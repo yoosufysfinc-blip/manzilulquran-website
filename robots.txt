@@ -1,0 +1,11 @@
+# Robots.txt for ManzilulQuran Academy
+# https://manzilulquran.in
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://manzilulquran.in/sitemap.xml
+
+# Be polite to search engine crawlers
+Crawl-delay: 1
