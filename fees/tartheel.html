@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tartheelul Qur'an — ManzilulQuran Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --indigo:#0b1442; --indigo2:#16215e; --royal:#27338f; --plum:#2a1a55;
+    --gold:#E9C46A; --gold-br:#F6DF9B; --gold-dp:#C49A3A;
+    --cream:#FBF4E2;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  body{
+    font-family:'Poppins',sans-serif;color:var(--cream);position:relative;
+    display:grid;place-items:center;
+    background:radial-gradient(circle at 50% 18%,#1d2a73 0%,#101a52 42%,#0a1038 78%,#070a26 100%)
+  }
+  /* warm center glow */
+  .glow{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:120vw;height:80vh;z-index:0;
+    background:radial-gradient(ellipse at center,rgba(233,196,106,.16),transparent 60%)}
+
+  /* flowing golden recitation wave */
+  .waves{position:absolute;left:0;top:50%;transform:translateY(-50%);width:100%;height:48vh;z-index:0;opacity:.8}
+  .waves svg{width:100%;height:100%}
+  .waves path{fill:none;stroke-linecap:round}
+  #w1{stroke:rgba(246,223,155,.55);stroke-width:2.5;filter:drop-shadow(0 0 8px rgba(233,196,106,.4))}
+  #w2{stroke:rgba(233,196,106,.35);stroke-width:1.8}
+
+  /* illuminated gold corners */
+  .corner{position:absolute;width:clamp(70px,12vw,128px);height:clamp(70px,12vw,128px);z-index:1;opacity:.85;color:var(--gold)}
+  .corner svg{width:100%;height:100%}
+  .tl{top:18px;left:18px}
+  .tr{top:18px;right:18px;transform:scaleX(-1)}
+  .bl{bottom:18px;left:18px;transform:scaleY(-1)}
+  .br{bottom:18px;right:18px;transform:scale(-1,-1)}
+
+  .card{
+    position:relative;z-index:3;width:min(680px,93vw);text-align:center;
+    padding:clamp(24px,4.2vh,38px) clamp(24px,5vw,50px);
+    background:rgba(9,14,48,.6);border:1px solid rgba(233,196,106,.45);
+    border-radius:26px;backdrop-filter:blur(13px);
+    box-shadow:0 34px 90px -34px rgba(0,0,0,.85),inset 0 0 60px rgba(233,196,106,.06);
+    animation:cardIn 1s cubic-bezier(.2,.8,.3,1) both
+  }
+  @keyframes cardIn{from{opacity:0;transform:translateY(26px) scale(.96)}to{opacity:1;transform:none}}
+
+  .topline{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:4px}
+  .topline .ar{font-family:'Amiri',serif;font-size:1.5rem;color:var(--gold-br)}
+  .eyebrow{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(246,223,155,.85)}
+
+  h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(2.3rem,7vw,3.6rem);line-height:1;color:#fff;
+    text-shadow:0 0 24px rgba(233,196,106,.4)}
+  .tagline{font-size:clamp(.74rem,2.2vw,.86rem);letter-spacing:.14em;text-transform:uppercase;color:var(--gold-br);margin-top:6px;font-weight:500}
+
+  .lede{color:rgba(251,244,226,.92);font-size:clamp(.86rem,2.4vw,1rem);margin-top:12px;font-weight:300;max-width:50ch;margin-inline:auto;line-height:1.55}
+  .lede em{font-style:normal;color:var(--gold-br);font-weight:500}
+
+  /* levels */
+  .levels{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+  .lvl{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:1px;
+    padding:9px 16px;border-radius:14px;background:rgba(39,51,143,.4);border:1px solid rgba(233,196,106,.4)}
+  .lvl b{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--gold-br);font-weight:600;display:flex;align-items:center;gap:7px}
+  .lvl b::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold)}
+  .lvl span{font-size:.66rem;color:rgba(251,244,226,.72)}
+
+  /* prices */
+  .formats{display:flex;gap:clamp(12px,2.6vw,18px);margin:clamp(14px,2.6vh,20px) 0 4px;justify-content:center}
+  .fmt{position:relative;flex:1;max-width:228px;border-radius:18px;padding:18px 14px 16px;
+    border:1px solid rgba(233,196,106,.45);overflow:hidden;background:linear-gradient(155deg,#1b2569,#121a4c);
+    transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s}
+  .fmt.best{border-color:var(--gold);background:linear-gradient(155deg,#28336f,#1a2255)}
+  .fmt:hover{transform:translateY(-6px);box-shadow:0 22px 48px -22px rgba(233,196,106,.5)}
+  .fmt .days{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.2rem;color:#fff}
+  .fmt .days small{display:block;font-family:'Poppins',sans-serif;font-weight:300;font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(251,244,226,.7);margin-top:2px}
+  .fmt .price{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(1.8rem,6vw,2.4rem);margin-top:8px;line-height:1;color:var(--gold-br)}
+  .fmt .per{font-size:.6rem;font-weight:300;color:rgba(251,244,226,.72);letter-spacing:.06em}
+  .tagbest{position:absolute;top:10px;right:10px;font-size:.52rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    padding:4px 9px;border-radius:30px;background:linear-gradient(90deg,#F6DF9B,#C49A3A);color:#1a1640;
+    box-shadow:0 0 16px rgba(233,196,106,.5);animation:bp 2.2s ease-in-out infinite}
+  @keyframes bp{50%{box-shadow:0 0 26px rgba(246,223,155,.85)}}
+
+  .cta{margin-top:clamp(12px,2.4vh,18px);display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
+  .live{display:inline-flex;align-items:center;gap:7px;font-size:.72rem;font-weight:500;color:var(--gold-br);
+    padding:8px 14px;border-radius:30px;background:rgba(39,51,143,.4);border:1px solid rgba(233,196,106,.4)}
+  .live svg{width:14px;height:14px;stroke:var(--gold);fill:none;stroke-width:2}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:40px;border:none;cursor:pointer;
+    font-family:'Poppins',sans-serif;font-weight:600;font-size:.92rem;color:#fff;text-decoration:none;
+    background:linear-gradient(92deg,#1faa54,#25d366);box-shadow:0 14px 30px -12px rgba(37,211,102,.6);transition:transform .3s,box-shadow .3s}
+  .btn:hover{transform:translateY(-3px);box-shadow:0 20px 42px -14px rgba(37,211,102,.75)}
+  .btn svg{width:19px;height:19px;fill:#fff}
+
+  @media (max-height:660px){ h1{font-size:clamp(2rem,5.6vh,2.8rem)} .lede{font-size:.84rem} .corner{display:none} .formats{margin:10px 0 2px} }
+  @media (max-width:440px){ .formats{flex-direction:column;align-items:center} .fmt{max-width:280px;width:100%} .levels{flex-direction:column;align-items:center} .lvl{width:100%;max-width:280px} }
+  @media (prefers-reduced-motion:reduce){ .tagbest{animation:none} }
+
+  /* Back-to-hub link (top-left corner, subtle) */
+  .back-hub{
+    position:fixed;top:18px;left:18px;z-index:50;
+    display:inline-flex;align-items:center;gap:8px;
+    padding:8px 14px;border-radius:24px;
+    background:rgba(0,0,0,0.35);
+    border:1px solid rgba(255,255,255,0.18);
+    color:#fff;text-decoration:none;
+    font-family:'Poppins',sans-serif;font-size:11px;
+    letter-spacing:1.5px;text-transform:uppercase;font-weight:500;
+    backdrop-filter:blur(8px);
+    transition:background .25s,border-color .25s,transform .25s;
+    opacity:0.7;
+  }
+  .back-hub:hover{
+    opacity:1;background:rgba(0,0,0,0.55);
+    border-color:rgba(255,200,140,0.6);
+    transform:translateX(-2px);
+  }
+  .back-hub svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+  @media (max-width:480px){
+    .back-hub{top:10px;left:10px;padding:6px 10px;font-size:10px;letter-spacing:1px}
+  }
+
+</style>
+</head>
+<body>
+  <a href="./" class="back-hub" aria-label="Back to all fees">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    All Fees
+  </a>
+
+  <div class="glow" aria-hidden="true"></div>
+  <div class="waves" aria-hidden="true">
+    <svg viewBox="0 0 1200 240" preserveAspectRatio="none"><path id="w1"/><path id="w2"/></svg>
+  </div>
+
+  <div class="corner tl" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2"><path d="M6,6 H70 M6,6 V70"/><path d="M6,40 C30,40 40,30 40,6"/><path d="M16,16 C16,44 44,16 16,16 Z" stroke-width="1.6"/><circle cx="54" cy="54" r="5"/><path d="M6,86 C6,70 14,64 26,64 M86,6 C70,6 64,14 64,26"/></svg></div>
+  <div class="corner tr" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2"><path d="M6,6 H70 M6,6 V70"/><path d="M6,40 C30,40 40,30 40,6"/><path d="M16,16 C16,44 44,16 16,16 Z" stroke-width="1.6"/><circle cx="54" cy="54" r="5"/><path d="M6,86 C6,70 14,64 26,64 M86,6 C70,6 64,14 64,26"/></svg></div>
+  <div class="corner bl" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2"><path d="M6,6 H70 M6,6 V70"/><path d="M6,40 C30,40 40,30 40,6"/><path d="M16,16 C16,44 44,16 16,16 Z" stroke-width="1.6"/><circle cx="54" cy="54" r="5"/><path d="M6,86 C6,70 14,64 26,64 M86,6 C70,6 64,14 64,26"/></svg></div>
+  <div class="corner br" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2"><path d="M6,6 H70 M6,6 V70"/><path d="M6,40 C30,40 40,30 40,6"/><path d="M16,16 C16,44 44,16 16,16 Z" stroke-width="1.6"/><circle cx="54" cy="54" r="5"/><path d="M6,86 C6,70 14,64 26,64 M86,6 C70,6 64,14 64,26"/></svg></div>
+
+  <main class="card">
+    <div class="topline">
+      <span class="ar">تَرْتِيلُ القُرآن</span>
+      <span class="eyebrow">ManzilulQuran E-learning Academy</span>
+    </div>
+
+    <h1>Tartheelul Qur'an</h1>
+    <div class="tagline">Qur'an Recitation with Tajwīd · Base &amp; Advanced</div>
+
+    <p class="lede">Recite the Qur'an the way it was meant to be heard — every letter from its <em>correct point of articulation</em>, every rule of tajwīd in its place, every verse flowing with calm and beauty. From your very first letters to a polished, melodious recitation, a personal mentor guides you at your own pace.</p>
+
+    <div class="levels">
+      <div class="lvl"><b>Base Level</b><span>Letters, makhārij &amp; core tajwīd rules</span></div>
+      <div class="lvl"><b>Advanced Level</b><span>Fluency, rhythm &amp; melodious tarteel</span></div>
+    </div>
+
+    <div class="formats">
+      <div class="fmt best">
+        <span class="tagbest">Best Value</span>
+        <div class="days">5 Days <small>per week</small></div>
+        <div class="price">₹<span data-count="2699">0</span></div>
+        <div class="per">per month</div>
+      </div>
+      <div class="fmt">
+        <div class="days">3 Days <small>per week</small></div>
+        <div class="price">₹<span data-count="2000">0</span></div>
+        <div class="per">per month</div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <span class="live"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>100% Live · One-to-One</span>
+      <a class="btn" id="demoBtn" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.04c-.24.68-1.42 1.31-1.96 1.36-.5.05-1.13.07-1.83-.11-.42-.13-.96-.31-1.66-.61-2.92-1.26-4.83-4.2-4.97-4.4-.15-.2-1.19-1.58-1.19-3.01s.75-2.14 1.02-2.43c.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.59.82 2.03.89 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5-.15.17-.31.39-.44.52-.15.15-.3.31-.13.6.17.29.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.35 1.46.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.19-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.72-.17 1.4z"/></svg>
+        Book a Free Demo
+      </a>
+    </div>
+  </main>
+
+<script>
+  // flowing recitation waves
+  (function(){
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var w1=document.getElementById('w1'), w2=document.getElementById('w2');
+    var midY=120, W=1200, step=8;
+    function build(el,amp,k,ph){
+      var d='M0 '+(midY+amp*Math.sin(ph)).toFixed(1);
+      for(var x=step;x<=W;x+=step){ d+=' L'+x+' '+(midY+amp*Math.sin(k*x+ph)).toFixed(1); }
+      el.setAttribute('d',d);
+    }
+    var k1=2*Math.PI*4/W, k2=2*Math.PI*3/W, p=0;
+    if(reduce){ build(w1,34,k1,0); build(w2,22,k2,1.5); return; }
+    (function frame(){ p+=0.03; build(w1,34,k1,p); build(w2,22,k2,-p*0.8+1.5); requestAnimationFrame(frame); })();
+  })();
+
+  function countUp(el){
+    var target=+el.dataset.count, dur=1200, t0=null;
+    function step(ts){ if(!t0)t0=ts; var pr=Math.min((ts-t0)/dur,1), e=1-Math.pow(1-pr,3);
+      el.textContent=Math.round(target*e).toLocaleString('en-IN'); if(pr<1)requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  setTimeout(function(){ document.querySelectorAll('[data-count]').forEach(countUp); }, 500);
+
+  // WhatsApp free-demo link
+  var phone='917025070415';
+  var msg="Assalamu Alaikum! I'm interested in the Tartheelul Qur'an course (Recitation with Tajwīd) at ManzilulQuran E-learning Academy and would like to book a FREE demo class.\n\nLevel: Base / Advanced (please advise)\nFormat: 5 days (₹2699) or 3 days (₹2000) per week.\n\nPlease share the available time slots. Jazak Allah Khair.";
+  document.getElementById('demoBtn').href='https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
+</script>
+</body>
+</html>
