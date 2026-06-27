@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hifz — ManzilulQuran Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#06392B;
+    --emerald:#1B7A5A;
+    --gold:#C9A96E;
+    --gold-bright:#F0D9A8;
+    --cream:#FBF7EF;
+    --t:3s; /* night transition length */
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  body{
+    font-family:'Poppins',sans-serif;color:var(--cream);
+    background:radial-gradient(circle at 25% 20%,#0E5A43 0%,#073325 55%,#04231A 100%);
+    display:grid;place-items:center;position:relative;
+    transition:background var(--t) ease-in-out
+  }
+  body.night{background:radial-gradient(circle at 50% 30%,#063524 0%,#02130D 55%,#00060499 100%),#010C07}
+
+  /* drifting clouds */
+  .cloud{position:absolute;border-radius:50%;filter:blur(80px);z-index:0;transition:opacity var(--t) ease}
+  .cloud.c1{width:420px;height:420px;background:rgba(27,122,90,.55);top:-100px;left:-120px;animation:drift1 34s ease-in-out infinite}
+  .cloud.c2{width:380px;height:380px;background:rgba(201,169,110,.40);bottom:-130px;right:-110px;animation:drift2 42s ease-in-out infinite}
+  .cloud.c3{width:300px;height:300px;background:rgba(14,124,88,.45);top:60%;left:55%;animation:drift3 38s ease-in-out infinite}
+  body.night .cloud{opacity:.45}
+  @keyframes drift1{0%,38%{transform:translate(0,0)}60%,100%{transform:translate(70px,46px)}}
+  @keyframes drift2{0%,30%{transform:translate(0,0)}55%,100%{transform:translate(-60px,-40px)}}
+  @keyframes drift3{0%,45%{transform:translate(0,0)}70%,100%{transform:translate(-50px,34px)}}
+
+  /* snow — small blurred flakes, fade in over the same 3s */
+  .snow{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity var(--t) ease}
+  body.night .snow{opacity:1}
+  .flake{position:absolute;top:0;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%,#ffffff,rgba(207,236,255,.35));
+    animation-name:snowfall;animation-timing-function:linear;animation-iteration-count:infinite;will-change:transform}
+  @keyframes snowfall{0%{transform:translate3d(0,-12vh,0)}100%{transform:translate3d(var(--dx,0),112vh,0)}}
+
+  .card{
+    position:relative;z-index:2;width:min(640px,92vw);text-align:center;
+    padding:clamp(26px,5vh,46px) clamp(24px,5vw,52px);
+    background:rgba(255,253,248,.06);
+    border:1px solid rgba(240,217,168,.35);
+    border-radius:28px;backdrop-filter:blur(14px);
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.6),inset 0 0 40px rgba(240,217,168,.05);
+    transition:box-shadow var(--t) ease,border-color var(--t) ease;
+    animation:cardIn 1s cubic-bezier(.2,.8,.3,1) both
+  }
+  body.night .card{border-color:rgba(196,232,255,.45);box-shadow:0 30px 90px -28px rgba(0,0,0,.9),inset 0 0 50px rgba(196,232,255,.07)}
+  @keyframes cardIn{from{opacity:0;transform:translateY(26px) scale(.96)}to{opacity:1;transform:none}}
+
+  .bismillah{font-family:'Amiri',serif;color:var(--gold-bright);font-size:clamp(1.1rem,3.6vw,1.5rem);direction:rtl;opacity:.9}
+  .eyebrow{margin-top:10px;font-size:.62rem;letter-spacing:.34em;text-transform:uppercase;color:var(--gold)}
+
+  h1{
+    font-family:'Cormorant Garamond',serif;font-weight:700;
+    font-size:clamp(3.2rem,12vw,5.6rem);line-height:.92;margin-top:6px;color:#fff;
+    text-shadow:0 0 24px rgba(240,217,168,.5),0 0 60px rgba(27,122,90,.45);
+    transition:text-shadow var(--t) ease
+  }
+  body.night h1{text-shadow:0 0 28px rgba(196,232,255,.8),0 0 80px rgba(27,122,90,.7)}
+  .ar-title{font-family:'Amiri',serif;color:var(--gold-bright);font-size:clamp(1.3rem,5vw,2rem);margin-top:2px}
+  .sub{color:rgba(251,247,239,.7);font-size:clamp(.8rem,2.4vw,.95rem);margin-top:4px;font-weight:300}
+
+  .stats{display:flex;justify-content:center;gap:clamp(10px,2.5vw,18px);margin:clamp(16px,3vh,24px) 0}
+  .chip{
+    flex:1;max-width:160px;padding:14px 10px;border-radius:16px;
+    background:rgba(6,57,43,.45);border:1px solid rgba(240,217,168,.3);
+    box-shadow:0 0 20px rgba(201,169,110,.16);
+    transition:box-shadow var(--t) ease,border-color var(--t) ease
+  }
+  body.night .chip{border-color:rgba(196,232,255,.5);box-shadow:0 0 28px rgba(140,200,235,.32)}
+  .chip .v{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(1.5rem,5vw,2.1rem);color:var(--gold-bright);line-height:1;transition:text-shadow var(--t) ease}
+  body.night .chip .v{text-shadow:0 0 16px rgba(196,232,255,.65)}
+  .chip .v small{font-size:.5em;color:rgba(251,247,239,.75);font-family:'Poppins',sans-serif}
+  .chip .k{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(251,247,239,.65);margin-top:6px}
+
+  /* note box reserved up front */
+  .note-wrap{
+    position:relative;display:flex;align-items:center;justify-content:center;text-align:center;
+    margin-top:6px;padding:12px 18px;
+    height:clamp(104px,19vh,132px);
+    border:1px solid rgba(240,217,168,.34);border-radius:16px;
+    background:rgba(6,57,43,.3);box-shadow:inset 0 0 26px rgba(240,217,168,.05);
+    transition:border-color var(--t) ease,box-shadow var(--t) ease
+  }
+  body.night .note-wrap{border-color:rgba(196,232,255,.5);box-shadow:inset 0 0 32px rgba(196,232,255,.1),0 0 26px rgba(140,200,235,.2)}
+
+  /* two stacked copies crossfade for a smooth colour morph */
+  .note,.note-night{
+    font-family:'Cormorant Garamond',serif;font-weight:600;
+    font-size:clamp(.85rem,2.5vw,1.05rem);line-height:1.4;letter-spacing:.2px;
+    width:min(46ch,100%)
+  }
+  .note{color:var(--cream);text-shadow:0 0 10px rgba(240,217,168,.35);transition:opacity var(--t) ease}
+  body.night .note{opacity:0}
+
+  .note-night{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    pointer-events:none;opacity:0;transition:opacity var(--t) ease;
+    color:transparent;
+    background:linear-gradient(90deg,#F0D9A8,#BFF6E4,#9FD8FF,#CFE9FF,#F0D9A8);
+    background-size:320% 100%;
+    -webkit-background-clip:text;background-clip:text;
+    filter:drop-shadow(0 0 12px rgba(159,216,255,.55)) drop-shadow(0 0 22px rgba(240,217,168,.3));
+    animation:adaptHue 7s linear infinite
+  }
+  body.night .note-night{opacity:1}
+  @keyframes adaptHue{to{background-position:320% 0}}
+
+  .note .ch{display:inline-block;animation:charIn .22s ease forwards}
+  @keyframes charIn{
+    from{opacity:0;filter:blur(8px);transform:translateY(7px) scale(1.04);
+         text-shadow:0 0 18px rgba(240,217,168,.9),0 0 36px rgba(127,227,192,.6)}
+    to{opacity:1;filter:blur(0);transform:none;text-shadow:0 0 10px rgba(240,217,168,.35)}
+  }
+  .caret{display:inline-block;width:2px;height:1.05em;background:var(--gold-bright);
+    margin-left:3px;vertical-align:-2px;box-shadow:0 0 10px var(--gold-bright);animation:blink .8s step-end infinite}
+  .caret.hide{display:none}
+  @keyframes blink{50%{opacity:0}}
+
+  .ribbon{margin-top:clamp(12px,2.6vh,20px);font-family:'Amiri',serif;color:var(--gold);font-size:clamp(.95rem,2.8vw,1.2rem);transition:text-shadow var(--t) ease}
+  body.night .ribbon{text-shadow:0 0 16px rgba(196,232,255,.55)}
+  .brand{margin-top:8px;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(251,247,239,.55)}
+
+  @media (max-height:600px){ h1{font-size:clamp(2.6rem,9vh,4rem)} .stats{margin:12px 0} .note-wrap{height:clamp(92px,17vh,116px)} }
+  @media (prefers-reduced-motion:reduce){
+    .cloud,.flake{animation:none}
+    .note .ch{animation:none;opacity:1;filter:none;transform:none}
+    .note-night{animation:none;background-position:0 0}
+  }
+
+  /* Back-to-hub link (top-left corner, subtle) */
+  .back-hub{
+    position:fixed;top:18px;left:18px;z-index:50;
+    display:inline-flex;align-items:center;gap:8px;
+    padding:8px 14px;border-radius:24px;
+    background:rgba(0,0,0,0.35);
+    border:1px solid rgba(255,255,255,0.18);
+    color:#fff;text-decoration:none;
+    font-family:'Poppins',sans-serif;font-size:11px;
+    letter-spacing:1.5px;text-transform:uppercase;font-weight:500;
+    backdrop-filter:blur(8px);
+    transition:background .25s,border-color .25s,transform .25s;
+    opacity:0.7;
+  }
+  .back-hub:hover{
+    opacity:1;background:rgba(0,0,0,0.55);
+    border-color:rgba(255,200,140,0.6);
+    transform:translateX(-2px);
+  }
+  .back-hub svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+  @media (max-width:480px){
+    .back-hub{top:10px;left:10px;padding:6px 10px;font-size:10px;letter-spacing:1px}
+  }
+
+</style>
+</head>
+<body>
+  <a href="./" class="back-hub" aria-label="Back to all fees">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    All Fees
+  </a>
+
+  <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+  <div class="snow" id="snow" aria-hidden="true"></div>
+
+  <main class="card">
+    <div class="bismillah">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+    <div class="eyebrow">ManzilulQuran E-learning Academy</div>
+    <h1>Hifz</h1>
+    <div class="ar-title">حِفْظُ القُرآن</div>
+    <div class="sub">Qur'an Memorisation Programme</div>
+
+    <div class="stats">
+      <div class="chip"><div class="v">&#8377;3000</div><div class="k">Monthly Fees</div></div>
+      <div class="chip"><div class="v">6 <small>days</small></div><div class="k">Weekly Class</div></div>
+      <div class="chip"><div class="v">50 <small>min</small></div><div class="k">Per Session</div></div>
+    </div>
+
+    <div class="note-wrap">
+      <span class="note" id="note"></span><span class="caret" id="caret"></span>
+      <span class="note-night" id="noteNight" aria-hidden="true"></span>
+    </div>
+
+    <div class="ribbon">وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ</div>
+    <div class="brand">Personal Mentorship · Quality-Focused Retention</div>
+  </main>
+
+<script>
+  const text = "Complete Hifz or a selected Surah — personal mentorship, scientific memorisation, strong recall, monthly tests, daily parent reports, and quality-focused retention.";
+  const el = document.getElementById('note');
+  const elNight = document.getElementById('noteNight');
+  const caret = document.getElementById('caret');
+  let i = 0, settled = "";
+
+  const START = 150, SETTLE = 220;
+  const charDelay = Math.max(6, Math.round((3000 - START - SETTLE) / text.length));
+
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function type(){
+    if(i >= text.length){
+      caret.classList.add('hide');
+      setTimeout(function(){
+        el.textContent = text;       // flatten typed spans
+        elNight.textContent = text;  // prep the night colour layer (still invisible)
+      }, 260);
+      return;
+    }
+    const cur = text[i];
+    el.innerHTML = esc(settled) + '<span class="ch">' + esc(cur) + '</span>';
+    settled += cur;
+    i++;
+    setTimeout(type, charDelay);
+  }
+  setTimeout(type, START);
+
+  function makeSnow(){
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce) return;
+    const c = document.getElementById('snow');
+    for(let k=0;k<40;k++){
+      const s = document.createElement('div');
+      s.className = 'flake';
+      const size = 2 + Math.random()*5;
+      s.style.width = s.style.height = size + 'px';
+      s.style.left = (Math.random()*100) + 'vw';
+      s.style.setProperty('--dx', (Math.random()*80 - 40) + 'px');
+      const dur = 6 + Math.random()*8;
+      s.style.animationDuration = dur + 's';
+      s.style.animationDelay = (-Math.random()*dur) + 's';
+      s.style.opacity = (0.3 + Math.random()*0.5).toFixed(2);
+      s.style.filter = 'blur(' + (0.6 + Math.random()*1.6).toFixed(2) + 'px)';
+      c.appendChild(s);
+    }
+  }
+
+  // at 10s: build snow, then trigger the 3s crossfade into night
+  setTimeout(function(){
+    makeSnow();
+    requestAnimationFrame(function(){ document.body.classList.add('night'); });
+  }, 10000);
+</script>
+</body>
+</html>
