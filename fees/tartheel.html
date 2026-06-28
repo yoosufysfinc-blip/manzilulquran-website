@@ -101,36 +101,36 @@
   @media (prefers-reduced-motion:reduce){ .tagbest{animation:none} }
 
   /* Back-to-hub link (top-left corner, subtle) */
+ /* Small dot back button — barely visible top-left */
   .back-hub{
-    position:fixed;top:18px;left:18px;z-index:50;
-    display:inline-flex;align-items:center;gap:8px;
-    padding:8px 14px;border-radius:24px;
-    background:rgba(0,0,0,0.35);
-    border:1px solid rgba(255,255,255,0.18);
-    color:#fff;text-decoration:none;
-    font-family:'Poppins',sans-serif;font-size:11px;
-    letter-spacing:1.5px;text-transform:uppercase;font-weight:500;
-    backdrop-filter:blur(8px);
-    transition:background .25s,border-color .25s,transform .25s;
+    position:fixed;top:20px;left:20px;z-index:50;
+    width:14px;height:14px;
+    border-radius:50%;
+    background:rgba(255,200,140,0.5);
+    box-shadow:0 0 10px rgba(255,200,140,0.4);
+    text-decoration:none;
+    transition:all .3s ease;
     opacity:0.7;
+    display:block;
+    font-size:0;
+    line-height:0;
+    overflow:hidden;
   }
   .back-hub:hover{
-    opacity:1;background:rgba(0,0,0,0.55);
-    border-color:rgba(255,200,140,0.6);
-    transform:translateX(-2px);
+    opacity:1;
+    background:rgba(255,200,140,1);
+    box-shadow:0 0 20px rgba(255,200,140,0.8);
+    transform:scale(1.4);
   }
-  .back-hub svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+  .back-hub *{display:none !important}
   @media (max-width:480px){
-    .back-hub{top:10px;left:10px;padding:6px 10px;font-size:10px;letter-spacing:1px}
+    .back-hub{top:14px;left:14px;width:12px;height:12px}
   }
 
 </style>
 </head>
 <body>
-  <a href="./" class="back-hub" aria-label="Back to all fees">
-    <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-    All Fees
-  </a>
+<a href="./" class="back-hub" aria-label="Back to all fees" title="All Fees"></a>
 
   <div class="glow" aria-hidden="true"></div>
   <div class="waves" aria-hidden="true">
