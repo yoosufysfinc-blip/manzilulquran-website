@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quran Ayah Media Generator — ManzilulQuran</title>
+
+<!-- Arabic Quran typography -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* =============================================================
+   CONFIG-DRIVEN THEME — academy brand palette
+   ============================================================= */
+:root{
+  --emerald-900:#06382a;
+  --emerald-800:#0B4D3B;
+  --emerald-600:#1B7A5A;
+  --emerald-400:#2fa37c;
+  --gold:#C9A96E;
+  --gold-soft:#e3cf9f;
+  --cream:#FBF7EF;
+  --ink:#10231d;
+
+  --glass: rgba(251,247,239,0.72);
+  --glass-border: rgba(255,255,255,0.55);
+  --shadow: 0 18px 50px -18px rgba(6,56,42,0.55);
+  --radius: 20px;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  color:var(--ink);
+  min-height:100vh;
+  background:
+    radial-gradient(1200px 700px at 85% -10%, rgba(201,169,110,0.18), transparent 60%),
+    radial-gradient(1000px 800px at -10% 110%, rgba(27,122,90,0.22), transparent 55%),
+    linear-gradient(160deg, #f4efe2 0%, #eaf1ec 100%);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* subtle geometric Islamic pattern overlay on the page */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;z-index:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><g fill='none' stroke='%230B4D3B' stroke-width='1'><path d='M30 0l30 30-30 30L0 30z'/><circle cx='30' cy='30' r='14'/></g></svg>");
+}
+
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:28px 18px 60px}
+
+/* ---------- Header ---------- */
+header.top{
+  display:flex;align-items:center;gap:16px;margin-bottom:22px;flex-wrap:wrap;
+}
+.brand-mark{
+  width:52px;height:52px;border-radius:14px;flex:0 0 auto;
+  display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(140deg,var(--emerald-800),var(--emerald-600));
+  box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.25);
+}
+.brand-mark img{width:100%;height:100%;object-fit:contain}
+.brand-mark span{font-size:11px;font-weight:700;color:var(--gold-soft);letter-spacing:.5px}
+.brand-text h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.02em}
+.brand-text p{margin:2px 0 0;font-size:12.5px;color:#4d6358;font-weight:500}
+.phase-tag{margin-left:auto;font-size:11px;font-weight:700;color:var(--emerald-800);
+  background:rgba(201,169,110,.22);border:1px solid rgba(201,169,110,.5);
+  padding:6px 12px;border-radius:999px}
+
+/* ---------- Layout ---------- */
+.grid{display:grid;grid-template-columns:1fr;gap:22px}
+@media(min-width:980px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+
+/* ---------- Glass panel ---------- */
+.panel{
+  position:relative;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:22px;
+}
+/* lift the controls panel above the preview while the bg popover is open */
+.panel.bg-open{z-index:60}
+.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.13em;
+  color:var(--emerald-800);margin:0 0 16px;font-weight:800}
+.field{margin-bottom:18px}
+.field:last-child{margin-bottom:0}
+label.lbl{display:block;font-size:12.5px;font-weight:600;color:#3a4f46;margin-bottom:7px}
+
+/* inputs */
+input[type=text],input[type=number],input[type=url],select{
+  width:100%;padding:13px 14px;font-size:15px;font-family:inherit;color:var(--ink);
+  background:rgba(255,255,255,.85);border:1px solid rgba(11,77,59,.18);
+  border-radius:12px;outline:none;transition:border .15s, box-shadow .15s;
+}
+input:focus,select:focus{border-color:var(--emerald-600);
+  box-shadow:0 0 0 3px rgba(27,122,90,.18)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* searchable combobox */
+.combo{position:relative}
+.combo-list{
+  position:absolute;z-index:30;top:calc(100% + 6px);left:0;right:0;max-height:280px;
+  overflow:auto;background:#fff;border:1px solid rgba(11,77,59,.18);border-radius:12px;
+  box-shadow:0 20px 40px -16px rgba(6,56,42,.4);display:none;
+}
+.combo-list.open{display:block}
+.combo-item{display:flex;align-items:center;gap:10px;padding:10px 13px;cursor:pointer;border-bottom:1px solid #f0ece2}
+.combo-item:last-child{border-bottom:none}
+.combo-item:hover,.combo-item.active{background:rgba(27,122,90,.10)}
+.combo-num{flex:0 0 30px;height:30px;border-radius:8px;display:grid;place-items:center;
+  font-size:12px;font-weight:700;color:#fff;background:linear-gradient(140deg,var(--emerald-800),var(--emerald-600))}
+.combo-en{font-weight:600;font-size:14px}
+.combo-meta{font-size:11.5px;color:#6b7d74}
+.combo-ar{margin-left:auto;font-family:'Amiri Quran',serif;font-size:20px;color:var(--emerald-800)}
+
+/* background swatches */
+.bg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bg-swatch{aspect-ratio:16/10;border-radius:12px;cursor:pointer;position:relative;
+  border:2px solid transparent;overflow:hidden;background-size:cover;background-position:center}
+.bg-swatch.sel{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,.35)}
+.bg-swatch span{position:absolute;left:0;right:0;bottom:0;font-size:10.5px;font-weight:700;color:#fff;
+  text-align:center;padding:4px 2px;background:linear-gradient(transparent,rgba(0,0,0,.65))}
+
+/* background selector collapsed into a button + popover */
+.bg-select{position:relative}
+.bg-toggle{width:100%;display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;
+  background:rgba(255,255,255,.85);border:1px solid rgba(11,77,59,.18);cursor:pointer;
+  font-family:inherit;font-size:15px;font-weight:600;color:var(--ink)}
+.bg-toggle:focus{outline:none;border-color:var(--emerald-600);box-shadow:0 0 0 3px rgba(27,122,90,.18)}
+.bg-toggle-sw{width:28px;height:20px;border-radius:6px;flex:0 0 auto;border:1px solid rgba(0,0,0,.18);background-size:cover;background-position:center}
+.bg-caret{width:20px;height:20px;margin-left:auto;color:#6b7d74;transition:transform .2s}
+.bg-select.open .bg-caret{transform:rotate(180deg)}
+.bg-panel{position:absolute;z-index:60;top:calc(100% + 6px);left:0;right:0;background:#fff;
+  border:1px solid rgba(11,77,59,.18);border-radius:14px;box-shadow:0 20px 40px -16px rgba(6,56,42,.4);
+  padding:12px;display:none;max-height:min(60vh,360px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.bg-select.open .bg-panel{display:block}
+
+/* reciter pills as select; quality segmented */
+.seg{display:flex;gap:8px}
+.seg button{flex:1;padding:11px;border-radius:11px;border:1px solid rgba(11,77,59,.18);
+  background:rgba(255,255,255,.7);font-weight:700;font-size:13px;cursor:pointer;color:#3a4f46}
+.seg button.on{background:linear-gradient(140deg,var(--emerald-800),var(--emerald-600));color:#fff;border-color:transparent}
+
+/* ---------- Preview stage (THE HERO / future video frame) ---------- */
+.stage-shell{position:sticky;top:18px}
+.stage{
+  position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;
+  background:#000;box-shadow:0 24px 60px -20px rgba(0,0,0,.6);
+  display:grid;place-items:center;text-align:center;
+}
+.stage .bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity .5s}
+.stage .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.55))}
+.stage .content{position:relative;z-index:2;padding:7% 8% 84px;width:100%}
+.surah-banner{font-family:'Amiri',serif;color:var(--gold-soft);font-size:clamp(13px,2.4vw,20px);
+  letter-spacing:.04em;margin-bottom:14px;opacity:.95;transition:opacity .5s}
+.ayah-arabic{
+  font-family:'Amiri Quran',serif;direction:rtl;color:#fff;line-height:1.95;
+  font-size:clamp(22px,5.2vw,46px);text-shadow:0 2px 18px rgba(0,0,0,.6);
+  transition:opacity .45s ease;
+}
+.ayah-arabic.fade{opacity:0}
+.ayah-num-badge{display:inline-grid;place-items:center;min-width:30px;height:30px;padding:0 8px;
+  border-radius:50%;border:1.5px solid var(--gold);color:var(--gold-soft);
+  font-family:'Amiri',serif;font-size:15px;margin:0 6px;vertical-align:middle}
+
+/* branding footer/watermark inside stage */
+.stage-footer{position:absolute;left:0;right:0;bottom:0;z-index:4;
+  display:flex;align-items:center;gap:10px;padding:12px 16px;
+  background:linear-gradient(transparent,rgba(0,0,0,.55) 38%,rgba(0,0,0,.78))}
+.stage-logo{width:34px;height:34px;border-radius:8px;flex:0 0 auto;display:grid;place-items:center;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);overflow:hidden}
+.stage-logo img{width:100%;height:100%;object-fit:contain}
+.stage-logo small{font-size:8px;color:var(--gold-soft);font-weight:700}
+.stage-brand-txt{text-align:left;line-height:1.25}
+.stage-brand-txt b{color:#fff;font-size:12.5px;display:block;font-weight:700}
+.stage-brand-txt em{color:var(--gold-soft);font-size:10.5px;font-style:normal}
+.stage-social{margin-left:auto;color:rgba(255,255,255,.85);font-size:10.5px;text-align:right}
+
+.stage-empty{color:rgba(255,255,255,.55);font-family:'Inter';font-size:14px;font-weight:500}
+
+/* transport + downloads */
+.transport{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+.tbtn{width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;
+  background:linear-gradient(140deg,var(--emerald-800),var(--emerald-600));color:#fff;box-shadow:var(--shadow)}
+.tbtn.ghost{background:rgba(255,255,255,.7);color:var(--emerald-800);border:1px solid rgba(11,77,59,.2)}
+.tbtn svg{width:20px;height:20px}
+.track-info{font-size:12.5px;color:#3a4f46;font-weight:600}
+.scrub{flex:1 1 140px;height:6px;border-radius:99px;background:rgba(11,77,59,.15);overflow:hidden;min-width:120px}
+.scrub > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--emerald-600),var(--gold))}
+
+.dlrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+@media(max-width:520px){.dlrow{grid-template-columns:1fr}}
+.dlbtn{padding:14px;border-radius:14px;border:none;cursor:pointer;font-weight:700;font-size:14px;
+  display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .1s, filter .15s}
+.dlbtn:active{transform:translateY(1px)}
+.dlbtn.primary{background:linear-gradient(140deg,var(--gold),#b89455);color:#2a2410;box-shadow:var(--shadow)}
+.dlbtn.secondary{background:rgba(255,255,255,.8);color:var(--emerald-800);border:1px solid rgba(11,77,59,.22)}
+.dlbtn[disabled]{opacity:.5;cursor:not-allowed;filter:grayscale(.3)}
+.dlbtn svg{width:18px;height:18px}
+
+/* progress / toast */
+.progress{margin-top:14px;display:none}
+.progress.show{display:block}
+.progress .bar{height:9px;border-radius:99px;background:rgba(11,77,59,.14);overflow:hidden}
+.progress .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--emerald-600),var(--gold));transition:width .2s}
+.progress .meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12px;color:#3a4f46;font-weight:600}
+.cancel{background:none;border:none;color:#a23b3b;font-weight:700;cursor:pointer;font-size:12px}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;padding:13px 20px;border-radius:12px;font-size:13.5px;font-weight:600;
+  box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.3s;z-index:100;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{background:#7a2e2e}
+
+.hint{font-size:11.5px;color:#6b7d74;margin-top:6px;line-height:1.5}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+.spinner.dark{border-color:rgba(11,77,59,.3);border-top-color:var(--emerald-800)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand-mark" id="headerLogo"><span>LOGO</span></div>
+    <div class="brand-text">
+      <h1>Quran Ayah Media Generator</h1>
+      <p>ManzilulQuran E-learning Academy · audio export</p>
+    </div>
+    <div class="phase-tag">Phase 1 · Audio</div>
+  </header>
+
+  <div class="grid">
+
+    <!-- ============ CONTROLS ============ -->
+    <section class="panel" id="controlsPanel">
+      <h2>Recitation setup</h2>
+
+      <!-- Surah searchable dropdown -->
+      <div class="field">
+        <label class="lbl" for="surahInput">Surah</label>
+        <div class="combo">
+          <input type="text" id="surahInput" placeholder="Search by number, Arabic or English name…" autocomplete="off" />
+          <div class="combo-list" id="surahList"></div>
+        </div>
+      </div>
+
+      <!-- Ayah range -->
+      <div class="field">
+        <label class="lbl">Ayah range</label>
+        <div class="row2">
+          <input type="number" id="fromAyah" min="1" placeholder="From" />
+          <input type="number" id="toAyah" min="1" placeholder="To" />
+        </div>
+        <div class="hint" id="rangeHint">Select a Surah to set the range.</div>
+      </div>
+
+      <!-- Reciter -->
+      <div class="field">
+        <label class="lbl" for="reciter">Reciter</label>
+        <select id="reciter"></select>
+        <div class="hint" style="display:flex;align-items:center;gap:8px;justify-content:space-between">
+          <span>Audio source: Al Quran Cloud CDN (cdn.islamic.network)</span>
+          <button id="testAudioBtn" type="button" style="background:rgba(27,122,90,.12);border:1px solid rgba(11,77,59,.25);color:var(--emerald-800);font-weight:700;font-size:11.5px;padding:5px 11px;border-radius:8px;cursor:pointer">▶ Test audio</button>
+        </div>
+      </div>
+
+      <!-- Background -->
+      <div class="field">
+        <label class="lbl">Background</label>
+        <div class="bg-select">
+          <button type="button" class="bg-toggle" id="bgToggle" aria-haspopup="true" aria-expanded="false">
+            <span class="bg-toggle-sw" id="bgToggleSw"></span>
+            <span id="bgToggleLabel">Islamic</span>
+            <svg class="bg-caret" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+          </button>
+          <div class="bg-panel" id="bgPanel">
+            <div class="bg-grid" id="bgGrid"></div>
+          </div>
+        </div>
+        <input type="file" id="bgUpload" accept="image/*" style="display:none" />
+        <div class="hint">Pick “Custom” to upload your own Kaaba / Masjid photo, or add permanent image URLs in the <b>BACKGROUNDS</b> config at the top of the script.</div>
+      </div>
+
+      <!-- Quality (kept for the upcoming video phase; controls preview frame) -->
+      <div class="field">
+        <label class="lbl">Frame quality</label>
+        <div class="seg" id="qualitySeg">
+          <button data-q="720" class="on">720p</button>
+          <button data-q="1080">1080p</button>
+        </div>
+        <div class="hint">Used for the preview frame now; the same setting will drive the video export in Phase 2.</div>
+      </div>
+    </section>
+
+    <!-- ============ PREVIEW + DOWNLOADS ============ -->
+    <section class="panel stage-shell">
+      <h2>Live preview &amp; export</h2>
+
+      <div class="stage" id="stage">
+        <div class="bg" id="stageBg"></div>
+        <div class="veil"></div>
+        <div class="content">
+          <div class="surah-banner" id="surahBanner" style="display:none"></div>
+          <div class="ayah-arabic" id="ayahText"><span class="stage-empty">Choose a Surah and ayah range to preview the recitation frame.</span></div>
+        </div>
+        <div class="stage-footer">
+          <div class="stage-logo" id="stageLogo"><small>LOGO</small></div>
+          <div class="stage-brand-txt">
+            <b id="brandName">ManzilulQuran E-learning Academy</b>
+            <em id="brandSite">manzilulquran.in</em>
+          </div>
+          <div class="stage-social" id="brandSocial"></div>
+        </div>
+      </div>
+
+      <!-- transport -->
+      <div class="transport">
+        <button class="tbtn ghost" id="prevBtn" title="Previous ayah" aria-label="Previous ayah">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zm3.5 7l8.5 6V6z"/></svg>
+        </button>
+        <button class="tbtn" id="playBtn" title="Play range" aria-label="Play">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="tbtn ghost" id="nextBtn" title="Next ayah" aria-label="Next ayah">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM6 6l8.5 6L6 18z"/></svg>
+        </button>
+        <div class="track-info" id="trackInfo">—</div>
+        <div class="scrub"><i id="scrubFill"></i></div>
+      </div>
+
+      <!-- downloads -->
+      <div class="dlrow">
+        <button class="dlbtn secondary" id="dlOneBtn" disabled>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17 7.3 12.3l1.4-1.4 3.3 3.3V3zM5 19h14v2H5z"/></svg>
+          Current Ayah (MP3)
+        </button>
+        <button class="dlbtn primary" id="dlRangeBtn" disabled>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17 7.3 12.3l1.4-1.4 3.3 3.3V3zM5 19h14v2H5z"/></svg>
+          Full Range (MP3)
+        </button>
+      </div>
+
+      <!-- progress -->
+      <div class="progress" id="progress">
+        <div class="bar"><i id="progressBar"></i></div>
+        <div class="meta">
+          <span id="progressLabel">Preparing…</span>
+          <button class="cancel" id="cancelBtn">Cancel</button>
+        </div>
+      </div>
+
+      <div class="hint" style="margin-top:14px">
+        🎬 <b>Video export (MP4)</b> arrives in Phase 2. This preview frame is exactly what each video frame will look like, so anything you set here carries straight over.
+      </div>
+    </section>
+  </div>
+</div>
+
+<audio id="player" preload="auto" playsinline></audio>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =================================================================
+   ░░  CONFIG  ░░  — edit these to rebrand or swap data sources
+   ================================================================= */
+
+// Put your academy logo URL here (GitHub raw URL or website asset).
+// This is the single place to set the logo — leave "" to show the placeholder.
+const LOGO_URL = "";
+
+// Fixed academy branding shown on the preview frame / footer.
+const ACADEMY = {
+  name:   "ManzilulQuran E-learning Academy",
+  site:   "manzilulquran.in",
+  social: ""   // optional, e.g. "@manzilulquran" — leave "" to hide
+};
+
+// Quran TEXT api (modular — swap freely, see loadSurahText()).
+const TEXT_API = (surah) =>
+  `https://api.alquran.cloud/v1/surah/${surah}/quran-uthmani`;
+
+// Per-ayah AUDIO CDN. {bitrate}/{edition}/{globalAyahNumber}.mp3
+// CORS-enabled, so blob downloads work in-browser.
+const AUDIO_BITRATE = 128;
+const AUDIO_URL = (edition, globalAyah) =>
+  `https://cdn.islamic.network/quran/audio/${AUDIO_BITRATE}/${edition}/${globalAyah}.mp3`;
+
+// DOWNLOAD fallback chain. The CDN plays audio fine but may block JS from
+// reading bytes (CORS), which is what saving a file needs. So downloads try,
+// in order: your own proxy (best) → direct → public CORS proxies.
+//
+// Once you upload audio-proxy.php next to this HTML (cPanel, or `php -S` locally),
+// downloads route through your OWN server — same origin, no CORS, nothing third-party.
+// Relative path means it works identically locally and on manzilulquran.in.
+// (On a plain file:// page or static host without PHP, it harmlessly falls back.)
+const SELF_PROXY = "audio-proxy.php?url=";
+
+// RECITERS — add more by appending {name, edition}. edition = islamic.network id.
+const RECITERS = [
+  { name: "Mishary Rashid Alafasy",        edition: "ar.alafasy" },
+  { name: "Maher Al Muaiqly",              edition: "ar.mahermuaiqly" },
+  { name: "Abdul Basit Abdus Samad",       edition: "ar.abdulbasitmurattal" },
+  { name: "Abdur Rahman As-Sudais",        edition: "ar.abdurrahmaansudais" },
+  { name: "Saad Al Ghamdi",                edition: "ar.saadalghamdi" },
+];
+
+// BACKGROUNDS — type "color" | "gradient" | "image".
+// To wire a permanent Kaaba/Masjid photo, set type:"image" and a url.
+const BACKGROUNDS = [
+  { id:"black",    label:"Solid Black", type:"color",    value:"#000000" },
+  { id:"islamic",  label:"Islamic",     type:"gradient", value:"linear-gradient(160deg,#06382a 0%,#0B4D3B 45%,#1B7A5A 100%)" },
+  { id:"gold",     label:"Emerald·Gold",type:"gradient", value:"linear-gradient(160deg,#0B4D3B 0%,#1c1407 60%,#C9A96E 140%)" },
+  { id:"night",    label:"Night Sky",   type:"gradient", value:"radial-gradient(120% 100% at 50% 0%,#13314a 0%,#0a1622 60%,#05080d 100%)" },
+  { id:"kaaba",    label:"Kaaba",       type:"image",    value:"" },   // ← paste image url
+  { id:"masjid",   label:"Masjid",      type:"image",    value:"" },   // ← paste image url
+  { id:"custom",   label:"Custom ↑",    type:"upload",   value:"" },
+];
+
+// Full 114-Surah dataset {n, ar, en, ayahs}
+const SURAHS = [
+{n:1,ar:"الفاتحة",en:"Al-Fatihah",ayahs:7},{n:2,ar:"البقرة",en:"Al-Baqarah",ayahs:286},
+{n:3,ar:"آل عمران",en:"Aal-E-Imran",ayahs:200},{n:4,ar:"النساء",en:"An-Nisa",ayahs:176},
+{n:5,ar:"المائدة",en:"Al-Ma'idah",ayahs:120},{n:6,ar:"الأنعام",en:"Al-An'am",ayahs:165},
+{n:7,ar:"الأعراف",en:"Al-A'raf",ayahs:206},{n:8,ar:"الأنفال",en:"Al-Anfal",ayahs:75},
+{n:9,ar:"التوبة",en:"At-Tawbah",ayahs:129},{n:10,ar:"يونس",en:"Yunus",ayahs:109},
+{n:11,ar:"هود",en:"Hud",ayahs:123},{n:12,ar:"يوسف",en:"Yusuf",ayahs:111},
+{n:13,ar:"الرعد",en:"Ar-Ra'd",ayahs:43},{n:14,ar:"إبراهيم",en:"Ibrahim",ayahs:52},
+{n:15,ar:"الحجر",en:"Al-Hijr",ayahs:99},{n:16,ar:"النحل",en:"An-Nahl",ayahs:128},
+{n:17,ar:"الإسراء",en:"Al-Isra",ayahs:111},{n:18,ar:"الكهف",en:"Al-Kahf",ayahs:110},
+{n:19,ar:"مريم",en:"Maryam",ayahs:98},{n:20,ar:"طه",en:"Taha",ayahs:135},
+{n:21,ar:"الأنبياء",en:"Al-Anbiya",ayahs:112},{n:22,ar:"الحج",en:"Al-Hajj",ayahs:78},
+{n:23,ar:"المؤمنون",en:"Al-Mu'minun",ayahs:118},{n:24,ar:"النور",en:"An-Nur",ayahs:64},
+{n:25,ar:"الفرقان",en:"Al-Furqan",ayahs:77},{n:26,ar:"الشعراء",en:"Ash-Shu'ara",ayahs:227},
+{n:27,ar:"النمل",en:"An-Naml",ayahs:93},{n:28,ar:"القصص",en:"Al-Qasas",ayahs:88},
+{n:29,ar:"العنكبوت",en:"Al-Ankabut",ayahs:69},{n:30,ar:"الروم",en:"Ar-Rum",ayahs:60},
+{n:31,ar:"لقمان",en:"Luqman",ayahs:34},{n:32,ar:"السجدة",en:"As-Sajdah",ayahs:30},
+{n:33,ar:"الأحزاب",en:"Al-Ahzab",ayahs:73},{n:34,ar:"سبأ",en:"Saba",ayahs:54},
+{n:35,ar:"فاطر",en:"Fatir",ayahs:45},{n:36,ar:"يس",en:"Ya-Sin",ayahs:83},
+{n:37,ar:"الصافات",en:"As-Saffat",ayahs:182},{n:38,ar:"ص",en:"Sad",ayahs:88},
+{n:39,ar:"الزمر",en:"Az-Zumar",ayahs:75},{n:40,ar:"غافر",en:"Ghafir",ayahs:85},
+{n:41,ar:"فصلت",en:"Fussilat",ayahs:54},{n:42,ar:"الشورى",en:"Ash-Shura",ayahs:53},
+{n:43,ar:"الزخرف",en:"Az-Zukhruf",ayahs:89},{n:44,ar:"الدخان",en:"Ad-Dukhan",ayahs:59},
+{n:45,ar:"الجاثية",en:"Al-Jathiyah",ayahs:37},{n:46,ar:"الأحقاف",en:"Al-Ahqaf",ayahs:35},
+{n:47,ar:"محمد",en:"Muhammad",ayahs:38},{n:48,ar:"الفتح",en:"Al-Fath",ayahs:29},
+{n:49,ar:"الحجرات",en:"Al-Hujurat",ayahs:18},{n:50,ar:"ق",en:"Qaf",ayahs:45},
+{n:51,ar:"الذاريات",en:"Adh-Dhariyat",ayahs:60},{n:52,ar:"الطور",en:"At-Tur",ayahs:49},
+{n:53,ar:"النجم",en:"An-Najm",ayahs:62},{n:54,ar:"القمر",en:"Al-Qamar",ayahs:55},
+{n:55,ar:"الرحمن",en:"Ar-Rahman",ayahs:78},{n:56,ar:"الواقعة",en:"Al-Waqi'ah",ayahs:96},
+{n:57,ar:"الحديد",en:"Al-Hadid",ayahs:29},{n:58,ar:"المجادلة",en:"Al-Mujadilah",ayahs:22},
+{n:59,ar:"الحشر",en:"Al-Hashr",ayahs:24},{n:60,ar:"الممتحنة",en:"Al-Mumtahanah",ayahs:13},
+{n:61,ar:"الصف",en:"As-Saff",ayahs:14},{n:62,ar:"الجمعة",en:"Al-Jumu'ah",ayahs:11},
+{n:63,ar:"المنافقون",en:"Al-Munafiqun",ayahs:11},{n:64,ar:"التغابن",en:"At-Taghabun",ayahs:18},
+{n:65,ar:"الطلاق",en:"At-Talaq",ayahs:12},{n:66,ar:"التحريم",en:"At-Tahrim",ayahs:12},
+{n:67,ar:"الملك",en:"Al-Mulk",ayahs:30},{n:68,ar:"القلم",en:"Al-Qalam",ayahs:52},
+{n:69,ar:"الحاقة",en:"Al-Haqqah",ayahs:52},{n:70,ar:"المعارج",en:"Al-Ma'arij",ayahs:44},
+{n:71,ar:"نوح",en:"Nuh",ayahs:28},{n:72,ar:"الجن",en:"Al-Jinn",ayahs:28},
+{n:73,ar:"المزمل",en:"Al-Muzzammil",ayahs:20},{n:74,ar:"المدثر",en:"Al-Muddaththir",ayahs:56},
+{n:75,ar:"القيامة",en:"Al-Qiyamah",ayahs:40},{n:76,ar:"الإنسان",en:"Al-Insan",ayahs:31},
+{n:77,ar:"المرسلات",en:"Al-Mursalat",ayahs:50},{n:78,ar:"النبأ",en:"An-Naba",ayahs:40},
+{n:79,ar:"النازعات",en:"An-Nazi'at",ayahs:46},{n:80,ar:"عبس",en:"Abasa",ayahs:42},
+{n:81,ar:"التكوير",en:"At-Takwir",ayahs:29},{n:82,ar:"الانفطار",en:"Al-Infitar",ayahs:19},
+{n:83,ar:"المطففين",en:"Al-Mutaffifin",ayahs:36},{n:84,ar:"الانشقاق",en:"Al-Inshiqaq",ayahs:25},
+{n:85,ar:"البروج",en:"Al-Buruj",ayahs:22},{n:86,ar:"الطارق",en:"At-Tariq",ayahs:17},
+{n:87,ar:"الأعلى",en:"Al-A'la",ayahs:19},{n:88,ar:"الغاشية",en:"Al-Ghashiyah",ayahs:26},
+{n:89,ar:"الفجر",en:"Al-Fajr",ayahs:30},{n:90,ar:"البلد",en:"Al-Balad",ayahs:20},
+{n:91,ar:"الشمس",en:"Ash-Shams",ayahs:15},{n:92,ar:"الليل",en:"Al-Layl",ayahs:21},
+{n:93,ar:"الضحى",en:"Ad-Duha",ayahs:11},{n:94,ar:"الشرح",en:"Ash-Sharh",ayahs:8},
+{n:95,ar:"التين",en:"At-Tin",ayahs:8},{n:96,ar:"العلق",en:"Al-Alaq",ayahs:19},
+{n:97,ar:"القدر",en:"Al-Qadr",ayahs:5},{n:98,ar:"البينة",en:"Al-Bayyinah",ayahs:8},
+{n:99,ar:"الزلزلة",en:"Az-Zalzalah",ayahs:8},{n:100,ar:"العاديات",en:"Al-Adiyat",ayahs:11},
+{n:101,ar:"القارعة",en:"Al-Qari'ah",ayahs:11},{n:102,ar:"التكاثر",en:"At-Takathur",ayahs:8},
+{n:103,ar:"العصر",en:"Al-Asr",ayahs:3},{n:104,ar:"الهمزة",en:"Al-Humazah",ayahs:9},
+{n:105,ar:"الفيل",en:"Al-Fil",ayahs:5},{n:106,ar:"قريش",en:"Quraysh",ayahs:4},
+{n:107,ar:"الماعون",en:"Al-Ma'un",ayahs:7},{n:108,ar:"الكوثر",en:"Al-Kawthar",ayahs:3},
+{n:109,ar:"الكافرون",en:"Al-Kafirun",ayahs:6},{n:110,ar:"النصر",en:"An-Nasr",ayahs:3},
+{n:111,ar:"المسد",en:"Al-Masad",ayahs:5},{n:112,ar:"الإخلاص",en:"Al-Ikhlas",ayahs:4},
+{n:113,ar:"الفلق",en:"Al-Falaq",ayahs:5},{n:114,ar:"الناس",en:"An-Nas",ayahs:6}
+];
+
+/* =================================================================
+   ░░  STATE  ░░
+   ================================================================= */
+const state = {
+  surah: null,             // selected surah object
+  ayahs: [],               // [{numberInSurah, number(global), text}]
+  from: 1, to: 1,
+  current: 0,              // index within range
+  reciter: RECITERS[0],
+  bg: BACKGROUNDS[1],
+  quality: 720,
+  playing: false,
+  textCache: {},           // surah -> ayahs
+};
+
+/* =================================================================
+   ░░  HELPERS  ░░
+   ================================================================= */
+const $ = (id) => document.getElementById(id);
+const toast = (msg, isErr) => {
+  const t = $("toast"); t.textContent = msg;
+  t.className = "toast show" + (isErr ? " err" : "");
+  clearTimeout(t._t); t._t = setTimeout(()=>t.className="toast", 3200);
+};
+const pad3 = (x) => String(x).padStart(3,"0");
+
+function rangeAyahs(){
+  return state.ayahs.filter(a => a.numberInSurah >= state.from && a.numberInSurah <= state.to);
+}
+
+// Build the ordered list of URL transformers to try for downloads.
+function downloadStrategies(){
+  const list = [];
+  if(SELF_PROXY) list.push(u => SELF_PROXY + encodeURIComponent(u));
+  list.push(u => u);                                                      // direct
+  list.push(u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u));
+  list.push(u => "https://corsproxy.io/?url=" + encodeURIComponent(u));
+  list.push(u => "https://thingproxy.freeboard.io/fetch/" + u);
+  return list;
+}
+
+// Fetch audio bytes, trying each strategy until one returns real audio.
+// Returns an ArrayBuffer. Throws only if every strategy fails.
+async function fetchAudioBytes(url, signal){
+  let lastErr;
+  for(const make of downloadStrategies()){
+    try{
+      const res = await fetch(make(url), {signal});
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      const buf = await res.arrayBuffer();
+      if(buf.byteLength < 800) throw new Error("not audio"); // proxy error page
+      return buf;
+    }catch(err){
+      if(err.name === "AbortError") throw err;
+      lastErr = err;
+    }
+  }
+  throw lastErr || new Error("All sources blocked");
+}
+
+/* =================================================================
+   ░░  BUILD UI  ░░
+   ================================================================= */
+// Reciters
+RECITERS.forEach((r,i)=>{
+  const o=document.createElement("option"); o.value=i; o.textContent=r.name; $("reciter").appendChild(o);
+});
+$("reciter").onchange = (e)=>{ state.reciter = RECITERS[+e.target.value]; if(state.playing) stopPlay(); };
+
+// Quick reachability check for the selected reciter (plays Al-Fatiha ayah 1).
+$("testAudioBtn").onclick = ()=>{
+  const url = AUDIO_URL(state.reciter.edition, 1); // global ayah 1 = Al-Fatiha:1
+  player.src = url; player.load();
+  const p = player.play();
+  if(p && p.catch) p.catch(()=>toast("Tap Test audio once more to allow sound"));
+  toast("Testing: "+state.reciter.name);
+};
+
+// Backgrounds
+function bgCss(bg){
+  if(bg.type==="color") return bg.value;
+  if(bg.type==="gradient") return bg.value;
+  if((bg.type==="image"||bg.type==="upload") && bg.value) return `url("${bg.value}") center/cover`;
+  return "linear-gradient(160deg,#0B4D3B,#1B7A5A)"; // fallback for empty image slots
+}
+const bgGrid = $("bgGrid");
+const bgSelect = document.querySelector(".bg-select");
+function updateBgToggle(){
+  $("bgToggleSw").style.background = bgCss(state.bg);
+  $("bgToggleLabel").textContent = state.bg.label.replace(" ↑","");
+}
+function closeBgPanel(){ bgSelect.classList.remove("open"); $("bgToggle").setAttribute("aria-expanded","false"); $("controlsPanel").classList.remove("bg-open"); }
+
+BACKGROUNDS.forEach((bg,i)=>{
+  const d=document.createElement("div");
+  d.className="bg-swatch"+(bg===state.bg?" sel":"");
+  d.style.background = bgCss(bg);
+  d.innerHTML = `<span>${bg.label}</span>`;
+  d.onclick = ()=>{
+    if(bg.type==="upload"){ $("bgUpload").click();
+      bgGrid.querySelectorAll(".bg-swatch").forEach(s=>s.classList.remove("sel"));
+      d.classList.add("sel"); state.bg=bg; return; }   // wait for file, keep panel open
+    if(bg.type==="image" && !bg.value){ toast("Add an image URL for "+bg.label+" in the BACKGROUNDS config, or use Custom ↑"); }
+    bgGrid.querySelectorAll(".bg-swatch").forEach(s=>s.classList.remove("sel"));
+    d.classList.add("sel"); state.bg=bg; applyBg(); updateBgToggle(); closeBgPanel();
+  };
+  bgGrid.appendChild(d);
+});
+$("bgToggle").onclick = (e)=>{
+  e.stopPropagation();
+  const open = bgSelect.classList.toggle("open");
+  $("bgToggle").setAttribute("aria-expanded", open ? "true" : "false");
+  $("controlsPanel").classList.toggle("bg-open", open);
+};
+document.addEventListener("click",(e)=>{ if(!e.target.closest(".bg-select")) closeBgPanel(); });
+
+$("bgUpload").onchange = (e)=>{
+  const f=e.target.files[0]; if(!f) return;
+  const url=URL.createObjectURL(f);
+  const up=BACKGROUNDS.find(b=>b.type==="upload"); up.value=url;
+  const sw=[...bgGrid.children].find((c,i)=>BACKGROUNDS[i].type==="upload");
+  sw.style.background=`url("${url}") center/cover`;
+  state.bg=up; applyBg(); updateBgToggle(); closeBgPanel(); toast("Background image loaded");
+};
+function applyBg(){ $("stageBg").style.background = bgCss(state.bg); }
+applyBg(); updateBgToggle();
+
+// Quality
+$("qualitySeg").querySelectorAll("button").forEach(b=>{
+  b.onclick=()=>{ $("qualitySeg").querySelectorAll("button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); state.quality=+b.dataset.q; };
+});
+
+// Branding from config (no editable UI)
+function syncBrand(){
+  const setLogo=(el,fallback)=>{ el.innerHTML = LOGO_URL
+      ? `<img src="${LOGO_URL}" alt="logo" onerror="this.parentNode.innerHTML='<small>${fallback}</small>'">`
+      : `<small>${fallback}</small>`; };
+  setLogo($("stageLogo"),"LOGO"); setLogo($("headerLogo"),"LOGO");
+  $("brandName").textContent = ACADEMY.name;
+  $("brandSite").textContent = ACADEMY.site;
+  $("brandSocial").textContent = ACADEMY.social;
+}
+syncBrand();
+
+/* =================================================================
+   ░░  SURAH SEARCHABLE COMBOBOX  ░░
+   ================================================================= */
+const surahInput=$("surahInput"), surahList=$("surahList");
+let comboActive=-1, filtered=SURAHS.slice();
+
+function renderCombo(items){
+  surahList.innerHTML="";
+  items.forEach((s,idx)=>{
+    const el=document.createElement("div");
+    el.className="combo-item"+(idx===comboActive?" active":"");
+    el.innerHTML=`<div class="combo-num">${s.n}</div>
+      <div><div class="combo-en">${s.en}</div><div class="combo-meta">${s.ayahs} ayahs</div></div>
+      <div class="combo-ar">${s.ar}</div>`;
+    el.onclick=()=>selectSurah(s);
+    surahList.appendChild(el);
+  });
+  surahList.classList.toggle("open", items.length>0);
+}
+function filterSurahs(q){
+  q=q.trim().toLowerCase();
+  filtered = !q ? SURAHS.slice() : SURAHS.filter(s=>
+    String(s.n)===q || String(s.n).startsWith(q) ||
+    s.en.toLowerCase().includes(q) || s.ar.includes(q));
+  comboActive=-1; renderCombo(filtered);
+}
+surahInput.addEventListener("focus",()=>filterSurahs(surahInput.value));
+surahInput.addEventListener("input",()=>filterSurahs(surahInput.value));
+surahInput.addEventListener("keydown",(e)=>{
+  if(!surahList.classList.contains("open")) return;
+  if(e.key==="ArrowDown"){e.preventDefault();comboActive=Math.min(comboActive+1,filtered.length-1);renderCombo(filtered);scrollActive();}
+  else if(e.key==="ArrowUp"){e.preventDefault();comboActive=Math.max(comboActive-1,0);renderCombo(filtered);scrollActive();}
+  else if(e.key==="Enter"&&comboActive>=0){e.preventDefault();selectSurah(filtered[comboActive]);}
+  else if(e.key==="Escape"){surahList.classList.remove("open");}
+});
+function scrollActive(){const el=surahList.querySelector(".active"); if(el) el.scrollIntoView({block:"nearest"});}
+document.addEventListener("click",(e)=>{ if(!e.target.closest(".combo")) surahList.classList.remove("open"); });
+
+/* =================================================================
+   ░░  SELECT SURAH + LOAD TEXT (lazy)  ░░
+   ================================================================= */
+async function selectSurah(s){
+  state.surah=s;
+  surahInput.value=`${s.n}. ${s.en} — ${s.ar}`;
+  surahList.classList.remove("open");
+  $("fromAyah").value=1; $("toAyah").value=Math.min(7,s.ayahs);
+  $("fromAyah").max=s.ayahs; $("toAyah").max=s.ayahs;
+  state.from=1; state.to=Math.min(7,s.ayahs);
+  $("rangeHint").innerHTML=`<span class="spinner dark"></span> Loading ${s.en} (1–${s.ayahs})…`;
+  disableDownloads(true);
+
+  try{
+    if(!state.textCache[s.n]){
+      const res=await fetch(TEXT_API(s.n));
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      const data=await res.json();
+      state.textCache[s.n]=data.data.ayahs.map(a=>({
+        numberInSurah:a.numberInSurah, number:a.number, text:a.text
+      }));
+    }
+    state.ayahs=state.textCache[s.n];
+    $("rangeHint").textContent=`Range 1–${s.ayahs}. Showing ${state.from}–${state.to}.`;
+    state.current=0; updateStage(); disableDownloads(false);
+    $("surahBanner").style.display="block";
+    $("surahBanner").textContent=`سورة ${s.ar} — ${s.en}`;
+  }catch(err){
+    $("rangeHint").innerHTML=`<span style="color:#a23b3b">Couldn't load text. Check connection and retry.</span>`;
+    toast("Failed to load Surah text: "+err.message, true);
+  }
+}
+
+/* range validation */
+function clampRange(){
+  if(!state.surah) return;
+  let f=parseInt($("fromAyah").value)||1, t=parseInt($("toAyah").value)||1;
+  const max=state.surah.ayahs;
+  f=Math.max(1,Math.min(f,max)); t=Math.max(1,Math.min(t,max));
+  if(f>t){ t=f; }
+  $("fromAyah").value=f; $("toAyah").value=t;
+  state.from=f; state.to=t; state.current=0;
+  $("rangeHint").textContent=`Range 1–${max}. Showing ${f}–${t} (${t-f+1} ayah${t-f? "s":""}).`;
+  if(state.playing) stopPlay();
+  updateStage();
+}
+$("fromAyah").addEventListener("change",clampRange);
+$("toAyah").addEventListener("change",clampRange);
+
+/* =================================================================
+   ░░  STAGE / PREVIEW  ░░
+   ================================================================= */
+function currentAyah(){ const r=rangeAyahs(); return r[state.current]; }
+function updateStage(){
+  const a=currentAyah(); const txtEl=$("ayahText");
+  if(!a){ txtEl.innerHTML=`<span class="stage-empty">No ayah in range.</span>`; $("trackInfo").textContent="—"; return; }
+  txtEl.classList.add("fade");
+  setTimeout(()=>{
+    txtEl.innerHTML = `${a.text}<span class="ayah-num-badge">${toArabicNum(a.numberInSurah)}</span>`;
+    txtEl.classList.remove("fade");
+  },180);
+  const r=rangeAyahs();
+  $("trackInfo").textContent=`Ayah ${a.numberInSurah} · ${state.current+1}/${r.length}`;
+}
+function toArabicNum(n){ return String(n).replace(/[0-9]/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]); }
+
+/* =================================================================
+   ░░  TRANSPORT (sequential play = sync preview)  ░░
+   ================================================================= */
+const player=$("player");
+$("playBtn").onclick=()=> state.playing? stopPlay() : startPlay();
+$("prevBtn").onclick=()=>{ if(state.current>0){state.current--; updateStage(); if(state.playing) loadCurrentAudio();} };
+$("nextBtn").onclick=()=>{ const r=rangeAyahs(); if(state.current<r.length-1){state.current++; updateStage(); if(state.playing) loadCurrentAudio();} };
+
+function startPlay(){
+  if(!currentAyah()){ toast("Select a Surah and range first"); return; }
+  state.playing=true; setPlayIcon(true); loadCurrentAudio();
+}
+function stopPlay(){ state.playing=false; setPlayIcon(false); player.pause(); $("scrubFill").style.width="0%"; }
+function setPlayIcon(p){
+  $("playIcon").innerHTML = p
+    ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>'
+    : '<path d="M8 5v14l11-7z"/>';
+}
+function loadCurrentAudio(){
+  const a=currentAyah(); if(!a) return;
+  player.src=AUDIO_URL(state.reciter.edition, a.number);
+  player.load();
+  const p=player.play();
+  if(p && p.catch) p.catch(err=>{
+    // A click is a valid gesture, so a rejection here is almost always a
+    // load/network issue rather than autoplay policy.
+    if(err && err.name==="NotAllowedError") toast("Tap play again to allow audio");
+    else toast("Couldn't load audio — check your connection",true);
+  });
+  updateStage();
+}
+player.addEventListener("error",()=>{
+  if(state.playing){ stopPlay(); toast("Audio source unreachable for this ayah",true); }
+});
+player.addEventListener("timeupdate",()=>{
+  if(player.duration) $("scrubFill").style.width=(player.currentTime/player.duration*100)+"%";
+});
+player.addEventListener("ended",()=>{
+  const r=rangeAyahs();
+  if(state.current<r.length-1){ state.current++; loadCurrentAudio(); }
+  else { stopPlay(); state.current=0; updateStage(); }
+});
+
+/* =================================================================
+   ░░  DOWNLOADS  ░░
+   ================================================================= */
+function disableDownloads(v){ $("dlOneBtn").disabled=v; $("dlRangeBtn").disabled=v; }
+
+function saveBlob(blob, filename){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download=filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+}
+function safeName(){
+  const s=state.surah;
+  return `${s.n}_${s.en.replace(/[^a-z0-9]/gi,"")}_${state.from}-${state.to}_${state.reciter.edition}`;
+}
+
+// Single (current) ayah
+$("dlOneBtn").onclick=async()=>{
+  const a=currentAyah(); if(!a) return;
+  const btn=$("dlOneBtn"); const old=btn.innerHTML;
+  btn.disabled=true; btn.innerHTML='<span class="spinner dark"></span> Downloading…';
+  try{
+    const buf=await fetchAudioBytes(AUDIO_URL(state.reciter.edition,a.number));
+    saveBlob(new Blob([buf],{type:"audio/mpeg"}), `${state.surah.en}_ayah${a.numberInSurah}_${state.reciter.edition}.mp3`);
+    toast("Ayah "+a.numberInSurah+" saved");
+  }catch(err){
+    // Last resort: open the file directly so the user can save it manually.
+    window.open(AUDIO_URL(state.reciter.edition,a.number), "_blank");
+    toast("Opened audio in a new tab — use ⋮ → Save", true);
+  }
+  btn.innerHTML=old; btn.disabled=false;
+};
+
+// Full range (combined MP3) with progress + cancel
+let abortCtl=null;
+$("dlRangeBtn").onclick=async()=>{
+  const r=rangeAyahs(); if(!r.length) return;
+  abortCtl=new AbortController();
+  const prog=$("progress"), bar=$("progressBar"), lbl=$("progressLabel");
+  prog.classList.add("show"); disableDownloads(true);
+  const parts=[]; let ok=true;
+  try{
+    for(let i=0;i<r.length;i++){
+      lbl.textContent=`Fetching ayah ${r[i].numberInSurah} (${i+1}/${r.length})…`;
+      const buf=await fetchAudioBytes(AUDIO_URL(state.reciter.edition,r[i].number),abortCtl.signal);
+      parts.push(buf);
+      bar.style.width=((i+1)/r.length*100)+"%";
+    }
+    // naive MP3 frame concatenation (plays as one continuous track)
+    const blob=new Blob(parts,{type:"audio/mpeg"});
+    saveBlob(blob, `${safeName()}.mp3`);
+    lbl.textContent="Done ✓";
+    toast(`Saved ${r.length} ayahs as one MP3`);
+  }catch(err){
+    ok=false;
+    if(err.name==="AbortError"){ toast("Export cancelled"); }
+    else toast("Export failed: "+err.message, true);
+  }
+  setTimeout(()=>{ prog.classList.remove("show"); bar.style.width="0%"; },1200);
+  disableDownloads(false); abortCtl=null;
+};
+$("cancelBtn").onclick=()=>{ if(abortCtl) abortCtl.abort(); };
+
+/* =================================================================
+   ░░  INIT  ░░
+   ================================================================= */
+state.reciter=RECITERS[0];
+state.bg=BACKGROUNDS[1];
+// gentle default so the stage isn't empty-looking
+applyBg();
+
+// Heads-up when opened as a local file — downloads need a real origin.
+if(location.protocol === "file:"){
+  const b=document.createElement("div");
+  b.style.cssText="position:relative;z-index:2;margin:0 auto 18px;max-width:1180px;"+
+    "background:rgba(122,46,46,.10);border:1px solid rgba(122,46,46,.4);color:#7a2e2e;"+
+    "padding:12px 16px;border-radius:14px;font-size:13px;font-weight:600;line-height:1.5";
+  b.innerHTML="⚠ Opened as a local file — audio plays fine, but one-click MP3 "+
+    "downloads are blocked by the browser here. Serve the page over http/https "+
+    "(GitHub Pages, your cPanel, or run <b>python3 -m http.server</b> and open "+
+    "<b>http://localhost:8000</b>). Until then, downloads open in a new tab to save manually.";
+  document.querySelector(".wrap").prepend(b);
+}
+</script>
+</body>
+</html>
