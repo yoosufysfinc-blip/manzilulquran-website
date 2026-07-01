@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Basic SEO (this page IS meant to be found via shared links) -->
+<title>Quran Ayah · ManzilulQuran Academy</title>
+<meta name="description" content="Listen to the Holy Quran with beautiful recitation. Shared by ManzilulQuran E-Learning Academy." />
+
+<!-- Open Graph (WhatsApp / Facebook / LinkedIn preview) -->
+<meta property="og:type" content="music.song" />
+<meta property="og:site_name" content="ManzilulQuran Academy" />
+<meta property="og:title" content="Holy Quran Recitation" />
+<meta property="og:description" content="Listen to the Holy Quran with beautiful recitation. Shared by ManzilulQuran E-Learning Academy." />
+<meta property="og:image" content="https://manzilulquran.in/logo.png" />
+<meta property="og:image:width" content="512" />
+<meta property="og:image:height" content="512" />
+<meta property="og:url" content="https://manzilulquran.in/share.html" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Holy Quran Recitation · ManzilulQuran" />
+<meta name="twitter:description" content="Listen to the Holy Quran with beautiful recitation." />
+<meta name="twitter:image" content="https://manzilulquran.in/logo.png" />
+
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --emerald-900:#031b13;
+    --emerald-800:#062f22;
+    --emerald-700:#0B4D3B;
+    --emerald-600:#1B7A5A;
+    --gold:#c9a961;
+    --gold-soft:#e8d29a;
+    --ink:#0a1310;
+    --cream:#fbf6ea;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:'Inter',sans-serif;
+    background:radial-gradient(ellipse at top,var(--emerald-800) 0%,var(--emerald-900) 60%,#000 100%);
+    color:#fff;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    overflow-x:hidden;
+  }
+
+  .share-container{
+    max-width:560px;
+    width:100%;
+    background:linear-gradient(160deg,rgba(11,77,59,0.9),rgba(3,27,19,0.95));
+    border:1px solid rgba(201,169,110,0.3);
+    border-radius:24px;
+    padding:30px 24px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    position:relative;
+    overflow:hidden;
+  }
+
+  /* Decorative gold glow */
+  .share-container::before{
+    content:'';
+    position:absolute;
+    top:-50%;
+    left:-20%;
+    width:140%;
+    height:100%;
+    background:radial-gradient(ellipse,rgba(201,169,110,0.15),transparent 60%);
+    pointer-events:none;
+  }
+
+  .header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:24px;
+    position:relative;
+  }
+  .header-logo{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    overflow:hidden;
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(201,169,110,0.4);
+    flex-shrink:0;
+  }
+  .header-logo img{width:100%;height:100%;object-fit:cover}
+  .header-text b{
+    display:block;
+    color:#fff;
+    font-size:15px;
+    font-weight:700;
+    line-height:1.2;
+  }
+  .header-text em{
+    display:block;
+    color:var(--gold-soft);
+    font-size:11.5px;
+    font-style:normal;
+    margin-top:2px;
+  }
+
+  .surah-badge{
+    display:inline-block;
+    padding:6px 14px;
+    background:rgba(201,169,110,0.15);
+    border:1px solid rgba(201,169,110,0.4);
+    border-radius:100px;
+    color:var(--gold-soft);
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin-bottom:16px;
+  }
+
+  .ayah-display{
+    background:rgba(0,0,0,0.35);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:18px;
+    padding:32px 24px;
+    min-height:200px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    margin-bottom:20px;
+    position:relative;
+  }
+
+  .ayah-arabic{
+    font-family:'Amiri Quran','Amiri',serif;
+    font-size:28px;
+    line-height:2;
+    color:#fff;
+    direction:rtl;
+    font-weight:600;
+    text-shadow:0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .ayah-number{
+    position:absolute;
+    top:12px;
+    right:16px;
+    background:rgba(201,169,110,0.9);
+    color:#0a1310;
+    font-size:11px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:100px;
+  }
+
+  .loading-state{
+    color:rgba(255,255,255,0.6);
+    font-size:14px;
+  }
+
+  .error-state{
+    color:#ff9b9b;
+    font-size:14px;
+    text-align:center;
+    padding:20px;
+  }
+
+  /* Player controls */
+  .player{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-bottom:20px;
+  }
+
+  .player-btn-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+  }
+
+  .btn-play{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:linear-gradient(140deg,var(--gold),#a8874a);
+    border:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink);
+    box-shadow:0 8px 20px rgba(201,169,110,0.4);
+    transition:transform .2s,box-shadow .2s;
+  }
+  .btn-play:hover{transform:scale(1.05);box-shadow:0 10px 30px rgba(201,169,110,0.6)}
+  .btn-play:active{transform:scale(0.98)}
+  .btn-play svg{width:24px;height:24px;fill:currentColor}
+
+  .btn-nav{
+    width:44px;height:44px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.15);
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;
+    transition:background .2s;
+  }
+  .btn-nav:hover{background:rgba(255,255,255,0.2)}
+  .btn-nav:disabled{opacity:0.35;cursor:not-allowed}
+  .btn-nav svg{width:18px;height:18px;fill:currentColor}
+
+  .progress-bar{
+    height:4px;
+    background:rgba(255,255,255,0.1);
+    border-radius:100px;
+    overflow:hidden;
+    position:relative;
+  }
+  .progress-fill{
+    position:absolute;
+    left:0;top:0;bottom:0;
+    background:linear-gradient(90deg,var(--gold-soft),var(--gold));
+    width:0%;
+    transition:width .15s;
+  }
+
+  .time-row{
+    display:flex;
+    justify-content:space-between;
+    color:rgba(255,255,255,0.6);
+    font-size:11px;
+    font-family:'Inter';
+    margin-top:2px;
+  }
+
+  .reciter-row{
+    text-align:center;
+    color:rgba(255,255,255,0.7);
+    font-size:12.5px;
+    margin-bottom:14px;
+  }
+
+  .reciter-row b{color:var(--gold-soft);font-weight:600}
+
+  /* Footer */
+  .footer{
+    text-align:center;
+    padding-top:20px;
+    border-top:1px solid rgba(255,255,255,0.08);
+    color:rgba(255,255,255,0.5);
+    font-size:11.5px;
+    letter-spacing:0.5px;
+  }
+  .footer a{
+    color:var(--gold-soft);
+    text-decoration:none;
+    font-weight:500;
+  }
+  .footer a:hover{text-decoration:underline}
+
+  .cta{
+    display:inline-block;
+    margin-top:14px;
+    padding:8px 18px;
+    background:rgba(201,169,110,0.15);
+    border:1px solid rgba(201,169,110,0.4);
+    color:var(--gold-soft);
+    text-decoration:none;
+    border-radius:100px;
+    font-size:12px;
+    font-weight:500;
+    transition:background .2s;
+  }
+  .cta:hover{background:rgba(201,169,110,0.25)}
+
+  @media (max-width:520px){
+    .ayah-arabic{font-size:24px;line-height:1.9}
+    .ayah-display{padding:26px 18px;min-height:170px}
+    .share-container{padding:24px 18px}
+  }
+
+  /* Share button on the shared page (recipient can re-share) */
+  .reshare-btn{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin:12px auto 0;
+    padding:8px 16px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.15);
+    color:#fff;
+    border-radius:100px;
+    cursor:pointer;
+    font-family:'Inter';
+    font-size:12px;
+    transition:background .2s;
+  }
+  .reshare-btn:hover{background:rgba(255,255,255,0.15)}
+  .reshare-btn svg{width:14px;height:14px;fill:currentColor}
+</style>
+</head>
+<body>
+
+<div class="share-container">
+
+  <!-- Branded header -->
+  <div class="header">
+    <div class="header-logo">
+      <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+    </div>
+    <div class="header-text">
+      <b>ManzilulQuran E-Learning Academy</b>
+      <em id="reciterName">Loading recitation…</em>
+    </div>
+  </div>
+
+  <!-- Surah badge -->
+  <div class="surah-badge" id="surahBadge">Loading…</div>
+
+  <!-- Ayah display -->
+  <div class="ayah-display">
+    <div class="ayah-number" id="ayahNumber" style="display:none"></div>
+    <div class="ayah-arabic" id="ayahArabic">
+      <span class="loading-state">Loading ayah…</span>
+    </div>
+  </div>
+
+  <!-- Reciter info -->
+  <div class="reciter-row">
+    Reciter: <b id="reciterFullName">—</b>
+  </div>
+
+  <!-- Player controls -->
+  <div class="player">
+    <div class="player-btn-row">
+      <button class="btn-nav" id="prevBtn" disabled aria-label="Previous ayah">
+        <svg viewBox="0 0 24 24"><path d="M6 4h2v16H6zm12 0L8 12l10 8V4z"/></svg>
+      </button>
+      <button class="btn-play" id="playBtn" aria-label="Play">
+        <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="btn-nav" id="nextBtn" disabled aria-label="Next ayah">
+        <svg viewBox="0 0 24 24"><path d="M16 4h2v16h-2zM6 4l10 8-10 8V4z"/></svg>
+      </button>
+    </div>
+
+    <div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="time-row">
+        <span id="currTime">0:00</span>
+        <span id="totalTime">0:00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reshare button -->
+  <button class="reshare-btn" id="reshareBtn">
+    <svg viewBox="0 0 24 24"><path d="M18 8a3 3 0 100-6 3 3 0 000 6zM6 15a3 3 0 100-6 3 3 0 000 6zm12 7a3 3 0 100-6 3 3 0 000 6zM8.6 13.5l6.8 3.9m0-11L8.6 10.4"/></svg>
+    Share
+  </button>
+
+  <!-- Footer -->
+  <div class="footer">
+    <a href="https://manzilulquran.in" target="_blank">manzilulquran.in</a>
+    <br />
+    <a href="https://manzilulquran.in" target="_blank" class="cta">Learn Quran with us →</a>
+  </div>
+
+  <audio id="audioPlayer" preload="auto"></audio>
+</div>
+
+<script>
+/* =================================================================
+   ░░  SHARE PLAYER  ░░
+   Reads URL params (surah, ayah range, reciter) and plays the audio
+   with live text preview. Everything happens on-demand from public APIs.
+================================================================= */
+
+const TEXT_API = (surah) => `https://api.alquran.cloud/v1/surah/${surah}/quran-uthmani`;
+const AUDIO_BITRATE = "128";
+const AUDIO_URL = (edition, globalAyah) =>
+  `https://cdn.islamic.network/quran/audio/${AUDIO_BITRATE}/${edition}/${globalAyah}.mp3`;
+
+// Cloudflare Worker proxy (for consistent playback if needed)
+const AUDIO_PROXY = "https://audio-proxy.yoosufysfinc.workers.dev/?url=";
+
+// Reciter registry — must match the tool's list
+const RECITERS = [
+  { name: "Mishary Rashid Alafasy",        edition: "ar.alafasy" },
+  { name: "Maher Al Muaiqly",              edition: "ar.mahermuaiqly" },
+  { name: "Abdul Basit (Mujawwad)",        edition: "ar.abdulbasitmurattal" },
+  { name: "Saad Al-Ghamdi",                edition: "ar.saadalghamdi" },
+  { name: "Saud Al-Shuraim",               edition: "ar.saoodshuraym" },
+  { name: "Abdurrahman As-Sudais",         edition: "ar.abdurrahmaansudais" },
+  { name: "Hani Ar-Rifai",                 edition: "ar.hanirifai" },
+  { name: "Mahmoud Khalil Al-Husary",      edition: "ar.husary" },
+  { name: "Muhammad Ayyub",                edition: "ar.muhammadayyoub" },
+  { name: "Muhammad Jibreel",              edition: "ar.muhammadjibreel" }
+];
+
+// -----------------------------------------------------------------
+// Parse URL parameters
+// URL format: share.html?s=SURAH&f=FROM&t=TO&r=RECITER_INDEX
+// Example: share.html?s=1&f=1&t=7&r=0  (Al-Fatiha 1-7, Alafasy)
+// -----------------------------------------------------------------
+const params = new URLSearchParams(window.location.search);
+const surahNum = parseInt(params.get("s") || "1", 10);
+const fromAyah = parseInt(params.get("f") || "1", 10);
+const toAyah   = parseInt(params.get("t") || String(fromAyah), 10);
+const reciterIdx = parseInt(params.get("r") || "0", 10);
+
+const reciter = RECITERS[reciterIdx] || RECITERS[0];
+
+// State
+let ayahs = [];      // fetched from API
+let currentIdx = 0;
+let isPlaying = false;
+
+// DOM
+const $ = (id) => document.getElementById(id);
+const audio = $("audioPlayer");
+
+// -----------------------------------------------------------------
+// Load surah metadata + ayahs
+// -----------------------------------------------------------------
+async function loadAyahs(){
+  try{
+    $("reciterName").textContent = reciter.name;
+    $("reciterFullName").textContent = reciter.name;
+
+    const res = await fetch(TEXT_API(surahNum));
+    if(!res.ok) throw new Error("Failed to load surah");
+    const data = await res.json();
+    const surah = data.data;
+
+    // Filter to requested range
+    ayahs = surah.ayahs.filter(a =>
+      a.numberInSurah >= fromAyah && a.numberInSurah <= toAyah
+    );
+    if(!ayahs.length) throw new Error("No ayahs found in the given range");
+
+    // Update badge
+    $("surahBadge").textContent =
+      `${surah.englishName} · ${surah.name}  ·  Ayah ${fromAyah}${fromAyah!==toAyah ? '-'+toAyah : ''}`;
+
+    // Update document title
+    document.title = `${surah.englishName} · Ayah ${fromAyah}${fromAyah!==toAyah?'-'+toAyah:''} · ManzilulQuran`;
+
+    // Show first ayah
+    showAyah(0);
+    updateNavButtons();
+
+    // Preload first audio
+    audio.src = AUDIO_URL(reciter.edition, ayahs[0].number);
+  }catch(err){
+    console.error(err);
+    $("ayahArabic").innerHTML = `<div class="error-state">Couldn't load this Quran passage.<br>Please check the link and try again.</div>`;
+    $("surahBadge").textContent = "Error";
+  }
+}
+
+function showAyah(idx){
+  currentIdx = idx;
+  const a = ayahs[idx];
+  $("ayahArabic").textContent = a.text;
+  $("ayahNumber").textContent = `Ayah ${a.numberInSurah}`;
+  $("ayahNumber").style.display = "inline-block";
+  audio.src = AUDIO_URL(reciter.edition, a.number);
+  if(isPlaying){
+    audio.play().catch(()=>{ isPlaying=false; updatePlayIcon(); });
+  }
+}
+
+function updateNavButtons(){
+  $("prevBtn").disabled = currentIdx <= 0;
+  $("nextBtn").disabled = currentIdx >= ayahs.length - 1;
+}
+
+function updatePlayIcon(){
+  $("playIcon").innerHTML = isPlaying
+    ? '<path d="M6 4h4v16H6zm8 0h4v16h-4z"/>'  // pause
+    : '<path d="M8 5v14l11-7z"/>';              // play
+}
+
+function fmtTime(s){
+  if(!isFinite(s)) return "0:00";
+  const m = Math.floor(s/60), sec = Math.floor(s%60);
+  return `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+// -----------------------------------------------------------------
+// Player controls
+// -----------------------------------------------------------------
+$("playBtn").onclick = ()=>{
+  if(!ayahs.length) return;
+  if(audio.paused){
+    audio.play().then(()=>{
+      isPlaying = true; updatePlayIcon();
+    }).catch(err=>{
+      console.error("Play blocked:", err);
+    });
+  } else {
+    audio.pause();
+    isPlaying = false; updatePlayIcon();
+  }
+};
+
+$("prevBtn").onclick = ()=>{
+  if(currentIdx > 0){ showAyah(currentIdx - 1); updateNavButtons(); }
+};
+
+$("nextBtn").onclick = ()=>{
+  if(currentIdx < ayahs.length - 1){ showAyah(currentIdx + 1); updateNavButtons(); }
+};
+
+// Auto-advance to next ayah
+audio.addEventListener("ended", ()=>{
+  if(currentIdx < ayahs.length - 1){
+    showAyah(currentIdx + 1);
+    updateNavButtons();
+  } else {
+    isPlaying = false; updatePlayIcon();
+  }
+});
+
+// Progress bar
+audio.addEventListener("timeupdate", ()=>{
+  const pct = audio.duration ? (audio.currentTime/audio.duration)*100 : 0;
+  $("progressFill").style.width = pct + "%";
+  $("currTime").textContent = fmtTime(audio.currentTime);
+  $("totalTime").textContent = fmtTime(audio.duration);
+});
+
+audio.addEventListener("loadedmetadata", ()=>{
+  $("totalTime").textContent = fmtTime(audio.duration);
+});
+
+// Click progress bar to seek
+document.querySelector(".progress-bar").onclick = (e)=>{
+  if(!audio.duration) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  audio.currentTime = pct * audio.duration;
+};
+
+// -----------------------------------------------------------------
+// Reshare (Web Share API or copy link)
+// -----------------------------------------------------------------
+$("reshareBtn").onclick = async ()=>{
+  const url = window.location.href;
+  const title = document.title;
+  if(navigator.share){
+    try{
+      await navigator.share({ title, url });
+    }catch(e){/* user cancelled */}
+  } else {
+    try{
+      await navigator.clipboard.writeText(url);
+      $("reshareBtn").innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> Copied!';
+      setTimeout(()=>{
+        $("reshareBtn").innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a3 3 0 100-6 3 3 0 000 6zM6 15a3 3 0 100-6 3 3 0 000 6zm12 7a3 3 0 100-6 3 3 0 000 6zM8.6 13.5l6.8 3.9m0-11L8.6 10.4"/></svg> Share';
+      }, 2000);
+    }catch(e){
+      alert("Link: " + url);
+    }
+  }
+};
+
+// -----------------------------------------------------------------
+// Kick off
+// -----------------------------------------------------------------
+loadAyahs();
+</script>
+</body>
+</html>
