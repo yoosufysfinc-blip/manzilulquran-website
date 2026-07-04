@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Student Registration · ManzilulQuran E-learning Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --emerald-deep:#0B4D3B;
+    --emerald:#1B7A5A;
+    --gold:#C9A96E;
+    --gold-bright:#E6C68A;
+    --gold-soft:#E3D2AC;
+    --confirm:#36E2A0;
+    --cream:#FBF7EF;
+    --ink:#29251F;
+    --text-light:#F2EDE0;
+    --muted-light:rgba(242,237,224,.55);
+    --field-bg:rgba(255,255,255,.055);
+    --field-border:rgba(201,169,110,.30);
+    --err:#F0A8A8;
+    --radius:16px;
+    --shadow:0 30px 70px -30px rgba(4,30,22,.7);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Jost',sans-serif;
+    background:
+      radial-gradient(140% 90% at 50% 0%, #14654B 0%, var(--cream) 38%);
+    color:var(--text-light);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:28px 18px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+
+  /* ---------- Header crest ---------- */
+  .crest{
+    position:relative;
+    background:radial-gradient(120% 150% at 50% -20%, #16664D 0%, var(--emerald-deep) 60%);
+    border-radius:var(--radius) var(--radius) 0 0;
+    overflow:hidden;color:#fff;text-align:center;
+    padding:42px 26px 38px;
+    box-shadow:var(--shadow);
+  }
+  .crest .pattern{position:absolute;inset:0;opacity:.12;background-size:54px 54px;pointer-events:none}
+  .crest .frame{position:absolute;inset:14px;border:1px solid rgba(201,169,110,.45);border-radius:11px;pointer-events:none}
+  .bismillah{font-family:'Amiri',serif;font-size:30px;color:var(--gold-soft);line-height:1;margin-bottom:14px;direction:rtl;position:relative}
+  .star-rule{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 auto 16px;max-width:240px;position:relative}
+  .star-rule::before,.star-rule::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--gold))}
+  .star-glyph{width:14px;height:14px;flex:none}
+  .wordmark{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:34px;letter-spacing:.5px;line-height:1.05;position:relative}
+  .wordmark span{color:var(--gold)}
+  .tagline{font-size:12.5px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.72);margin-top:8px;position:relative}
+  .crest-contact{margin-top:20px;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:center;font-size:13px;color:rgba(255,255,255,.82);position:relative}
+  .crest-contact b{color:var(--gold-soft);font-weight:500}
+
+  /* ---------- Dark sheet ---------- */
+  .sheet{
+    position:relative;
+    background:linear-gradient(165deg,#0F5C45 0%, var(--emerald-deep) 48%, #06382A 100%);
+    border-radius:0 0 var(--radius) var(--radius);
+    box-shadow:var(--shadow);
+    padding:36px 30px 40px;
+    overflow:hidden;
+  }
+  .sheet::before{
+    content:"";position:absolute;inset:14px;border:1px solid rgba(201,169,110,.22);
+    border-radius:11px;pointer-events:none;
+  }
+  .sheet-inner{position:relative}
+
+  .intro{text-align:center;max-width:520px;margin:0 auto 30px}
+  .intro h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:28px;color:var(--gold-soft);margin-bottom:8px}
+  .intro p{font-size:14.5px;color:rgba(242,237,224,.72)}
+
+  /* ---------- Sections ---------- */
+  .section{margin-bottom:30px}
+  .section-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .section-no{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:15px;color:var(--gold);border:1px solid var(--gold);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none}
+  .section-head h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:21px;color:var(--gold-soft);letter-spacing:.3px}
+  .section-head .line{flex:1;height:1px;background:rgba(201,169,110,.28)}
+
+  /* ---------- Fields ---------- */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field.full{grid-column:1 / -1}
+  label{font-size:12px;font-weight:500;letter-spacing:.5px;color:var(--gold);text-transform:uppercase}
+  label::before{content:"";display:inline-block;width:5px;height:5px;background:var(--gold);transform:rotate(45deg);margin-right:8px;vertical-align:middle;box-shadow:0 0 5px rgba(201,169,110,.55)}
+  label .req{color:var(--gold-bright);margin-left:2px}
+  label .hint{text-transform:none;letter-spacing:0;color:var(--muted-light);font-size:11.5px;font-weight:300}
+
+  input,select,textarea{
+    font-family:'Jost',sans-serif;font-size:15px;color:var(--text-light);
+    background:linear-gradient(180deg, rgba(255,255,255,.095) 0%, rgba(255,255,255,.035) 100%);
+    border:1px solid rgba(201,169,110,.34);
+    border-radius:12px;padding:13px 14px;width:100%;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.09), 0 2px 6px rgba(0,0,0,.14);
+    -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+    transition:border-color .18s, background .18s, box-shadow .18s;
+    appearance:none;
+  }
+  input:hover,select:hover,textarea:hover{
+    border-color:rgba(201,169,110,.6);
+    background:linear-gradient(180deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.05) 100%);
+  }
+  input::placeholder,textarea::placeholder{color:rgba(242,237,224,.45)}
+  /* golden reflection glow on focus */
+  input:focus,select:focus,textarea:focus{
+    outline:none;border-color:var(--gold);
+    background:rgba(255,255,255,.085);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.18),
+      0 0 0 1px rgba(201,169,110,.85),
+      0 0 18px rgba(201,169,110,.42);
+  }
+  /* soft single flash when text first entered */
+  @keyframes flashGold{
+    0%{box-shadow:0 0 0 1px rgba(201,169,110,.35)}
+    30%{box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 0 2px rgba(230,198,138,.95),0 0 28px rgba(230,198,138,.6)}
+    100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px rgba(201,169,110,.85),0 0 18px rgba(201,169,110,.42)}
+  }
+  input.flash,select.flash,textarea.flash{animation:flashGold .55s ease}
+
+  select{
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23C9A96E' stroke-width='2.4' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 13px center;padding-right:36px;cursor:pointer;
+  }
+  select option{color:#1a1a1a}
+  textarea{resize:vertical;min-height:92px}
+  input[type="date"],input[type="time"]{color-scheme:dark}
+
+  /* phone + country */
+  .phone-row{display:grid;grid-template-columns:130px 1fr;gap:10px}
+  .phone-row input[list]{font-size:14.5px}
+
+  /* ---------- Receipt upload ---------- */
+  .drop{border:1.6px dashed var(--gold);border-radius:12px;background:rgba(201,169,110,.08);padding:26px 18px;text-align:center;cursor:pointer;transition:all .18s;display:block}
+  .drop:hover,.drop.drag{background:rgba(201,169,110,.16);border-color:var(--gold-bright)}
+  .drop input{display:none}
+  .drop-ico{width:34px;height:34px;margin:0 auto 10px;display:block;stroke:var(--gold-soft)}
+  .drop-title{font-size:14.5px;color:var(--gold-soft);font-weight:500}
+  .drop-hint{font-size:12.5px;color:var(--muted-light);margin-top:4px}
+  .file-chip{display:none;align-items:center;gap:11px;margin-top:12px;padding:11px 13px;background:rgba(255,255,255,.06);border:1px solid var(--field-border);border-radius:10px}
+  .file-chip.show{display:flex}
+  .file-chip .fi{width:30px;height:30px;border-radius:7px;background:rgba(201,169,110,.2);display:grid;place-items:center;flex:none}
+  .file-chip .fi svg{width:16px;height:16px;stroke:var(--gold-soft)}
+  .file-chip .meta{flex:1;min-width:0;text-align:left}
+  .file-chip .meta .nm{font-size:13.5px;color:var(--text-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .file-chip .meta .sz{font-size:11.5px;color:var(--muted-light)}
+  .file-chip .rm{border:none;background:none;color:var(--err);cursor:pointer;font-size:13px;flex:none}
+
+  /* ---------- Errors ---------- */
+  .err-msg{font-size:12px;color:var(--err);display:none}
+  .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--err)}
+  .field.invalid .err-msg{display:block}
+  .field.invalid .drop{border-color:var(--err)}
+
+  /* ---------- Submit ---------- */
+  .submit-btn{
+    width:100%;font-family:'Jost',sans-serif;font-size:16px;font-weight:600;letter-spacing:.6px;
+    color:var(--emerald-deep);
+    background:linear-gradient(135deg,var(--gold-bright) 0%,var(--gold) 100%);
+    border:none;border-radius:12px;padding:16px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    transition:transform .15s, box-shadow .2s, opacity .2s;
+    box-shadow:0 16px 34px -14px rgba(201,169,110,.7);
+  }
+  .submit-btn:hover{transform:translateY(-1px);box-shadow:0 20px 40px -14px rgba(201,169,110,.85)}
+  .submit-btn:active{transform:translateY(0)}
+  .submit-btn[disabled]{opacity:.7;cursor:not-allowed;transform:none}
+  .spinner{width:18px;height:18px;border:2.4px solid rgba(11,77,59,.3);border-top-color:var(--emerald-deep);border-radius:50%;animation:spin .7s linear infinite;display:none}
+  .submit-btn.loading .spinner{display:block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .form-note{text-align:center;font-size:12px;color:var(--muted-light);margin-top:14px}
+
+  /* ---------- Confirmation page ---------- */
+  .success{display:none;text-align:center;padding:20px 10px 14px;min-height:420px;flex-direction:column;align-items:center;justify-content:center}
+  .success.show{display:flex;animation:fadeUp .6s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  .confirm-wrap{position:relative;width:170px;height:170px;margin:0 auto 6px}
+  .confirm-glow{position:absolute;inset:0;margin:auto;width:128px;height:128px;border-radius:50%;background:radial-gradient(circle,rgba(54,226,160,.5),transparent 66%);opacity:0;animation:glowIn .6s .25s ease forwards}
+  @keyframes glowIn{to{opacity:1}}
+  .confirm-ring{position:absolute;inset:0;margin:auto;width:170px;height:170px;transform-origin:50% 50%;animation:ringSpin 1.7s cubic-bezier(.22,.85,.3,1) forwards}
+  @keyframes ringSpin{from{transform:rotate(0deg)}to{transform:rotate(720deg)}}
+  .confirm-ring circle{fill:none;stroke:var(--confirm);stroke-width:12;stroke-dasharray:40 12;stroke-linecap:butt;filter:drop-shadow(0 0 9px rgba(54,226,160,.75))}
+  .confirm-svg{position:absolute;inset:0;margin:auto;width:170px;height:170px}
+  .c-check{fill:none;stroke:#fff;stroke-width:11;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:96;stroke-dashoffset:96;filter:drop-shadow(0 0 7px rgba(54,226,160,.65));animation:checkDraw .5s 1.15s ease forwards}
+  @keyframes checkDraw{to{stroke-dashoffset:0}}
+  .success .ar{font-family:'Amiri',serif;font-size:24px;color:var(--gold);direction:rtl;margin:22px 0 6px;opacity:0;animation:fadeUp .5s 1s ease forwards}
+  .success h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:30px;color:var(--gold-soft);margin-bottom:10px;opacity:0;animation:fadeUp .5s 1.15s ease forwards}
+  .success h2 .nm{color:#fff}
+  .success p{font-size:14.5px;color:rgba(242,237,224,.72);max-width:380px;margin:0 auto 26px;opacity:0;animation:fadeUp .5s 1.3s ease forwards}
+  .success .again{font-family:'Jost',sans-serif;font-size:14.5px;font-weight:500;color:var(--gold-soft);background:transparent;border:1px solid var(--gold);border-radius:10px;padding:12px 28px;cursor:pointer;transition:all .18s;opacity:0;animation:fadeUp .5s 1.45s ease forwards}
+  .success .again:hover{background:var(--gold);color:var(--emerald-deep)}
+
+  /* ---------- Footer ---------- */
+  .foot{text-align:center;margin-top:26px;font-size:12.5px;color:rgba(41,37,31,.65);line-height:1.7}
+  .foot b{color:var(--emerald-deep);font-weight:600}
+  .foot a{color:var(--emerald);text-decoration:none}
+
+  @media (max-width:600px){
+    body{padding:16px 12px 50px}
+    .crest{padding:34px 20px 30px}
+    .wordmark{font-size:27px}
+    .sheet{padding:28px 18px 32px}
+    .grid{grid-template-columns:1fr}
+    .phone-row{grid-template-columns:118px 1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== Header crest ===== -->
+  <header class="crest">
+    <div class="pattern" id="pattern"></div>
+    <div class="frame"></div>
+    <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+    <div class="star-rule">
+      <svg class="star-glyph" viewBox="0 0 24 24" fill="#C9A96E"><path d="M12 0l2.6 6.8L21.6 4.4 19.2 11.4 24 12l-4.8.6 2.4 7-7-2.4L12 24l-2.6-6.8L2.4 19.6 4.8 12.6 0 12l4.8-.6L2.4 4.4l7 2.4z"/></svg>
+    </div>
+    <div class="wordmark">Manzilul<span>Quran</span></div>
+    <div class="tagline">E-learning Academy</div>
+    <div class="crest-contact">
+      <span><b>Web</b> manzilulquran.in</span>
+      <span><b>Email</b> info@manzilulquran.in</span>
+      <span><b>Call</b> +91 70250 70415 · +91 99953 60416</span>
+    </div>
+  </header>
+
+  <!-- ===== Dark sheet ===== -->
+  <main class="sheet">
+    <div class="sheet-inner">
+
+      <!-- FORM VIEW -->
+      <div id="formView">
+        <div class="intro">
+          <h1>Student Registration</h1>
+          <p>Begin your journey with the Qur'an. Complete the form below to enroll — our team will reach out to confirm your placement and class schedule.</p>
+        </div>
+
+        <form id="regForm" novalidate>
+
+          <!-- I PERSONAL -->
+          <section class="section">
+            <div class="section-head"><span class="section-no">I</span><h2>Personal Details</h2><span class="line"></span></div>
+            <div class="grid">
+              <div class="field">
+                <label>First Name <span class="req">*</span></label>
+                <input type="text" name="firstName" placeholder="e.g. Aisha" autocomplete="given-name" />
+                <span class="err-msg">Please enter the first name.</span>
+              </div>
+              <div class="field">
+                <label>Second Name <span class="req">*</span></label>
+                <input type="text" name="secondName" placeholder="e.g. Rahman" autocomplete="family-name" />
+                <span class="err-msg">Please enter the second name.</span>
+              </div>
+              <div class="field">
+                <label>Gender <span class="req">*</span></label>
+                <select name="gender">
+                  <option value="" disabled selected>Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+                <span class="err-msg">Please select a gender.</span>
+              </div>
+              <div class="field">
+                <label>Date of Birth <span class="req">*</span></label>
+                <input type="date" name="birthDate" />
+                <span class="err-msg">Please enter the date of birth.</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- II CONTACT -->
+          <section class="section">
+            <div class="section-head"><span class="section-no">II</span><h2>Contact</h2><span class="line"></span></div>
+            <div class="grid">
+              <div class="field full">
+                <label>Email Address <span class="req">*</span></label>
+                <input type="email" name="email" placeholder="name@example.com" autocomplete="email" />
+                <span class="err-msg">Please enter a valid email address.</span>
+              </div>
+              <div class="field full">
+                <label>Phone Number <span class="req">*</span> <span class="hint">— type country name or code</span></label>
+                <div class="phone-row">
+                  <input list="ccList" name="countryCode" id="countryCode" value="+91" placeholder="+91" aria-label="Country code" autocomplete="off" />
+                  <input type="tel" name="phone" placeholder="Mobile number" inputmode="numeric" autocomplete="tel" />
+                </div>
+                <datalist id="ccList"></datalist>
+                <span class="err-msg">Please enter a valid country code and number.</span>
+              </div>
+              <div class="field full">
+                <label>Address <span class="req">*</span></label>
+                <textarea name="address" placeholder="House / street, city, district, state, country, PIN"></textarea>
+                <span class="err-msg">Please enter the full address.</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- III PROGRAMME -->
+          <section class="section">
+            <div class="section-head"><span class="section-no">III</span><h2>Programme</h2><span class="line"></span></div>
+            <div class="grid">
+              <div class="field full">
+                <label>Course <span class="req">*</span></label>
+                <select name="course">
+                  <option value="" disabled selected>Select a course</option>
+                  <option value="Hifzul Qur'an — Qur'an Memorisation">Hifzul Qur'an — Qur'an Memorisation</option>
+                  <option value="Tartheel — Recitation">Tartheel — Recitation</option>
+                  <option value="Quranul Yawmi — Daily Recitation">Quranul Yawmi — Daily Recitation</option>
+                  <option value="Madrasa Studies">Madrasa Studies</option>
+                  <option value="Tajweedul Qur'an — Rules & Pronunciation">Tajweedul Qur'an — Rules & Pronunciation</option>
+                  <option value="Tafseerul Qur'an — Meaning & Explanation">Tafseerul Qur'an — Meaning & Explanation</option>
+                  <option value="Dawra — Revision">Dawra — Revision</option>
+                </select>
+                <span class="err-msg">Please choose a course.</span>
+              </div>
+              <div class="field full">
+                <label>Preferred Class Time <span class="req">*</span> <span class="hint">— between 6:00 AM and 10:00 PM IST</span></label>
+                <input type="time" name="time" id="timeInput" min="06:00" max="22:00" />
+                <span class="err-msg">Please enter a time between 6:00 AM and 10:00 PM IST.</span>
+              </div>
+              <div class="field full">
+                <label>Additional Comment <span class="req">*</span></label>
+                <textarea name="comment" placeholder="Prior learning, goals, age of student, or any note for our team"></textarea>
+                <span class="err-msg">Please add a short note.</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- IV RECEIPT -->
+          <section class="section">
+            <div class="section-head"><span class="section-no">IV</span><h2>Payment Receipt</h2><span class="line"></span></div>
+            <div class="field full">
+              <label>Upload Receipt <span class="req">*</span></label>
+              <label class="drop" id="drop">
+                <input type="file" id="fileInput" accept="image/*,.pdf" />
+                <svg class="drop-ico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0L7 9m5-5l5 5"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+                <div class="drop-title">Tap to upload, or drag your receipt here</div>
+                <div class="drop-hint">Payment receipt — image or PDF · max 8 MB</div>
+              </label>
+              <div class="file-chip" id="fileChip">
+                <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></span>
+                <div class="meta"><div class="nm" id="fileName"></div><div class="sz" id="fileSize"></div></div>
+                <button type="button" class="rm" id="fileRemove">Remove</button>
+              </div>
+              <span class="err-msg">Please attach your payment receipt.</span>
+            </div>
+          </section>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <span class="spinner"></span>
+            <span class="btn-label">Submit Registration</span>
+          </button>
+          <p class="form-note">All fields are required. Your details are sent securely to ManzilulQuran Academy.</p>
+        </form>
+      </div>
+
+      <!-- SUCCESS VIEW -->
+      <div class="success" id="successView">
+        <div class="confirm-wrap">
+          <div class="confirm-glow"></div>
+          <svg class="confirm-ring" viewBox="0 0 170 170"><circle cx="85" cy="85" r="68"></circle></svg>
+          <svg class="confirm-svg" viewBox="0 0 170 170">
+            <path class="c-check" d="M55 88 L77 110 L118 60"></path>
+          </svg>
+        </div>
+        <div class="ar">جَزَاكَ اللهُ خَيْرًا</div>
+        <h2>Registration Confirmed, <span class="nm" id="successName">Student</span>!</h2>
+        <p>Your registration has been received successfully. Our team will contact you shortly to confirm your placement and class schedule, in shā’ Allāh.</p>
+        <button class="again" id="againBtn">Register another student</button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="foot">
+    <b>ManzilulQuran E-learning Academy</b><br>
+    Hifz · Tartheel · Tajweed · Tafseer · Madrasa Studies<br>
+    <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a> ·
+    <a href="mailto:info@manzilulquran.in">info@manzilulquran.in</a> ·
+    +91 70250 70415
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   1. CONFIG — paste your Google Apps Script Web App URL
+   ============================================================ */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCDt-Vbw4ckOH8rbZ22sGsmPzA82XQ8w8Xey-BE3krJX3WgRcz_lGTyj5Ie_Mjz6q8tA/exec";
+const MAX_FILE_MB = 8;
+
+/* ============================================================
+   2. Country codes  (datalist — type country name or code)
+   ============================================================ */
+const COUNTRIES = [
+  ["+91","India"],["+966","Saudi Arabia"],["+971","UAE"],["+974","Qatar"],
+  ["+965","Kuwait"],["+973","Bahrain"],["+968","Oman"],["+1","USA / Canada"],
+  ["+44","UK"],["+60","Malaysia"],["+65","Singapore"],["+61","Australia"],
+  ["+880","Bangladesh"],["+92","Pakistan"],["+94","Sri Lanka"],["+960","Maldives"],
+  ["+977","Nepal"],["+20","Egypt"],["+90","Türkiye"],["+62","Indonesia"],
+  ["+63","Philippines"],["+49","Germany"],["+33","France"],["+39","Italy"],
+  ["+31","Netherlands"],["+27","South Africa"],["+254","Kenya"],["+234","Nigeria"],
+  ["+255","Tanzania"],["+7","Russia"],["+86","China"],["+81","Japan"],["+82","South Korea"]
+];
+(function fillCC(){
+  const dl = document.getElementById('ccList');
+  COUNTRIES.forEach(([code,name])=>{
+    const o = document.createElement('option');
+    o.value = code; o.textContent = name + " (" + code + ")";
+    dl.appendChild(o);
+  });
+})();
+
+/* ============================================================
+   3. Header geometric star pattern (khatam)
+   ============================================================ */
+(function patternBg(){
+  const star = "<svg xmlns='http://www.w3.org/2000/svg' width='54' height='54' viewBox='0 0 54 54'><g fill='none' stroke='%23C9A96E' stroke-width='1.1'><path d='M27 5l5.5 13.5L46 13l-6.5 14L52 27l-12.5 0L46 41l-13.5-5.5L27 49l-5.5-13.5L8 41l6.5-14L2 27l12.5 0L8 13l13.5 5.5z'/></g></svg>";
+  document.getElementById('pattern').style.backgroundImage = "url(\"data:image/svg+xml;utf8," + star + "\")";
+})();
+
+/* ============================================================
+   4. Golden focus glow + soft single flash on first keystroke
+   ============================================================ */
+document.querySelectorAll('#regForm input, #regForm select, #regForm textarea').forEach(el=>{
+  el.addEventListener('focus', ()=>{ el._typed = false; });
+  el.addEventListener('input', ()=>{
+    if(!el._typed){
+      el._typed = true;
+      el.classList.remove('flash');
+      void el.offsetWidth;          // restart animation
+      el.classList.add('flash');
+    }
+  });
+  el.addEventListener('animationend', ()=> el.classList.remove('flash'));
+});
+
+/* ============================================================
+   5. Receipt upload
+   ============================================================ */
+const fileInput = document.getElementById('fileInput');
+const drop = document.getElementById('drop');
+const fileChip = document.getElementById('fileChip');
+const fileNameEl = document.getElementById('fileName');
+const fileSizeEl = document.getElementById('fileSize');
+let selectedFile = null;
+
+function humanSize(b){
+  if(b<1024) return b+' B';
+  if(b<1048576) return (b/1024).toFixed(1)+' KB';
+  return (b/1048576).toFixed(2)+' MB';
+}
+function handleFile(file){
+  if(!file) return;
+  const okType = file.type.startsWith('image/') || file.type==='application/pdf';
+  if(!okType){ alert('Please upload an image or a PDF receipt.'); return; }
+  if(file.size > MAX_FILE_MB*1048576){ alert('File is larger than '+MAX_FILE_MB+' MB.'); return; }
+  selectedFile = file;
+  fileNameEl.textContent = file.name;
+  fileSizeEl.textContent = humanSize(file.size);
+  fileChip.classList.add('show');
+  drop.style.display='none';
+  clearError(drop.closest('.field'));
+}
+fileInput.addEventListener('change', e=>handleFile(e.target.files[0]));
+['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+drop.addEventListener('drop', e=>handleFile(e.dataTransfer.files[0]));
+document.getElementById('fileRemove').addEventListener('click', ()=>{
+  selectedFile=null; fileInput.value=''; fileChip.classList.remove('show'); drop.style.display='';
+});
+
+/* ============================================================
+   6. Validation
+   ============================================================ */
+const form = document.getElementById('regForm');
+const setError = f=>f.classList.add('invalid');
+const clearError = f=>{ if(f) f.classList.remove('invalid'); };
+form.addEventListener('input', e=>{const f=e.target.closest('.field'); if(f) clearError(f);});
+form.addEventListener('change', e=>{const f=e.target.closest('.field'); if(f) clearError(f);});
+
+function validate(){
+  let ok=true, firstBad=null;
+  form.querySelectorAll('.field').forEach(clearError);
+
+  ['firstName','secondName','gender','birthDate','address','course','comment'].forEach(n=>{
+    const el=form.querySelector(`[name="${n}"]`);
+    if(!el.value.trim()){const fl=el.closest('.field');setError(fl);ok=false;firstBad=firstBad||fl;}
+  });
+  const email=form.querySelector('[name="email"]');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())){const fl=email.closest('.field');setError(fl);ok=false;firstBad=firstBad||fl;}
+  // country code typed
+  const cc=form.querySelector('[name="countryCode"]');
+  if(!/^\+\d{1,4}$/.test(cc.value.trim())){const fl=cc.closest('.field');setError(fl);ok=false;firstBad=firstBad||fl;}
+  // phone
+  const phone=form.querySelector('[name="phone"]');
+  if(!/^\d{6,15}$/.test(phone.value.replace(/\s/g,''))){const fl=phone.closest('.field');setError(fl);ok=false;firstBad=firstBad||fl;}
+  // time within IST 06:00–22:00
+  const t=form.querySelector('[name="time"]');
+  if(!t.value || t.value<"06:00" || t.value>"22:00"){const fl=t.closest('.field');setError(fl);ok=false;firstBad=firstBad||fl;}
+  // receipt
+  if(!selectedFile){const fl=drop.closest('.field');setError(fl);ok=false;firstBad=firstBad||fl;}
+
+  if(firstBad) firstBad.scrollIntoView({behavior:'smooth',block:'center'});
+  return ok;
+}
+
+/* ============================================================
+   7. Submit
+   ============================================================ */
+const submitBtn=document.getElementById('submitBtn');
+const formView=document.getElementById('formView');
+const successView=document.getElementById('successView');
+
+function fileToBase64(file){
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});
+}
+function to12h(t){
+  let [h,m]=t.split(':').map(Number); const ap=h<12?'AM':'PM'; let hr=h%12; if(hr===0)hr=12;
+  return hr+':'+String(m).padStart(2,'0')+' '+ap+' IST';
+}
+
+form.addEventListener('submit', async e=>{
+  e.preventDefault();
+  if(!validate()) return;
+  submitBtn.classList.add('loading'); submitBtn.disabled=true;
+
+  try{
+    const fileData = await fileToBase64(selectedFile);
+    const cc = form.countryCode.value.trim();
+    const payload = {
+      formType:'student',
+      firstName:form.firstName.value.trim(),
+      secondName:form.secondName.value.trim(),
+      gender:form.gender.value,
+      birthDate:form.birthDate.value,
+      email:form.email.value.trim(),
+      phone:cc+' '+form.phone.value.trim(),
+      address:form.address.value.trim(),
+      course:form.course.value,
+      time:to12h(form.time.value),
+      comment:form.comment.value.trim(),
+      fileName:selectedFile.name,
+      fileType:selectedFile.type,
+      fileData:fileData
+    };
+
+    if(SCRIPT_URL.startsWith("PASTE_")){
+      console.warn("SCRIPT_URL not set — demo success.", payload);
+      await new Promise(r=>setTimeout(r,900));
+      showSuccess(payload.firstName); return;
+    }
+
+    const res = await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    let result={}; try{ result=await res.json(); }catch(_){ result={result:'success'}; }
+    if(result.result==='success'){ showSuccess(payload.firstName); }
+    else throw new Error(result.error||'Submission failed');
+
+  }catch(err){
+    console.error(err);
+    alert("Something went wrong while submitting. Please check your connection and try again.\n\n("+err.message+")");
+  }finally{
+    submitBtn.classList.remove('loading'); submitBtn.disabled=false;
+  }
+});
+
+function showSuccess(name){
+  document.getElementById('successName').textContent = name || 'Student';
+  formView.style.display='none';
+  successView.classList.add('show');
+  // re-trigger confirmation animations
+  successView.querySelectorAll('.confirm-ring,.confirm-glow,.c-check').forEach(el=>{
+    el.style.animation='none'; void el.offsetWidth; el.style.animation='';
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('againBtn').addEventListener('click', ()=>{
+  form.reset();
+  selectedFile=null; fileChip.classList.remove('show'); drop.style.display='';
+  form.countryCode.value='+91';
+  successView.classList.remove('show');
+  formView.style.display='';
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+</script>
+</body>
+</html>

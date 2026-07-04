@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Batch Class Registration · ManzilulQuran E-learning Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#EBC24E;
+    --gold-soft:#F4DB95;
+    --field-bg:rgba(10,72,50,.58);
+    --field-border:#B8911F;       /* darkened yellow */
+    --field-border-bright:#F0C84E;
+    --text:#FCF6E4;
+    --muted:rgba(252,246,228,.6);
+    --err:#F2A6A6;
+    --radius:24px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);line-height:1.5;
+    -webkit-font-smoothing:antialiased;min-height:100vh;position:relative;
+    padding:34px 18px 60px;overflow-x:hidden;
+  }
+
+  /* ============ ISLAMIC NIGHT BACKGROUND ============ */
+  .night{position:fixed;inset:0;z-index:-3;background:linear-gradient(180deg,#0A1430 0%, #0C2440 38%, #0A3A33 72%, #093E32 100%)}
+  .stars{position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background-image:
+      radial-gradient(1.6px 1.6px at 12% 18%, #fff, transparent),
+      radial-gradient(1.4px 1.4px at 28% 28%, #fff, transparent),
+      radial-gradient(1.2px 1.2px at 42% 12%, #fff, transparent),
+      radial-gradient(1.7px 1.7px at 58% 22%, #fff, transparent),
+      radial-gradient(1.2px 1.2px at 70% 14%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 82% 26%, #fff, transparent),
+      radial-gradient(1.2px 1.2px at 90% 10%, #fff, transparent),
+      radial-gradient(1.3px 1.3px at 18% 40%, #fff, transparent),
+      radial-gradient(1.1px 1.1px at 36% 46%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 64% 40%, #fff, transparent),
+      radial-gradient(1.2px 1.2px at 76% 48%, #fff, transparent),
+      radial-gradient(1.3px 1.3px at 8% 56%, #fff, transparent),
+      radial-gradient(1.1px 1.1px at 48% 58%, #fff, transparent),
+      radial-gradient(1.4px 1.4px at 88% 54%, #fff, transparent);
+    opacity:.85;animation:twinkle 4.5s ease-in-out infinite alternate}
+  @keyframes twinkle{from{opacity:.5}to{opacity:.95}}
+  .moon{position:fixed;top:7%;right:13%;width:66px;height:66px;border-radius:50%;z-index:-2;
+    background:#F6EAC0;box-shadow:0 0 46px 10px rgba(246,234,192,.4), inset -16px 3px 0 0 #0C2440}
+  .horizon{position:fixed;left:0;right:0;bottom:0;height:40vh;z-index:-2;pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 100%, rgba(28,140,110,.35), transparent 70%)}
+  .mosque{position:fixed;left:0;right:0;bottom:0;width:100%;height:auto;max-height:46vh;z-index:-1;pointer-events:none}
+
+  .wrap{max-width:680px;margin:0 auto;position:relative;z-index:1}
+
+  /* ============ GLASS CARD (yellow tint) ============ */
+  .card{
+    background:linear-gradient(160deg, rgba(255,221,120,.17), rgba(255,198,74,.07));
+    -webkit-backdrop-filter:blur(22px) saturate(125%);backdrop-filter:blur(22px) saturate(125%);
+    border:1.5px solid rgba(255,214,120,.4);border-radius:var(--radius);
+    box-shadow:0 36px 90px -34px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.2);
+    padding:38px 32px 38px;
+  }
+
+  /* ---------- Header ---------- */
+  .head{text-align:center;margin-bottom:24px}
+  .logo-circle{width:94px;height:94px;border-radius:50%;border:3px solid var(--gold);background:rgba(255,255,255,.92);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 28px -4px rgba(235,194,78,.6)}
+  .logo-circle img{width:100%;height:100%;object-fit:contain;padding:10px}
+  .logo-fallback{display:none;font-size:13px;font-weight:800;letter-spacing:1.5px;color:#0B4D3B}
+  .academy{font-size:12px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-soft);margin-bottom:8px}
+  .head h1{font-family:'Fraunces',serif;font-size:33px;font-weight:700;letter-spacing:-.5px;color:#fff;line-height:1.05;text-shadow:0 2px 20px rgba(0,0,0,.3)}
+  .head p{font-size:14px;font-weight:500;color:var(--muted);margin-top:9px}
+
+  /* ---------- Sections ---------- */
+  .section{margin-top:28px}
+  .section-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .section-head h2{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--gold-soft)}
+  .section-head .ln{flex:1;height:1px;background:linear-gradient(90deg,rgba(235,194,78,.6),transparent)}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 22px}
+  .field{display:flex;flex-direction:column;gap:8px}
+  .field.full{grid-column:1 / -1}
+  label{font-size:12px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--gold-soft)}
+  label .req{color:var(--gold)}
+  label .opt{text-transform:none;letter-spacing:0;color:var(--muted);font-weight:600;font-size:11.5px}
+
+  /* ---------- Column (field) ---------- */
+  .col{position:relative}
+  .col::after{content:"";position:absolute;top:-7px;right:-7px;width:30px;height:30px;border-radius:50%;
+    background:radial-gradient(circle, rgba(240,205,90,.95) 0%, rgba(240,205,90,.4) 42%, transparent 72%);
+    filter:blur(3px);opacity:0;transition:opacity .28s ease;pointer-events:none;z-index:4}
+  .col:focus-within::after{opacity:1}   /* corner glow while typing */
+
+  input,select,textarea{
+    font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;color:var(--text);
+    background:var(--field-bg);border:1.8px solid var(--field-border);border-radius:11px;
+    padding:12px 13px;width:100%;transition:border-color .16s, box-shadow .16s, background .16s;
+    appearance:none;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  }
+  input::placeholder,textarea::placeholder{color:rgba(252,246,228,.45);font-weight:500}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--field-border-bright);box-shadow:0 0 0 3px rgba(240,200,80,.18)}
+  select{cursor:pointer;padding-right:36px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23F0C84E' stroke-width='3' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 13px center}
+  select option{color:#10241c;background:#EAF3EE}
+  textarea{resize:vertical;min-height:92px}
+  input[type="date"]{color-scheme:dark}
+  .phone-row{display:grid;grid-template-columns:128px 1fr;gap:10px}
+  .phone-row input[list]{font-size:14.5px}
+
+  /* full flash on Enter (slow fade ~1s) */
+  @keyframes eflash{
+    0%{background:rgba(240,205,90,.7);border-color:var(--field-border-bright);box-shadow:0 0 30px rgba(240,205,90,.85), inset 0 0 22px rgba(255,242,190,.6);color:#16341f}
+    100%{background:var(--field-bg);border-color:var(--field-border);box-shadow:0 0 0 rgba(0,0,0,0);color:var(--text)}
+  }
+  input.eflash,select.eflash,textarea.eflash{animation:eflash 1s ease-out}
+
+  /* ---------- Receipt ---------- */
+  .drop{border:2px dashed var(--field-border);border-radius:12px;background:rgba(10,72,50,.4);padding:24px 18px;text-align:center;cursor:pointer;transition:all .18s;display:block}
+  .drop:hover,.drop.drag{background:rgba(235,194,78,.14);border-color:var(--field-border-bright)}
+  .drop input{display:none}
+  .drop-ico{width:32px;height:32px;margin:0 auto 9px;display:block;stroke:var(--gold-soft)}
+  .drop-title{font-size:14px;font-weight:700;color:var(--gold-soft)}
+  .drop-hint{font-size:12px;color:var(--muted);margin-top:4px;font-weight:500}
+  .file-chip{display:none;align-items:center;gap:11px;margin-top:12px;padding:11px 13px;background:rgba(10,72,50,.5);border:1.6px solid var(--field-border);border-radius:10px}
+  .file-chip.show{display:flex}
+  .file-chip .fi{width:30px;height:30px;border-radius:7px;background:rgba(235,194,78,.2);display:grid;place-items:center;flex:none}
+  .file-chip .fi svg{width:16px;height:16px;stroke:var(--gold-soft)}
+  .file-chip .meta{flex:1;min-width:0;text-align:left}
+  .file-chip .meta .nm{font-size:13.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .file-chip .meta .sz{font-size:11.5px;color:var(--muted);font-weight:500}
+  .file-chip .rm{border:none;background:none;color:var(--err);cursor:pointer;font-size:13px;font-weight:700;flex:none}
+
+  .err-msg{font-size:12px;font-weight:600;color:var(--err);display:none}
+  .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--err)}
+  .field.invalid .err-msg{display:block}
+  .field.invalid .drop{border-color:var(--err)}
+
+  /* ---------- Submit ---------- */
+  .submit{width:100%;margin-top:30px;font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800;letter-spacing:.4px;color:#0A332A;background:linear-gradient(135deg,#F4D673,#D9A92F);border:none;border-radius:12px;padding:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .14s, box-shadow .2s;box-shadow:0 16px 34px -14px rgba(235,194,78,.7)}
+  .submit:hover{transform:translateY(-1px);box-shadow:0 20px 40px -14px rgba(235,194,78,.85)}
+  .submit:active{transform:translateY(0)}
+  .submit[disabled]{opacity:.65;cursor:not-allowed;transform:none}
+  .spinner{width:18px;height:18px;border:2.6px solid rgba(10,51,42,.35);border-top-color:#0A332A;border-radius:50%;animation:spin .7s linear infinite;display:none}
+  .submit.loading .spinner{display:block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .note{text-align:center;font-size:12px;font-weight:600;color:var(--muted);margin-top:14px}
+
+  /* ---------- Success ---------- */
+  .success{display:none;text-align:center;padding:40px 10px 18px}
+  .success.show{display:block;animation:rise .5s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .tick-wrap{position:relative;width:110px;height:110px;margin:0 auto 26px}
+  .tick-ripple{position:absolute;inset:0;border-radius:50%;border:2px solid var(--gold);opacity:0}
+  .tick-ripple.go{animation:tickRipple 1s .15s ease-out forwards}
+  @keyframes tickRipple{0%{transform:scale(.6);opacity:.6}100%{transform:scale(1.75);opacity:0}}
+  .tick-circle{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#34C998,#0E7A55);display:grid;place-items:center;box-shadow:0 0 44px rgba(52,201,152,.6)}
+  .tick-circle.go{animation:tickPop .55s cubic-bezier(.2,.9,.3,1.4)}
+  @keyframes tickPop{from{transform:scale(0)}to{transform:scale(1)}}
+  .tick-circle svg{width:54px;height:54px;stroke:#fff;stroke-width:4.5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:64;stroke-dashoffset:64}
+  .tick-circle svg.go{animation:tickDraw .5s .38s ease forwards}
+  @keyframes tickDraw{to{stroke-dashoffset:0}}
+  .success h2{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:#fff;margin-bottom:10px}
+  .success h2 .nm{color:var(--gold-soft)}
+  .success p{font-size:14px;font-weight:500;color:var(--muted);max-width:390px;margin:0 auto 24px}
+  .again{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:var(--gold-soft);background:transparent;border:2px solid var(--gold);border-radius:11px;padding:11px 26px;cursor:pointer;transition:all .18s}
+  .again:hover{background:var(--gold);color:#0A332A}
+
+  /* page-wide glow burst from the tick */
+  .page-glow{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0}
+  .page-glow::before{content:"";width:130vmax;height:130vmax;border-radius:50%;
+    background:radial-gradient(circle, rgba(245,215,110,.95) 0%, rgba(52,201,152,.45) 34%, transparent 66%);
+    transform:scale(.12)}
+  .page-glow.go{animation:pageGlow 1.9s ease forwards}
+  .page-glow.go::before{animation:pageGlowScale 1.9s ease forwards}
+  @keyframes pageGlow{0%{opacity:0}16%{opacity:.95}55%{opacity:.5}100%{opacity:0}}
+  @keyframes pageGlowScale{0%{transform:scale(.12)}100%{transform:scale(1.15)}}
+
+  /* ---------- Footer ---------- */
+  .foot{max-width:680px;margin:22px auto 0;text-align:center;font-size:12px;font-weight:600;color:var(--gold-soft);line-height:1.7;position:relative;z-index:1}
+  .foot a{color:#fff;text-decoration:none}
+
+  @media (max-width:580px){
+    body{padding:18px 12px 46px}
+    .card{padding:30px 20px 30px}
+    .head h1{font-size:27px}
+    .grid{grid-template-columns:1fr;gap:18px}
+    .phone-row{grid-template-columns:116px 1fr}
+    .moon{width:52px;height:52px;top:5%}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+  <!-- NIGHT BACKGROUND -->
+  <div class="night"></div>
+  <div class="stars"></div>
+  <div class="moon"></div>
+  <div class="horizon"></div>
+  <svg class="mosque" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax meet">
+    <g fill="#04211C">
+      <rect x="140" y="235" width="920" height="65"/>
+      <rect x="355" y="200" width="120" height="100"/>
+      <rect x="725" y="200" width="110" height="100"/>
+      <rect x="515" y="175" width="170" height="125"/>
+      <path d="M515 175 C515 95 560 40 600 40 C640 40 685 95 685 175 Z"/>
+      <path d="M365 200 C365 150 395 110 420 110 C445 110 475 150 475 200 Z"/>
+      <path d="M725 200 C725 150 755 110 780 110 C805 110 835 150 835 200 Z"/>
+      <rect x="210" y="80" width="24" height="220"/>
+      <rect x="203" y="150" width="38" height="8"/>
+      <path d="M210 80 C210 60 216 45 222 45 C228 45 234 60 234 80 Z"/>
+      <rect x="966" y="80" width="24" height="220"/>
+      <rect x="959" y="150" width="38" height="8"/>
+      <path d="M966 80 C966 60 972 45 978 45 C984 45 990 60 990 80 Z"/>
+      <rect x="598" y="14" width="4" height="28" rx="1"/><circle cx="600" cy="12" r="4"/>
+      <rect x="220" y="24" width="4" height="22"/><circle cx="222" cy="22" r="3.5"/>
+      <rect x="976" y="24" width="4" height="22"/><circle cx="978" cy="22" r="3.5"/>
+    </g>
+  </svg>
+
+  <div class="page-glow" id="pageGlow"></div>
+
+  <div class="wrap">
+    <div class="card">
+      <!-- HEADER -->
+      <div class="head">
+        <div class="logo-circle">
+          <img src="logo.png" alt="ManzilulQuran Academy logo"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+          <span class="logo-fallback">LOGO</span>
+        </div>
+        <div class="academy">ManzilulQuran Academy</div>
+        <h1>Batch Class Registration</h1>
+        <p>Enroll in our structured batch programme — complete the form below to reserve your place.</p>
+      </div>
+
+      <!-- FORM -->
+      <div id="formView">
+        <form id="batchForm" novalidate>
+
+          <div class="section">
+            <div class="section-head"><h2>Personal Details</h2><span class="ln"></span></div>
+            <div class="grid">
+              <div class="field">
+                <label>First Name <span class="req">*</span></label>
+                <div class="col"><input type="text" name="firstName" placeholder="e.g. Aisha" autocomplete="given-name" /></div>
+                <span class="err-msg">Please enter the first name.</span>
+              </div>
+              <div class="field">
+                <label>Second Name <span class="req">*</span></label>
+                <div class="col"><input type="text" name="secondName" placeholder="e.g. Rahman" autocomplete="family-name" /></div>
+                <span class="err-msg">Please enter the second name.</span>
+              </div>
+              <div class="field">
+                <label>Gender <span class="req">*</span></label>
+                <div class="col"><select name="gender">
+                  <option value="" disabled selected>Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select></div>
+                <span class="err-msg">Please select a gender.</span>
+              </div>
+              <div class="field">
+                <label>Date of Birth <span class="req">*</span></label>
+                <div class="col"><input type="date" name="birthDate" /></div>
+                <span class="err-msg">Please enter the date of birth.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-head"><h2>Contact</h2><span class="ln"></span></div>
+            <div class="grid">
+              <div class="field full">
+                <label>Email Address <span class="req">*</span></label>
+                <div class="col"><input type="email" name="email" placeholder="name@example.com" autocomplete="email" /></div>
+                <span class="err-msg">Please enter a valid email address.</span>
+              </div>
+              <div class="field full">
+                <label>Phone Number <span class="req">*</span> <span class="opt">— type country or code</span></label>
+                <div class="phone-row">
+                  <div class="col"><input list="ccList" name="countryCode" id="countryCode" value="+91" placeholder="+91" aria-label="Country code" autocomplete="off" /></div>
+                  <div class="col"><input type="tel" name="phone" placeholder="Mobile number" inputmode="numeric" autocomplete="tel" /></div>
+                </div>
+                <datalist id="ccList"></datalist>
+                <span class="err-msg">Please enter a valid country code and number.</span>
+              </div>
+              <div class="field full">
+                <label>Address <span class="req">*</span></label>
+                <div class="col"><textarea name="address" placeholder="House / street, city, district, state, country, PIN"></textarea></div>
+                <span class="err-msg">Please enter the full address.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-head"><h2>Programme</h2><span class="ln"></span></div>
+            <div class="grid">
+              <div class="field full">
+                <label>Course <span class="req">*</span></label>
+                <div class="col"><select name="course">
+                  <option value="" disabled selected>Select a course</option>
+                  <option value="Madrasa Foundational">Madrasa Foundational</option>
+                  <option value="Tarbiya (1st Level)">Tarbiya (1st Level)</option>
+                  <option value="Tazkiya (2nd Level)">Tazkiya (2nd Level)</option>
+                </select></div>
+                <span class="err-msg">Please choose a course.</span>
+              </div>
+              <div class="field full">
+                <label>Additional Comments <span class="opt">— optional</span></label>
+                <div class="col"><textarea name="comment" placeholder="Prior learning, goals, age of student, or any note for our team"></textarea></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-head"><h2>Payment Receipt</h2><span class="ln"></span></div>
+            <div class="field full">
+              <label>Upload Receipt <span class="req">*</span></label>
+              <label class="drop" id="drop">
+                <input type="file" id="fileInput" accept="image/*,.pdf" />
+                <svg class="drop-ico" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0L7 9m5-5l5 5"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+                <div class="drop-title">Tap to upload, or drag your receipt here</div>
+                <div class="drop-hint">Payment receipt — image or PDF · max 8 MB</div>
+              </label>
+              <div class="file-chip" id="fileChip">
+                <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></span>
+                <div class="meta"><div class="nm" id="fileName"></div><div class="sz" id="fileSize"></div></div>
+                <button type="button" class="rm" id="fileRemove">Remove</button>
+              </div>
+              <span class="err-msg">Please attach your payment receipt.</span>
+            </div>
+          </div>
+
+          <button type="submit" class="submit" id="submitBtn">
+            <span class="spinner"></span>
+            <span>Submit Registration</span>
+          </button>
+          <p class="note">All fields are required except additional comments.</p>
+        </form>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success" id="successView">
+        <div class="tick-wrap">
+          <div class="tick-ripple" id="tickRipple"></div>
+          <div class="tick-circle" id="tickCircle"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
+        </div>
+        <h2>Registration Confirmed, <span class="nm" id="successName">Student</span>!</h2>
+        <p>Your batch registration has been received successfully. Our team will contact you shortly to confirm your placement, in shā’ Allāh.</p>
+        <button class="again" id="againBtn">Register another student</button>
+      </div>
+    </div>
+
+    <footer class="foot">
+      ManzilulQuran E-learning Academy ·
+      <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a> ·
+      <a href="mailto:info@manzilulquran.in">info@manzilulquran.in</a> · +91 70250 70415
+    </footer>
+  </div>
+
+<script>
+/* CONFIG — paste the SAME combined Apps Script URL used by the other forms */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCDt-Vbw4ckOH8rbZ22sGsmPzA82XQ8w8Xey-BE3krJX3WgRcz_lGTyj5Ie_Mjz6q8tA/exec";
+const MAX_FILE_MB = 8;
+
+/* country codes */
+const COUNTRIES=[["+91","India"],["+966","Saudi Arabia"],["+971","UAE"],["+974","Qatar"],["+965","Kuwait"],["+973","Bahrain"],["+968","Oman"],["+1","USA / Canada"],["+44","UK"],["+60","Malaysia"],["+65","Singapore"],["+61","Australia"],["+880","Bangladesh"],["+92","Pakistan"],["+94","Sri Lanka"],["+960","Maldives"],["+977","Nepal"],["+20","Egypt"],["+90","Türkiye"],["+62","Indonesia"],["+63","Philippines"],["+49","Germany"],["+33","France"],["+39","Italy"],["+31","Netherlands"],["+27","South Africa"],["+254","Kenya"],["+234","Nigeria"],["+255","Tanzania"],["+7","Russia"],["+86","China"],["+81","Japan"],["+82","South Korea"]];
+(function(){const dl=document.getElementById('ccList');COUNTRIES.forEach(([c,n])=>{const o=document.createElement('option');o.value=c;o.textContent=n+" ("+c+")";dl.appendChild(o);});})();
+
+/* receipt upload */
+const fileInput=document.getElementById('fileInput');
+const drop=document.getElementById('drop');
+const fileChip=document.getElementById('fileChip');
+const fileNameEl=document.getElementById('fileName');
+const fileSizeEl=document.getElementById('fileSize');
+let selectedFile=null;
+function humanSize(b){if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1)+' KB';return (b/1048576).toFixed(2)+' MB';}
+function handleFile(file){
+  if(!file)return;
+  const okType=file.type.startsWith('image/')||file.type==='application/pdf';
+  if(!okType){alert('Please upload an image or a PDF receipt.');return;}
+  if(file.size>MAX_FILE_MB*1048576){alert('File is larger than '+MAX_FILE_MB+' MB.');return;}
+  selectedFile=file;fileNameEl.textContent=file.name;fileSizeEl.textContent=humanSize(file.size);
+  fileChip.classList.add('show');drop.style.display='none';clearError(drop.closest('.field'));
+}
+fileInput.addEventListener('change',e=>handleFile(e.target.files[0]));
+['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+drop.addEventListener('drop',e=>handleFile(e.dataTransfer.files[0]));
+document.getElementById('fileRemove').addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileChip.classList.remove('show');drop.style.display='';});
+
+const form=document.getElementById('batchForm');
+const submitBtn=document.getElementById('submitBtn');
+const formView=document.getElementById('formView');
+const successView=document.getElementById('successView');
+const pageGlow=document.getElementById('pageGlow');
+
+/* full flash on Enter */
+function flashCol(el){ if(!el||!el.classList) return; el.classList.remove('eflash'); void el.offsetWidth; el.classList.add('eflash'); }
+form.addEventListener('keydown', e=>{
+  if(e.key!=='Enter') return;
+  const t=e.target;
+  if(t.tagName==='TEXTAREA'){ flashCol(t); return; }   // allow newline + flash
+  e.preventDefault();                                   // stop accidental submit
+  flashCol(t);
+});
+form.addEventListener('animationend', e=>{ if(e.animationName==='eflash') e.target.classList.remove('eflash'); });
+
+/* validation */
+const setError=f=>f.classList.add('invalid');
+const clearError=f=>{ if(f) f.classList.remove('invalid'); };
+form.addEventListener('input',e=>{const f=e.target.closest('.field'); if(f) clearError(f);});
+form.addEventListener('change',e=>{const f=e.target.closest('.field'); if(f) clearError(f);});
+
+function validate(){
+  let ok=true,firstBad=null;
+  form.querySelectorAll('.field').forEach(clearError);
+  ['firstName','secondName','gender','birthDate','address','course'].forEach(n=>{
+    const el=form.querySelector(`[name="${n}"]`);
+    if(!el.value.trim()){const fl=el.closest('.field');setError(fl);ok=false;firstBad=firstBad||fl;}
+  });
+  const email=form.querySelector('[name="email"]');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())){const fl=email.closest('.field');setError(fl);ok=false;firstBad=firstBad||fl;}
+  const cc=form.querySelector('[name="countryCode"]');
+  if(!/^\+\d{1,4}$/.test(cc.value.trim())){const fl=cc.closest('.field');setError(fl);ok=false;firstBad=firstBad||fl;}
+  const phone=form.querySelector('[name="phone"]');
+  if(!/^\d{6,15}$/.test(phone.value.replace(/\s/g,''))){const fl=phone.closest('.field');setError(fl);ok=false;firstBad=firstBad||fl;}
+  if(!selectedFile){const fl=drop.closest('.field');setError(fl);ok=false;firstBad=firstBad||fl;}
+  if(firstBad) firstBad.scrollIntoView({behavior:'smooth',block:'center'});
+  return ok;
+}
+
+function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});}
+
+form.addEventListener('submit', async e=>{
+  e.preventDefault();
+  if(!validate())return;
+  submitBtn.classList.add('loading');submitBtn.disabled=true;
+  try{
+    const fileData=await fileToBase64(selectedFile);
+    const cc=form.countryCode.value.trim();
+    const payload={
+      formType:'batch',
+      firstName:form.firstName.value.trim(),
+      secondName:form.secondName.value.trim(),
+      gender:form.gender.value,
+      birthDate:form.birthDate.value,
+      email:form.email.value.trim(),
+      phone:cc+' '+form.phone.value.trim(),
+      address:form.address.value.trim(),
+      course:form.course.value,
+      comment:form.comment.value.trim(),
+      fileName:selectedFile.name,
+      fileType:selectedFile.type,
+      fileData:fileData
+    };
+    if(SCRIPT_URL.startsWith("PASTE_")){
+      console.warn("SCRIPT_URL not set — demo success.", payload);
+      await new Promise(r=>setTimeout(r,900));
+      showSuccess(payload.firstName); return;
+    }
+    const res=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    let result={}; try{ result=await res.json(); }catch(_){ result={result:'success'}; }
+    if(result.result==='success'){ showSuccess(payload.firstName); }
+    else throw new Error(result.error||'Submission failed');
+  }catch(err){
+    console.error(err);
+    alert("Something went wrong while submitting. Please check your connection and try again.\n\n("+err.message+")");
+  }finally{
+    submitBtn.classList.remove('loading');submitBtn.disabled=false;
+  }
+});
+
+function retrigger(el){ el.classList.remove('go'); void el.offsetWidth; el.classList.add('go'); }
+function showSuccess(name){
+  document.getElementById('successName').textContent=name||'Student';
+  formView.style.display='none';
+  successView.classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+  retrigger(document.getElementById('tickCircle'));
+  retrigger(document.getElementById('tickCircle').querySelector('svg'));
+  retrigger(document.getElementById('tickRipple'));
+  retrigger(pageGlow);
+}
+document.getElementById('againBtn').addEventListener('click',()=>{
+  form.reset();selectedFile=null;fileChip.classList.remove('show');drop.style.display='';
+  form.countryCode.value='+91';
+  successView.classList.remove('show');formView.style.display='';
+  pageGlow.classList.remove('go');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+</script>
+</body>
+</html>
