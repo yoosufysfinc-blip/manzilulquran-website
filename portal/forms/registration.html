@@ -1,1 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Student Registration · ManzilulQuran E-learning Academy</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Amiri:wght@400;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --emerald-deepest:#031b13;
+    --emerald-deep:#0a3d2e;
+    --emerald:#125c44;
+    --emerald-light:#1a7a5a;
+    --emerald-glow:#2dd4a4;
+    --gold:#c9a961;
+    --gold-light:#e4c987;
+    --gold-warm:#ffb86b;
+    --cream:#faf6ee;
+    --cream-dim:rgba(250,246,238,0.7);
+    --ink:#0e1a14;
+    --err:#ff9999;
+    --glow-warm:rgba(255,200,140,0.3);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+
+  body{
+    font-family:'Manrope',sans-serif;
+    background:radial-gradient(ellipse at top,var(--emerald-deep) 0%,var(--emerald-deepest) 65%,#000 100%);
+    color:var(--cream);
+    min-height:100vh;
+    padding:36px 20px 60px;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* Background floating gold particles */
+  .bg-particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .particle{
+    position:absolute;width:3px;height:3px;
+    background:var(--gold-light);border-radius:50%;
+    opacity:0;
+    animation:floatUp 14s linear infinite;
+    box-shadow:0 0 8px var(--gold-warm);
+  }
+  @keyframes floatUp{
+    0%{transform:translateY(100vh) scale(0);opacity:0}
+    10%{opacity:0.6}
+    50%{opacity:0.9}
+    90%{opacity:0.4}
+    100%{transform:translateY(-10vh) scale(1);opacity:0}
+  }
+
+  /* Card container */
+  .stage{max-width:680px;margin:0 auto;position:relative;z-index:1}
+  .card{
+    background:linear-gradient(160deg,rgba(18,92,68,0.55) 0%,rgba(3,27,19,0.85) 100%);
+    border:1px solid rgba(201,169,110,0.25);
+    border-radius:24px;
+    padding:44px 42px 40px;
+    box-shadow:0 30px 80px -20px rgba(0,0,0,0.6),
+               0 0 60px -30px rgba(201,169,110,0.4);
+    backdrop-filter:blur(6px);
+    position:relative;overflow:hidden;
+    animation:cardRise .6s cubic-bezier(.2,.9,.3,1.1) both;
+  }
+  @keyframes cardRise{
+    from{opacity:0;transform:translateY(30px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--gold),var(--gold-warm),var(--gold),transparent);
+    opacity:0.7;
+  }
+  .card::after{
+    content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);
+    width:300px;height:300px;
+    background:radial-gradient(circle,rgba(201,169,110,0.15),transparent 60%);
+    pointer-events:none;
+  }
+
+  /* Header */
+  .head{text-align:center;position:relative;margin-bottom:32px}
+  .logo-orbit{
+    position:relative;width:110px;height:110px;margin:0 auto 20px;
+    animation:logoIn 1s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+  @keyframes logoIn{
+    from{transform:scale(0);opacity:0}
+    to{transform:scale(1);opacity:1}
+  }
+  .logo-ring{
+    position:absolute;inset:0;border-radius:50%;
+    border:1px solid rgba(201,169,110,0.35);
+    animation:orbitSpin 22s linear infinite;
+  }
+  .logo-ring::before,.logo-ring::after{
+    content:'';position:absolute;width:6px;height:6px;
+    background:var(--gold-light);border-radius:50%;
+    box-shadow:0 0 10px var(--gold-warm);
+  }
+  .logo-ring::before{top:-3px;left:50%;transform:translateX(-50%)}
+  .logo-ring::after{bottom:-3px;left:50%;transform:translateX(-50%)}
+  @keyframes orbitSpin{
+    from{transform:rotate(0)}
+    to{transform:rotate(360deg)}
+  }
+  .logo-circle{
+    position:absolute;inset:12px;border-radius:50%;
+    overflow:hidden;border:2px solid var(--gold);background:#fff;
+    box-shadow:0 0 30px -6px var(--glow-warm);
+  }
+  .logo-circle img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+
+  .eyebrow{
+    display:inline-block;
+    font-size:10.5px;font-weight:600;letter-spacing:3.5px;text-transform:uppercase;
+    color:var(--gold-light);
+    padding:6px 16px;
+    background:rgba(201,169,110,0.08);
+    border:1px solid rgba(201,169,110,0.25);
+    border-radius:100px;margin-bottom:14px;
+  }
+  h1{
+    font-family:'Cormorant Garamond',serif;
+    font-size:38px;font-weight:600;
+    color:var(--cream);letter-spacing:-.5px;line-height:1.1;
+    margin-bottom:10px;
+  }
+  h1 .accent{color:var(--gold-light);font-style:italic;font-weight:500}
+  .subtitle{
+    font-size:14px;color:var(--cream-dim);font-weight:400;
+    max-width:420px;margin:0 auto;
+  }
+  .divider{
+    height:1px;
+    background:linear-gradient(90deg,transparent,rgba(201,169,110,0.4),transparent);
+    margin:26px auto 0;max-width:120px;
+  }
+
+  /* Form */
+  form{margin-top:28px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .field{display:flex;flex-direction:column;gap:8px;position:relative}
+  .field.full{grid-column:1 / -1}
+  label{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light)}
+  label .req{color:var(--gold-warm)}
+
+  input,select,textarea{
+    font-family:'Manrope',sans-serif;
+    font-size:15px;font-weight:500;color:var(--cream);
+    background:rgba(3,27,19,0.6);
+    border:1.5px solid rgba(201,169,110,0.25);
+    border-radius:12px;
+    padding:14px 15px;width:100%;
+    transition:border-color .25s, box-shadow .25s, background .25s;
+    appearance:none;outline:none;
+  }
+  input::placeholder,textarea::placeholder{color:rgba(250,246,238,0.35);font-weight:400}
+  input:focus,select:focus,textarea:focus{
+    border-color:var(--gold);
+    background:rgba(3,27,19,0.85);
+    box-shadow:0 0 0 3px rgba(201,169,110,0.15),0 0 20px -6px var(--glow-warm);
+  }
+  select{
+    cursor:pointer;padding-right:42px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23c9a961' stroke-width='2.5' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 15px center;
+  }
+  select option{background:var(--emerald-deepest);color:var(--cream)}
+  textarea{resize:vertical;min-height:100px;line-height:1.5}
+  input[type="date"],input[type="time"]{color-scheme:dark}
+
+  .phone-group{display:grid;grid-template-columns:110px 1fr;gap:8px}
+
+  /* ============================================================
+     File upload (payment receipt)
+     ============================================================ */
+  .file-drop{
+    position:relative;
+    border:1.5px dashed rgba(201,169,110,0.4);
+    border-radius:12px;
+    background:rgba(3,27,19,0.4);
+    padding:18px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .25s, background .25s;
+  }
+  .file-drop:hover{
+    border-color:var(--gold);
+    background:rgba(3,27,19,0.7);
+  }
+  .file-drop.dragover{
+    border-color:var(--gold-warm);
+    background:rgba(201,169,110,0.08);
+    box-shadow:0 0 20px -6px var(--glow-warm);
+  }
+  .file-drop input[type="file"]{
+    position:absolute;inset:0;opacity:0;cursor:pointer;
+  }
+  .file-drop-icon{
+    display:inline-block;color:var(--gold-light);margin-bottom:6px;
+  }
+  .file-drop-icon svg{width:28px;height:28px}
+  .file-drop-text{
+    font-size:13px;color:var(--cream-dim);font-weight:500;
+  }
+  .file-drop-text b{color:var(--gold-light);font-weight:700}
+  .file-drop-hint{
+    font-size:11px;color:rgba(250,246,238,0.4);
+    margin-top:4px;letter-spacing:.3px;
+  }
+
+  .file-selected{
+    display:none;
+    align-items:center;gap:12px;
+    padding:12px 14px;
+    background:rgba(45,212,164,0.08);
+    border:1.5px solid rgba(45,212,164,0.3);
+    border-radius:12px;
+    margin-top:8px;
+  }
+  .file-selected.show{display:flex}
+  .file-selected-icon{
+    flex:0 0 auto;color:var(--emerald-glow);
+  }
+  .file-selected-icon svg{width:22px;height:22px}
+  .file-selected-info{flex:1;min-width:0}
+  .file-selected-name{
+    font-size:13px;font-weight:600;color:var(--cream);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .file-selected-size{
+    font-size:11px;color:var(--cream-dim);margin-top:2px;
+  }
+  .file-remove{
+    flex:0 0 auto;
+    background:transparent;border:none;
+    color:var(--err);cursor:pointer;
+    padding:4px 8px;font-size:11px;font-weight:600;
+    text-transform:uppercase;letter-spacing:1px;
+  }
+  .file-remove:hover{color:var(--gold-warm)}
+
+  .err-msg{font-size:11.5px;font-weight:500;color:var(--err);display:none}
+  .field.invalid input,.field.invalid select,.field.invalid textarea{
+    border-color:var(--err);box-shadow:0 0 0 3px rgba(255,153,153,0.12);
+  }
+  .field.invalid .err-msg{display:block;animation:shakeIn .3s ease}
+  @keyframes shakeIn{
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-4px)}
+    75%{transform:translateX(4px)}
+  }
+
+  /* Submit button */
+  .submit{
+    width:100%;margin-top:32px;
+    font-family:'Manrope',sans-serif;
+    font-size:15px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--emerald-deepest);
+    background:linear-gradient(135deg,var(--gold-light) 0%,var(--gold) 100%);
+    border:none;border-radius:100px;
+    padding:18px 20px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:12px;
+    box-shadow:0 8px 30px -8px rgba(201,169,110,0.6);
+    transition:transform .2s, box-shadow .2s, background .3s;
+    position:relative;overflow:hidden;
+  }
+  .submit:hover{
+    transform:translateY(-2px);
+    box-shadow:0 14px 40px -8px rgba(201,169,110,0.8);
+    background:linear-gradient(135deg,var(--gold-warm) 0%,var(--gold-light) 100%);
+  }
+  .submit:active{transform:translateY(0)}
+  .submit[disabled]{opacity:.7;cursor:not-allowed;transform:none}
+  .submit::after{
+    content:'';position:absolute;top:0;left:-100%;
+    width:100%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
+    transition:left .6s ease;
+  }
+  .submit:hover::after{left:100%}
+  .spinner{
+    width:18px;height:18px;
+    border:2.5px solid rgba(14,26,20,0.3);
+    border-top-color:var(--emerald-deepest);
+    border-radius:50%;display:none;
+    animation:spin .8s linear infinite;
+  }
+  .submit.loading .spinner{display:block}
+  .submit.loading .btn-text{opacity:.7}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .fine-print{
+    text-align:center;font-size:11.5px;color:var(--cream-dim);
+    font-weight:400;margin-top:16px;
+  }
+
+  /* Success view */
+  .success{display:none;text-align:center;padding:30px 10px;position:relative}
+  .success.show{display:block;animation:successFade .5s ease both}
+  @keyframes successFade{
+    from{opacity:0;transform:translateY(20px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .succ-ring{position:relative;width:120px;height:120px;margin:0 auto 30px}
+  .succ-ring-outer{
+    position:absolute;inset:0;border-radius:50%;
+    border:2px solid var(--gold);
+    animation:ringPulse 2s ease-out infinite;
+  }
+  .succ-ring-inner{
+    position:absolute;inset:10px;border-radius:50%;
+    background:linear-gradient(135deg,var(--emerald-light),var(--emerald));
+    border:2px solid var(--gold-light);
+    display:grid;place-items:center;
+    box-shadow:0 0 40px -6px var(--glow-warm),inset 0 0 20px rgba(201,169,110,0.2);
+    animation:innerPop .5s cubic-bezier(.2,.9,.3,1.3) both;
+  }
+  @keyframes ringPulse{
+    0%{transform:scale(1);opacity:1}
+    100%{transform:scale(1.4);opacity:0}
+  }
+  @keyframes innerPop{
+    from{transform:scale(0)}
+    to{transform:scale(1)}
+  }
+  .succ-check{
+    width:50px;height:50px;
+    stroke:var(--gold-light);stroke-width:3.5;fill:none;
+    stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:60;stroke-dashoffset:60;
+    animation:drawCheck .55s .35s ease forwards;
+    filter:drop-shadow(0 0 8px var(--gold-warm));
+  }
+  @keyframes drawCheck{to{stroke-dashoffset:0}}
+  .success h2{
+    font-family:'Cormorant Garamond',serif;
+    font-size:34px;font-weight:600;color:var(--cream);
+    margin-bottom:12px;letter-spacing:-.3px;
+  }
+  .success h2 .nm{color:var(--gold-light);font-style:italic}
+  .success p{
+    font-size:15px;color:var(--cream-dim);
+    max-width:440px;margin:0 auto 12px;line-height:1.6;
+  }
+  .success .arabic{
+    font-family:'Amiri',serif;
+    font-size:24px;color:var(--gold-light);margin:22px 0 10px;
+  }
+  .again{
+    font-family:'Manrope',sans-serif;
+    font-size:13px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--gold-light);background:transparent;
+    border:1.5px solid var(--gold);border-radius:100px;
+    padding:12px 30px;cursor:pointer;margin-top:22px;
+    transition:all .2s;
+  }
+  .again:hover{background:var(--gold);color:var(--emerald-deepest)}
+
+  /* Confetti burst */
+  .confetti{position:absolute;top:60px;left:50%;width:0;height:0;pointer-events:none}
+  .confetti span{
+    position:absolute;top:0;left:0;
+    width:8px;height:8px;border-radius:50%;opacity:0;
+    animation:confettiBurst 1.6s cubic-bezier(.2,.9,.3,1) forwards;
+  }
+  @keyframes confettiBurst{
+    0%{opacity:1;transform:translate(0,0) scale(0)}
+    20%{opacity:1;transform:translate(var(--tx),var(--ty)) scale(1)}
+    100%{opacity:0;transform:translate(calc(var(--tx)*1.4),calc(var(--ty)*1.6 + 120px)) scale(0.4) rotate(720deg)}
+  }
+
+  /* Footer */
+  .foot{
+    max-width:680px;margin:24px auto 0;
+    text-align:center;font-size:12px;
+    color:var(--cream-dim);font-weight:500;
+    position:relative;z-index:1;
+  }
+  .foot a{color:var(--gold-light);text-decoration:none;transition:color .2s}
+  .foot a:hover{color:var(--gold-warm)}
+
+  @media (max-width:640px){
+    body{padding:22px 14px 46px}
+    .card{padding:34px 22px 30px;border-radius:20px}
+    h1{font-size:30px}
+    .grid{grid-template-columns:1fr;gap:18px}
+    .phone-group{grid-template-columns:100px 1fr}
+    .success h2{font-size:28px}
+    .logo-orbit{width:96px;height:96px}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important}
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg-particles" id="bgParticles" aria-hidden="true"></div>
+
+  <div class="stage">
+    <div class="card">
+      <div class="head">
+        <div class="logo-orbit">
+          <div class="logo-ring"></div>
+          <div class="logo-circle">
+            <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+          </div>
+        </div>
+        <div class="eyebrow">ManzilulQuran · E-Learning Academy</div>
+        <h1>Student <span class="accent">Registration</span></h1>
+        <p class="subtitle">Begin your Quranic journey with structured, personal, one-on-one classes taught by qualified scholars.</p>
+        <div class="divider"></div>
+      </div>
+
+      <div id="formView">
+        <form id="regForm" novalidate>
+          <div class="grid">
+
+            <div class="field">
+              <label>First Name <span class="req">*</span></label>
+              <input type="text" name="firstName" placeholder="e.g. Aisha" autocomplete="given-name" />
+              <span class="err-msg">Please enter first name.</span>
+            </div>
+
+            <div class="field">
+              <label>Second Name <span class="req">*</span></label>
+              <input type="text" name="secondName" placeholder="e.g. Rahman" autocomplete="family-name" />
+              <span class="err-msg">Please enter second name.</span>
+            </div>
+
+            <div class="field">
+              <label>Gender <span class="req">*</span></label>
+              <select name="gender">
+                <option value="" disabled selected>Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+              <span class="err-msg">Please select gender.</span>
+            </div>
+
+            <div class="field">
+              <label>Date of Birth <span class="req">*</span></label>
+              <input type="date" name="birthDate" />
+              <span class="err-msg">Please enter date of birth.</span>
+            </div>
+
+            <div class="field full">
+              <label>Email Address <span class="req">*</span></label>
+              <input type="email" name="email" placeholder="name@example.com" autocomplete="email" />
+              <span class="err-msg">Please enter a valid email.</span>
+            </div>
+
+            <div class="field full">
+              <label>Phone Number <span class="req">*</span></label>
+              <div class="phone-group">
+                <input list="ccList" name="countryCode" id="countryCode" value="+91" placeholder="+91" aria-label="Country code" autocomplete="off" />
+                <input type="tel" name="phone" placeholder="Mobile number" inputmode="numeric" autocomplete="tel" />
+              </div>
+              <datalist id="ccList">
+                <option value="+91">India</option>
+                <option value="+971">UAE</option>
+                <option value="+966">Saudi Arabia</option>
+                <option value="+974">Qatar</option>
+                <option value="+965">Kuwait</option>
+                <option value="+968">Oman</option>
+                <option value="+973">Bahrain</option>
+                <option value="+44">United Kingdom</option>
+                <option value="+1">USA / Canada</option>
+                <option value="+61">Australia</option>
+                <option value="+60">Malaysia</option>
+                <option value="+65">Singapore</option>
+              </datalist>
+              <span class="err-msg">Please enter a valid phone number.</span>
+            </div>
+
+            <div class="field full">
+              <label>Address <span class="req">*</span></label>
+              <textarea name="address" placeholder="House / street, city, district, state, country, PIN"></textarea>
+              <span class="err-msg">Please enter your address.</span>
+            </div>
+
+            <div class="field">
+              <label>Course <span class="req">*</span></label>
+              <select name="course">
+                <option value="" disabled selected>Select course</option>
+                <option value="Hifzul Qur'an">Hifzul Qur'an</option>
+                <option value="Tartheel">Tartheel</option>
+                <option value="Quranul Yawmi">Quranul Yawmi</option>
+                <option value="Madrasa Studies">Madrasa Studies</option>
+                <option value="Tajweedul Qur'an">Tajweedul Qur'an</option>
+                <option value="Tafseerul Qur'an">Tafseerul Qur'an</option>
+                <option value="Dawra">Dawra</option>
+              </select>
+              <span class="err-msg">Please select a course.</span>
+            </div>
+
+            <div class="field">
+              <label>Preferred Class Time (IST)</label>
+              <input type="time" name="time" id="timeInput" min="06:00" max="22:00" />
+              <span class="err-msg">Please pick a class time.</span>
+            </div>
+
+            <div class="field full">
+              <label>Additional Notes</label>
+              <textarea name="comment" placeholder="Prior learning, goals, age of student, or any note for our team"></textarea>
+            </div>
+
+            <div class="field full">
+              <label>Payment Receipt <span class="req">*</span></label>
+              <div class="file-drop" id="fileDrop">
+                <input type="file" name="receipt" id="receiptInput" accept="image/jpeg,image/png,image/jpg,application/pdf" />
+                <div class="file-drop-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                </div>
+                <div class="file-drop-text">
+                  <b>Click to upload</b> or drag & drop your payment receipt
+                </div>
+                <div class="file-drop-hint">JPG, PNG or PDF · Max 5 MB</div>
+              </div>
+              <div class="file-selected" id="fileSelected">
+                <div class="file-selected-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                </div>
+                <div class="file-selected-info">
+                  <div class="file-selected-name" id="fileSelectedName">—</div>
+                  <div class="file-selected-size" id="fileSelectedSize">—</div>
+                </div>
+                <button type="button" class="file-remove" id="fileRemove">Remove</button>
+              </div>
+              <span class="err-msg" id="receiptErr">Please upload your payment receipt.</span>
+            </div>
+
+          </div>
+
+          <button type="submit" class="submit" id="submitBtn">
+            <span class="spinner"></span>
+            <span class="btn-text">Submit Registration</span>
+          </button>
+          <p class="fine-print">All fields marked * are required. Your details are sent securely.</p>
+        </form>
+      </div>
+
+      <div class="success" id="successView">
+        <div class="confetti" id="confetti"></div>
+        <div class="succ-ring">
+          <div class="succ-ring-outer"></div>
+          <div class="succ-ring-inner">
+            <svg class="succ-check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+        </div>
+        <h2>Welcome, <span class="nm" id="successName">student</span>!</h2>
+        <p>Your registration has been received. Our team will contact you soon to schedule your demo class and next steps.</p>
+        <p class="arabic">جَزَاكَ اللهُ خَيْرًا</p>
+        <button class="again" id="againBtn">Register another student</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    ManzilulQuran E-learning Academy ·
+    <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a> ·
+    <a href="mailto:info@manzilulquran.in">info@manzilulquran.in</a>
+  </footer>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhCGlnBG6LthyJW3b-o1qERqvKY3ULuvOyCik6469tpHsRL9bJ2pJgqw6Rnkf9S84pYg/exec";
+
+const form = document.getElementById('regForm');
+const submitBtn = document.getElementById('submitBtn');
+const formView = document.getElementById('formView');
+const successView = document.getElementById('successView');
+
+const setError = f => f.classList.add('invalid');
+const clearError = f => { if(f) f.classList.remove('invalid'); };
+form.addEventListener('input', e => { const f = e.target.closest('.field'); if(f) clearError(f); });
+form.addEventListener('change', e => { const f = e.target.closest('.field'); if(f) clearError(f); });
+
+// Background particles
+function spawnParticles(count){
+  const container = document.getElementById('bgParticles');
+  for(let i=0;i<count;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = (Math.random()*100) + '%';
+    p.style.animationDelay = (Math.random()*14) + 's';
+    p.style.animationDuration = (10 + Math.random()*8) + 's';
+    const size = 2 + Math.random()*3;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    container.appendChild(p);
+  }
+}
+spawnParticles(28);
+
+/* ============================================================
+   File upload — payment receipt
+   ============================================================ */
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const ALLOWED_TYPES = ['image/jpeg','image/jpg','image/png','application/pdf'];
+
+const fileDrop = document.getElementById('fileDrop');
+const receiptInput = document.getElementById('receiptInput');
+const fileSelected = document.getElementById('fileSelected');
+const fileSelectedName = document.getElementById('fileSelectedName');
+const fileSelectedSize = document.getElementById('fileSelectedSize');
+const fileRemove = document.getElementById('fileRemove');
+
+let selectedFile = null;
+let selectedFileBase64 = null;
+
+function fmtSize(bytes){
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(2) + ' MB';
+}
+
+function handleFile(file){
+  if(!file) return;
+
+  // Validate type
+  if(!ALLOWED_TYPES.includes(file.type)){
+    alert('Please upload a JPG, PNG or PDF file.');
+    return;
+  }
+
+  // Validate size
+  if(file.size > MAX_FILE_SIZE){
+    alert('File too large. Maximum size is 5 MB.\nYour file: ' + fmtSize(file.size));
+    return;
+  }
+
+  // Read file as base64
+  const reader = new FileReader();
+  reader.onload = e => {
+    selectedFile = file;
+    selectedFileBase64 = e.target.result.split(',')[1]; // strip data:xxx;base64,
+    fileSelectedName.textContent = file.name;
+    fileSelectedSize.textContent = fmtSize(file.size) + ' · ' + (file.type.split('/')[1] || 'file').toUpperCase();
+    fileSelected.classList.add('show');
+    // Clear any error state
+    const fl = fileDrop.closest('.field');
+    if(fl) clearError(fl);
+  };
+  reader.onerror = () => alert('Could not read the file. Please try again.');
+  reader.readAsDataURL(file);
+}
+
+receiptInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+fileRemove.addEventListener('click', () => {
+  selectedFile = null;
+  selectedFileBase64 = null;
+  receiptInput.value = '';
+  fileSelected.classList.remove('show');
+});
+
+// Drag & drop
+['dragenter','dragover'].forEach(evt => {
+  fileDrop.addEventListener(evt, e => {
+    e.preventDefault(); e.stopPropagation();
+    fileDrop.classList.add('dragover');
+  });
+});
+['dragleave','drop'].forEach(evt => {
+  fileDrop.addEventListener(evt, e => {
+    e.preventDefault(); e.stopPropagation();
+    fileDrop.classList.remove('dragover');
+  });
+});
+fileDrop.addEventListener('drop', e => {
+  const dt = e.dataTransfer;
+  if(dt && dt.files && dt.files.length) handleFile(dt.files[0]);
+});
+
+function validate(){
+  let ok = true, firstBad = null;
+  form.querySelectorAll('.field').forEach(clearError);
+  ['firstName','secondName','gender','birthDate','address','course'].forEach(n=>{
+    const el = form.querySelector(`[name="${n}"]`);
+    if(!el.value.trim()){
+      const fl = el.closest('.field'); setError(fl); ok = false;
+      firstBad = firstBad || fl;
+    }
+  });
+  const email = form.querySelector('[name="email"]');
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+  if(!emailOk){ const fl = email.closest('.field'); setError(fl); ok = false; firstBad = firstBad || fl; }
+  const phone = form.querySelector('[name="phone"]');
+  const digits = phone.value.replace(/\D/g,'');
+  if(digits.length < 7 || digits.length > 15){
+    const fl = phone.closest('.field'); setError(fl); ok = false; firstBad = firstBad || fl;
+  }
+  // Payment receipt required
+  if(!selectedFile){
+    const fl = fileDrop.closest('.field'); setError(fl); ok = false; firstBad = firstBad || fl;
+  }
+  if(firstBad) firstBad.scrollIntoView({behavior:'smooth', block:'center'});
+  return ok;
+}
+
+form.addEventListener('submit', async e=>{
+  e.preventDefault();
+  if(!validate()) return;
+  submitBtn.classList.add('loading');
+  submitBtn.disabled = true;
+  try{
+    const payload = {
+      formType:'student',
+      firstName:  form.firstName.value.trim(),
+      secondName: form.secondName.value.trim(),
+      gender:     form.gender.value,
+      birthDate:  form.birthDate.value,
+      email:      form.email.value.trim(),
+      countryCode:form.countryCode.value.trim(),
+      phone:      form.phone.value.trim(),
+      address:    form.address.value.trim(),
+      course:     form.course.value,
+      time:       form.time.value,
+      comment:    form.comment.value.trim(),
+      // Payment receipt (base64)
+      receipt: {
+        name: selectedFile.name,
+        type: selectedFile.type,
+        size: selectedFile.size,
+        data: selectedFileBase64
+      }
+    };
+    if(SCRIPT_URL.startsWith("PASTE_")){
+      console.warn("SCRIPT_URL not set — demo success.", payload);
+      await new Promise(r=>setTimeout(r,800));
+      showSuccess(payload.firstName); return;
+    }
+    const res = await fetch(SCRIPT_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    });
+    let result = {};
+    try{ result = await res.json(); }catch(_){ result = {result:'success'}; }
+    if(result.result === 'success'){ showSuccess(payload.firstName); }
+    else throw new Error(result.error || 'Submission failed');
+  }catch(err){
+    console.error(err);
+    alert("Something went wrong. Please check your connection and try again.\n\n(" + err.message + ")");
+  }finally{
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+  }
+});
+
+function fireConfetti(){
+  const wrap = document.getElementById('confetti');
+  wrap.innerHTML = '';
+  const colors = ['#c9a961','#e4c987','#ffb86b','#2dd4a4','#faf6ee'];
+  const count = 26;
+  for(let i=0;i<count;i++){
+    const s = document.createElement('span');
+    const angle = (Math.PI * 2 * i) / count + (Math.random()*0.4 - 0.2);
+    const radius = 80 + Math.random()*60;
+    const tx = Math.cos(angle) * radius;
+    const ty = Math.sin(angle) * radius - 20;
+    s.style.setProperty('--tx', tx + 'px');
+    s.style.setProperty('--ty', ty + 'px');
+    s.style.background = colors[i % colors.length];
+    s.style.animationDelay = (i * 0.015) + 's';
+    if(i % 3 === 0){ s.style.borderRadius = '2px'; s.style.width = '6px'; s.style.height = '10px'; }
+    wrap.appendChild(s);
+  }
+}
+
+function showSuccess(name){
+  document.getElementById('successName').textContent = name || 'student';
+  formView.style.display = 'none';
+  successView.classList.add('show');
+  fireConfetti();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.getElementById('againBtn').addEventListener('click', ()=>{
+  form.reset();
+  // Reset file upload state
+  selectedFile = null;
+  selectedFileBase64 = null;
+  fileSelected.classList.remove('show');
+  successView.classList.remove('show');
+  formView.style.display = '';
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+</script>
+</body>
+</html>
 
