@@ -1,1 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Form Records · ManzilulQuran Admin</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Amiri:wght@400;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+<style>
+  :root{
+    --emerald-deepest:#031b13;
+    --emerald-deep:#0a3d2e;
+    --emerald:#125c44;
+    --emerald-light:#1a7a5a;
+    --gold:#c9a961;
+    --gold-light:#e4c987;
+    --gold-warm:#ffb86b;
+    --cream:#faf6ee;
+    --cream-dim:rgba(250,246,238,0.7);
+    --ink:#0e1a14;
+    --err:#ff9999;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Manrope',sans-serif;
+    background:radial-gradient(ellipse at top,var(--emerald-deep) 0%,var(--emerald-deepest) 65%,#000 100%);
+    color:var(--cream);min-height:100vh;padding:36px 20px 60px;
+  }
+
+  /* Lock screen */
+  .lock-screen{
+    max-width:420px;width:100%;background:#fff;color:var(--ink);
+    border-radius:22px;padding:44px 32px 36px;
+    box-shadow:0 30px 80px rgba(0,0,0,0.4);text-align:center;
+    animation:riseIn .35s ease;margin:80px auto 0;
+  }
+  @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .lock-logo{width:80px;height:80px;border-radius:50%;border:3px solid var(--emerald-light);margin:0 auto 22px;overflow:hidden;background:#fff}
+  .lock-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .lock-title{font-size:22px;font-weight:800;color:var(--emerald);margin-bottom:6px}
+  .lock-sub{font-size:13.5px;color:#5B6B63;font-weight:500;margin-bottom:24px}
+  .lock-input{
+    width:100%;font-family:'Manrope',sans-serif;font-size:16px;font-weight:600;color:var(--ink);
+    border:2px solid var(--emerald-light);border-radius:12px;padding:14px 16px;
+    text-align:center;letter-spacing:4px;transition:border-color .2s;
+  }
+  .lock-input:focus{outline:none;border-color:var(--emerald);box-shadow:0 0 0 3px rgba(27,122,90,.15)}
+  .lock-input.wrong{border-color:#c0392b;animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  .lock-btn{
+    width:100%;margin-top:16px;font-family:'Manrope',sans-serif;font-size:15px;font-weight:800;
+    color:#fff;background:var(--emerald);border:none;border-radius:12px;padding:14px;cursor:pointer;
+  }
+  .lock-btn:hover{background:var(--emerald-light)}
+  .lock-error{color:#c0392b;font-size:12.5px;font-weight:600;margin-top:12px;min-height:16px}
+  .lock-hint{margin-top:22px;padding-top:20px;border-top:1px solid #E8F3EE;font-size:11.5px;color:#5B6B63}
+  .lock-hint a{color:var(--emerald-light);text-decoration:none;font-weight:600}
+
+  /* Admin */
+  .admin{display:none;max-width:1100px;margin:0 auto}
+  .admin.show{display:block;animation:riseIn .35s ease}
+  .admin-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid rgba(201,169,110,0.2);
+  }
+  .admin-head-left{display:flex;align-items:center;gap:16px}
+  .admin-logo{width:56px;height:56px;border-radius:50%;border:2px solid rgba(201,169,110,0.5);overflow:hidden;background:#fff;flex:0 0 auto}
+  .admin-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .admin-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--cream);line-height:1.1}
+  .admin-title .accent{color:var(--gold-light);font-style:italic;font-weight:500}
+  .admin-sub{font-size:12px;color:var(--cream-dim);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+  .admin-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn-ghost{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+    color:rgba(255,255,255,0.75);background:transparent;border:1px solid rgba(255,255,255,0.2);
+    border-radius:100px;padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,0.08)}
+  .btn-ghost svg{width:12px;height:12px}
+
+  /* Form type tabs */
+  .form-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+  .form-tab{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+    color:var(--cream-dim);background:rgba(3,27,19,0.5);
+    border:1px solid rgba(201,169,110,0.2);border-radius:100px;
+    padding:10px 20px;cursor:pointer;transition:all .2s;
+  }
+  .form-tab:hover{border-color:rgba(201,169,110,0.5)}
+  .form-tab.active{
+    color:var(--emerald-deepest);
+    background:linear-gradient(135deg,var(--gold-light),var(--gold));
+    border-color:var(--gold);
+  }
+
+  /* List */
+  .list-wrap{background:rgba(3,27,19,0.5);border:1px solid rgba(201,169,110,0.2);border-radius:14px;overflow:hidden}
+  .list-search{padding:16px 20px;border-bottom:1px solid rgba(201,169,110,0.15);display:flex;align-items:center;gap:12px}
+  .list-search svg{width:18px;height:18px;color:var(--gold-light);flex:0 0 auto}
+  .list-search input{flex:1;font-family:'Manrope',sans-serif;font-size:14px;color:var(--cream);background:transparent;border:none;outline:none}
+  .list-search input::placeholder{color:rgba(250,246,238,0.4)}
+  #resultCount{font-size:12px;color:var(--gold-light);font-weight:600;white-space:nowrap}
+
+  .list-table{width:100%;border-collapse:collapse}
+  .list-table thead th{
+    text-align:left;padding:14px 20px;font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    color:var(--gold-light);background:rgba(3,27,19,0.4);border-bottom:1px solid rgba(201,169,110,0.15);
+  }
+  .list-table tbody tr{border-bottom:1px solid rgba(201,169,110,0.08);cursor:pointer;transition:background .2s}
+  .list-table tbody tr:hover{background:rgba(201,169,110,0.05)}
+  .list-table tbody tr:last-child{border-bottom:none}
+  .list-table td{padding:14px 20px;font-size:14px;color:var(--cream);vertical-align:middle}
+  .list-table td.date{color:rgba(250,246,238,0.6);font-size:12.5px}
+  .list-table td.actions{text-align:right;white-space:nowrap}
+  .list-table td.actions button{
+    background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold-light);
+    padding:5px 12px;border-radius:100px;cursor:pointer;font-size:11px;font-weight:600;
+    letter-spacing:1px;text-transform:uppercase;margin-left:6px;font-family:'Manrope',sans-serif;transition:all .2s;
+  }
+  .list-table td.actions button:hover{background:var(--gold);color:var(--emerald-deepest);border-color:var(--gold)}
+
+  .loading{text-align:center;padding:60px 20px;color:var(--cream-dim);font-size:14px}
+  .loading-spin{
+    display:inline-block;width:26px;height:26px;
+    border:3px solid rgba(201,169,110,0.2);border-top-color:var(--gold);
+    border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty-state{text-align:center;padding:60px 20px;color:var(--cream-dim);font-size:14px}
+
+  /* Detail modal */
+  .modal-backdrop{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(6px);z-index:100;
+    align-items:flex-start;justify-content:center;padding:30px 20px;overflow-y:auto;
+  }
+  .modal-backdrop.show{display:flex;animation:fadeIn .25s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal{
+    background:#fff;color:var(--ink);max-width:720px;width:100%;
+    border-radius:18px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.5);
+    animation:modalIn .35s cubic-bezier(.2,.9,.3,1.1) both;
+  }
+  @keyframes modalIn{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+  .detail{padding:36px 38px 30px}
+  .detail-head{text-align:center;padding-bottom:22px;border-bottom:2px solid var(--gold);margin-bottom:24px}
+  .detail-logo{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;overflow:hidden;border:2px solid var(--gold);background:#fff}
+  .detail-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .detail-eyebrow{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+  .detail-h1{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--emerald)}
+  .detail-h1 .accent{color:var(--gold);font-style:italic;font-weight:500}
+  .detail-sub{font-size:12px;color:#666;margin-top:6px}
+
+  .detail-row{
+    display:flex;gap:14px;
+    padding:11px 14px;margin-bottom:8px;
+    background:#faf6ee;border:1px solid #ecdcaf;border-radius:8px;
+    font-size:13.5px;page-break-inside:avoid;break-inside:avoid;
+  }
+  .detail-row b{
+    color:var(--emerald);font-weight:700;font-size:11px;
+    letter-spacing:1px;text-transform:uppercase;
+    flex:0 0 150px;padding-top:2px;
+  }
+  .detail-row span{color:#333;font-weight:500;flex:1;word-break:break-word}
+  .detail-row a{color:var(--emerald-light);font-weight:600}
+  .detail-arabic{text-align:center;font-family:'Amiri',serif;font-size:20px;color:var(--gold);margin:24px 0 10px}
+  .detail-foot{text-align:center;padding-top:14px;border-top:1px solid #ddd;font-size:11px;color:#666;margin-top:8px}
+
+  .modal-actions{
+    background:#faf6ee;padding:16px 28px;display:flex;justify-content:flex-end;gap:10px;
+    border-top:1px solid #ecdcaf;
+  }
+  .btn-solid{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    background:var(--emerald);color:#fff;border:none;border-radius:100px;padding:11px 22px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn-solid:hover{background:var(--emerald-light)}
+  .btn-solid svg{width:12px;height:12px}
+  .btn-outline{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    background:transparent;color:var(--emerald);border:1.5px solid var(--emerald);
+    border-radius:100px;padding:10px 22px;cursor:pointer;
+  }
+  .btn-outline:hover{background:var(--emerald);color:#fff}
+
+  @media (max-width:640px){
+    .admin-title{font-size:22px}
+    .list-table td:nth-child(3){display:none}
+    .detail{padding:26px 22px 22px}
+    .detail-row b{flex:0 0 110px}
+  }
+
+  @media print{
+    body{background:#fff;color:#000;padding:0}
+    .admin,.modal-backdrop{position:static;background:#fff;display:block !important}
+    .modal-actions,.list-wrap,.admin-head,.form-tabs,.lock-screen{display:none !important}
+    .modal-backdrop{background:#fff;padding:0;overflow:visible}
+    .modal{box-shadow:none;max-width:100%;border-radius:0;animation:none}
+    .detail{padding:20px 30px}
+    .detail-row{background:#faf6ee !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+  <!-- LOCK -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
+    <div class="lock-title">Form Records</div>
+    <div class="lock-sub">Enter the portal password to continue.</div>
+    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="off" autofocus />
+    <button class="lock-btn" id="lockBtn">Unlock</button>
+    <div class="lock-error" id="lockError">&nbsp;</div>
+    <div class="lock-hint">Admin access only.<br><a href="/portal/">← Back to portal</a></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="admin" id="adminView">
+    <div class="admin-head">
+      <div class="admin-head-left">
+        <div class="admin-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
+        <div>
+          <div class="admin-title">Form <span class="accent">Records</span></div>
+          <div class="admin-sub">Admin Review</div>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-ghost" id="refreshBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          Refresh
+        </button>
+        <button class="btn-ghost" id="lockAgainBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Lock
+        </button>
+      </div>
+    </div>
+
+    <!-- Form type tabs -->
+    <div class="form-tabs" id="formTabs">
+      <button class="form-tab active" data-form="student">Registrations</button>
+      <button class="form-tab" data-form="batch">Batch Registrations</button>
+      <button class="form-tab" data-form="teacher">Staff Applications</button>
+      <button class="form-tab" data-form="complaint">Complaints</button>
+    </div>
+
+    <div class="list-wrap">
+      <div class="list-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search by name or phone number..." />
+        <span id="resultCount"></span>
+      </div>
+      <div id="listContent">
+        <div class="loading"><div class="loading-spin"></div><div>Loading records…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail modal -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal">
+      <div class="detail" id="detailContent"></div>
+      <div class="modal-actions">
+        <button class="btn-outline" id="closeModalBtn">Close</button>
+        <button class="btn-solid" id="downloadBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* =================================================================
+   ░░  FORM RECORDS — all 4 non-evaluation forms  ░░
+   ================================================================= */
+
+// CONFIG — master Apps Script (same one all 4 forms submit to)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhCGlnBG6LthyJW3b-o1qERqvKY3ULuvOyCik6469tpHsRL9bJ2pJgqw6Rnkf9S84pYg/exec";
+const PORTAL_PASSWORD = "manzil2026";
+const ADMIN_API_PASSWORD = "manzil2026admin"; // must match ADMIN_PASSWORD in master Apps Script
+
+const SESSION_KEY = "mq_portal_unlocked_at";
+const SESSION_MAX_MS = 24 * 60 * 60 * 1000;
+
+// Per-form config: title + which header columns to show in the list table
+// (headers come from the Apps Script response, matching the sheet columns)
+const FORMS = {
+  student:   { title: "Student Registration",  listCols: ["Timestamp","First Name","Phone","Course"] },
+  batch:     { title: "Batch Registration",    listCols: ["Timestamp","First Name","Phone","Course"] },
+  teacher:   { title: "Staff Application",     listCols: ["Timestamp","First Name","Phone","Post"] },
+  complaint: { title: "Complaint",             listCols: ["Timestamp","Student Name","Phone","Complaint Type"] }
+};
+
+const $ = (id) => document.getElementById(id);
+let currentForm = "student";
+let headers = [];   // column headers from Apps Script
+let rows = [];      // data rows (arrays)
+let currentDetail = null;
+
+/* ---------------- Lock ---------------- */
+function isUnlocked(){
+  try{
+    const at = parseInt(sessionStorage.getItem(SESSION_KEY) || "0", 10);
+    return at && (Date.now() - at) < SESSION_MAX_MS;
+  }catch(e){ return false; }
+}
+function unlock(){
+  try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  loadRecords();
+}
+function lock(){
+  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  $("adminView").classList.remove("show");
+  $("lockScreen").style.display = "";
+  $("lockInput").value = "";
+  setTimeout(()=>$("lockInput").focus(), 100);
+}
+function tryPassword(){
+  const val = ($("lockInput").value || "").trim();
+  if(val === PORTAL_PASSWORD){ unlock(); }
+  else {
+    $("lockInput").classList.add("wrong");
+    $("lockError").textContent = "Wrong password. Try again.";
+    setTimeout(()=>$("lockInput").classList.remove("wrong"), 400);
+    $("lockInput").select();
+  }
+}
+$("lockBtn").onclick = tryPassword;
+$("lockInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryPassword(); });
+$("lockAgainBtn").onclick = lock;
+if(isUnlocked()){
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  loadRecords();
+}
+
+/* ---------------- Tabs ---------------- */
+document.querySelectorAll('.form-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentForm = tab.dataset.form;
+    $("searchInput").value = "";
+    loadRecords();
+  });
+});
+
+/* ---------------- Load ---------------- */
+async function loadRecords(){
+  $("listContent").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading records…</div></div>';
+  $("resultCount").textContent = "";
+  try{
+    const url = `${SCRIPT_URL}?action=list&formType=${currentForm}&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Failed to load");
+    headers = data.headers || [];
+    rows = data.rows || [];
+    renderList(rows);
+    updateCount(rows.length);
+  }catch(err){
+    console.error(err);
+    $("listContent").innerHTML = `<div class="empty-state">Failed to load records.<br><br><small style="color:#ff9999">Error: ${escapeHtml(err.message)}</small><br><br>Check that the master Apps Script is redeployed with the list endpoint.</div>`;
+  }
+}
+$("refreshBtn").onclick = loadRecords;
+
+function updateCount(shown){
+  $("resultCount").textContent = `Showing ${shown} of ${rows.length}`;
+}
+
+/* ---------------- List ---------------- */
+function colIndex(name){ return headers.indexOf(name); }
+
+function renderList(items){
+  if(!items.length){
+    $("listContent").innerHTML = '<div class="empty-state">No submissions yet for this form.</div>';
+    return;
+  }
+  const cfg = FORMS[currentForm];
+  const colIdxs = cfg.listCols.map(colIndex);
+
+  const head = cfg.listCols.map(c => `<th>${escapeHtml(c === "Timestamp" ? "Date" : c)}</th>`).join('') +
+               '<th style="text-align:right">Actions</th>';
+
+  const body = items.map((row) => {
+    const origIdx = rows.indexOf(row);
+    const cells = colIdxs.map((ci, i) => {
+      let val = ci >= 0 ? row[ci] : '';
+      if(cfg.listCols[i] === "Timestamp"){
+        return `<td class="date">${formatDate(val)}</td>`;
+      }
+      return `<td>${escapeHtml(val || '—')}</td>`;
+    }).join('');
+    return `<tr data-idx="${origIdx}">${cells}
+      <td class="actions">
+        <button data-action="view" data-idx="${origIdx}">View</button>
+        <button data-action="download" data-idx="${origIdx}">Download</button>
+      </td></tr>`;
+  }).join('');
+
+  $("listContent").innerHTML = `<table class="list-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+
+  $("listContent").querySelectorAll('button[data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openDetail(parseInt(btn.dataset.idx, 10));
+      if(btn.dataset.action === 'download') setTimeout(()=>window.print(), 200);
+    });
+  });
+  $("listContent").querySelectorAll('tr[data-idx]').forEach(tr => {
+    tr.addEventListener('click', () => openDetail(parseInt(tr.dataset.idx, 10)));
+  });
+}
+
+/* ---------------- Search: name OR phone number ---------------- */
+$("searchInput").addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  if(!q){ renderList(rows); updateCount(rows.length); return; }
+  const digitsQ = q.replace(/\D/g,'');
+  const filtered = rows.filter(row => {
+    // match any name-ish column
+    const text = row.join(' ').toLowerCase();
+    if(text.includes(q)) return true;
+    // number-wise: match phone digits anywhere
+    if(digitsQ.length >= 3){
+      const rowDigits = row.join(' ').replace(/\D/g,'');
+      if(rowDigits.includes(digitsQ)) return true;
+    }
+    return false;
+  });
+  renderList(filtered);
+  updateCount(filtered.length);
+});
+
+/* ---------------- Detail ---------------- */
+function openDetail(idx){
+  const row = rows[idx];
+  if(!row) return;
+  currentDetail = row;
+  const cfg = FORMS[currentForm];
+
+  let html = `
+    <div class="detail-head">
+      <div class="detail-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'"></div>
+      <div class="detail-eyebrow">ManzilulQuran · E-Learning Academy</div>
+      <div class="detail-h1">${escapeHtml(cfg.title)} <span class="accent">Record</span></div>
+      <div class="detail-sub">Submitted ${formatDate(row[colIndex("Timestamp")], true)}</div>
+    </div>`;
+
+  headers.forEach((h, i) => {
+    if(h === "Timestamp") return; // already in header
+    let val = row[i] || '—';
+    let valHtml;
+    if(h === "Payment Receipt" && String(val).startsWith('http')){
+      valHtml = `<a href="${escapeHtml(val)}" target="_blank" rel="noopener">Open receipt file →</a>`;
+    } else {
+      valHtml = escapeHtml(val);
+    }
+    html += `<div class="detail-row"><b>${escapeHtml(h)}</b><span>${valHtml}</span></div>`;
+  });
+
+  html += `
+    <div class="detail-arabic">جَزَاكَ اللهُ خَيْرًا</div>
+    <div class="detail-foot">ManzilulQuran E-learning Academy · manzilulquran.in · info@manzilulquran.in</div>`;
+
+  $("detailContent").innerHTML = html;
+  $("modal").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closeDetail(){
+  $("modal").classList.remove("show");
+  document.body.style.overflow = "";
+  currentDetail = null;
+}
+$("closeModalBtn").onclick = closeDetail;
+$("modal").addEventListener('click', e => { if(e.target === $("modal")) closeDetail(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && $("modal").classList.contains('show')) closeDetail(); });
+
+$("downloadBtn").onclick = () => {
+  const originalTitle = document.title;
+  if(currentDetail){
+    const nameIdx = colIndex("First Name") >= 0 ? colIndex("First Name") : colIndex("Student Name");
+    const name = nameIdx >= 0 ? currentDetail[nameIdx] : 'record';
+    document.title = `${FORMS[currentForm].title} - ${name}`;
+  }
+  window.print();
+  setTimeout(()=>{ document.title = originalTitle; }, 1000);
+};
+
+/* ---------------- Helpers ---------------- */
+function escapeHtml(str){
+  if(str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function formatDate(iso, includeTime){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return String(iso);
+  const opts = { day:'numeric', month:'short', year:'numeric' };
+  if(includeTime){ opts.hour='2-digit'; opts.minute='2-digit'; }
+  return d.toLocaleDateString('en-GB', opts);
+}
+</script>
+</body>
+</html>
