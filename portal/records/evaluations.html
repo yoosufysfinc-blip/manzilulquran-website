@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Evaluations Review · ManzilulQuran Admin</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Amiri:wght@400;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --emerald-deepest:#031b13;
+    --emerald-deep:#0a3d2e;
+    --emerald:#125c44;
+    --emerald-light:#1a7a5a;
+    --gold:#c9a961;
+    --gold-light:#e4c987;
+    --gold-warm:#ffb86b;
+    --cream:#faf6ee;
+    --cream-dim:rgba(250,246,238,0.7);
+    --ink:#0e1a14;
+    --err:#ff9999;
+    --success:#2dd4a4;
+    --glow-warm:rgba(255,200,140,0.3);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+
+  body{
+    font-family:'Manrope',sans-serif;
+    background:radial-gradient(ellipse at top,var(--emerald-deep) 0%,var(--emerald-deepest) 65%,#000 100%);
+    color:var(--cream);
+    min-height:100vh;
+    padding:36px 20px 60px;
+  }
+
+  /* ============================================================
+     Lock Screen
+     ============================================================ */
+  .lock-screen{
+    max-width:420px;width:100%;
+    background:#fff;color:var(--ink);
+    border-radius:22px;
+    padding:44px 32px 36px;
+    box-shadow:0 30px 80px rgba(0,0,0,0.4);
+    text-align:center;
+    animation:riseIn .35s ease;
+    margin:80px auto 0;
+  }
+  @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .lock-logo{
+    width:80px;height:80px;border-radius:50%;
+    border:3px solid var(--emerald-light);
+    margin:0 auto 22px;overflow:hidden;background:#fff;
+  }
+  .lock-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .lock-title{font-size:22px;font-weight:800;color:var(--emerald);letter-spacing:-.3px;margin-bottom:6px}
+  .lock-sub{font-size:13.5px;color:#5B6B63;font-weight:500;margin-bottom:24px}
+  .lock-input{
+    width:100%;
+    font-family:'Manrope',sans-serif;
+    font-size:16px;font-weight:600;color:var(--ink);
+    background:#fff;
+    border:2px solid var(--emerald-light);
+    border-radius:12px;
+    padding:14px 16px;
+    text-align:center;letter-spacing:4px;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .lock-input:focus{
+    outline:none;border-color:var(--emerald);
+    box-shadow:0 0 0 3px rgba(27,122,90,.15);
+  }
+  .lock-input.wrong{border-color:#c0392b;animation:shake .4s}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-8px)}
+    75%{transform:translateX(8px)}
+  }
+  .lock-btn{
+    width:100%;margin-top:16px;
+    font-family:'Manrope',sans-serif;
+    font-size:15px;font-weight:800;color:#fff;
+    background:var(--emerald);
+    border:none;border-radius:12px;
+    padding:14px;cursor:pointer;
+    transition:background .2s;
+  }
+  .lock-btn:hover{background:var(--emerald-light)}
+  .lock-error{color:#c0392b;font-size:12.5px;font-weight:600;margin-top:12px;min-height:16px}
+  .lock-hint{
+    margin-top:22px;padding-top:20px;
+    border-top:1px solid #E8F3EE;
+    font-size:11.5px;color:#5B6B63;
+  }
+  .lock-hint a{color:var(--emerald-light);text-decoration:none;font-weight:600}
+
+  /* ============================================================
+     Admin View (after unlock)
+     ============================================================ */
+  .admin{display:none;max-width:1100px;margin:0 auto}
+  .admin.show{display:block;animation:riseIn .35s ease}
+
+  .admin-head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:16px;flex-wrap:wrap;
+    margin-bottom:30px;padding-bottom:22px;
+    border-bottom:1px solid rgba(201,169,110,0.2);
+  }
+  .admin-head-left{display:flex;align-items:center;gap:16px}
+  .admin-logo{
+    width:56px;height:56px;border-radius:50%;
+    border:2px solid rgba(201,169,110,0.5);
+    overflow:hidden;background:#fff;flex:0 0 auto;
+  }
+  .admin-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .admin-title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:28px;font-weight:600;color:var(--cream);
+    line-height:1.1;
+  }
+  .admin-title .accent{color:var(--gold-light);font-style:italic;font-weight:500}
+  .admin-sub{
+    font-size:12px;color:var(--cream-dim);
+    letter-spacing:2px;text-transform:uppercase;
+    margin-top:4px;
+  }
+  .admin-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn-ghost{
+    font-family:'Manrope',sans-serif;
+    font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+    color:rgba(255,255,255,0.75);
+    background:transparent;border:1px solid rgba(255,255,255,0.2);
+    border-radius:100px;padding:8px 16px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;
+    transition:background .2s;
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,0.08)}
+  .btn-ghost svg{width:12px;height:12px}
+
+  /* Stats row */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:16px;margin-bottom:28px;
+  }
+  .stat{
+    background:rgba(3,27,19,0.5);
+    border:1px solid rgba(201,169,110,0.2);
+    border-radius:14px;padding:18px 20px;
+  }
+  .stat-label{
+    font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    color:var(--gold-light);margin-bottom:6px;
+  }
+  .stat-value{
+    font-family:'Cormorant Garamond',serif;
+    font-size:32px;font-weight:600;color:var(--cream);
+    line-height:1;
+  }
+  .stat-value .stars-mini{color:var(--gold);font-size:20px;letter-spacing:2px}
+
+  /* Loading state */
+  .loading{
+    text-align:center;padding:60px 20px;
+    color:var(--cream-dim);font-size:14px;
+  }
+  .loading-spin{
+    display:inline-block;
+    width:26px;height:26px;
+    border:3px solid rgba(201,169,110,0.2);
+    border-top-color:var(--gold);
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+    margin-bottom:12px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* List table */
+  .list-wrap{
+    background:rgba(3,27,19,0.5);
+    border:1px solid rgba(201,169,110,0.2);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .list-search{
+    padding:16px 20px;
+    border-bottom:1px solid rgba(201,169,110,0.15);
+    display:flex;align-items:center;gap:12px;
+  }
+  .list-search svg{width:18px;height:18px;color:var(--gold-light);flex:0 0 auto}
+  .list-search input{
+    flex:1;
+    font-family:'Manrope',sans-serif;
+    font-size:14px;color:var(--cream);
+    background:transparent;border:none;outline:none;
+  }
+  .list-search input::placeholder{color:rgba(250,246,238,0.4)}
+
+  .list-table{width:100%;border-collapse:collapse}
+  .list-table thead th{
+    text-align:left;padding:14px 20px;
+    font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    color:var(--gold-light);
+    background:rgba(3,27,19,0.4);
+    border-bottom:1px solid rgba(201,169,110,0.15);
+  }
+  .list-table tbody tr{
+    border-bottom:1px solid rgba(201,169,110,0.08);
+    transition:background .2s;
+    cursor:pointer;
+  }
+  .list-table tbody tr:hover{background:rgba(201,169,110,0.05)}
+  .list-table tbody tr:last-child{border-bottom:none}
+  .list-table td{padding:14px 20px;font-size:14px;color:var(--cream);vertical-align:middle}
+  .list-table td.date{color:rgba(250,246,238,0.6);font-size:12.5px;font-variant-numeric:tabular-nums}
+  .list-table td.rating{color:var(--gold);letter-spacing:2px;font-size:16px}
+  .list-table td.actions{text-align:right;white-space:nowrap}
+  .list-table td.actions button{
+    background:transparent;border:1px solid rgba(201,169,110,0.3);
+    color:var(--gold-light);
+    padding:5px 12px;border-radius:100px;cursor:pointer;
+    font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+    margin-left:6px;transition:all .2s;
+    font-family:'Manrope',sans-serif;
+  }
+  .list-table td.actions button:hover{
+    background:var(--gold);color:var(--emerald-deepest);border-color:var(--gold);
+  }
+
+  .empty-state{
+    text-align:center;padding:60px 20px;
+    color:var(--cream-dim);
+  }
+  .empty-state svg{width:48px;height:48px;color:var(--gold-light);margin-bottom:14px;opacity:0.4}
+  .empty-state p{font-size:14px;font-weight:500}
+
+  /* ============================================================
+     Detail Modal
+     ============================================================ */
+  .modal-backdrop{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(6px);
+    z-index:100;
+    align-items:flex-start;justify-content:center;
+    padding:30px 20px;overflow-y:auto;
+  }
+  .modal-backdrop.show{display:flex;animation:fadeIn .25s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+  .modal{
+    background:#fff;color:var(--ink);
+    max-width:760px;width:100%;
+    border-radius:18px;
+    padding:0;overflow:hidden;
+    position:relative;
+    box-shadow:0 40px 100px rgba(0,0,0,0.5);
+    animation:modalIn .35s cubic-bezier(.2,.9,.3,1.1) both;
+  }
+  @keyframes modalIn{
+    from{opacity:0;transform:translateY(30px) scale(0.96)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+  }
+
+  /* Detail view (matches the printed PDF style) */
+  .detail{padding:36px 38px 30px}
+  .detail-head{
+    text-align:center;
+    padding-bottom:22px;
+    border-bottom:2px solid var(--gold);
+    margin-bottom:24px;
+  }
+  .detail-logo{
+    width:64px;height:64px;
+    border-radius:50%;
+    margin:0 auto 12px;
+    overflow:hidden;
+    border:2px solid var(--gold);
+    background:#fff;
+  }
+  .detail-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .detail-eyebrow{
+    font-size:10px;font-weight:700;letter-spacing:2.5px;
+    text-transform:uppercase;color:var(--gold);
+    margin-bottom:6px;
+  }
+  .detail-h1{
+    font-family:'Cormorant Garamond',serif;
+    font-size:28px;font-weight:700;
+    color:var(--emerald);letter-spacing:-.3px;
+  }
+  .detail-h1 .accent{color:var(--gold);font-style:italic;font-weight:500}
+  .detail-sub{font-size:12px;color:#666;margin-top:6px}
+
+  .detail-meta{
+    background:#faf6ee;
+    border-left:3px solid var(--gold);
+    padding:14px 18px;
+    margin-bottom:24px;
+    font-size:13px;
+  }
+  .detail-meta-row{
+    display:flex;justify-content:space-between;
+    padding:4px 0;
+  }
+  .detail-meta-row b{
+    color:var(--emerald);font-weight:700;
+    font-size:11px;letter-spacing:1px;text-transform:uppercase;
+  }
+  .detail-meta-row span{color:var(--ink);font-weight:600}
+
+  .detail-q{
+    margin-bottom:18px;
+    page-break-inside:avoid;
+    break-inside:avoid;
+  }
+  .detail-q-title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:17px;font-weight:600;
+    color:var(--emerald);
+    margin-bottom:10px;
+    display:flex;align-items:baseline;gap:8px;
+  }
+  .detail-q-num{
+    display:inline-block;
+    background:var(--gold);color:var(--ink);
+    font-family:'Manrope',sans-serif;
+    font-size:10px;font-weight:800;
+    padding:2px 8px;border-radius:100px;
+    letter-spacing:1px;
+  }
+  .detail-options{display:flex;flex-direction:column;gap:6px;margin-left:14px}
+  .detail-option{
+    display:flex;align-items:center;gap:12px;
+    padding:8px 12px;
+    background:#faf6ee;
+    border:1px solid #ecdcaf;
+    border-radius:8px;
+    font-size:13.5px;color:#333;
+    transition:all .15s;
+  }
+  .detail-option.selected{
+    background:linear-gradient(90deg,rgba(201,169,110,0.2),rgba(201,169,110,0.05));
+    border-color:var(--gold);
+    color:var(--emerald);
+    font-weight:600;
+    box-shadow:0 0 0 1px var(--gold);
+  }
+  .detail-radio{
+    width:16px;height:16px;
+    border-radius:50%;
+    border:2px solid #c0b58a;
+    flex:0 0 auto;
+    position:relative;
+  }
+  .detail-option.selected .detail-radio{
+    border-color:var(--gold);
+    background:radial-gradient(circle,var(--gold) 0%,var(--gold) 40%,transparent 45%);
+  }
+  .detail-selected-label{
+    margin-left:auto;
+    font-size:10.5px;font-weight:800;
+    color:var(--gold);
+    letter-spacing:1.2px;text-transform:uppercase;
+  }
+
+  .detail-stars{
+    color:var(--gold);
+    font-size:26px;letter-spacing:4px;
+    margin-left:14px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .detail-stars-num{
+    font-family:'Manrope',sans-serif;
+    font-size:13px;font-weight:700;color:var(--emerald);
+    letter-spacing:0;
+  }
+
+  .detail-suggestions{
+    margin-left:14px;
+    background:#faf6ee;
+    border:1px solid #ecdcaf;
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:13.5px;color:#333;
+    line-height:1.6;font-style:italic;
+    min-height:40px;
+  }
+
+  .detail-arabic{
+    text-align:center;
+    font-family:'Amiri',serif;
+    font-size:20px;color:var(--gold);
+    margin:24px 0 10px;
+  }
+  .detail-foot{
+    text-align:center;
+    padding-top:14px;
+    border-top:1px solid #ddd;
+    font-size:11px;color:#666;
+    margin-top:8px;
+  }
+
+  /* Modal action bar */
+  .modal-actions{
+    background:#faf6ee;
+    padding:16px 28px;
+    display:flex;justify-content:flex-end;gap:10px;
+    border-top:1px solid #ecdcaf;
+  }
+  .btn-solid{
+    font-family:'Manrope',sans-serif;
+    font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    background:var(--emerald);color:#fff;
+    border:none;border-radius:100px;
+    padding:11px 22px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;
+    transition:background .2s;
+  }
+  .btn-solid:hover{background:var(--emerald-light)}
+  .btn-solid svg{width:12px;height:12px}
+  .btn-outline{
+    font-family:'Manrope',sans-serif;
+    font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    background:transparent;color:var(--emerald);
+    border:1.5px solid var(--emerald);border-radius:100px;
+    padding:10px 22px;cursor:pointer;
+    transition:all .2s;
+  }
+  .btn-outline:hover{background:var(--emerald);color:#fff}
+
+  @media (max-width:640px){
+    .admin-title{font-size:22px}
+    .list-table td:nth-child(3){display:none}
+    .modal{max-width:100%}
+    .detail{padding:26px 22px 22px}
+    .detail-h1{font-size:22px}
+  }
+
+  @media print{
+    body{background:#fff;color:#000;padding:0}
+    .admin,.modal-backdrop{position:static;background:#fff;display:block !important}
+    .modal-actions,.list-wrap,.admin-head,.stats,.lock-screen{display:none !important}
+    .modal-backdrop{background:#fff;padding:0;overflow:visible}
+    .modal{box-shadow:none;max-width:100%;border-radius:0;animation:none}
+    .detail{padding:20px 30px}
+    .detail-option.selected{background:#f5efe1 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .detail-meta{background:#faf6ee !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+  <!-- LOCK SCREEN -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-logo">
+      <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+    </div>
+    <div class="lock-title">Evaluations Review</div>
+    <div class="lock-sub">Enter the portal password to continue.</div>
+    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="off" autofocus />
+    <button class="lock-btn" id="lockBtn">Unlock</button>
+    <div class="lock-error" id="lockError">&nbsp;</div>
+    <div class="lock-hint">
+      Admin access only. Do not share this URL publicly.<br>
+      <a href="/portal/">← Back to portal</a>
+    </div>
+  </div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div class="admin" id="adminView">
+
+    <div class="admin-head">
+      <div class="admin-head-left">
+        <div class="admin-logo">
+          <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+        </div>
+        <div>
+          <div class="admin-title">Class <span class="accent">Evaluations</span></div>
+          <div class="admin-sub">Admin Review</div>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-ghost" id="refreshBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          Refresh
+        </button>
+        <button class="btn-ghost" id="lockAgainBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Lock
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats" id="stats">
+      <div class="stat">
+        <div class="stat-label">Total submissions</div>
+        <div class="stat-value" id="statTotal">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Average rating</div>
+        <div class="stat-value" id="statAvg">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Most recent</div>
+        <div class="stat-value" id="statRecent" style="font-size:16px">—</div>
+      </div>
+    </div>
+
+    <!-- List -->
+    <div class="list-wrap">
+      <div class="list-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search by student, teacher, or rating (e.g. 5)..." />
+        <span id="resultCount" style="font-size:12px;color:var(--gold-light);font-weight:600;white-space:nowrap"></span>
+      </div>
+
+      <div id="listContent">
+        <div class="loading">
+          <div class="loading-spin"></div>
+          <div>Loading evaluations…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal">
+      <div class="detail" id="detailContent"></div>
+      <div class="modal-actions">
+        <button class="btn-outline" id="closeModalBtn">Close</button>
+        <button class="btn-solid" id="downloadBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* =================================================================
+   ░░  ADMIN EVALUATIONS DASHBOARD  ░░
+   Loads submissions from Apps Script, shows list, opens detail view
+   ================================================================= */
+
+// CONFIG
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSEfI9CEPSMmQLdPP_oWiT0f61jCfQBl5uNIlU9EXxNuVpIH4Y7PLBKJDgGg70O2YKqA/exec";
+const PORTAL_PASSWORD = "manzil2026";         // must match portal password
+const ADMIN_API_PASSWORD = "manzil2026admin"; // MUST match ADMIN_PASSWORD in apps-script-evaluation.gs
+
+const SESSION_KEY = "mq_portal_unlocked_at";
+const SESSION_MAX_MS = 24 * 60 * 60 * 1000; // 24h
+
+// Question definitions with ALL possible answer options
+// This lets the admin see every option and which one the parent chose
+const QUESTIONS = [
+  {
+    key: "satisfaction",
+    label: "Overall satisfaction with learning experience",
+    options: ["Very satisfied","Satisfied","Neutral","Dissatisfied","Very dissatisfied"]
+  },
+  {
+    key: "progress",
+    label: "Rating of learning progress",
+    options: ["Excellent progress","Good progress","Average progress","Slow progress","No noticeable progress"]
+  },
+  {
+    key: "teacherFit",
+    label: "Is the mentor suitable?",
+    options: ["Yes, perfectly suited","Yes, but could be better","Neutral / not sure","We would like to try another teacher"]
+  },
+  {
+    key: "punctuality",
+    label: "Does the teacher attend on time?",
+    options: ["Always on time","Sometimes late","Frequently late","Often misses classes"]
+  },
+  {
+    key: "recommend",
+    label: "Would you recommend ManzilulQuran Academy?",
+    options: ["Definitely","Probably","Not sure","No"]
+  }
+];
+
+const $ = (id) => document.getElementById(id);
+let evaluations = [];
+let currentDetail = null;
+
+// ============================================================
+// LOCK SCREEN
+// ============================================================
+function isUnlocked(){
+  try{
+    const at = parseInt(sessionStorage.getItem(SESSION_KEY) || "0", 10);
+    return at && (Date.now() - at) < SESSION_MAX_MS;
+  }catch(e){ return false; }
+}
+function unlock(){
+  try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  loadEvaluations();
+}
+function lock(){
+  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  $("adminView").classList.remove("show");
+  $("lockScreen").style.display = "";
+  $("lockInput").value = "";
+  $("lockError").textContent = "";
+  setTimeout(()=>$("lockInput").focus(), 100);
+}
+function tryPassword(){
+  const val = ($("lockInput").value || "").trim();
+  if(val === PORTAL_PASSWORD){
+    unlock();
+  } else {
+    const input = $("lockInput");
+    input.classList.add("wrong");
+    $("lockError").textContent = "Wrong password. Try again.";
+    setTimeout(()=>input.classList.remove("wrong"), 400);
+    input.select();
+  }
+}
+$("lockBtn").onclick = tryPassword;
+$("lockInput").addEventListener("keydown", (e)=>{ if(e.key === "Enter") tryPassword(); });
+$("lockAgainBtn").onclick = lock;
+
+if(isUnlocked()){
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  loadEvaluations();
+}
+
+// ============================================================
+// LOAD EVALUATIONS FROM APPS SCRIPT
+// ============================================================
+async function loadEvaluations(){
+  $("listContent").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading evaluations…</div></div>';
+
+  try{
+    const url = `${SCRIPT_URL}?action=list&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if(data.result !== "success"){
+      throw new Error(data.error || "Failed to load");
+    }
+
+    evaluations = data.evaluations || [];
+    updateStats();
+    renderList(evaluations);
+    updateCount(evaluations.length);
+  }catch(err){
+    console.error(err);
+    $("listContent").innerHTML = `<div class="empty-state"><p>Failed to load evaluations.<br><br><small style="color:#ff9999">Error: ${escapeHtml(err.message)}</small><br><br>Check that the Apps Script is deployed and the admin password matches.</p></div>`;
+  }
+}
+
+$("refreshBtn").onclick = loadEvaluations;
+
+// ============================================================
+// STATS
+// ============================================================
+function updateStats(){
+  $("statTotal").textContent = evaluations.length;
+
+  if(evaluations.length === 0){
+    $("statAvg").innerHTML = "—";
+    $("statRecent").textContent = "—";
+    return;
+  }
+
+  const ratings = evaluations
+    .map(e => parseFloat(e.rating))
+    .filter(r => !isNaN(r));
+  const avg = ratings.length ? (ratings.reduce((a,b)=>a+b,0) / ratings.length) : 0;
+  const avgFixed = avg.toFixed(1);
+  const filledStars = Math.round(avg);
+  const stars = '★'.repeat(filledStars) + '<span style="color:rgba(201,169,110,0.3)">' + '★'.repeat(5 - filledStars) + '</span>';
+  $("statAvg").innerHTML = `${avgFixed} <span class="stars-mini">${stars}</span>`;
+
+  // Most recent
+  const recent = evaluations[0]; // already newest-first from Apps Script
+  $("statRecent").textContent = formatDate(recent.timestamp, true);
+}
+
+// ============================================================
+// LIST RENDERING
+// ============================================================
+function renderList(items){
+  if(!items.length){
+    $("listContent").innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        <p>No evaluations yet.</p>
+      </div>`;
+    return;
+  }
+
+  const rows = items.map((e, idx) => {
+    const rating = parseInt(e.rating, 10) || 0;
+    const stars = '★'.repeat(rating) + '<span style="opacity:0.25">' + '★'.repeat(5 - rating) + '</span>';
+    return `
+      <tr data-idx="${idx}">
+        <td class="date">${formatDate(e.timestamp)}</td>
+        <td>${escapeHtml(e.studentName || '—')}</td>
+        <td>${escapeHtml(e.teacherName || '—')}</td>
+        <td class="rating">${stars}</td>
+        <td class="actions">
+          <button data-action="view" data-idx="${idx}">View</button>
+          <button data-action="download" data-idx="${idx}">Download</button>
+        </td>
+      </tr>`;
+  }).join('');
+
+  $("listContent").innerHTML = `
+    <table class="list-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Student</th>
+          <th>Teacher</th>
+          <th>Rating</th>
+          <th style="text-align:right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+
+  // Wire up row buttons
+  $("listContent").querySelectorAll('button[data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const action = btn.dataset.action;
+      const idx = parseInt(btn.dataset.idx, 10);
+      openDetail(idx);
+      if(action === 'download'){
+        setTimeout(() => window.print(), 200);
+      }
+    });
+  });
+
+  // Also allow clicking the whole row
+  $("listContent").querySelectorAll('tr[data-idx]').forEach(tr => {
+    tr.addEventListener('click', () => {
+      const idx = parseInt(tr.dataset.idx, 10);
+      openDetail(idx);
+    });
+  });
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+$("searchInput").addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  if(!q){ renderList(evaluations); updateCount(evaluations.length); return; }
+  const filtered = evaluations.filter(ev =>
+    (ev.studentName || '').toLowerCase().includes(q) ||
+    (ev.teacherName || '').toLowerCase().includes(q) ||
+    String(ev.rating || '') === q            // number-wise: type "5" for 5-star
+  );
+  renderList(filtered);
+  updateCount(filtered.length);
+});
+
+function updateCount(shown){
+  $("resultCount").textContent = `Showing ${shown} of ${evaluations.length}`;
+}
+
+// ============================================================
+// DETAIL MODAL
+// ============================================================
+function openDetail(idx){
+  const ev = evaluations[idx];
+  if(!ev) return;
+  currentDetail = ev;
+
+  const rating = parseInt(ev.rating, 10) || 0;
+  const stars = '★'.repeat(rating) + '<span style="opacity:0.25">' + '★'.repeat(5 - rating) + '</span>';
+
+  let html = `
+    <div class="detail-head">
+      <div class="detail-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'"></div>
+      <div class="detail-eyebrow">ManzilulQuran · E-Learning Academy</div>
+      <div class="detail-h1">Class <span class="accent">Evaluation</span></div>
+      <div class="detail-sub">Submitted ${formatDate(ev.timestamp, true)}</div>
+    </div>
+
+    <div class="detail-meta">
+      <div class="detail-meta-row"><b>Student</b><span>${escapeHtml(ev.studentName)}</span></div>
+      <div class="detail-meta-row"><b>Teacher</b><span>${escapeHtml(ev.teacherName)}</span></div>
+    </div>
+  `;
+
+  // Radio questions with all options + highlight selected
+  QUESTIONS.forEach((q, i) => {
+    const selected = ev[q.key];
+    html += `<div class="detail-q">
+      <div class="detail-q-title">
+        <span class="detail-q-num">Q${i+1}</span>
+        ${escapeHtml(q.label)}
+      </div>
+      <div class="detail-options">`;
+    q.options.forEach(opt => {
+      const isSel = (opt === selected);
+      html += `
+        <div class="detail-option${isSel ? ' selected' : ''}">
+          <div class="detail-radio"></div>
+          <div>${escapeHtml(opt)}</div>
+          ${isSel ? '<div class="detail-selected-label">Parent\'s answer</div>' : ''}
+        </div>`;
+    });
+    html += `</div></div>`;
+  });
+
+  // Star rating (Q6)
+  html += `
+    <div class="detail-q">
+      <div class="detail-q-title">
+        <span class="detail-q-num">Q6</span>
+        Overall quality of classes
+      </div>
+      <div class="detail-stars">
+        <span>${stars}</span>
+        <span class="detail-stars-num">${ev.rating || 0}/5</span>
+      </div>
+    </div>`;
+
+  // Suggestions (Q7)
+  html += `
+    <div class="detail-q">
+      <div class="detail-q-title">
+        <span class="detail-q-num">Q7</span>
+        Suggestions or comments
+      </div>
+      <div class="detail-suggestions">${escapeHtml(ev.suggestions || '(no suggestions provided)')}</div>
+    </div>`;
+
+  // Footer
+  html += `
+    <div class="detail-arabic">جَزَاكَ اللهُ خَيْرًا</div>
+    <div class="detail-foot">ManzilulQuran E-learning Academy · manzilulquran.in · info@manzilulquran.in</div>
+  `;
+
+  $("detailContent").innerHTML = html;
+  $("modal").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+function closeDetail(){
+  $("modal").classList.remove("show");
+  document.body.style.overflow = "";
+  currentDetail = null;
+}
+
+$("closeModalBtn").onclick = closeDetail;
+$("modal").addEventListener('click', (e) => {
+  if(e.target === $("modal")) closeDetail();
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && $("modal").classList.contains('show')) closeDetail();
+});
+
+// Download PDF — uses the browser's print dialog, which lets user "Save as PDF"
+$("downloadBtn").onclick = () => {
+  // Set page title to the student name so the PDF filename is helpful
+  const originalTitle = document.title;
+  if(currentDetail){
+    document.title = `Evaluation - ${currentDetail.studentName} - ${formatDate(currentDetail.timestamp)}`;
+  }
+  window.print();
+  setTimeout(() => { document.title = originalTitle; }, 1000);
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
+function escapeHtml(str){
+  if(str == null) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+function formatDate(iso, includeTime){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return String(iso);
+  const opts = { day:'numeric', month:'short', year:'numeric' };
+  if(includeTime){
+    opts.hour = '2-digit';
+    opts.minute = '2-digit';
+  }
+  return d.toLocaleDateString('en-GB', opts);
+}
+</script>
+</body>
+</html>
