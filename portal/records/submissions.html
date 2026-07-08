@@ -465,6 +465,10 @@ function openDetail(idx){
     let valHtml;
     if(h === "Payment Receipt" && String(val).startsWith('http')){
       valHtml = `<a href="${escapeHtml(val)}" target="_blank" rel="noopener">Open receipt file →</a>`;
+    } else if(h === "Birth Date" || h === "Date of Birth"){
+      valHtml = escapeHtml(formatDateValue(val));
+    } else if(h === "Class Time"){
+      valHtml = escapeHtml(formatTimeValue(val));
     } else {
       valHtml = escapeHtml(val);
     }
@@ -511,6 +515,39 @@ function formatDate(iso, includeTime){
   const opts = { day:'numeric', month:'short', year:'numeric' };
   if(includeTime){ opts.hour='2-digit'; opts.minute='2-digit'; }
   return d.toLocaleDateString('en-GB', opts);
+}
+
+// Birth Date — show only the date (e.g. "27 May 1966")
+// The stored value may be an ISO string or a plain "yyyy-mm-dd"
+function formatDateValue(val){
+  if(!val || val === '—') return '—';
+  const s = String(val);
+  // Plain yyyy-mm-dd from a <input type=date> — keep it simple, no timezone shift
+  const plain = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(plain){
+    const d = new Date(Date.UTC(+plain[1], +plain[2]-1, +plain[3]));
+    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', timeZone:'UTC' });
+  }
+  const d = new Date(s);
+  if(isNaN(d.getTime())) return s;
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+
+// Class Time — show only the time (e.g. "2:08 PM")
+// Google Sheets stores time-only values with a dummy date (1899-12-30)
+function formatTimeValue(val){
+  if(!val || val === '—') return '—';
+  const s = String(val);
+  // Plain HH:mm from a <input type=time>
+  const plain = s.match(/^(\d{1,2}):(\d{2})$/);
+  if(plain){
+    const d = new Date();
+    d.setHours(+plain[1], +plain[2], 0, 0);
+    return d.toLocaleTimeString('en-GB', { hour:'numeric', minute:'2-digit', hour12:true });
+  }
+  const d = new Date(s);
+  if(isNaN(d.getTime())) return s;
+  return d.toLocaleTimeString('en-GB', { hour:'numeric', minute:'2-digit', hour12:true });
 }
 </script>
 </body>
