@@ -191,11 +191,11 @@
   .list-search{
     padding:16px 20px;
     border-bottom:1px solid rgba(201,169,110,0.15);
-    display:flex;align-items:center;gap:12px;
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   }
   .list-search svg{width:18px;height:18px;color:var(--gold-light);flex:0 0 auto}
   .list-search input{
-    flex:1;
+    flex:1;min-width:150px;
     font-family:'Manrope',sans-serif;
     font-size:14px;color:var(--cream);
     background:transparent;border:none;outline:none;
@@ -438,10 +438,46 @@
 
   @media (max-width:640px){
     .admin-title{font-size:22px}
-    .list-table td:nth-child(3){display:none}
     .modal{max-width:100%}
     .detail{padding:26px 22px 22px}
     .detail-h1{font-size:22px}
+
+    /* ---- Mobile: turn table rows into stacked cards ---- */
+    .list-table thead{display:none}
+    .list-table,
+    .list-table tbody,
+    .list-table tr,
+    .list-table td{display:block;width:100%}
+    .list-table tr{
+      border:1px solid rgba(201,169,110,0.2);
+      border-radius:12px;
+      margin:12px 14px;
+      padding:14px 16px;
+      background:rgba(3,27,19,0.45);
+      width:auto;
+    }
+    .list-table td{
+      padding:6px 0;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      border:none;
+    }
+    /* Label each cell using the data-label attribute */
+    .list-table td::before{
+      content:attr(data-label);
+      font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+      color:var(--gold-light);
+      flex:0 0 auto;
+    }
+    .list-table td.actions{
+      justify-content:flex-end;
+      padding-top:12px;margin-top:8px;
+      border-top:1px solid rgba(201,169,110,0.15);
+    }
+    .list-table td.actions::before{content:none}
+    .list-table td.actions button{
+      flex:1;margin-left:0;margin-right:6px;padding:9px 12px;
+    }
+    .list-table td.actions button:last-child{margin-right:0}
   }
 
   @media print{
@@ -716,10 +752,10 @@ function renderList(items){
     const stars = '★'.repeat(rating) + '<span style="opacity:0.25">' + '★'.repeat(5 - rating) + '</span>';
     return `
       <tr data-idx="${idx}">
-        <td class="date">${formatDate(e.timestamp)}</td>
-        <td>${escapeHtml(e.studentName || '—')}</td>
-        <td>${escapeHtml(e.teacherName || '—')}</td>
-        <td class="rating">${stars}</td>
+        <td class="date" data-label="Date">${formatDate(e.timestamp)}</td>
+        <td data-label="Student">${escapeHtml(e.studentName || '—')}</td>
+        <td data-label="Teacher">${escapeHtml(e.teacherName || '—')}</td>
+        <td class="rating" data-label="Rating">${stars}</td>
         <td class="actions">
           <button data-action="view" data-idx="${idx}">View</button>
           <button data-action="download" data-idx="${idx}">Download</button>
