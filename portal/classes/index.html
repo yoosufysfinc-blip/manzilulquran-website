@@ -685,6 +685,7 @@ function renderList(items){
       <td class="date" data-label="Joined">${fmtDate(c["Join Date"])}</td>
       <td data-label="Status"><span class="pill ${isActive ? 'active':'inactive'}">${isActive ? 'Active':'Inactive'}</span></td>
       <td class="actions">
+        <button data-act="cal"   data-id="${escapeHtml(c["Class ID"])}">Calendars</button>
         <button data-act="open"  data-id="${escapeHtml(c["Class ID"])}">Open</button>
         <button data-act="share" data-id="${escapeHtml(c["Class ID"])}">Share</button>
         <button data-act="edit"  data-id="${escapeHtml(c["Class ID"])}">Edit</button>
@@ -706,6 +707,7 @@ function renderList(items){
       const c = classes.find(x => x["Class ID"] === btn.dataset.id);
       if(!c) return;
       const act = btn.dataset.act;
+      if(act === "cal")   window.location.href = "/portal/classes/calendars.html?id=" + encodeURIComponent(c["Class ID"]);
       if(act === "open")  window.open(shareUrl(c), "_blank");
       if(act === "share") openShare(c);
       if(act === "edit")  openForm(c);
