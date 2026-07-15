@@ -267,6 +267,114 @@
     border:1px solid rgba(255,255,255,0.08);
   }
 
+  /* ---------- Calendar Sheets ---------- */
+  .cal-chips{
+    display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;
+  }
+  .cal-chip{
+    font-family:'Manrope',sans-serif;
+    font-size:11px;font-weight:700;letter-spacing:.6px;
+    color:var(--frost-dim);
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(91,157,255,0.14);
+    border-radius:11px;padding:9px 14px;cursor:pointer;
+    transition:all .2s;text-align:left;line-height:1.35;
+  }
+  .cal-chip:hover{border-color:rgba(91,157,255,0.45);color:var(--frost)}
+  .cal-chip.on{
+    background:rgba(91,157,255,0.12);
+    border-color:var(--azure);
+    color:var(--frost);
+  }
+  .cal-chip b{display:block;font-size:12.5px;font-weight:800;letter-spacing:-.2px}
+  .cal-chip .st{
+    font-size:8.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    opacity:.85;
+  }
+  .cal-chip.on .st{opacity:1}
+
+  .cal-summary{
+    background:rgba(255,255,255,0.028);
+    border:1px solid rgba(91,157,255,0.14);
+    border-radius:14px;padding:16px 18px;margin-bottom:14px;
+    display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  }
+  .cal-summary h3{
+    font-family:'Manrope',sans-serif;
+    font-size:18px;font-weight:800;color:var(--frost);letter-spacing:-.4px;
+  }
+  .cal-summary .sub{
+    font-size:12px;color:var(--frost-dim);margin-top:6px;line-height:1.65;
+  }
+  .cal-summary .sub b{color:var(--azure-light);font-weight:700}
+
+  .cal-note{
+    border-radius:12px;padding:11px 15px;margin-bottom:14px;
+    font-size:12.5px;font-weight:600;text-align:center;
+  }
+  .cal-note.dim {background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--frost-dim)}
+  .cal-note.warn{background:rgba(255,154,166,0.07);border:1px solid rgba(255,154,166,0.3);color:var(--rose)}
+
+  .days{
+    border:1px solid rgba(91,157,255,0.12);
+    border-radius:14px;overflow:hidden;
+  }
+  .day{
+    display:flex;align-items:center;gap:12px;
+    padding:11px 15px;
+    border-bottom:1px solid rgba(91,157,255,0.07);
+    background:rgba(255,255,255,0.014);
+  }
+  .day:last-child{border-bottom:none}
+  .day-left{flex:1;min-width:0}
+  .day-n{
+    font-size:9px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;
+    color:var(--frost-faint);margin-bottom:2px;
+  }
+  .day-date{font-size:14px;font-weight:700;color:var(--frost);letter-spacing:-.2px}
+  .day-dow{font-size:11.5px;color:var(--frost-dim);margin-left:6px;font-weight:500}
+
+  .day.off{background:rgba(255,255,255,0.005)}
+  .day.off .day-date{color:var(--frost-faint);font-weight:600}
+  .day-holiday{
+    font-size:9.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;
+    color:var(--rose);opacity:.7;padding:6px 12px;
+  }
+
+  .day.today{
+    background:linear-gradient(90deg, rgba(91,157,255,0.16), rgba(91,157,255,0.04));
+    border-left:3px solid var(--azure);
+  }
+  .day.today .day-n{color:var(--azure-light)}
+  .day.past{opacity:.5}
+
+  .today-tag{
+    display:inline-block;margin-left:8px;
+    font-size:8.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--void);background:var(--azure-light);
+    padding:2px 7px;border-radius:100px;vertical-align:middle;
+  }
+
+  .btn-join{
+    flex:0 0 auto;
+    font-family:'Manrope',sans-serif;
+    font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--void);
+    background:linear-gradient(135deg,var(--azure-light),var(--azure));
+    border:none;border-radius:100px;padding:9px 16px;cursor:pointer;
+    text-decoration:none;display:inline-flex;align-items:center;gap:6px;
+    transition:transform .15s, box-shadow .2s;
+    box-shadow:0 4px 14px -6px var(--azure-glow);
+  }
+  .btn-join:hover{transform:translateY(-1px);box-shadow:0 8px 22px -6px var(--azure-glow)}
+  .btn-join svg{width:11px;height:11px}
+  .btn-join.dead{
+    background:rgba(255,255,255,0.05);
+    color:var(--frost-faint);
+    box-shadow:none;cursor:not-allowed;pointer-events:none;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+
   /* ---------- Empty state ---------- */
   .empty{text-align:center;padding:48px 20px}
   .empty svg{width:42px;height:42px;color:var(--azure);opacity:.3;margin-bottom:16px}
@@ -430,17 +538,19 @@
           </a>
         </div>
 
-        <!-- Calendar Sheets (Phase 2) -->
+        <!-- Calendar Sheets -->
         <div class="tab-panel" id="panel-calendar">
-          <div class="empty">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            <h4>No calendar sheets yet</h4>
-            <p>Your class schedule and join links will appear here once the academy publishes them, in shā’ Allāh.</p>
+          <div id="calArea">
+            <div class="empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <h4>No calendar sheets yet</h4>
+              <p>Your class schedule and join links will appear here once the academy publishes them, in shā’ Allāh.</p>
+            </div>
           </div>
         </div>
 
@@ -551,7 +661,7 @@ function render(d){
   $('ovName').textContent   = d.studentName || '—';
   $('ovId').textContent     = d.studentId || '—';
   $('ovCourse').textContent = d.course || '—';
-  $('ovJoin').textContent   = fmtDate(d.joinDate);
+  $('ovJoin').textContent   = fmtDate(parseDate(d.joinDate) || d.joinDate);
   $('ovStatus').innerHTML   = `<span class="pill ${isActive ? 'active' : 'inactive'}">${isActive ? 'Active' : 'Inactive'}</span>`;
 
   if(!isActive) $('statusBanner').classList.add('show');
@@ -567,6 +677,212 @@ function render(d){
     btn.classList.add('disabled');
     $('waLabel').textContent = 'No WhatsApp group linked';
   }
+
+  calendars = d.calendars || [];
+  renderCalendarStatus();
+  renderCalendars();
+}
+
+/* =================================================================
+   ░░  CALENDAR ENGINE  ░░
+   The day rows are never stored. The academy saves only the rule
+   (start + days + weekly off + links) and we rebuild the days here.
+   ================================================================= */
+let calendars = [];
+let activeCalIdx = 0;
+
+const DAYS_FULL  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const DAYS_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+function parseDate(s){
+  const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!m) return null;
+  return new Date(+m[1], +m[2]-1, +m[3]);   // local midnight — no timezone drift
+}
+function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function today0(){ const t = new Date(); t.setHours(0,0,0,0); return t; }
+function endDate(cal){
+  const s = parseDate(cal.startDate);
+  return s ? addDays(s, (cal.days || 1) - 1) : null;
+}
+
+// Active / Upcoming / Completed / Inactive — worked out from the date,
+// never stored. This is what makes a calendar expire on its own.
+function calStatus(cal){
+  if(!cal.active) return 'Inactive';
+  const s = parseDate(cal.startDate);
+  const e = endDate(cal);
+  if(!s || !e) return 'Inactive';
+  const t = today0();
+  if(t < s) return 'Upcoming';
+  if(t > e) return 'Completed';
+  return 'Active';
+}
+
+// Join is live unless the academy switched the calendar off, or it has ended.
+function joinAllowed(cal){
+  const st = calStatus(cal);
+  return st === 'Active' || st === 'Upcoming';
+}
+
+function buildDays(cal){
+  const start = parseDate(cal.startDate);
+  if(!start) return [];
+  const off = new Set((cal.weeklyOff || []).map(n => DAYS_FULL.indexOf(n)).filter(i => i >= 0));
+  const links = cal.links || [];
+  const out = [];
+  let linkIdx = 0;
+
+  for(let i = 0; i < cal.days; i++){
+    const date = addDays(start, i);
+    const isOff = off.has(date.getDay());
+    let link = null;
+    if(!isOff && links.length){
+      link = links[linkIdx % links.length];
+      linkIdx++;              // rotation advances on class days only
+    }
+    out.push({ n: i+1, date, isOff, link });
+  }
+  return out;
+}
+
+/* ---------------- Overview: calendar status line ---------------- */
+function renderCalendarStatus(){
+  const box = $('ovCalendar');
+  if(!calendars.length){ box.textContent = 'No calendar sheets yet'; return; }
+
+  const running = calendars.find(c => calStatus(c) === 'Active');
+  if(running){
+    const days = buildDays(running);
+    const t = today0().getTime();
+    const idx = days.findIndex(d => d.date.getTime() === t);
+    const dayLine = idx >= 0 ? ` · Day ${idx+1} of ${running.days}` : '';
+    box.innerHTML = `<b style="color:var(--mint);font-weight:800">${escapeHtml(running.name)}</b>
+      <span style="color:var(--frost-dim)"> · Running${dayLine}</span>`;
+    return;
+  }
+
+  const upcoming = calendars.find(c => calStatus(c) === 'Upcoming');
+  if(upcoming){
+    box.innerHTML = `<b style="color:var(--azure-light);font-weight:800">${escapeHtml(upcoming.name)}</b>
+      <span style="color:var(--frost-dim)"> · Starts ${fmtDate(parseDate(upcoming.startDate))}</span>`;
+    return;
+  }
+
+  box.innerHTML = `<span style="color:var(--frost-dim)">${calendars.length} calendar sheet${calendars.length>1?'s':''} · none running right now</span>`;
+}
+
+/* ---------------- Calendar tab ---------------- */
+function renderCalendars(){
+  const area = $('calArea');
+
+  if(!calendars.length) return;  // keep the empty state already in the HTML
+
+  // Open on whatever is running; otherwise the next upcoming; otherwise the first.
+  let start = calendars.findIndex(c => calStatus(c) === 'Active');
+  if(start < 0) start = calendars.findIndex(c => calStatus(c) === 'Upcoming');
+  if(start < 0) start = 0;
+  activeCalIdx = start;
+
+  area.innerHTML = `<div class="cal-chips" id="calChips"></div><div id="calBody"></div>`;
+  renderChips();
+  renderCalBody();
+}
+
+function renderChips(){
+  $('calChips').innerHTML = calendars.map((c, i) => {
+    const st = calStatus(c);
+    const colour = st === 'Active'   ? 'var(--mint)'
+                 : st === 'Upcoming' ? 'var(--azure-light)'
+                 : st === 'Inactive' ? 'var(--rose)'
+                 : 'var(--frost-faint)';
+    return `<button class="cal-chip ${i === activeCalIdx ? 'on' : ''}" data-i="${i}">
+      <b>${escapeHtml(c.name)}</b>
+      <span class="st" style="color:${colour}">${st}</span>
+    </button>`;
+  }).join('');
+
+  $('calChips').querySelectorAll('.cal-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      activeCalIdx = parseInt(chip.dataset.i, 10);
+      renderChips();
+      renderCalBody();
+    });
+  });
+}
+
+function renderCalBody(){
+  const cal = calendars[activeCalIdx];
+  if(!cal) return;
+
+  const st    = calStatus(cal);
+  const s     = parseDate(cal.startDate);
+  const e     = endDate(cal);
+  const days  = buildDays(cal);
+  const classCount = days.filter(d => !d.isOff).length;
+  const canJoin = joinAllowed(cal);
+  const offTxt  = (cal.weeklyOff && cal.weeklyOff.length) ? cal.weeklyOff.join(', ') : 'None';
+
+  const stColour = st === 'Active'   ? 'var(--mint)'
+                 : st === 'Upcoming' ? 'var(--azure-light)'
+                 : st === 'Inactive' ? 'var(--rose)'
+                 : 'var(--frost-faint)';
+
+  let note = '';
+  if(st === 'Completed'){
+    note = `<div class="cal-note dim">This plan finished on ${fmtDate(e)}. Kept here for your records.</div>`;
+  } else if(st === 'Inactive'){
+    note = `<div class="cal-note warn">This calendar has been switched off by the academy. Join buttons are disabled.</div>`;
+  } else if(st === 'Upcoming'){
+    note = `<div class="cal-note dim">This plan starts on ${fmtDate(s)}, in shā’ Allāh.</div>`;
+  }
+
+  const t = today0().getTime();
+
+  $('calBody').innerHTML = `
+    <div class="cal-summary">
+      <div>
+        <h3>${escapeHtml(cal.name)}</h3>
+        <div class="sub">
+          <b>${fmtDate(s)} – ${fmtDate(e)}</b> · ${cal.days} days (${classCount} classes)<br>
+          Weekly off: <b>${escapeHtml(offTxt)}</b>
+        </div>
+      </div>
+      <span class="pill" style="color:${stColour};border:1px solid ${stColour};background:transparent">${st}</span>
+    </div>
+    ${note}
+    <div class="days">
+      ${days.map(d => {
+        const isToday = d.date.getTime() === t;
+        const isPast  = d.date.getTime() < t;
+        if(d.isOff){
+          return `<div class="day off ${isPast ? 'past' : ''}">
+            <div class="day-left">
+              <div class="day-n">Day ${d.n}</div>
+              <div class="day-date">${fmtDate(d.date)}<span class="day-dow">${DAYS_SHORT[d.date.getDay()]}</span></div>
+            </div>
+            <div class="day-holiday">Holiday</div>
+          </div>`;
+        }
+        const joinable = canJoin && d.link;
+        return `<div class="day ${isToday ? 'today' : ''} ${isPast && !isToday ? 'past' : ''}">
+          <div class="day-left">
+            <div class="day-n">Day ${d.n}</div>
+            <div class="day-date">${fmtDate(d.date)}<span class="day-dow">${DAYS_SHORT[d.date.getDay()]}</span>${isToday ? '<span class="today-tag">Today</span>' : ''}</div>
+          </div>
+          ${joinable
+            ? `<a class="btn-join" href="${escapeHtml(d.link)}" target="_blank" rel="noopener">
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                 Join
+               </a>`
+            : `<span class="btn-join dead">Join</span>`}
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  // Scroll today's row into view inside the list
+  const todayEl = $('calBody').querySelector('.day.today');
+  if(todayEl) todayEl.scrollIntoView({ block:'nearest' });
 }
 
 /* ---------------- Utils ---------------- */
@@ -582,6 +898,10 @@ function escapeHtml(str){
 }
 function fmtDate(v){
   if(!v) return '—';
+  if(v instanceof Date){
+    if(isNaN(v.getTime())) return '—';
+    return v.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+  }
   const s = String(v);
   const plain = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if(plain){
