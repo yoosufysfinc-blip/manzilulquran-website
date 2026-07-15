@@ -1,1 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Classes · ManzilulQuran Admin</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+<style>
+  :root{
+    --emerald-deepest:#031b13;
+    --emerald-deep:#0a3d2e;
+    --emerald:#125c44;
+    --emerald-light:#1a7a5a;
+    --emerald-glow:#2dd4a4;
+    --gold:#c9a961;
+    --gold-light:#e4c987;
+    --gold-warm:#ffb86b;
+    --cream:#faf6ee;
+    --cream-dim:rgba(250,246,238,0.7);
+    --ink:#0e1a14;
+    --err:#ff9999;
+    --glow-warm:rgba(255,200,140,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Manrope',sans-serif;
+    background:radial-gradient(ellipse at top,var(--emerald-deep) 0%,var(--emerald-deepest) 65%,#000 100%);
+    color:var(--cream);min-height:100vh;padding:36px 20px 60px;
+  }
+
+  /* ---------- Lock ---------- */
+  .lock-screen{
+    max-width:420px;width:100%;background:#fff;color:var(--ink);
+    border-radius:22px;padding:44px 32px 36px;
+    box-shadow:0 30px 80px rgba(0,0,0,0.4);text-align:center;
+    animation:riseIn .35s ease;margin:80px auto 0;
+  }
+  @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .lock-logo{width:80px;height:80px;border-radius:50%;border:3px solid var(--emerald-light);margin:0 auto 22px;overflow:hidden;background:#fff}
+  .lock-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .lock-title{font-size:22px;font-weight:800;color:var(--emerald);margin-bottom:6px}
+  .lock-sub{font-size:13.5px;color:#5B6B63;font-weight:500;margin-bottom:24px}
+  .lock-input{
+    width:100%;font-family:'Manrope',sans-serif;font-size:16px;font-weight:600;color:var(--ink);
+    border:2px solid var(--emerald-light);border-radius:12px;padding:14px 16px;
+    text-align:center;letter-spacing:4px;transition:border-color .2s;
+  }
+  .lock-input:focus{outline:none;border-color:var(--emerald);box-shadow:0 0 0 3px rgba(27,122,90,.15)}
+  .lock-input.wrong{border-color:#c0392b;animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  .lock-btn{
+    width:100%;margin-top:16px;font-family:'Manrope',sans-serif;font-size:15px;font-weight:800;
+    color:#fff;background:var(--emerald);border:none;border-radius:12px;padding:14px;cursor:pointer;
+  }
+  .lock-btn:hover{background:var(--emerald-light)}
+  .lock-error{color:#c0392b;font-size:12.5px;font-weight:600;margin-top:12px;min-height:16px}
+  .lock-hint{margin-top:22px;padding-top:20px;border-top:1px solid #E8F3EE;font-size:11.5px;color:#5B6B63}
+  .lock-hint a{color:var(--emerald-light);text-decoration:none;font-weight:600}
+
+  /* ---------- Admin shell ---------- */
+  .admin{display:none;max-width:1180px;margin:0 auto}
+  .admin.show{display:block;animation:riseIn .35s ease}
+  .admin-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid rgba(201,169,110,0.2);
+  }
+  .admin-head-left{display:flex;align-items:center;gap:16px}
+  .admin-logo{width:56px;height:56px;border-radius:50%;border:2px solid rgba(201,169,110,0.5);overflow:hidden;background:#fff;flex:0 0 auto}
+  .admin-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .admin-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--cream);line-height:1.1}
+  .admin-title .accent{color:var(--gold-light);font-style:italic;font-weight:500}
+  .admin-sub{font-size:12px;color:var(--cream-dim);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+  .admin-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+  .btn-ghost{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+    color:rgba(255,255,255,0.75);background:transparent;border:1px solid rgba(255,255,255,0.2);
+    border-radius:100px;padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    transition:background .2s;
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,0.08)}
+  .btn-ghost svg{width:12px;height:12px}
+  .btn-gold{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--emerald-deepest);
+    background:linear-gradient(135deg,var(--gold-light),var(--gold));
+    border:none;border-radius:100px;padding:10px 20px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;
+    box-shadow:0 6px 20px -8px rgba(201,169,110,0.6);
+    transition:transform .15s, box-shadow .2s;
+  }
+  .btn-gold:hover{transform:translateY(-1px);box-shadow:0 10px 26px -8px rgba(201,169,110,0.8)}
+  .btn-gold svg{width:13px;height:13px}
+
+  /* ---------- Stats ---------- */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+  .stat{background:rgba(3,27,19,0.5);border:1px solid rgba(201,169,110,0.2);border-radius:14px;padding:16px 18px}
+  .stat-label{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px}
+  .stat-value{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--cream);line-height:1}
+
+  /* ---------- Controls ---------- */
+  .list-wrap{background:rgba(3,27,19,0.5);border:1px solid rgba(201,169,110,0.2);border-radius:14px;overflow:hidden}
+  .list-search{
+    padding:16px 20px;border-bottom:1px solid rgba(201,169,110,0.15);
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  }
+  .list-search svg{width:18px;height:18px;color:var(--gold-light);flex:0 0 auto}
+  .list-search input{
+    flex:1;min-width:150px;font-family:'Manrope',sans-serif;font-size:14px;
+    color:var(--cream);background:transparent;border:none;outline:none;
+  }
+  .list-search input::placeholder{color:rgba(250,246,238,0.4)}
+  #resultCount{font-size:12px;color:var(--gold-light);font-weight:600;white-space:nowrap}
+
+  .filters{
+    display:flex;gap:10px;flex-wrap:wrap;
+    padding:14px 20px;border-bottom:1px solid rgba(201,169,110,0.15);
+  }
+  .filters select{
+    font-family:'Manrope',sans-serif;font-size:12.5px;font-weight:600;color:var(--cream);
+    background:rgba(3,27,19,0.75);border:1px solid rgba(201,169,110,0.25);
+    border-radius:100px;padding:8px 32px 8px 14px;cursor:pointer;outline:none;appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c9a961' stroke-width='3' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 12px center;
+  }
+  .filters select:focus{border-color:var(--gold)}
+  .filters select option{background:var(--emerald-deepest);color:var(--cream)}
+
+  /* ---------- Table ---------- */
+  .list-table{width:100%;border-collapse:collapse}
+  .list-table thead th{
+    text-align:left;padding:14px 20px;font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    color:var(--gold-light);background:rgba(3,27,19,0.4);border-bottom:1px solid rgba(201,169,110,0.15);
+  }
+  .list-table tbody tr{border-bottom:1px solid rgba(201,169,110,0.08);transition:background .2s}
+  .list-table tbody tr:hover{background:rgba(201,169,110,0.05)}
+  .list-table tbody tr:last-child{border-bottom:none}
+  .list-table td{padding:13px 20px;font-size:14px;color:var(--cream);vertical-align:middle}
+  .list-table td.date,.list-table td.sid{color:rgba(250,246,238,0.6);font-size:12.5px}
+  .list-table td.actions{text-align:right;white-space:nowrap}
+  .list-table td.actions button{
+    background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold-light);
+    padding:5px 11px;border-radius:100px;cursor:pointer;font-size:11px;font-weight:600;
+    letter-spacing:.8px;text-transform:uppercase;margin-left:5px;font-family:'Manrope',sans-serif;transition:all .2s;
+  }
+  .list-table td.actions button:hover{background:var(--gold);color:var(--emerald-deepest);border-color:var(--gold)}
+  .list-table td.actions button.danger{color:var(--err);border-color:rgba(255,153,153,0.3)}
+  .list-table td.actions button.danger:hover{background:#c0392b;color:#fff;border-color:#c0392b}
+
+  .pill{
+    display:inline-block;padding:3px 11px;border-radius:100px;
+    font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  }
+  .pill.active{background:rgba(45,212,164,0.15);color:var(--emerald-glow);border:1px solid rgba(45,212,164,0.4)}
+  .pill.inactive{background:rgba(255,153,153,0.1);color:var(--err);border:1px solid rgba(255,153,153,0.3)}
+
+  .loading{text-align:center;padding:60px 20px;color:var(--cream-dim);font-size:14px}
+  .loading-spin{
+    display:inline-block;width:26px;height:26px;
+    border:3px solid rgba(201,169,110,0.2);border-top-color:var(--gold);
+    border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty-state{text-align:center;padding:60px 20px;color:var(--cream-dim);font-size:14px;line-height:1.7}
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(6px);z-index:100;
+    align-items:flex-start;justify-content:center;padding:30px 20px;overflow-y:auto;
+  }
+  .modal-backdrop.show{display:flex;animation:fadeIn .25s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal{
+    background:linear-gradient(160deg,rgba(18,92,68,0.97) 0%,rgba(3,27,19,0.99) 100%);
+    border:1px solid rgba(201,169,110,0.3);
+    max-width:560px;width:100%;border-radius:20px;overflow:hidden;
+    box-shadow:0 40px 100px rgba(0,0,0,0.6);
+    animation:modalIn .35s cubic-bezier(.2,.9,.3,1.1) both;
+  }
+  @keyframes modalIn{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .modal-head{
+    padding:26px 30px 20px;border-bottom:1px solid rgba(201,169,110,0.2);
+  }
+  .modal-head h3{
+    font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--cream);
+  }
+  .modal-head h3 .accent{color:var(--gold-light);font-style:italic;font-weight:500}
+  .modal-head p{font-size:12.5px;color:var(--cream-dim);margin-top:5px}
+  .modal-body{padding:24px 30px}
+  .modal-foot{
+    padding:16px 30px;display:flex;justify-content:flex-end;gap:10px;
+    border-top:1px solid rgba(201,169,110,0.2);background:rgba(3,27,19,0.4);
+  }
+
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field.full{grid-column:1/-1}
+  .field label{font-size:10.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-light)}
+  .field label .req{color:var(--gold-warm)}
+  .field input,.field select{
+    font-family:'Manrope',sans-serif;font-size:14.5px;font-weight:500;color:var(--cream);
+    background:rgba(3,27,19,0.7);border:1.5px solid rgba(201,169,110,0.25);
+    border-radius:11px;padding:12px 14px;width:100%;outline:none;appearance:none;
+    transition:border-color .25s, box-shadow .25s;
+  }
+  .field input::placeholder{color:rgba(250,246,238,0.32)}
+  .field input:focus,.field select:focus{
+    border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,0.14);
+  }
+  .field select{
+    cursor:pointer;padding-right:38px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%23c9a961' stroke-width='2.5' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 14px center;
+  }
+  .field select option{background:var(--emerald-deepest);color:var(--cream)}
+  .field input[type="date"]{color-scheme:dark}
+  .field .err-msg{font-size:11.5px;color:var(--err);display:none}
+  .field.invalid input,.field.invalid select{border-color:var(--err)}
+  .field.invalid .err-msg{display:block}
+
+  .btn-solid{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    background:linear-gradient(135deg,var(--gold-light),var(--gold));color:var(--emerald-deepest);
+    border:none;border-radius:100px;padding:12px 24px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  .btn-solid:hover{background:linear-gradient(135deg,var(--gold-warm),var(--gold-light))}
+  .btn-solid[disabled]{opacity:.6;cursor:not-allowed}
+  .btn-solid.danger{background:#c0392b;color:#fff}
+  .btn-solid.danger:hover{background:#e74c3c}
+  .btn-outline{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    background:transparent;color:var(--gold-light);border:1.5px solid rgba(201,169,110,0.5);
+    border-radius:100px;padding:11px 24px;cursor:pointer;
+  }
+  .btn-outline:hover{background:rgba(201,169,110,0.12)}
+
+  /* ---------- Share modal ---------- */
+  .share-link-box{
+    display:flex;align-items:center;gap:10px;
+    background:rgba(3,27,19,0.8);border:1.5px solid rgba(201,169,110,0.3);
+    border-radius:11px;padding:12px 14px;margin-bottom:16px;
+  }
+  .share-link-box input{
+    flex:1;background:transparent;border:none;outline:none;
+    font-family:'Manrope',sans-serif;font-size:13px;color:var(--gold-light);
+    font-weight:500;
+  }
+  .share-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .share-actions button{flex:1;min-width:130px;justify-content:center}
+  .btn-wa{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    background:#25D366;color:#04301a;border:none;border-radius:100px;padding:12px 20px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  .btn-wa:hover{background:#1ebe5b}
+  .btn-wa svg{width:14px;height:14px}
+  .warn-box{
+    background:rgba(255,153,153,0.08);border:1px solid rgba(255,153,153,0.3);
+    border-radius:11px;padding:13px 15px;margin-top:16px;
+    font-size:12.5px;color:var(--cream-dim);line-height:1.6;
+  }
+  .warn-box b{color:var(--err)}
+
+  .toast{
+    position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--emerald-deepest);border:1px solid var(--gold);
+    color:var(--cream);padding:13px 24px;border-radius:100px;
+    font-size:13px;font-weight:600;z-index:200;opacity:0;
+    transition:all .3s cubic-bezier(.2,.9,.3,1.2);
+    box-shadow:0 12px 40px rgba(0,0,0,0.5);
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast.err{border-color:var(--err);color:var(--err)}
+
+  @media (max-width:700px){
+    .admin-title{font-size:22px}
+    .fgrid{grid-template-columns:1fr}
+
+    /* rows become cards */
+    .list-table thead{display:none}
+    .list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
+    .list-table tr{
+      border:1px solid rgba(201,169,110,0.2);border-radius:12px;
+      margin:12px 14px;padding:14px 16px;background:rgba(3,27,19,0.45);width:auto;
+    }
+    .list-table td{
+      padding:6px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;border:none;
+    }
+    .list-table td::before{
+      content:attr(data-label);
+      font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+      color:var(--gold-light);flex:0 0 auto;
+    }
+    .list-table td.actions{
+      justify-content:flex-start;flex-wrap:wrap;gap:6px;
+      padding-top:12px;margin-top:8px;border-top:1px solid rgba(201,169,110,0.15);
+    }
+    .list-table td.actions::before{content:none}
+    .list-table td.actions button{margin-left:0;padding:8px 14px}
+  }
+</style>
+</head>
+<body>
+
+  <!-- LOCK -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
+    <div class="lock-title">Classes</div>
+    <div class="lock-sub">Enter the portal password to continue.</div>
+    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="off" autofocus />
+    <button class="lock-btn" id="lockBtn">Unlock</button>
+    <div class="lock-error" id="lockError">&nbsp;</div>
+    <div class="lock-hint">Admin access only.<br><a href="/portal/">← Back to portal</a></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="admin" id="adminView">
+    <div class="admin-head">
+      <div class="admin-head-left">
+        <div class="admin-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
+        <div>
+          <div class="admin-title">Class <span class="accent">Sheets</span></div>
+          <div class="admin-sub">Student Workspaces</div>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-gold" id="newClassBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Class Sheet
+        </button>
+        <button class="btn-ghost" id="refreshBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          Refresh
+        </button>
+        <button class="btn-ghost" id="lockAgainBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Lock
+        </button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Total class sheets</div><div class="stat-value" id="statTotal">—</div></div>
+      <div class="stat"><div class="stat-label">Active</div><div class="stat-value" id="statActive">—</div></div>
+      <div class="stat"><div class="stat-label">Inactive</div><div class="stat-value" id="statInactive">—</div></div>
+    </div>
+
+    <div class="list-wrap">
+      <div class="list-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search by student name, student ID, or course..." />
+        <span id="resultCount"></span>
+      </div>
+
+      <div class="filters">
+        <select id="filterCourse"><option value="">All courses</option></select>
+        <select id="filterStatus">
+          <option value="">All status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+        <select id="filterMonth"><option value="">All join months</option></select>
+        <select id="filterYear"><option value="">All join years</option></select>
+        <select id="sortBy">
+          <option value="createdDesc">Recently created</option>
+          <option value="updatedDesc">Recently updated</option>
+          <option value="nameAsc">Student name (A–Z)</option>
+          <option value="joinDesc">Join date (newest)</option>
+          <option value="joinAsc">Join date (oldest)</option>
+          <option value="courseAsc">Course</option>
+          <option value="statusAsc">Status</option>
+        </select>
+      </div>
+
+      <div id="listContent">
+        <div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT MODAL -->
+  <div class="modal-backdrop" id="formModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="formTitle">New <span class="accent">Class Sheet</span></h3>
+        <p id="formSubtitle">Creates a secure workspace and share link for this student.</p>
+      </div>
+      <div class="modal-body">
+        <div class="fgrid">
+          <div class="field full">
+            <label>Student Name <span class="req">*</span></label>
+            <input type="text" id="fName" placeholder="e.g. Aisha Rahman" />
+            <span class="err-msg">Please enter the student's name.</span>
+          </div>
+          <div class="field">
+            <label>Student ID <span class="req">*</span></label>
+            <input type="text" id="fStudentId" placeholder="e.g. MQ-2026-014" />
+            <span class="err-msg">Please enter a student ID.</span>
+          </div>
+          <div class="field">
+            <label>Join Date <span class="req">*</span></label>
+            <input type="date" id="fJoinDate" />
+            <span class="err-msg">Please pick a join date.</span>
+          </div>
+          <div class="field">
+            <label>Course <span class="req">*</span></label>
+            <select id="fCourse">
+              <option value="" disabled selected>Select course</option>
+              <option value="Hifzul Qur'an">Hifzul Qur'an</option>
+              <option value="Tartheel">Tartheel</option>
+              <option value="Quranul Yawmi">Quranul Yawmi</option>
+              <option value="Madrasa Studies">Madrasa Studies</option>
+              <option value="Tajweedul Qur'an">Tajweedul Qur'an</option>
+              <option value="Tafseerul Qur'an">Tafseerul Qur'an</option>
+              <option value="Dawra">Dawra</option>
+            </select>
+            <span class="err-msg">Please select a course.</span>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="fStatus">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>WhatsApp Group Link</label>
+            <input type="url" id="fWhatsapp" placeholder="https://chat.whatsapp.com/..." />
+            <span class="err-msg">Please enter a valid link (or leave empty).</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="formCancelBtn">Cancel</button>
+        <button class="btn-solid" id="formSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHARE MODAL -->
+  <div class="modal-backdrop" id="shareModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Share <span class="accent">Class Sheet</span></h3>
+        <p id="shareSubtitle">Anyone with this link can open this class sheet.</p>
+      </div>
+      <div class="modal-body">
+        <div class="share-link-box">
+          <input type="text" id="shareLinkInput" readonly />
+        </div>
+        <div class="share-actions">
+          <button class="btn-solid" id="copyLinkBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Link
+          </button>
+          <button class="btn-wa" id="waShareBtn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/></svg>
+            WhatsApp
+          </button>
+        </div>
+        <div class="warn-box">
+          <b>Reset Link</b> creates a brand-new link and permanently kills the old one.
+          Use this if a link was shared with the wrong person.
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="shareCloseBtn">Close</button>
+        <button class="btn-solid danger" id="resetLinkBtn">Reset Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM MODAL -->
+  <div class="modal-backdrop" id="confirmModal">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-head">
+        <h3 id="confirmTitle">Are you <span class="accent">sure?</span></h3>
+        <p id="confirmText">This cannot be undone.</p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="confirmCancelBtn">Cancel</button>
+        <button class="btn-solid danger" id="confirmOkBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+/* =================================================================
+   ░░  CLASSES ADMIN  ░░
+   ================================================================= */
+
+// CONFIG — paste the Classes Apps Script Web App URL here
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
+const PORTAL_PASSWORD = "manzil2026";
+const ADMIN_API_PASSWORD = "manzil2026admin"; // must match ADMIN_PASSWORD in apps-script-classes.gs
+const SHARE_BASE = window.location.origin + "/class/";
+
+const SESSION_KEY = "mq_portal_unlocked_at";
+const SESSION_MAX_MS = 24 * 60 * 60 * 1000;
+
+const $ = (id) => document.getElementById(id);
+let classes = [];
+let editingId = null;      // null = creating, otherwise Class ID
+let shareTarget = null;    // class object currently in the share modal
+let confirmAction = null;  // function to run on confirm
+
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+/* ---------------- Lock ---------------- */
+function isUnlocked(){
+  try{
+    const at = parseInt(sessionStorage.getItem(SESSION_KEY) || "0", 10);
+    return at && (Date.now() - at) < SESSION_MAX_MS;
+  }catch(e){ return false; }
+}
+function unlock(){
+  try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  loadClasses();
+}
+function lock(){
+  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  $("adminView").classList.remove("show");
+  $("lockScreen").style.display = "";
+  $("lockInput").value = "";
+  setTimeout(()=>$("lockInput").focus(), 100);
+}
+function tryPassword(){
+  if(($("lockInput").value || "").trim() === PORTAL_PASSWORD){ unlock(); }
+  else{
+    $("lockInput").classList.add("wrong");
+    $("lockError").textContent = "Wrong password. Try again.";
+    setTimeout(()=>$("lockInput").classList.remove("wrong"), 400);
+    $("lockInput").select();
+  }
+}
+$("lockBtn").onclick = tryPassword;
+$("lockInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryPassword(); });
+$("lockAgainBtn").onclick = lock;
+if(isUnlocked()){
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  loadClasses();
+}
+
+/* ---------------- Load ---------------- */
+async function loadClasses(){
+  $("listContent").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>';
+  try{
+    if(SCRIPT_URL.startsWith("PASTE_")){
+      throw new Error("SCRIPT_URL is not set in this file yet.");
+    }
+    const res = await fetch(`${SCRIPT_URL}?action=listClasses&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Failed to load");
+
+    classes = data.classes || [];
+    buildFilterOptions();
+    updateStats();
+    applyView();
+  }catch(err){
+    console.error(err);
+    $("listContent").innerHTML = `<div class="empty-state">Failed to load class sheets.<br><br>
+      <small style="color:#ff9999">Error: ${escapeHtml(err.message)}</small><br><br>
+      Check that the Classes Apps Script is deployed and the URL + admin password match.</div>`;
+  }
+}
+$("refreshBtn").onclick = loadClasses;
+
+/* ---------------- Stats ---------------- */
+function updateStats(){
+  $("statTotal").textContent = classes.length;
+  $("statActive").textContent = classes.filter(c => c["Status"] === "Active").length;
+  $("statInactive").textContent = classes.filter(c => c["Status"] !== "Active").length;
+}
+
+/* ---------------- Filters ---------------- */
+function buildFilterOptions(){
+  // Courses present in the data
+  const courses = [...new Set(classes.map(c => c["Course"]).filter(Boolean))].sort();
+  const cSel = $("filterCourse");
+  const cVal = cSel.value;
+  cSel.innerHTML = '<option value="">All courses</option>' +
+    courses.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  cSel.value = cVal;
+
+  // Months
+  const mSel = $("filterMonth");
+  const mVal = mSel.value;
+  mSel.innerHTML = '<option value="">All join months</option>' +
+    MONTHS.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+  mSel.value = mVal;
+
+  // Years present in the data
+  const years = [...new Set(classes.map(c => {
+    const d = new Date(c["Join Date"]);
+    return isNaN(d.getTime()) ? null : d.getFullYear();
+  }).filter(Boolean))].sort((a,b)=>b-a);
+  const ySel = $("filterYear");
+  const yVal = ySel.value;
+  ySel.innerHTML = '<option value="">All join years</option>' +
+    years.map(y => `<option value="${y}">${y}</option>`).join('');
+  ySel.value = yVal;
+}
+
+["filterCourse","filterStatus","filterMonth","filterYear","sortBy"].forEach(id => {
+  $(id).addEventListener("change", applyView);
+});
+$("searchInput").addEventListener("input", applyView);
+
+function applyView(){
+  const q      = $("searchInput").value.trim().toLowerCase();
+  const course = $("filterCourse").value;
+  const status = $("filterStatus").value;
+  const month  = $("filterMonth").value;
+  const year   = $("filterYear").value;
+  const sort   = $("sortBy").value;
+
+  let list = classes.filter(c => {
+    if(q){
+      const hay = [c["Student Name"], c["Student ID"], c["Course"]].join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    if(course && c["Course"] !== course) return false;
+    if(status && (c["Status"] || "Active") !== status) return false;
+    if(month !== "" || year !== ""){
+      const d = new Date(c["Join Date"]);
+      if(isNaN(d.getTime())) return false;
+      if(month !== "" && d.getMonth() !== parseInt(month,10)) return false;
+      if(year !== ""  && d.getFullYear() !== parseInt(year,10)) return false;
+    }
+    return true;
+  });
+
+  const t = (v) => { const d = new Date(v); return isNaN(d.getTime()) ? 0 : d.getTime(); };
+  const s = (v) => String(v || "").toLowerCase();
+
+  list.sort((a,b) => {
+    switch(sort){
+      case "updatedDesc": return t(b["Last Updated"]) - t(a["Last Updated"]);
+      case "nameAsc":     return s(a["Student Name"]).localeCompare(s(b["Student Name"]));
+      case "joinDesc":    return t(b["Join Date"]) - t(a["Join Date"]);
+      case "joinAsc":     return t(a["Join Date"]) - t(b["Join Date"]);
+      case "courseAsc":   return s(a["Course"]).localeCompare(s(b["Course"]));
+      case "statusAsc":   return s(a["Status"]).localeCompare(s(b["Status"]));
+      case "createdDesc":
+      default:            return t(b["Created Date"]) - t(a["Created Date"]);
+    }
+  });
+
+  renderList(list);
+  $("resultCount").textContent = `Showing ${list.length} of ${classes.length}`;
+}
+
+/* ---------------- List ---------------- */
+function renderList(items){
+  if(!classes.length){
+    $("listContent").innerHTML = `<div class="empty-state">
+      No class sheets yet.<br>Click <b style="color:var(--gold-light)">New Class Sheet</b> to create the first one.
+    </div>`;
+    return;
+  }
+  if(!items.length){
+    $("listContent").innerHTML = '<div class="empty-state">No class sheets match these filters.</div>';
+    return;
+  }
+
+  const rows = items.map(c => {
+    const isActive = (c["Status"] || "Active") === "Active";
+    return `<tr>
+      <td data-label="Student">${escapeHtml(c["Student Name"] || "—")}</td>
+      <td class="sid" data-label="Student ID">${escapeHtml(c["Student ID"] || "—")}</td>
+      <td data-label="Course">${escapeHtml(c["Course"] || "—")}</td>
+      <td class="date" data-label="Joined">${fmtDate(c["Join Date"])}</td>
+      <td data-label="Status"><span class="pill ${isActive ? 'active':'inactive'}">${isActive ? 'Active':'Inactive'}</span></td>
+      <td class="actions">
+        <button data-act="open"  data-id="${escapeHtml(c["Class ID"])}">Open</button>
+        <button data-act="share" data-id="${escapeHtml(c["Class ID"])}">Share</button>
+        <button data-act="edit"  data-id="${escapeHtml(c["Class ID"])}">Edit</button>
+        <button data-act="del"   data-id="${escapeHtml(c["Class ID"])}" class="danger">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  $("listContent").innerHTML = `<table class="list-table">
+    <thead><tr>
+      <th>Student</th><th>Student ID</th><th>Course</th><th>Joined</th><th>Status</th>
+      <th style="text-align:right">Actions</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+
+  $("listContent").querySelectorAll("button[data-act]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const c = classes.find(x => x["Class ID"] === btn.dataset.id);
+      if(!c) return;
+      const act = btn.dataset.act;
+      if(act === "open")  window.open(shareUrl(c), "_blank");
+      if(act === "share") openShare(c);
+      if(act === "edit")  openForm(c);
+      if(act === "del")   askDelete(c);
+    });
+  });
+}
+
+function shareUrl(c){ return SHARE_BASE + "?t=" + encodeURIComponent(c["Share Token"]); }
+
+/* ---------------- Create / Edit ---------------- */
+$("newClassBtn").onclick = () => openForm(null);
+
+function openForm(c){
+  editingId = c ? c["Class ID"] : null;
+  $("formTitle").innerHTML = c ? 'Edit <span class="accent">Class Sheet</span>' : 'New <span class="accent">Class Sheet</span>';
+  $("formSubtitle").textContent = c
+    ? "Changes apply immediately. The share link stays the same."
+    : "Creates a secure workspace and share link for this student.";
+
+  $("fName").value      = c ? (c["Student Name"] || "") : "";
+  $("fStudentId").value = c ? (c["Student ID"] || "") : "";
+  $("fCourse").value    = c ? (c["Course"] || "") : "";
+  $("fJoinDate").value  = c ? toDateInput(c["Join Date"]) : "";
+  $("fWhatsapp").value  = c ? (c["WhatsApp Group Link"] || "") : "";
+  $("fStatus").value    = c ? (c["Status"] || "Active") : "Active";
+
+  document.querySelectorAll("#formModal .field").forEach(f => f.classList.remove("invalid"));
+  openModal("formModal");
+  setTimeout(()=>$("fName").focus(), 200);
+}
+
+$("formCancelBtn").onclick = () => closeModal("formModal");
+
+$("formSaveBtn").onclick = async () => {
+  if(!validateForm()) return;
+
+  const btn = $("formSaveBtn");
+  btn.disabled = true;
+  const oldLabel = btn.textContent;
+  btn.textContent = "Saving…";
+
+  try{
+    const payload = {
+      action:      editingId ? "updateClass" : "createClass",
+      password:    ADMIN_API_PASSWORD,
+      classId:     editingId,
+      studentName: $("fName").value.trim(),
+      studentId:   $("fStudentId").value.trim(),
+      course:      $("fCourse").value,
+      joinDate:    $("fJoinDate").value,
+      whatsapp:    $("fWhatsapp").value.trim(),
+      status:      $("fStatus").value
+    };
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Save failed");
+
+    closeModal("formModal");
+    toast(editingId ? "Class sheet updated" : "Class sheet created");
+    await loadClasses();
+
+    // Straight after creating, show the share link — that's the whole point
+    if(!editingId && data.token){
+      const created = classes.find(x => x["Share Token"] === data.token);
+      if(created) openShare(created);
+    }
+  }catch(err){
+    console.error(err);
+    toast(err.message, true);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = oldLabel;
+  }
+};
+
+function validateForm(){
+  let ok = true;
+  const mark = (el, bad) => {
+    const f = el.closest(".field");
+    f.classList.toggle("invalid", bad);
+    if(bad) ok = false;
+  };
+  mark($("fName"),      !$("fName").value.trim());
+  mark($("fStudentId"), !$("fStudentId").value.trim());
+  mark($("fCourse"),    !$("fCourse").value);
+  mark($("fJoinDate"),  !$("fJoinDate").value);
+
+  const wa = $("fWhatsapp").value.trim();
+  mark($("fWhatsapp"), !!wa && !/^https?:\/\//i.test(wa));
+
+  return ok;
+}
+document.querySelectorAll("#formModal input, #formModal select").forEach(el => {
+  el.addEventListener("input",  () => el.closest(".field").classList.remove("invalid"));
+  el.addEventListener("change", () => el.closest(".field").classList.remove("invalid"));
+});
+
+/* ---------------- Share ---------------- */
+function openShare(c){
+  shareTarget = c;
+  $("shareSubtitle").textContent = `${c["Student Name"]} · ${c["Student ID"]}`;
+  $("shareLinkInput").value = shareUrl(c);
+  openModal("shareModal");
+}
+$("shareCloseBtn").onclick = () => closeModal("shareModal");
+
+$("copyLinkBtn").onclick = async () => {
+  const url = $("shareLinkInput").value;
+  try{
+    await navigator.clipboard.writeText(url);
+    toast("Link copied to clipboard");
+  }catch(e){
+    $("shareLinkInput").select();
+    document.execCommand("copy");
+    toast("Link copied");
+  }
+};
+
+$("waShareBtn").onclick = () => {
+  if(!shareTarget) return;
+  const msg = `Assalamu Alaikum 👋\n\n*${shareTarget["Student Name"]}* — ManzilulQuran class sheet:\n${shareUrl(shareTarget)}\n\nAll class details are in this link, in shā’ Allāh.`;
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+};
+
+$("resetLinkBtn").onclick = () => {
+  if(!shareTarget) return;
+  askConfirm(
+    "Reset this link?",
+    `The current link for ${shareTarget["Student Name"]} will stop working immediately. Anyone still using it will lose access.`,
+    async () => {
+      try{
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action:"resetToken", password: ADMIN_API_PASSWORD, classId: shareTarget["Class ID"] })
+        });
+        const data = await res.json();
+        if(data.result !== "success") throw new Error(data.error || "Reset failed");
+
+        shareTarget["Share Token"] = data.token;
+        $("shareLinkInput").value = shareUrl(shareTarget);
+        toast("New link created — old link is dead");
+        loadClasses();
+      }catch(err){
+        toast(err.message, true);
+      }
+    }
+  );
+};
+
+/* ---------------- Delete ---------------- */
+function askDelete(c){
+  askConfirm(
+    "Delete this class sheet?",
+    `${c["Student Name"]} (${c["Student ID"]}) will be permanently removed, and their share link will stop working. This cannot be undone.`,
+    async () => {
+      try{
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action:"deleteClass", password: ADMIN_API_PASSWORD, classId: c["Class ID"] })
+        });
+        const data = await res.json();
+        if(data.result !== "success") throw new Error(data.error || "Delete failed");
+        toast("Class sheet deleted");
+        loadClasses();
+      }catch(err){
+        toast(err.message, true);
+      }
+    }
+  );
+}
+
+/* ---------------- Confirm modal ---------------- */
+function askConfirm(title, text, onOk){
+  $("confirmTitle").innerHTML = escapeHtml(title).replace(/(\?)$/, '<span class="accent">$1</span>');
+  $("confirmText").textContent = text;
+  confirmAction = onOk;
+  openModal("confirmModal");
+}
+$("confirmCancelBtn").onclick = () => { confirmAction = null; closeModal("confirmModal"); };
+$("confirmOkBtn").onclick = async () => {
+  const fn = confirmAction;
+  confirmAction = null;
+  closeModal("confirmModal");
+  if(fn) await fn();
+};
+
+/* ---------------- Modal helpers ---------------- */
+function openModal(id){
+  $(id).classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closeModal(id){
+  $(id).classList.remove("show");
+  if(!document.querySelector(".modal-backdrop.show")) document.body.style.overflow = "";
+}
+document.querySelectorAll(".modal-backdrop").forEach(m => {
+  m.addEventListener("click", e => { if(e.target === m) closeModal(m.id); });
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape"){
+    const open = document.querySelector(".modal-backdrop.show");
+    if(open) closeModal(open.id);
+  }
+});
+
+/* ---------------- Toast ---------------- */
+let toastTimer = null;
+function toast(msg, isErr){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.toggle("err", !!isErr);
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 3000);
+}
+
+/* ---------------- Utils ---------------- */
+function escapeHtml(str){
+  if(str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function fmtDate(v){
+  if(!v) return '—';
+  const d = new Date(v);
+  if(isNaN(d.getTime())) return String(v);
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function toDateInput(v){
+  if(!v) return '';
+  const d = new Date(v);
+  if(isNaN(d.getTime())) return String(v).slice(0,10);
+  return d.toISOString().slice(0,10);
+}
+</script>
+</body>
+</html>
