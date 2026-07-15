@@ -8,6 +8,7 @@ Allow: /
 Disallow: /fees/
 Disallow: /tools/
 Disallow: /portal/
+Disallow: /class/
 
 # Sitemap location
 Sitemap: https://manzilulquran.in/sitemap.xml
