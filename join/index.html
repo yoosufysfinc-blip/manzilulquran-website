@@ -1,1 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Joining Class · ManzilulQuran E-learning Academy</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+<style>
+  :root{
+    --void:#04060f;
+    --night-deep:#080d1f;
+    --night:#0e1630;
+    --slate:#16224a;
+    --azure:#5b9dff;
+    --azure-light:#93c5fd;
+    --azure-glow:rgba(91,157,255,0.35);
+    --iris:#8b7fd4;
+    --frost:#e9eefc;
+    --frost-dim:rgba(233,238,252,0.62);
+    --frost-faint:rgba(233,238,252,0.32);
+    --silver:#a9b8d8;
+    --rose:#ff9aa6;
+    --mint:#5eead4;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Manrope',sans-serif;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, var(--slate) 0%, transparent 55%),
+      linear-gradient(180deg, var(--night) 0%, var(--night-deep) 45%, var(--void) 100%);
+    background-attachment:fixed;
+    color:var(--frost);
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:30px 20px;
+    overflow-x:hidden;position:relative;
+  }
+
+  .aurora{
+    position:fixed;inset:-25%;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(ellipse 45% 38% at 22% 28%, rgba(91,157,255,0.18), transparent 62%),
+      radial-gradient(ellipse 42% 34% at 78% 18%, rgba(139,127,212,0.14), transparent 62%);
+    filter:blur(46px);
+    animation:auroraDrift 26s ease-in-out infinite alternate;
+  }
+  @keyframes auroraDrift{
+    0%{transform:translate(0,0) scale(1)}
+    100%{transform:translate(4%,-3%) scale(1.12)}
+  }
+  .sky{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 4s ease-in-out infinite}
+  @keyframes twinkle{
+    0%,100%{opacity:.12;transform:scale(.7)}
+    50%{opacity:.85;transform:scale(1)}
+  }
+
+  .stage{position:relative;z-index:1;width:100%;max-width:460px;text-align:center}
+
+  .state{display:none}
+  .state.show{display:block;animation:riseIn .55s cubic-bezier(.2,.9,.3,1.1) both}
+  @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ---------- The logo, with the countdown ring wrapped around it ---------- */
+  .logo-wrap{position:relative;width:150px;height:150px;margin:0 auto 30px}
+  .halo{
+    position:absolute;inset:14px;border-radius:50%;
+    border:1px solid var(--azure);
+    animation:halo 2.4s ease-out infinite;
+  }
+  .halo:nth-child(2){animation-delay:.8s}
+  .halo:nth-child(3){animation-delay:1.6s}
+  @keyframes halo{
+    0%{transform:scale(1);opacity:.55}
+    100%{transform:scale(1.5);opacity:0}
+  }
+  .ring{position:absolute;inset:0;transform:rotate(-90deg)}
+  .ring circle{fill:none;stroke-width:2.5;stroke-linecap:round}
+  .ring .track{stroke:rgba(91,157,255,0.15)}
+  .ring .prog{
+    stroke:url(#ringGrad);
+    stroke-dasharray:440;
+    stroke-dashoffset:440;
+    filter:drop-shadow(0 0 6px var(--azure-glow));
+    transition:stroke-dashoffset .1s linear;
+  }
+  .logo-circle{
+    position:absolute;inset:22px;border-radius:50%;
+    overflow:hidden;border:1.5px solid rgba(147,197,253,0.6);background:#fff;
+    box-shadow:0 0 44px -8px var(--azure-glow);
+    animation:logoIn .8s cubic-bezier(.2,.9,.3,1.3) both, breathe 3s ease-in-out infinite 1s;
+  }
+  @keyframes logoIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+  @keyframes breathe{
+    0%,100%{box-shadow:0 0 44px -8px var(--azure-glow)}
+    50%{box-shadow:0 0 62px -6px rgba(91,157,255,0.55)}
+  }
+  .logo-circle img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+
+  .count{
+    position:absolute;inset:0;display:grid;place-items:center;
+    pointer-events:none;
+  }
+  .count span{
+    font-family:'Manrope',sans-serif;
+    font-size:15px;font-weight:800;
+    color:var(--void);
+    background:var(--azure-light);
+    width:30px;height:30px;border-radius:50%;
+    display:grid;place-items:center;
+    transform:translate(52px,-52px);
+    box-shadow:0 4px 16px -3px var(--azure-glow);
+    animation:pop .45s cubic-bezier(.2,.9,.3,1.6);
+  }
+  @keyframes pop{
+    0%{transform:translate(52px,-52px) scale(.4);opacity:0}
+    60%{transform:translate(52px,-52px) scale(1.25)}
+    100%{transform:translate(52px,-52px) scale(1);opacity:1}
+  }
+
+  /* ---------- Brand with the flare sweep ---------- */
+  .brand{
+    font-family:'Cormorant Garamond',serif;
+    font-size:26px;font-weight:600;letter-spacing:.4px;line-height:1.2;
+    display:inline-block;
+    background-image:linear-gradient(100deg,
+      var(--silver) 0%, var(--silver) 38%, #ffffff 46%,
+      var(--azure-light) 50%, #ffffff 54%, var(--silver) 62%, var(--silver) 100%);
+    background-size:280% 100%;
+    background-position:180% 0;
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent;
+    animation:flareSweep 3.2s ease-in-out infinite;
+  }
+  @keyframes flareSweep{
+    0%{background-position:180% 0}
+    55%,100%{background-position:-80% 0}
+  }
+  .brand-sub{
+    font-size:9.5px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+    color:var(--azure-light);opacity:.7;margin-top:5px;
+  }
+
+  .rule{display:flex;align-items:center;justify-content:center;gap:12px;margin:26px auto 22px;max-width:250px}
+  .rule i{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(91,157,255,0.4),transparent)}
+  .rule span{
+    font-size:8.5px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
+    color:var(--frost-faint);white-space:nowrap;
+  }
+
+  h1{
+    font-size:30px;font-weight:800;letter-spacing:-.8px;
+    color:var(--frost);line-height:1.15;
+  }
+  h1 .accent{color:var(--azure-light);font-weight:600}
+  .meta{font-size:13px;color:var(--frost-dim);margin-top:10px;font-weight:500}
+  .status{
+    font-size:12.5px;color:var(--azure-light);margin-top:26px;
+    font-weight:700;letter-spacing:1.4px;text-transform:uppercase;
+  }
+
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    margin-top:20px;padding:14px 30px;
+    font-family:'Manrope',sans-serif;
+    font-size:12.5px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;
+    color:var(--void);
+    background:linear-gradient(135deg,var(--azure-light),var(--azure));
+    border:none;border-radius:100px;cursor:pointer;text-decoration:none;
+    box-shadow:0 10px 30px -10px var(--azure-glow);
+    transition:transform .16s, box-shadow .2s;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px -10px var(--azure-glow)}
+  .btn svg{width:14px;height:14px}
+  .btn.ghost{
+    background:transparent;color:var(--azure-light);
+    border:1.5px solid var(--azure);box-shadow:none;
+  }
+  .btn.ghost:hover{background:var(--azure);color:var(--void)}
+
+  .fallback{
+    font-size:11.5px;color:var(--frost-faint);margin-top:16px;line-height:1.6;
+  }
+
+  /* ---------- Error ---------- */
+  .err-icon{
+    width:74px;height:74px;margin:0 auto 22px;border-radius:50%;
+    background:rgba(255,154,166,0.06);
+    border:1.5px solid rgba(255,154,166,0.32);
+    display:grid;place-items:center;
+  }
+  .err-icon svg{width:32px;height:32px;stroke:var(--rose);fill:none;stroke-width:2;stroke-linecap:round}
+  .err-title{font-size:23px;font-weight:800;letter-spacing:-.5px;color:var(--frost);margin-bottom:12px}
+  .err-text{font-size:13.5px;color:var(--frost-dim);line-height:1.65;max-width:330px;margin:0 auto}
+
+  .foot{
+    position:fixed;bottom:18px;left:0;right:0;text-align:center;
+    font-size:11px;color:var(--frost-faint);z-index:1;
+  }
+  .foot a{color:var(--azure-light);text-decoration:none;opacity:.8}
+
+  @media (max-width:520px){
+    .logo-wrap{width:130px;height:130px}
+    .count span{transform:translate(44px,-44px)}
+    @keyframes pop{
+      0%{transform:translate(44px,-44px) scale(.4);opacity:0}
+      60%{transform:translate(44px,-44px) scale(1.25)}
+      100%{transform:translate(44px,-44px) scale(1);opacity:1}
+    }
+    .brand{font-size:22px}
+    h1{font-size:25px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.01ms !important;animation-iteration-count:1 !important}
+    .brand{-webkit-text-fill-color:var(--frost);color:var(--frost)}
+  }
+</style>
+</head>
+<body>
+
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="sky" id="sky" aria-hidden="true"></div>
+
+  <!-- gradient definition for the countdown ring -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"   stop-color="#93c5fd"/>
+        <stop offset="100%" stop-color="#5b9dff"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="stage">
+
+    <!-- LOADING -->
+    <div class="state show" id="stateLoading">
+      <div class="logo-wrap">
+        <div class="halo"></div>
+        <div class="logo-circle">
+          <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+        </div>
+      </div>
+      <div class="brand">ManzilulQuran</div>
+      <div class="brand-sub">E-Learning Academy</div>
+      <div class="status">Preparing your class…</div>
+    </div>
+
+    <!-- COUNTDOWN -->
+    <div class="state" id="stateGo">
+      <div class="logo-wrap">
+        <div class="halo"></div>
+        <div class="halo"></div>
+        <div class="halo"></div>
+        <svg class="ring" viewBox="0 0 150 150">
+          <circle class="track" cx="75" cy="75" r="70"/>
+          <circle class="prog" id="ringProg" cx="75" cy="75" r="70"/>
+        </svg>
+        <div class="logo-circle">
+          <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+        </div>
+        <div class="count"><span id="countNum">3</span></div>
+      </div>
+
+      <div class="brand">ManzilulQuran</div>
+      <div class="brand-sub">E-Learning Academy</div>
+
+      <div class="rule"><i></i><span>Your Class</span><i></i></div>
+
+      <h1 id="who">Student</h1>
+      <div class="meta" id="when">—</div>
+
+      <div class="status" id="goStatus">Opening Google Meet…</div>
+
+      <a class="btn" id="goNowBtn" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        Join Now
+      </a>
+      <div class="fallback">If the class doesn’t open by itself, tap the button above.</div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="state" id="stateError">
+      <div class="err-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="err-title" id="errTitle">Something went wrong</div>
+      <div class="err-text" id="errText">Please contact the academy for a new link.</div>
+      <a class="btn ghost" href="https://wa.me/917025070415" target="_blank" rel="noopener" style="margin-top:24px">Contact Academy</a>
+    </div>
+
+  </div>
+
+  <footer class="foot">
+    <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a>
+  </footer>
+
+<script>
+/* =================================================================
+   ░░  JOIN  ░░
+   Opened from a WhatsApp invite: /join/?t=TOKEN&dt=YYYY-MM-DD
+
+   Shows the academy for a beat, then hands off to Google Meet.
+
+   The Meet URL is NOT baked into the invite — it's worked out here,
+   live, from the calendar rule. So if the academy changes the links
+   later, invites already sitting in WhatsApp still land correctly.
+
+   As with /class/, there is no admin password in this file.
+   ================================================================= */
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
+const COUNTDOWN = 3;
+
+const $ = (id) => document.getElementById(id);
+
+/* ---------------- Starfield ---------------- */
+(function stars(n){
+  const sky = $('sky');
+  for(let i=0;i<n;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() < 0.85 ? (1 + Math.random()*1.4) : (2 + Math.random()*1.2);
+    s.style.width = size+'px'; s.style.height = size+'px';
+    s.style.left = (Math.random()*100)+'%';
+    s.style.top  = (Math.random()*100)+'%';
+    s.style.animationDelay = (Math.random()*4)+'s';
+    s.style.animationDuration = (3 + Math.random()*3.5)+'s';
+    sky.appendChild(s);
+  }
+})(40);
+
+function showState(id){
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('show'));
+  $(id).classList.add('show');
+}
+function fail(title, text){
+  $('errTitle').textContent = title;
+  $('errText').textContent = text;
+  showState('stateError');
+}
+
+/* ---------------- Calendar engine (same rules as /class/) ---------------- */
+const DAYS_FULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+function parseDate(s){
+  const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!m) return null;
+  return new Date(+m[1], +m[2]-1, +m[3]);
+}
+function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+function today0(){ const t = new Date(); t.setHours(0,0,0,0); return t; }
+function endDate(cal){
+  const s = parseDate(cal.startDate);
+  return s ? addDays(s, (cal.days||1)-1) : null;
+}
+function calStatus(cal){
+  if(!cal.active) return 'Inactive';
+  const s = parseDate(cal.startDate), e = endDate(cal);
+  if(!s || !e) return 'Inactive';
+  const t = today0();
+  if(t < s) return 'Upcoming';
+  if(t > e) return 'Completed';
+  return 'Active';
+}
+function buildDays(cal){
+  const start = parseDate(cal.startDate);
+  if(!start) return [];
+  const off = new Set((cal.weeklyOff||[]).map(n => DAYS_FULL.indexOf(n)).filter(i => i>=0));
+  const links = cal.links || [];
+  const out = [];
+  let linkIdx = 0;
+  for(let i=0;i<cal.days;i++){
+    const date = addDays(start, i);
+    const isOff = off.has(date.getDay());
+    let link = null;
+    if(!isOff && links.length){ link = links[linkIdx % links.length]; linkIdx++; }
+    out.push({ n:i+1, date, isOff, link });
+  }
+  return out;
+}
+function sameDay(a, b){ return a.getTime() === b.getTime(); }
+
+/* ---------------- Resolve which link this invite means ---------------- */
+function resolve(calendars, want){
+  // Prefer a running calendar, then upcoming, then anything that covers the date
+  const order = ['Active','Upcoming','Completed','Inactive'];
+  const ranked = calendars.slice().sort((a,b) => order.indexOf(calStatus(a)) - order.indexOf(calStatus(b)));
+
+  for(const cal of ranked){
+    const day = buildDays(cal).find(d => sameDay(d.date, want));
+    if(day) return { cal, day, status: calStatus(cal) };
+  }
+  return null;
+}
+
+/* ---------------- Go ---------------- */
+(async function(){
+  const q = new URLSearchParams(location.search);
+  const token = (q.get('t') || '').trim();
+  const dt    = (q.get('dt') || '').trim();
+
+  if(!token || !dt){
+    fail('Invalid link', 'This invite link is incomplete. Please ask the academy to send it again.');
+    return;
+  }
+  const want = parseDate(dt);
+  if(!want){
+    fail('Invalid link', 'This invite link has a bad date. Please ask the academy to send it again.');
+    return;
+  }
+
+  let data;
+  try{
+    const res = await fetch(`${SCRIPT_URL}?action=getClass&token=${encodeURIComponent(token)}`);
+    const out = await res.json();
+    if(out.result !== 'success'){
+      fail('Link not valid', 'This link is no longer valid, or it was reset by the academy. Please ask for a new one.');
+      return;
+    }
+    data = out.data;
+  }catch(err){
+    console.error(err);
+    fail('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
+    return;
+  }
+
+  const found = resolve(data.calendars || [], want);
+  const pretty = want.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  if(!found){
+    fail('No class that day', `There is no class scheduled for ${pretty}.`);
+    return;
+  }
+  if(found.day.isOff){
+    fail('That day is a holiday', `${pretty} is a weekly off in the ${found.cal.name}. There is no class.`);
+    return;
+  }
+  if(found.status === 'Inactive'){
+    fail('Class not available', 'This plan has been switched off by the academy. Please contact us.');
+    return;
+  }
+  if(found.status === 'Completed'){
+    fail('This plan has finished', `The ${found.cal.name} ended already. Please contact the academy for the current schedule.`);
+    return;
+  }
+  if(!found.day.link){
+    fail('No link for this class', 'The academy hasn’t added a class link for that day yet.');
+    return;
+  }
+
+  // Fill the page in
+  const name = data.studentName || 'Student';
+  const parts = name.trim().split(/\s+/);
+  $('who').innerHTML = parts.length > 1
+    ? esc(parts.slice(0,-1).join(' ')) + ' <span class="accent">' + esc(parts[parts.length-1]) + '</span>'
+    : esc(name);
+  $('when').textContent = `${found.cal.name} · Day ${found.day.n} · ${pretty}`;
+  $('goNowBtn').href = found.day.link;
+
+  showState('stateGo');
+  countdownThenGo(found.day.link);
+})();
+
+function countdownThenGo(link){
+  const ring = $('ringProg');
+  const CIRC = 2 * Math.PI * 70;   // r=70
+  ring.style.strokeDasharray = CIRC;
+  ring.style.strokeDashoffset = CIRC;
+
+  const started = performance.now();
+  const total = COUNTDOWN * 1000;
+  let shown = COUNTDOWN;
+  $('countNum').textContent = shown;
+
+  function tick(now){
+    const elapsed = Math.min(now - started, total);
+    const pct = elapsed / total;
+    ring.style.strokeDashoffset = CIRC * (1 - pct);
+
+    const left = Math.ceil((total - elapsed) / 1000);
+    if(left !== shown && left > 0){
+      shown = left;
+      const el = $('countNum');
+      el.textContent = shown;
+      el.style.animation = 'none';
+      void el.offsetWidth;          // restart the pop
+      el.style.animation = '';
+    }
+
+    if(elapsed < total){
+      requestAnimationFrame(tick);
+    } else {
+      $('goStatus').textContent = 'Opening now';
+      $('countNum').textContent = '0';
+      location.href = link;
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
