@@ -1,1 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calendar Sheets · ManzilulQuran Admin</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
+<style>
+  :root{
+    --emerald-deepest:#031b13;
+    --emerald-deep:#0a3d2e;
+    --emerald:#125c44;
+    --emerald-light:#1a7a5a;
+    --emerald-glow:#2dd4a4;
+    --gold:#c9a961;
+    --gold-light:#e4c987;
+    --gold-warm:#ffb86b;
+    --cream:#faf6ee;
+    --cream-dim:rgba(250,246,238,0.7);
+    --cream-faint:rgba(250,246,238,0.4);
+    --ink:#0e1a14;
+    --err:#ff9999;
+    --sky:#7cc4fb;
+    --glow-warm:rgba(255,200,140,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Manrope',sans-serif;
+    background:radial-gradient(ellipse at top,var(--emerald-deep) 0%,var(--emerald-deepest) 65%,#000 100%);
+    color:var(--cream);min-height:100vh;padding:36px 20px 60px;
+  }
+
+  /* ---------- Lock ---------- */
+  .lock-screen{
+    max-width:420px;width:100%;background:#fff;color:var(--ink);
+    border-radius:22px;padding:44px 32px 36px;
+    box-shadow:0 30px 80px rgba(0,0,0,0.4);text-align:center;
+    animation:riseIn .35s ease;margin:80px auto 0;
+  }
+  @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .lock-logo{width:80px;height:80px;border-radius:50%;border:3px solid var(--emerald-light);margin:0 auto 22px;overflow:hidden;background:#fff}
+  .lock-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .lock-title{font-size:22px;font-weight:800;color:var(--emerald);margin-bottom:6px}
+  .lock-sub{font-size:13.5px;color:#5B6B63;font-weight:500;margin-bottom:24px}
+  .lock-input{
+    width:100%;font-family:'Manrope',sans-serif;font-size:16px;font-weight:600;color:var(--ink);
+    border:2px solid var(--emerald-light);border-radius:12px;padding:14px 16px;
+    text-align:center;letter-spacing:4px;
+  }
+  .lock-input:focus{outline:none;border-color:var(--emerald);box-shadow:0 0 0 3px rgba(27,122,90,.15)}
+  .lock-input.wrong{border-color:#c0392b;animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  .lock-btn{
+    width:100%;margin-top:16px;font-family:'Manrope',sans-serif;font-size:15px;font-weight:800;
+    color:#fff;background:var(--emerald);border:none;border-radius:12px;padding:14px;cursor:pointer;
+  }
+  .lock-btn:hover{background:var(--emerald-light)}
+  .lock-error{color:#c0392b;font-size:12.5px;font-weight:600;margin-top:12px;min-height:16px}
+  .lock-hint{margin-top:22px;padding-top:20px;border-top:1px solid #E8F3EE;font-size:11.5px;color:#5B6B63}
+  .lock-hint a{color:var(--emerald-light);text-decoration:none;font-weight:600}
+
+  /* ---------- Shell ---------- */
+  .admin{display:none;max-width:1020px;margin:0 auto}
+  .admin.show{display:block;animation:riseIn .35s ease}
+
+  .crumb{
+    display:inline-flex;align-items:center;gap:7px;
+    color:var(--cream-dim);text-decoration:none;
+    font-size:11.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;
+    margin-bottom:18px;transition:color .2s;
+  }
+  .crumb:hover{color:var(--gold-light)}
+  .crumb svg{width:13px;height:13px}
+
+  .admin-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    margin-bottom:26px;padding-bottom:22px;border-bottom:1px solid rgba(201,169,110,0.2);
+  }
+  .admin-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--cream);line-height:1.1}
+  .admin-title .accent{color:var(--gold-light);font-style:italic;font-weight:500}
+  .admin-sub{font-size:12px;color:var(--cream-dim);letter-spacing:1.6px;text-transform:uppercase;margin-top:5px}
+  .admin-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+  .btn-ghost{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+    color:rgba(255,255,255,0.75);background:transparent;border:1px solid rgba(255,255,255,0.2);
+    border-radius:100px;padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,0.08)}
+  .btn-ghost svg{width:12px;height:12px}
+  .btn-gold{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--emerald-deepest);
+    background:linear-gradient(135deg,var(--gold-light),var(--gold));
+    border:none;border-radius:100px;padding:10px 20px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;
+    box-shadow:0 6px 20px -8px rgba(201,169,110,0.6);
+    transition:transform .15s;
+  }
+  .btn-gold:hover{transform:translateY(-1px)}
+  .btn-gold svg{width:13px;height:13px}
+
+  /* ---------- Calendar cards ---------- */
+  .cal-list{display:flex;flex-direction:column;gap:14px}
+  .cal{
+    background:rgba(3,27,19,0.5);
+    border:1px solid rgba(201,169,110,0.2);
+    border-radius:16px;overflow:hidden;
+    transition:border-color .2s;
+  }
+  .cal:hover{border-color:rgba(201,169,110,0.4)}
+  .cal.is-active{border-left:3px solid var(--emerald-glow)}
+  .cal.is-inactive{opacity:.72}
+
+  .cal-head{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+    padding:18px 20px;flex-wrap:wrap;
+  }
+  .cal-name{
+    font-family:'Cormorant Garamond',serif;
+    font-size:21px;font-weight:600;color:var(--cream);line-height:1.2;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .cal-meta{
+    font-size:12.5px;color:var(--cream-dim);margin-top:6px;line-height:1.6;
+  }
+  .cal-meta b{color:var(--gold-light);font-weight:600}
+  .cal-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .cal-actions button{
+    background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold-light);
+    padding:6px 12px;border-radius:100px;cursor:pointer;font-size:10.5px;font-weight:700;
+    letter-spacing:.8px;text-transform:uppercase;font-family:'Manrope',sans-serif;transition:all .2s;
+  }
+  .cal-actions button:hover{background:var(--gold);color:var(--emerald-deepest);border-color:var(--gold)}
+  .cal-actions button.danger{color:var(--err);border-color:rgba(255,153,153,0.3)}
+  .cal-actions button.danger:hover{background:#c0392b;color:#fff;border-color:#c0392b}
+  .cal-actions button:disabled{opacity:.3;cursor:not-allowed}
+  .cal-actions button:disabled:hover{background:transparent;color:var(--gold-light);border-color:rgba(201,169,110,0.3)}
+  .cal-actions .icon{padding:6px 9px;font-size:12px;line-height:1}
+
+  .pill{
+    display:inline-block;padding:3px 11px;border-radius:100px;
+    font-size:9.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  }
+  .pill.active   {background:rgba(45,212,164,0.14);color:var(--emerald-glow);border:1px solid rgba(45,212,164,0.4)}
+  .pill.upcoming {background:rgba(124,196,251,0.12);color:var(--sky);border:1px solid rgba(124,196,251,0.35)}
+  .pill.completed{background:rgba(250,246,238,0.07);color:var(--cream-faint);border:1px solid rgba(250,246,238,0.15)}
+  .pill.inactive {background:rgba(255,153,153,0.1);color:var(--err);border:1px solid rgba(255,153,153,0.3)}
+
+  /* day preview */
+  .cal-days{
+    display:none;
+    border-top:1px solid rgba(201,169,110,0.15);
+    background:rgba(0,0,0,0.2);
+    max-height:340px;overflow-y:auto;
+  }
+  .cal-days.show{display:block}
+  .day{
+    display:flex;align-items:center;gap:14px;
+    padding:9px 20px;
+    border-bottom:1px solid rgba(201,169,110,0.06);
+    font-size:13px;
+  }
+  .day:last-child{border-bottom:none}
+  .day-n{
+    flex:0 0 52px;font-size:10px;font-weight:800;letter-spacing:1px;
+    color:var(--cream-faint);text-transform:uppercase;
+  }
+  .day-date{flex:0 0 130px;color:var(--cream);font-weight:600}
+  .day-dow{flex:0 0 46px;color:var(--cream-dim);font-size:12px}
+  .day-link{
+    flex:1;font-size:11.5px;color:var(--cream-faint);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    font-family:ui-monospace,monospace;
+  }
+  .day.off{opacity:.55}
+  .day.off .day-date{color:var(--cream-dim)}
+  .day-holiday{
+    font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--err);opacity:.8;
+  }
+  .day.today{background:rgba(201,169,110,0.1)}
+  .day.today .day-n{color:var(--gold-warm)}
+
+  .loading{text-align:center;padding:60px 20px;color:var(--cream-dim);font-size:14px}
+  .loading-spin{
+    display:inline-block;width:26px;height:26px;
+    border:3px solid rgba(201,169,110,0.2);border-top-color:var(--gold);
+    border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty-state{
+    text-align:center;padding:70px 20px;color:var(--cream-dim);font-size:14px;line-height:1.8;
+    background:rgba(3,27,19,0.4);border:1px dashed rgba(201,169,110,0.25);border-radius:16px;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(6px);z-index:100;
+    align-items:flex-start;justify-content:center;padding:30px 20px;overflow-y:auto;
+  }
+  .modal-backdrop.show{display:flex;animation:fadeIn .25s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal{
+    background:linear-gradient(160deg,rgba(18,92,68,0.97) 0%,rgba(3,27,19,0.99) 100%);
+    border:1px solid rgba(201,169,110,0.3);
+    max-width:580px;width:100%;border-radius:20px;overflow:hidden;
+    box-shadow:0 40px 100px rgba(0,0,0,0.6);
+    animation:modalIn .35s cubic-bezier(.2,.9,.3,1.1) both;
+  }
+  @keyframes modalIn{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .modal-head{padding:26px 30px 20px;border-bottom:1px solid rgba(201,169,110,0.2)}
+  .modal-head h3{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--cream)}
+  .modal-head h3 .accent{color:var(--gold-light);font-style:italic;font-weight:500}
+  .modal-head p{font-size:12.5px;color:var(--cream-dim);margin-top:5px}
+  .modal-body{padding:24px 30px}
+  .modal-foot{
+    padding:16px 30px;display:flex;justify-content:flex-end;gap:10px;
+    border-top:1px solid rgba(201,169,110,0.2);background:rgba(3,27,19,0.4);
+  }
+
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field.full{grid-column:1/-1}
+  .field label{font-size:10.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-light)}
+  .field label .req{color:var(--gold-warm)}
+  .field .hint{font-size:11px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none}
+  .field input,.field select{
+    font-family:'Manrope',sans-serif;font-size:14.5px;font-weight:500;color:var(--cream);
+    background:rgba(3,27,19,0.7);border:1.5px solid rgba(201,169,110,0.25);
+    border-radius:11px;padding:12px 14px;width:100%;outline:none;appearance:none;
+    transition:border-color .25s, box-shadow .25s;
+  }
+  .field input::placeholder{color:rgba(250,246,238,0.32)}
+  .field input:focus,.field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,0.14)}
+  .field select{
+    cursor:pointer;padding-right:38px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%23c9a961' stroke-width='2.5' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 14px center;
+  }
+  .field select option{background:var(--emerald-deepest);color:var(--cream)}
+  .field input[type="date"]{color-scheme:dark}
+  .field .err-msg{font-size:11.5px;color:var(--err);display:none}
+  .field.invalid input,.field.invalid select{border-color:var(--err)}
+  .field.invalid .err-msg{display:block}
+
+  /* weekly off day chips */
+  .dow-row{display:flex;gap:6px;flex-wrap:wrap}
+  .dow{
+    font-family:'Manrope',sans-serif;
+    font-size:11px;font-weight:700;letter-spacing:.6px;
+    color:var(--cream-dim);
+    background:rgba(3,27,19,0.7);
+    border:1.5px solid rgba(201,169,110,0.2);
+    border-radius:100px;padding:9px 14px;cursor:pointer;
+    transition:all .18s;user-select:none;
+  }
+  .dow:hover{border-color:rgba(201,169,110,0.5)}
+  .dow.on{
+    background:rgba(255,153,153,0.12);
+    border-color:rgba(255,153,153,0.5);
+    color:var(--err);
+  }
+
+  /* links list */
+  .link-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+  .link-row input{flex:1}
+  .link-row .num{
+    flex:0 0 auto;font-size:10px;font-weight:800;color:var(--gold-light);
+    letter-spacing:1px;width:34px;text-align:center;
+  }
+  .link-del{
+    flex:0 0 auto;background:transparent;border:1px solid rgba(255,153,153,0.3);
+    color:var(--err);width:34px;height:34px;border-radius:9px;cursor:pointer;
+    font-size:15px;line-height:1;
+  }
+  .link-del:hover{background:#c0392b;color:#fff;border-color:#c0392b}
+  .link-add{
+    background:transparent;border:1.5px dashed rgba(201,169,110,0.4);
+    color:var(--gold-light);border-radius:11px;padding:10px;width:100%;cursor:pointer;
+    font-family:'Manrope',sans-serif;font-size:11.5px;font-weight:700;
+    letter-spacing:1.2px;text-transform:uppercase;margin-top:2px;
+  }
+  .link-add:hover{background:rgba(201,169,110,0.08);border-color:var(--gold)}
+
+  .rotate-note{
+    background:rgba(124,196,251,0.07);
+    border:1px solid rgba(124,196,251,0.25);
+    border-radius:11px;padding:12px 14px;margin-top:12px;
+    font-size:12px;color:var(--cream-dim);line-height:1.6;
+  }
+  .rotate-note b{color:var(--sky)}
+
+  .btn-solid{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    background:linear-gradient(135deg,var(--gold-light),var(--gold));color:var(--emerald-deepest);
+    border:none;border-radius:100px;padding:12px 24px;cursor:pointer;
+  }
+  .btn-solid:hover{background:linear-gradient(135deg,var(--gold-warm),var(--gold-light))}
+  .btn-solid[disabled]{opacity:.6;cursor:not-allowed}
+  .btn-solid.danger{background:#c0392b;color:#fff}
+  .btn-solid.danger:hover{background:#e74c3c}
+  .btn-outline{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    background:transparent;color:var(--gold-light);border:1.5px solid rgba(201,169,110,0.5);
+    border-radius:100px;padding:11px 24px;cursor:pointer;
+  }
+  .btn-outline:hover{background:rgba(201,169,110,0.12)}
+
+  .toast{
+    position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--emerald-deepest);border:1px solid var(--gold);
+    color:var(--cream);padding:13px 24px;border-radius:100px;
+    font-size:13px;font-weight:600;z-index:200;opacity:0;
+    transition:all .3s cubic-bezier(.2,.9,.3,1.2);
+    box-shadow:0 12px 40px rgba(0,0,0,0.5);
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast.err{border-color:var(--err);color:var(--err)}
+
+  @media (max-width:700px){
+    .admin-title{font-size:22px}
+    .fgrid{grid-template-columns:1fr}
+    .cal-head{flex-direction:column}
+    .cal-actions{width:100%}
+    .day{flex-wrap:wrap;gap:8px}
+    .day-date{flex:1 1 auto}
+    .day-link{flex:1 1 100%;padding-left:52px}
+  }
+</style>
+</head>
+<body>
+
+  <!-- LOCK -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
+    <div class="lock-title">Calendar Sheets</div>
+    <div class="lock-sub">Enter the portal password to continue.</div>
+    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="off" autofocus />
+    <button class="lock-btn" id="lockBtn">Unlock</button>
+    <div class="lock-error" id="lockError">&nbsp;</div>
+    <div class="lock-hint">Admin access only.<br><a href="/portal/classes/">← Back to Classes</a></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="admin" id="adminView">
+
+    <a class="crumb" href="/portal/classes/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      All Classes
+    </a>
+
+    <div class="admin-head">
+      <div>
+        <div class="admin-title">Calendar <span class="accent">Sheets</span></div>
+        <div class="admin-sub" id="studentLine">—</div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-gold" id="newCalBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Calendar Sheet
+        </button>
+        <button class="btn-ghost" id="previewBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Student View
+        </button>
+        <button class="btn-ghost" id="refreshBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <div id="calList">
+      <div class="loading"><div class="loading-spin"></div><div>Loading calendar sheets…</div></div>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT MODAL -->
+  <div class="modal-backdrop" id="formModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="formTitle">New <span class="accent">Calendar Sheet</span></h3>
+        <p id="formSubtitle">Set the schedule once — the days are generated automatically.</p>
+      </div>
+      <div class="modal-body">
+        <div class="fgrid">
+
+          <div class="field full">
+            <label>Calendar Name <span class="req">*</span></label>
+            <input type="text" id="fName" placeholder="e.g. July Plan, Revision Plan, Hifz Plan" />
+            <span class="err-msg">Please enter a name.</span>
+          </div>
+
+          <div class="field">
+            <label>Start Date <span class="req">*</span></label>
+            <input type="date" id="fStart" />
+            <span class="err-msg">Please pick a start date.</span>
+          </div>
+
+          <div class="field">
+            <label>Number of Days <span class="req">*</span></label>
+            <input type="number" id="fDays" min="1" max="40" value="30" />
+            <span class="err-msg">Enter 1–40 days.</span>
+          </div>
+
+          <div class="field full">
+            <label>Weekly Off <span class="hint">— these days show “Holiday”, no Join button</span></label>
+            <div class="dow-row" id="dowRow"></div>
+          </div>
+
+          <div class="field full">
+            <label>Class Links <span class="req">*</span> <span class="hint">— rotated across class days</span></label>
+            <div id="linkList"></div>
+            <button type="button" class="link-add" id="addLinkBtn">+ Add another link</button>
+            <span class="err-msg" id="linkErr">Add at least one valid link (must start with http).</span>
+            <div class="rotate-note" id="rotateNote"></div>
+          </div>
+
+          <div class="field full" id="positionField">
+            <label>Position</label>
+            <select id="fPosition"></select>
+          </div>
+
+          <div class="field full">
+            <label>Status</label>
+            <select id="fActive">
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="formCancelBtn">Cancel</button>
+        <button class="btn-solid" id="formSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM MODAL -->
+  <div class="modal-backdrop" id="confirmModal">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-head">
+        <h3 id="confirmTitle">Are you <span class="accent">sure?</span></h3>
+        <p id="confirmText">This cannot be undone.</p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="confirmCancelBtn">Cancel</button>
+        <button class="btn-solid danger" id="confirmOkBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+/* =================================================================
+   ░░  CALENDAR SHEETS ADMIN  ░░
+   ================================================================= */
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
+const PORTAL_PASSWORD = "manzil2026";
+const ADMIN_API_PASSWORD = "manzil2026admin";
+const MAX_DAYS = 40;
+
+const SESSION_KEY = "mq_portal_unlocked_at";
+const SESSION_MAX_MS = 24 * 60 * 60 * 1000;
+
+const DAYS_FULL  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const DAYS_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+const $ = (id) => document.getElementById(id);
+const classId = new URLSearchParams(location.search).get('id') || '';
+
+let classInfo = null;
+let calendars = [];
+let editingId = null;
+let confirmAction = null;
+
+/* ---------------- Lock ---------------- */
+function isUnlocked(){
+  try{
+    const at = parseInt(sessionStorage.getItem(SESSION_KEY) || "0", 10);
+    return at && (Date.now() - at) < SESSION_MAX_MS;
+  }catch(e){ return false; }
+}
+function unlock(){
+  try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  load();
+}
+function tryPassword(){
+  if(($("lockInput").value || "").trim() === PORTAL_PASSWORD){ unlock(); }
+  else{
+    $("lockInput").classList.add("wrong");
+    $("lockError").textContent = "Wrong password. Try again.";
+    setTimeout(()=>$("lockInput").classList.remove("wrong"), 400);
+    $("lockInput").select();
+  }
+}
+$("lockBtn").onclick = tryPassword;
+$("lockInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryPassword(); });
+if(isUnlocked()){
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  load();
+}
+
+/* ---------------- Date engine ----------------
+   The 40 day rows are NOT stored anywhere. We keep only the rule
+   (start + days + weekly off + links) and rebuild the days here.
+------------------------------------------------ */
+function parseDate(s){
+  const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!m) return null;
+  return new Date(+m[1], +m[2]-1, +m[3]);   // local midnight, no TZ drift
+}
+function addDays(d, n){
+  const x = new Date(d);
+  x.setDate(x.getDate() + n);
+  return x;
+}
+function today0(){
+  const t = new Date();
+  t.setHours(0,0,0,0);
+  return t;
+}
+function endDate(cal){
+  const s = parseDate(cal.startDate);
+  return s ? addDays(s, (cal.days || 1) - 1) : null;
+}
+
+// Active / Upcoming / Completed / Inactive — derived, never stored.
+// This is how "automatic expiry" works: no cron job, it just reads as
+// Completed the moment the end date passes.
+function calStatus(cal){
+  if(!cal.active) return 'Inactive';
+  const s = parseDate(cal.startDate);
+  const e = endDate(cal);
+  if(!s || !e) return 'Inactive';
+  const t = today0();
+  if(t < s) return 'Upcoming';
+  if(t > e) return 'Completed';
+  return 'Active';
+}
+
+function buildDays(cal){
+  const start = parseDate(cal.startDate);
+  if(!start) return [];
+  const off = new Set((cal.weeklyOff || []).map(n => DAYS_FULL.indexOf(n)).filter(i => i >= 0));
+  const links = cal.links || [];
+  const out = [];
+  let linkIdx = 0;
+
+  for(let i = 0; i < cal.days; i++){
+    const date = addDays(start, i);
+    const isOff = off.has(date.getDay());
+    let link = null;
+    if(!isOff && links.length){
+      link = links[linkIdx % links.length];
+      linkIdx++;              // rotation advances on class days only
+    }
+    out.push({ n: i+1, date, isOff, link });
+  }
+  return out;
+}
+
+/* ---------------- Load ---------------- */
+async function load(){
+  if(!classId){
+    $("calList").innerHTML = '<div class="empty-state">No class sheet selected.<br><a href="/portal/classes/" style="color:var(--gold-light)">← Back to Classes</a></div>';
+    return;
+  }
+  $("calList").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading calendar sheets…</div></div>';
+  try{
+    const url = `${SCRIPT_URL}?action=getClassAdmin&classId=${encodeURIComponent(classId)}&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Failed to load");
+
+    classInfo = data.class;
+    calendars = data.calendars || [];
+
+    $("studentLine").textContent = `${classInfo.studentName} · ${classInfo.studentId} · ${classInfo.course}`;
+    document.title = `Calendars · ${classInfo.studentName} · ManzilulQuran`;
+    renderList();
+  }catch(err){
+    console.error(err);
+    $("calList").innerHTML = `<div class="empty-state">Failed to load.<br><br>
+      <small style="color:#ff9999">Error: ${escapeHtml(err.message)}</small></div>`;
+  }
+}
+$("refreshBtn").onclick = load;
+$("previewBtn").onclick = () => {
+  if(classInfo && classInfo.shareToken){
+    window.open('/class/?t=' + encodeURIComponent(classInfo.shareToken), '_blank');
+  }
+};
+
+/* ---------------- Render ---------------- */
+function renderList(){
+  if(!calendars.length){
+    $("calList").innerHTML = `<div class="empty-state">
+      No calendar sheets yet for this student.<br>
+      Click <b style="color:var(--gold-light)">New Calendar Sheet</b> to build the first schedule.
+    </div>`;
+    return;
+  }
+
+  $("calList").innerHTML = '<div class="cal-list">' + calendars.map((c, i) => {
+    const st = calStatus(c);
+    const s = parseDate(c.startDate);
+    const e = endDate(c);
+    const range = (s && e) ? `${fmtDate(s)} – ${fmtDate(e)}` : '—';
+    const offTxt = (c.weeklyOff && c.weeklyOff.length) ? c.weeklyOff.join(', ') : 'None';
+    const classDays = buildDays(c).filter(d => !d.isOff).length;
+
+    return `<div class="cal ${c.active ? 'is-active' : 'is-inactive'}">
+      <div class="cal-head">
+        <div style="flex:1;min-width:220px">
+          <div class="cal-name">
+            ${escapeHtml(c.name)}
+            <span class="pill ${st.toLowerCase()}">${st}</span>
+          </div>
+          <div class="cal-meta">
+            <b>${range}</b> · ${c.days} days (${classDays} classes)<br>
+            Weekly off: <b>${escapeHtml(offTxt)}</b> · Links: <b>${c.links.length}</b>
+          </div>
+        </div>
+        <div class="cal-actions">
+          <button class="icon" data-act="up"   data-id="${c.calendarId}" ${i === 0 ? 'disabled' : ''} title="Move up">↑</button>
+          <button class="icon" data-act="down" data-id="${c.calendarId}" ${i === calendars.length-1 ? 'disabled' : ''} title="Move down">↓</button>
+          <button data-act="days"   data-id="${c.calendarId}">Days</button>
+          <button data-act="toggle" data-id="${c.calendarId}">${c.active ? 'Deactivate' : 'Activate'}</button>
+          <button data-act="edit"   data-id="${c.calendarId}">Edit</button>
+          <button data-act="del"    data-id="${c.calendarId}" class="danger">Delete</button>
+        </div>
+      </div>
+      <div class="cal-days" id="days-${c.calendarId}"></div>
+    </div>`;
+  }).join('') + '</div>';
+
+  $("calList").querySelectorAll('button[data-act]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const c = calendars.find(x => x.calendarId === btn.dataset.id);
+      if(!c) return;
+      const act = btn.dataset.act;
+      if(act === 'days')   toggleDays(c);
+      if(act === 'edit')   openForm(c);
+      if(act === 'toggle') doToggle(c);
+      if(act === 'del')    askDelete(c);
+      if(act === 'up')     doMove(c, 'up');
+      if(act === 'down')   doMove(c, 'down');
+    });
+  });
+}
+
+function toggleDays(c){
+  const box = $('days-' + c.calendarId);
+  if(box.classList.contains('show')){ box.classList.remove('show'); return; }
+
+  const t = today0().getTime();
+  box.innerHTML = buildDays(c).map(d => {
+    const isToday = d.date.getTime() === t;
+    return `<div class="day ${d.isOff ? 'off' : ''} ${isToday ? 'today' : ''}">
+      <div class="day-n">Day ${d.n}</div>
+      <div class="day-date">${fmtDate(d.date)}</div>
+      <div class="day-dow">${DAYS_SHORT[d.date.getDay()]}</div>
+      ${d.isOff
+        ? '<div class="day-holiday">Holiday</div>'
+        : `<div class="day-link">${escapeHtml(d.link || '—')}</div>`}
+    </div>`;
+  }).join('');
+  box.classList.add('show');
+
+  const todayEl = box.querySelector('.day.today');
+  if(todayEl) todayEl.scrollIntoView({ block:'center' });
+}
+
+/* ---------------- Create / Edit ---------------- */
+$("newCalBtn").onclick = () => openForm(null);
+
+function openForm(c){
+  editingId = c ? c.calendarId : null;
+  $("formTitle").innerHTML = c ? 'Edit <span class="accent">Calendar Sheet</span>' : 'New <span class="accent">Calendar Sheet</span>';
+  $("formSubtitle").textContent = c
+    ? 'Changes apply to the student’s view immediately.'
+    : 'Set the schedule once — the days are generated automatically.';
+
+  $("fName").value  = c ? c.name : '';
+  $("fStart").value = c ? c.startDate : '';
+  $("fDays").value  = c ? c.days : 30;
+  $("fActive").value = c ? String(!!c.active) : 'true';
+
+  buildDowChips(c ? c.weeklyOff : []);
+  buildLinkRows(c ? c.links : ['']);
+
+  // Position picker only makes sense when creating
+  $("positionField").style.display = c ? 'none' : 'flex';
+  if(!c) buildPositionOptions();
+
+  document.querySelectorAll("#formModal .field").forEach(f => f.classList.remove("invalid"));
+  updateRotateNote();
+  openModal("formModal");
+  setTimeout(()=>$("fName").focus(), 200);
+}
+
+function buildDowChips(selected){
+  const sel = new Set(selected || []);
+  $("dowRow").innerHTML = DAYS_FULL.map((d,i) =>
+    `<div class="dow ${sel.has(d) ? 'on' : ''}" data-day="${d}">${DAYS_SHORT[i]}</div>`
+  ).join('');
+  $("dowRow").querySelectorAll('.dow').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('on');
+      updateRotateNote();
+    });
+  });
+}
+function getWeeklyOff(){
+  return [...$("dowRow").querySelectorAll('.dow.on')].map(c => c.dataset.day);
+}
+
+function buildLinkRows(links){
+  const list = (links && links.length) ? links : [''];
+  $("linkList").innerHTML = '';
+  list.forEach(l => addLinkRow(l));
+}
+function addLinkRow(value){
+  const row = document.createElement('div');
+  row.className = 'link-row';
+  row.innerHTML = `
+    <span class="num"></span>
+    <input type="url" placeholder="https://meet.google.com/..." value="${escapeHtml(value || '')}" />
+    <button type="button" class="link-del" title="Remove">×</button>`;
+  row.querySelector('.link-del').addEventListener('click', () => {
+    row.remove();
+    renumberLinks();
+    updateRotateNote();
+  });
+  row.querySelector('input').addEventListener('input', updateRotateNote);
+  $("linkList").appendChild(row);
+  renumberLinks();
+}
+function renumberLinks(){
+  $("linkList").querySelectorAll('.link-row').forEach((r, i) => {
+    r.querySelector('.num').textContent = (i+1) + '.';
+  });
+}
+function getLinks(){
+  return [...$("linkList").querySelectorAll('input')]
+    .map(i => i.value.trim())
+    .filter(v => v && /^https?:\/\//i.test(v));
+}
+$("addLinkBtn").onclick = () => { addLinkRow(''); updateRotateNote(); };
+
+// Live preview of how links land on the first few days
+function updateRotateNote(){
+  const links = getLinks();
+  const off = new Set(getWeeklyOff().map(n => DAYS_FULL.indexOf(n)));
+  const start = parseDate($("fStart").value);
+  const note = $("rotateNote");
+
+  if(!links.length){
+    note.innerHTML = 'Add links above to see how they rotate.';
+    return;
+  }
+  if(!start){
+    note.innerHTML = `<b>${links.length} link${links.length>1?'s':''}</b> will rotate across class days. Pick a start date to preview.`;
+    return;
+  }
+
+  let linkIdx = 0;
+  const lines = [];
+  const total = Math.min(6, parseInt($("fDays").value,10) || 6);
+  for(let i = 0; i < total; i++){
+    const d = addDays(start, i);
+    if(off.has(d.getDay())){
+      lines.push(`Day ${i+1} ${DAYS_SHORT[d.getDay()]} → Holiday`);
+    } else {
+      lines.push(`Day ${i+1} ${DAYS_SHORT[d.getDay()]} → Link ${(linkIdx % links.length)+1}`);
+      linkIdx++;
+    }
+  }
+  note.innerHTML = `<b>Rotation preview</b><br>` + lines.join(' · ') + ' …';
+}
+$("fStart").addEventListener('change', updateRotateNote);
+$("fDays").addEventListener('input', updateRotateNote);
+
+function buildPositionOptions(){
+  const sel = $("fPosition");
+  let html = '<option value="end">Add at the end</option>';
+  calendars.forEach(c => {
+    html += `<option value="before|${c.calendarId}">Before — ${escapeHtml(c.name)}</option>`;
+    html += `<option value="after|${c.calendarId}">After — ${escapeHtml(c.name)}</option>`;
+  });
+  sel.innerHTML = html;
+}
+
+$("formCancelBtn").onclick = () => closeModal("formModal");
+
+$("formSaveBtn").onclick = async () => {
+  if(!validateForm()) return;
+
+  const btn = $("formSaveBtn");
+  btn.disabled = true;
+  const old = btn.textContent;
+  btn.textContent = "Saving…";
+
+  try{
+    const posRaw = $("fPosition").value || 'end';
+    const [position, relativeTo] = posRaw.includes('|') ? posRaw.split('|') : [posRaw, ''];
+
+    const payload = {
+      action:     editingId ? "updateCalendar" : "createCalendar",
+      password:   ADMIN_API_PASSWORD,
+      calendarId: editingId,
+      classId:    classId,
+      name:       $("fName").value.trim(),
+      startDate:  $("fStart").value,
+      days:       parseInt($("fDays").value, 10),
+      weeklyOff:  getWeeklyOff(),
+      links:      getLinks(),
+      active:     $("fActive").value === 'true',
+      position:   position,
+      relativeTo: relativeTo
+    };
+
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Save failed");
+
+    closeModal("formModal");
+    toast(editingId ? "Calendar updated" : "Calendar sheet created");
+    await load();
+  }catch(err){
+    console.error(err);
+    toast(err.message, true);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+};
+
+function validateForm(){
+  let ok = true;
+  const mark = (el, bad) => {
+    el.closest(".field").classList.toggle("invalid", bad);
+    if(bad) ok = false;
+  };
+  mark($("fName"),  !$("fName").value.trim());
+  mark($("fStart"), !$("fStart").value);
+
+  const days = parseInt($("fDays").value, 10);
+  mark($("fDays"), isNaN(days) || days < 1 || days > MAX_DAYS);
+
+  const linksOk = getLinks().length > 0;
+  $("linkErr").style.display = linksOk ? 'none' : 'block';
+  if(!linksOk) ok = false;
+
+  return ok;
+}
+document.querySelectorAll("#formModal input, #formModal select").forEach(el => {
+  el.addEventListener("input",  () => el.closest(".field") && el.closest(".field").classList.remove("invalid"));
+  el.addEventListener("change", () => el.closest(".field") && el.closest(".field").classList.remove("invalid"));
+});
+
+/* ---------------- Toggle / Move / Delete ---------------- */
+async function doToggle(c){
+  try{
+    const res = await fetch(SCRIPT_URL, {
+      method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: JSON.stringify({ action:"toggleCalendar", password:ADMIN_API_PASSWORD, calendarId:c.calendarId, active:!c.active })
+    });
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Failed");
+    toast(c.active ? "Calendar deactivated — Join buttons are now off" : "Calendar activated");
+    await load();
+  }catch(err){ toast(err.message, true); }
+}
+
+async function doMove(c, direction){
+  try{
+    const res = await fetch(SCRIPT_URL, {
+      method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: JSON.stringify({ action:"moveCalendar", password:ADMIN_API_PASSWORD, calendarId:c.calendarId, direction })
+    });
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Failed");
+    await load();
+  }catch(err){ toast(err.message, true); }
+}
+
+function askDelete(c){
+  askConfirm(
+    "Delete this calendar sheet?",
+    `“${c.name}” will be permanently removed from this student's class sheet. Old calendars are usually kept as history — consider deactivating instead.`,
+    async () => {
+      try{
+        const res = await fetch(SCRIPT_URL, {
+          method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" },
+          body: JSON.stringify({ action:"deleteCalendar", password:ADMIN_API_PASSWORD, calendarId:c.calendarId })
+        });
+        const data = await res.json();
+        if(data.result !== "success") throw new Error(data.error || "Delete failed");
+        toast("Calendar sheet deleted");
+        await load();
+      }catch(err){ toast(err.message, true); }
+    }
+  );
+}
+
+/* ---------------- Confirm ---------------- */
+function askConfirm(title, text, onOk){
+  $("confirmTitle").textContent = title;
+  $("confirmText").textContent = text;
+  confirmAction = onOk;
+  openModal("confirmModal");
+}
+$("confirmCancelBtn").onclick = () => { confirmAction = null; closeModal("confirmModal"); };
+$("confirmOkBtn").onclick = async () => {
+  const fn = confirmAction;
+  confirmAction = null;
+  closeModal("confirmModal");
+  if(fn) await fn();
+};
+
+/* ---------------- Modal helpers ---------------- */
+function openModal(id){ $(id).classList.add("show"); document.body.style.overflow = "hidden"; }
+function closeModal(id){
+  $(id).classList.remove("show");
+  if(!document.querySelector(".modal-backdrop.show")) document.body.style.overflow = "";
+}
+document.querySelectorAll(".modal-backdrop").forEach(m => {
+  m.addEventListener("click", e => { if(e.target === m) closeModal(m.id); });
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape"){
+    const open = document.querySelector(".modal-backdrop.show");
+    if(open) closeModal(open.id);
+  }
+});
+
+/* ---------------- Toast ---------------- */
+let toastTimer = null;
+function toast(msg, isErr){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.toggle("err", !!isErr);
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 3200);
+}
+
+/* ---------------- Utils ---------------- */
+function escapeHtml(str){
+  if(str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function fmtDate(d){
+  if(!(d instanceof Date) || isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+</script>
+</body>
+</html>
