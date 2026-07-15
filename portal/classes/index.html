@@ -104,6 +104,64 @@
   .stat-label{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px}
   .stat-value{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--cream);line-height:1}
 
+  /* ---------- Attention / expiring soon ---------- */
+  .alerts{
+    background:linear-gradient(160deg, rgba(255,184,107,0.09), rgba(3,27,19,0.5));
+    border:1px solid rgba(255,184,107,0.3);
+    border-radius:16px;padding:18px 20px;margin-bottom:22px;
+    display:none;
+  }
+  .alerts.show{display:block;animation:riseIn .35s ease}
+  .alerts-head{
+    display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;
+  }
+  .alerts-head svg{width:17px;height:17px;color:var(--gold-warm);flex:0 0 auto}
+  .alerts-head h4{
+    font-family:'Manrope',sans-serif;
+    font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+    color:var(--gold-warm);
+  }
+  .alerts-head .count{
+    font-size:10.5px;font-weight:800;letter-spacing:1px;
+    background:var(--gold-warm);color:var(--emerald-deepest);
+    padding:2px 9px;border-radius:100px;
+  }
+  .alert-row{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:11px 14px;margin-bottom:8px;flex-wrap:wrap;
+    background:rgba(3,27,19,0.5);
+    border:1px solid rgba(255,184,107,0.16);
+    border-radius:11px;
+  }
+  .alert-row:last-child{margin-bottom:0}
+  .alert-info{flex:1;min-width:190px}
+  .alert-name{font-size:14.5px;font-weight:700;color:var(--cream);letter-spacing:-.2px}
+  .alert-sub{font-size:11.5px;color:var(--cream-dim);margin-top:3px}
+  .alert-sub b{color:var(--gold-light);font-weight:700}
+  .alert-btns{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .tag{
+    display:inline-block;padding:2px 9px;border-radius:100px;
+    font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
+    margin-left:7px;vertical-align:middle;
+  }
+  .tag.ending{background:rgba(255,184,107,0.16);color:var(--gold-warm);border:1px solid rgba(255,184,107,0.4)}
+  .tag.none  {background:rgba(255,153,153,0.12);color:var(--err);border:1px solid rgba(255,153,153,0.35)}
+  .btn-wa-sm{
+    font-family:'Manrope',sans-serif;
+    font-size:10.5px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
+    background:#25D366;color:#04301a;border:none;border-radius:100px;
+    padding:8px 14px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:5px;
+    transition:background .2s, transform .15s;
+  }
+  .btn-wa-sm:hover{background:#1ebe5b;transform:translateY(-1px)}
+  .btn-wa-sm svg{width:11px;height:11px}
+  .btn-wa-sm.off{
+    background:rgba(255,255,255,0.06);color:var(--cream-faint);
+    cursor:not-allowed;border:1px solid rgba(255,255,255,0.1);
+  }
+  .btn-wa-sm.off:hover{transform:none;background:rgba(255,255,255,0.06)}
+
   /* ---------- Controls ---------- */
   .list-wrap{background:rgba(3,27,19,0.5);border:1px solid rgba(201,169,110,0.2);border-radius:14px;overflow:hidden}
   .list-search{
@@ -347,6 +405,18 @@
       </div>
     </div>
 
+    <div class="alerts" id="alerts">
+      <div class="alerts-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <h4>Needs attention</h4>
+        <span class="count" id="alertCount">0</span>
+      </div>
+      <div id="alertRows"></div>
+    </div>
+
     <div class="stats">
       <div class="stat"><div class="stat-label">Total class sheets</div><div class="stat-value" id="statTotal">—</div></div>
       <div class="stat"><div class="stat-label">Active</div><div class="stat-value" id="statActive">—</div></div>
@@ -436,6 +506,11 @@
             <input type="url" id="fWhatsapp" placeholder="https://chat.whatsapp.com/..." />
             <span class="err-msg">Please enter a valid link (or leave empty).</span>
           </div>
+          <div class="field full">
+            <label>Contact Number <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— admin only, never shown on the share link</span></label>
+            <input type="tel" id="fPhone" placeholder="+91 98765 43210" />
+            <span class="err-msg">Please enter a valid number (or leave empty).</span>
+          </div>
         </div>
       </div>
       <div class="modal-foot">
@@ -515,6 +590,77 @@ let shareTarget = null;    // class object currently in the share modal
 let confirmAction = null;  // function to run on confirm
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS_FULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+// Flag a student once their running plan has fewer than this many classes left
+const LOW_CLASS_THRESHOLD = 6;
+
+/* ---------------- Calendar engine ----------------
+   Same rules as /class/ and /join/. Kept inline rather than shared so each
+   page stays a single self-contained upload.
+------------------------------------------------- */
+function parseDate(s){
+  const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!m) return null;
+  return new Date(+m[1], +m[2]-1, +m[3]);
+}
+function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+function today0(){ const t = new Date(); t.setHours(0,0,0,0); return t; }
+function endDate(cal){
+  const s = parseDate(cal.startDate);
+  return s ? addDays(s, (cal.days||1)-1) : null;
+}
+function calStatus(cal){
+  if(!cal.active) return 'Inactive';
+  const s = parseDate(cal.startDate), e = endDate(cal);
+  if(!s || !e) return 'Inactive';
+  const t = today0();
+  if(t < s) return 'Upcoming';
+  if(t > e) return 'Completed';
+  return 'Active';
+}
+function buildDays(cal){
+  const start = parseDate(cal.startDate);
+  if(!start) return [];
+  const off = new Set((cal.weeklyOff||[]).map(n => DAYS_FULL.indexOf(n)).filter(i => i>=0));
+  const links = cal.links || [];
+  const out = [];
+  let linkIdx = 0;
+  for(let i=0;i<cal.days;i++){
+    const date = addDays(start, i);
+    const isOff = off.has(date.getDay());
+    let link = null;
+    if(!isOff && links.length){ link = links[linkIdx % links.length]; linkIdx++; }
+    out.push({ n:i+1, date, isOff, link });
+  }
+  return out;
+}
+
+/* ---------------- Who needs attention? ----------------
+   Two things worth chasing:
+     ending — a plan is running but nearly out of classes
+     none   — the student is active but has no plan at all
+------------------------------------------------------- */
+function classAlert(c){
+  if((c["Status"] || "Active") !== "Active") return null;   // don't nag about paused students
+
+  const cals = c.calendars || [];
+  const running = cals.find(x => calStatus(x) === 'Active');
+
+  if(running){
+    const t = today0().getTime();
+    const left = buildDays(running).filter(d => !d.isOff && d.date.getTime() >= t).length;
+    if(left < LOW_CLASS_THRESHOLD){
+      return { kind:'ending', left, cal:running };
+    }
+    return null;
+  }
+
+  // Nothing running — is anything queued up?
+  if(cals.some(x => calStatus(x) === 'Upcoming')) return null;
+
+  return { kind:'none', left:0, cal:null };
+}
 
 /* ---------------- Lock ---------------- */
 function isUnlocked(){
@@ -568,6 +714,7 @@ async function loadClasses(){
     classes = data.classes || [];
     buildFilterOptions();
     updateStats();
+    renderAlerts();
     applyView();
   }catch(err){
     console.error(err);
@@ -577,6 +724,94 @@ async function loadClasses(){
   }
 }
 $("refreshBtn").onclick = loadClasses;
+
+/* ---------------- Needs attention panel ---------------- */
+function renderAlerts(){
+  const rows = [];
+  classes.forEach(c => {
+    const a = classAlert(c);
+    if(a) rows.push({ c, a });
+  });
+
+  // Emptiest plans first, then students with no plan at all
+  rows.sort((x, y) => {
+    if(x.a.kind !== y.a.kind) return x.a.kind === 'none' ? 1 : -1;
+    return x.a.left - y.a.left;
+  });
+
+  if(!rows.length){ $("alerts").classList.remove("show"); return; }
+
+  $("alertCount").textContent = rows.length;
+  $("alertRows").innerHTML = rows.map(({c, a}) => {
+    const phone = digits(c["Phone"]);
+    const sub = a.kind === 'ending'
+      ? `<b>${escapeHtml(a.cal.name)}</b> · ${a.left === 0 ? 'no classes left' : a.left + (a.left === 1 ? ' class left' : ' classes left')} · ends ${fmtDate(endDate(a.cal))}`
+      : `No calendar plan running`;
+
+    return `<div class="alert-row">
+      <div class="alert-info">
+        <div class="alert-name">${escapeHtml(c["Student Name"])}
+          <span class="tag ${a.kind}">${a.kind === 'ending' ? 'Ending soon' : 'No plan'}</span>
+        </div>
+        <div class="alert-sub">${escapeHtml(c["Student ID"])} · ${escapeHtml(c["Course"] || '—')} — ${sub}</div>
+      </div>
+      <div class="alert-btns">
+        ${phone
+          ? `<button class="btn-wa-sm" data-wa="${escapeHtml(c["Class ID"])}">
+               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/></svg>
+               Message
+             </button>`
+          : `<span class="btn-wa-sm off" title="Add a contact number to this class sheet">No number</span>`}
+        <button data-cal="${escapeHtml(c["Class ID"])}" style="background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold-light);padding:8px 14px;border-radius:100px;cursor:pointer;font-size:10.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;font-family:'Manrope',sans-serif">Calendars</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  $("alertRows").querySelectorAll('[data-wa]').forEach(b => {
+    b.addEventListener('click', () => {
+      const c = classes.find(x => x["Class ID"] === b.dataset.wa);
+      if(c) messageStudent(c);
+    });
+  });
+  $("alertRows").querySelectorAll('[data-cal]').forEach(b => {
+    b.addEventListener('click', () => {
+      window.location.href = "/portal/classes/calendars.html?id=" + encodeURIComponent(b.dataset.cal);
+    });
+  });
+
+  $("alerts").classList.add("show");
+}
+
+/* Opens a 1-to-1 WhatsApp chat with the student.
+   The number lives only in the admin sheet — it is never sent to the share
+   link, so nobody holding a class sheet link can see or reach it. */
+function messageStudent(c){
+  const phone = digits(c["Phone"]);
+  if(!phone){ toast("No contact number saved for this student", true); return; }
+
+  const a = classAlert(c);
+  let body;
+  if(a && a.kind === 'ending'){
+    body = a.left === 0
+      ? `Your *${a.cal.name}* has finished. Shall we set up the next plan, in shā’ Allāh?`
+      : `Your *${a.cal.name}* has only *${a.left}* ${a.left === 1 ? 'class' : 'classes'} left (ends ${fmtDate(endDate(a.cal))}). Shall we set up the next plan, in shā’ Allāh?`;
+  } else {
+    body = `We haven't set up your next class plan yet. Shall we arrange it, in shā’ Allāh?`;
+  }
+
+  const msg = `Assalamu Alaikum 🌙\n\n*${c["Student Name"]}*\n${body}\n\n_ManzilulQuran E-learning Academy_`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+}
+
+/* Strip to digits. A bare 10-digit number is assumed Indian and gets 91,
+   which covers how numbers are usually typed here. Anything already
+   carrying a country code is left alone. */
+function digits(v){
+  let d = String(v || "").replace(/\D/g, "");
+  if(!d) return "";
+  if(d.length === 10) d = "91" + d;
+  return d;
+}
 
 /* ---------------- Stats ---------------- */
 function updateStats(){
@@ -733,6 +968,7 @@ function openForm(c){
   $("fCourse").value    = c ? (c["Course"] || "") : "";
   $("fJoinDate").value  = c ? toDateInput(c["Join Date"]) : "";
   $("fWhatsapp").value  = c ? (c["WhatsApp Group Link"] || "") : "";
+  $("fPhone").value     = c ? (c["Phone"] || "") : "";
   $("fStatus").value    = c ? (c["Status"] || "Active") : "Active";
 
   document.querySelectorAll("#formModal .field").forEach(f => f.classList.remove("invalid"));
@@ -760,6 +996,7 @@ $("formSaveBtn").onclick = async () => {
       course:      $("fCourse").value,
       joinDate:    $("fJoinDate").value,
       whatsapp:    $("fWhatsapp").value.trim(),
+      phone:       $("fPhone").value.trim(),
       status:      $("fStatus").value
     };
     const res = await fetch(SCRIPT_URL, {
@@ -938,7 +1175,7 @@ function escapeHtml(str){
 }
 function fmtDate(v){
   if(!v) return '—';
-  const d = new Date(v);
+  const d = (v instanceof Date) ? v : new Date(v);
   if(isNaN(d.getTime())) return String(v);
   return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
 }
