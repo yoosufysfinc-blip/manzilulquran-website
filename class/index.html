@@ -1,1 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Class Sheet · ManzilulQuran E-learning Academy</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Amiri:wght@400;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+<style>
+  :root{
+    --emerald-deepest:#031b13;
+    --emerald-deep:#0a3d2e;
+    --emerald:#125c44;
+    --emerald-light:#1a7a5a;
+    --emerald-glow:#2dd4a4;
+    --gold:#c9a961;
+    --gold-light:#e4c987;
+    --gold-warm:#ffb86b;
+    --cream:#faf6ee;
+    --cream-dim:rgba(250,246,238,0.7);
+    --ink:#0e1a14;
+    --err:#ff9999;
+    --glow-warm:rgba(255,200,140,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Manrope',sans-serif;
+    background:radial-gradient(ellipse at top,var(--emerald-deep) 0%,var(--emerald-deepest) 65%,#000 100%);
+    color:var(--cream);
+    min-height:100vh;
+    padding:32px 20px 60px;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* Floating gold particles */
+  .bg-particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .particle{
+    position:absolute;width:3px;height:3px;
+    background:var(--gold-light);border-radius:50%;opacity:0;
+    animation:floatUp 14s linear infinite;
+    box-shadow:0 0 8px var(--gold-warm);
+  }
+  @keyframes floatUp{
+    0%{transform:translateY(100vh) scale(0);opacity:0}
+    10%{opacity:0.5}
+    50%{opacity:0.8}
+    90%{opacity:0.3}
+    100%{transform:translateY(-10vh) scale(1);opacity:0}
+  }
+
+  .stage{max-width:760px;margin:0 auto;position:relative;z-index:1}
+
+  /* ---------- States ---------- */
+  .state{display:none}
+  .state.show{display:block;animation:riseIn .45s cubic-bezier(.2,.9,.3,1.1) both}
+  @keyframes riseIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+  .loading{text-align:center;padding:100px 20px;color:var(--cream-dim)}
+  .loading-spin{
+    display:inline-block;width:32px;height:32px;
+    border:3px solid rgba(201,169,110,0.2);border-top-color:var(--gold);
+    border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ---------- Card ---------- */
+  .card{
+    background:linear-gradient(160deg,rgba(18,92,68,0.55) 0%,rgba(3,27,19,0.85) 100%);
+    border:1px solid rgba(201,169,110,0.25);
+    border-radius:24px;
+    box-shadow:0 30px 80px -20px rgba(0,0,0,0.6),0 0 60px -30px rgba(201,169,110,0.4);
+    backdrop-filter:blur(6px);
+    position:relative;overflow:hidden;
+  }
+  .card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--gold),var(--gold-warm),var(--gold),transparent);
+    opacity:0.7;
+  }
+
+  /* ---------- Header ---------- */
+  .head{
+    text-align:center;padding:40px 34px 26px;position:relative;
+  }
+  .head::after{
+    content:'';position:absolute;top:-90px;left:50%;transform:translateX(-50%);
+    width:280px;height:280px;
+    background:radial-gradient(circle,rgba(201,169,110,0.15),transparent 60%);
+    pointer-events:none;
+  }
+  .logo-orbit{
+    position:relative;width:96px;height:96px;margin:0 auto 18px;
+    animation:logoIn 1s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+  @keyframes logoIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .logo-ring{
+    position:absolute;inset:0;border-radius:50%;
+    border:1px solid rgba(201,169,110,0.35);
+    animation:orbitSpin 22s linear infinite;
+  }
+  .logo-ring::before,.logo-ring::after{
+    content:'';position:absolute;width:6px;height:6px;
+    background:var(--gold-light);border-radius:50%;
+    box-shadow:0 0 10px var(--gold-warm);
+  }
+  .logo-ring::before{top:-3px;left:50%;transform:translateX(-50%)}
+  .logo-ring::after{bottom:-3px;left:50%;transform:translateX(-50%)}
+  @keyframes orbitSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  .logo-circle{
+    position:absolute;inset:10px;border-radius:50%;
+    overflow:hidden;border:2px solid var(--gold);background:#fff;
+    box-shadow:0 0 30px -6px var(--glow-warm);
+  }
+  .logo-circle img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+
+  .eyebrow{
+    display:inline-block;
+    font-size:10px;font-weight:600;letter-spacing:3.5px;text-transform:uppercase;
+    color:var(--gold-light);
+    padding:6px 16px;
+    background:rgba(201,169,110,0.08);
+    border:1px solid rgba(201,169,110,0.25);
+    border-radius:100px;margin-bottom:14px;
+  }
+  h1{
+    font-family:'Cormorant Garamond',serif;
+    font-size:36px;font-weight:600;color:var(--cream);
+    letter-spacing:-.5px;line-height:1.1;
+  }
+  h1 .accent{color:var(--gold-light);font-style:italic;font-weight:500}
+  .head-sub{
+    font-size:13.5px;color:var(--cream-dim);margin-top:8px;
+  }
+
+  .status-banner{
+    display:none;
+    margin:18px 34px 0;
+    background:rgba(255,153,153,0.08);
+    border:1px solid rgba(255,153,153,0.35);
+    border-radius:12px;padding:12px 16px;
+    font-size:13px;color:var(--err);text-align:center;font-weight:600;
+  }
+  .status-banner.show{display:block}
+
+  /* ---------- Tabs ---------- */
+  .tabs{
+    display:flex;gap:4px;padding:0 34px;
+    border-bottom:1px solid rgba(201,169,110,0.18);
+    margin-top:8px;overflow-x:auto;
+  }
+  .tab{
+    font-family:'Manrope',sans-serif;
+    font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--cream-dim);background:transparent;border:none;
+    padding:14px 18px;cursor:pointer;position:relative;white-space:nowrap;
+    transition:color .2s;
+  }
+  .tab:hover{color:var(--cream)}
+  .tab.active{color:var(--gold-light)}
+  .tab.active::after{
+    content:'';position:absolute;left:14px;right:14px;bottom:-1px;height:2px;
+    background:linear-gradient(90deg,var(--gold-light),var(--gold));
+    border-radius:2px;
+  }
+
+  .tab-panel{display:none;padding:28px 34px 34px}
+  .tab-panel.show{display:block;animation:fadeIn .3s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+  /* ---------- Overview ---------- */
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+  .info-item{
+    background:rgba(3,27,19,0.45);
+    border:1px solid rgba(201,169,110,0.18);
+    border-radius:14px;padding:16px 18px;
+  }
+  .info-item.full{grid-column:1/-1}
+  .info-label{
+    font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    color:var(--gold-light);margin-bottom:7px;
+  }
+  .info-value{
+    font-size:16px;font-weight:600;color:var(--cream);word-break:break-word;
+  }
+  .info-value.serif{
+    font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+  }
+
+  .pill{
+    display:inline-block;padding:4px 12px;border-radius:100px;
+    font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  }
+  .pill.active{background:rgba(45,212,164,0.15);color:var(--emerald-glow);border:1px solid rgba(45,212,164,0.4)}
+  .pill.inactive{background:rgba(255,153,153,0.1);color:var(--err);border:1px solid rgba(255,153,153,0.3)}
+
+  .btn-wa{
+    width:100%;
+    font-family:'Manrope',sans-serif;
+    font-size:14px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    background:#25D366;color:#04301a;border:none;border-radius:100px;
+    padding:16px 20px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    box-shadow:0 8px 26px -8px rgba(37,211,102,0.5);
+    transition:transform .18s, box-shadow .2s, background .2s;
+    text-decoration:none;
+  }
+  .btn-wa:hover{
+    background:#1ebe5b;transform:translateY(-2px);
+    box-shadow:0 12px 34px -8px rgba(37,211,102,0.7);
+  }
+  .btn-wa svg{width:18px;height:18px}
+  .btn-wa.disabled{
+    background:rgba(255,255,255,0.07);color:rgba(250,246,238,0.35);
+    box-shadow:none;cursor:not-allowed;pointer-events:none;
+    border:1px solid rgba(255,255,255,0.1);
+  }
+
+  /* ---------- Empty state (Calendar tab) ---------- */
+  .empty{
+    text-align:center;padding:50px 20px;
+  }
+  .empty svg{
+    width:44px;height:44px;color:var(--gold-light);opacity:0.35;margin-bottom:16px;
+  }
+  .empty h4{
+    font-family:'Cormorant Garamond',serif;
+    font-size:22px;font-weight:600;color:var(--cream);margin-bottom:8px;
+  }
+  .empty p{
+    font-size:13.5px;color:var(--cream-dim);line-height:1.6;max-width:360px;margin:0 auto;
+  }
+
+  /* ---------- Error state ---------- */
+  .err-card{
+    max-width:460px;margin:70px auto 0;text-align:center;
+    background:linear-gradient(160deg,rgba(18,92,68,0.5) 0%,rgba(3,27,19,0.88) 100%);
+    border:1px solid rgba(255,153,153,0.28);
+    border-radius:22px;padding:44px 34px 38px;
+    box-shadow:0 30px 80px -20px rgba(0,0,0,0.6);
+  }
+  .err-icon{
+    width:72px;height:72px;margin:0 auto 20px;border-radius:50%;
+    background:rgba(255,153,153,0.08);
+    border:2px solid rgba(255,153,153,0.35);
+    display:grid;place-items:center;
+  }
+  .err-icon svg{width:32px;height:32px;stroke:var(--err);fill:none;stroke-width:2;stroke-linecap:round}
+  .err-card h2{
+    font-family:'Cormorant Garamond',serif;
+    font-size:27px;font-weight:600;color:var(--cream);margin-bottom:12px;
+  }
+  .err-card p{
+    font-size:14px;color:var(--cream-dim);line-height:1.65;max-width:340px;margin:0 auto;
+  }
+  .err-card .cta{
+    display:inline-block;margin-top:24px;
+    padding:11px 26px;
+    border:1.5px solid var(--gold);border-radius:100px;
+    color:var(--gold-light);text-decoration:none;
+    font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    transition:all .2s;
+  }
+  .err-card .cta:hover{background:var(--gold);color:var(--emerald-deepest)}
+
+  /* ---------- Footer ---------- */
+  .foot{
+    max-width:760px;margin:22px auto 0;text-align:center;
+    font-size:12px;color:var(--cream-dim);font-weight:500;
+    position:relative;z-index:1;
+  }
+  .foot a{color:var(--gold-light);text-decoration:none}
+  .foot a:hover{color:var(--gold-warm)}
+
+  @media (max-width:640px){
+    body{padding:20px 14px 46px}
+    .card{border-radius:20px}
+    .head{padding:32px 20px 22px}
+    h1{font-size:28px}
+    .tabs{padding:0 14px}
+    .tab{padding:13px 14px;font-size:11px}
+    .tab.active::after{left:10px;right:10px}
+    .tab-panel{padding:24px 18px 28px}
+    .info-grid{grid-template-columns:1fr;gap:12px}
+    .status-banner{margin:16px 18px 0}
+    .logo-orbit{width:84px;height:84px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important}
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg-particles" id="bgParticles" aria-hidden="true"></div>
+
+  <div class="stage">
+
+    <!-- LOADING -->
+    <div class="state show" id="stateLoading">
+      <div class="loading">
+        <div class="loading-spin"></div>
+        <div>Opening class sheet…</div>
+      </div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="state" id="stateError">
+      <div class="err-card">
+        <div class="err-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </div>
+        <h2 id="errTitle">Link not valid</h2>
+        <p id="errText">This class sheet link is not valid, or it may have been reset by the academy. Please ask for a new link.</p>
+        <a class="cta" href="https://wa.me/917025070415" target="_blank" rel="noopener">Contact Academy</a>
+      </div>
+    </div>
+
+    <!-- CLASS SHEET -->
+    <div class="state" id="stateSheet">
+      <div class="card">
+
+        <div class="head">
+          <div class="logo-orbit">
+            <div class="logo-ring"></div>
+            <div class="logo-circle">
+              <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+            </div>
+          </div>
+          <div class="eyebrow">ManzilulQuran · Class Sheet</div>
+          <h1 id="studentName">Student</h1>
+          <div class="head-sub" id="headSub">—</div>
+        </div>
+
+        <div class="status-banner" id="statusBanner">
+          This class sheet is currently inactive. Please contact the academy.
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-tab="overview">Overview</button>
+          <button class="tab" data-tab="calendar">Calendar Sheets</button>
+        </div>
+
+        <!-- Overview -->
+        <div class="tab-panel show" id="panel-overview">
+          <div class="info-grid">
+            <div class="info-item full">
+              <div class="info-label">Student Name</div>
+              <div class="info-value serif" id="ovName">—</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Student ID</div>
+              <div class="info-value" id="ovId">—</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Course</div>
+              <div class="info-value" id="ovCourse">—</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Join Date</div>
+              <div class="info-value" id="ovJoin">—</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Status</div>
+              <div class="info-value" id="ovStatus">—</div>
+            </div>
+            <div class="info-item full">
+              <div class="info-label">Calendar Status</div>
+              <div class="info-value" id="ovCalendar">No calendar sheets yet</div>
+            </div>
+          </div>
+
+          <a class="btn-wa disabled" id="waBtn" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/></svg>
+            <span id="waLabel">WhatsApp Group</span>
+          </a>
+        </div>
+
+        <!-- Calendar Sheets (Phase 2) -->
+        <div class="tab-panel" id="panel-calendar">
+          <div class="empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <h4>No calendar sheets yet</h4>
+            <p>Your class schedule and join links will appear here once the academy publishes them, in shā’ Allāh.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="foot">
+    ManzilulQuran E-learning Academy ·
+    <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a>
+  </footer>
+
+<script>
+/* =================================================================
+   ░░  CLASS SHEET (shared view)  ░░
+   Loads exactly ONE class sheet, using only the token in the URL.
+   There is deliberately NO admin password anywhere in this file.
+   ================================================================= */
+
+// CONFIG — paste the Classes Apps Script Web App URL here
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
+
+const $ = (id) => document.getElementById(id);
+
+/* ---------------- Background particles ---------------- */
+(function spawnParticles(count){
+  const box = $('bgParticles');
+  for(let i=0;i<count;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = (Math.random()*100) + '%';
+    p.style.animationDelay = (Math.random()*14) + 's';
+    p.style.animationDuration = (10 + Math.random()*8) + 's';
+    const size = 2 + Math.random()*3;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    box.appendChild(p);
+  }
+})(22);
+
+/* ---------------- State switching ---------------- */
+function showState(id){
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('show'));
+  $(id).classList.add('show');
+}
+function showError(title, text){
+  if(title) $('errTitle').textContent = title;
+  if(text)  $('errText').textContent = text;
+  showState('stateError');
+}
+
+/* ---------------- Tabs ---------------- */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('show'));
+    tab.classList.add('active');
+    $('panel-' + tab.dataset.tab).classList.add('show');
+  });
+});
+
+/* ---------------- Load ---------------- */
+(async function load(){
+  const params = new URLSearchParams(window.location.search);
+  const token = (params.get('t') || '').trim();
+
+  if(!token){
+    showError('No link provided', 'This page needs a class sheet link. Please use the link shared with you by the academy.');
+    return;
+  }
+
+  if(SCRIPT_URL.startsWith('PASTE_')){
+    showError('Not configured yet', 'This class sheet system is not connected yet. Please contact the academy.');
+    return;
+  }
+
+  try{
+    const res = await fetch(`${SCRIPT_URL}?action=getClass&token=${encodeURIComponent(token)}`);
+    const out = await res.json();
+
+    if(out.result !== 'success'){
+      if(out.error === 'invalid_token'){
+        showError('Link not valid', 'This class sheet link is not valid, or it may have been reset by the academy. Please ask for a new link.');
+      } else {
+        showError('Could not open', out.error || 'Something went wrong. Please try again in a moment.');
+      }
+      return;
+    }
+
+    render(out.data);
+    showState('stateSheet');
+
+  }catch(err){
+    console.error(err);
+    showError('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
+  }
+})();
+
+/* ---------------- Render ---------------- */
+function render(d){
+  const isActive = (d.status || 'Active') === 'Active';
+
+  document.title = `${d.studentName} · Class Sheet · ManzilulQuran`;
+
+  $('studentName').innerHTML = accentLastWord(d.studentName || 'Student');
+  $('headSub').textContent = [d.course, d.studentId].filter(Boolean).join('  ·  ') || '—';
+
+  $('ovName').textContent   = d.studentName || '—';
+  $('ovId').textContent     = d.studentId || '—';
+  $('ovCourse').textContent = d.course || '—';
+  $('ovJoin').textContent   = fmtDate(d.joinDate);
+  $('ovStatus').innerHTML   = `<span class="pill ${isActive ? 'active' : 'inactive'}">${isActive ? 'Active' : 'Inactive'}</span>`;
+
+  if(!isActive) $('statusBanner').classList.add('show');
+
+  // WhatsApp button
+  const wa = (d.whatsapp || '').trim();
+  const btn = $('waBtn');
+  if(wa && /^https?:\/\//i.test(wa)){
+    btn.href = wa;
+    btn.classList.remove('disabled');
+    $('waLabel').textContent = 'Open WhatsApp Group';
+  } else {
+    btn.removeAttribute('href');
+    btn.classList.add('disabled');
+    $('waLabel').textContent = 'No WhatsApp group linked';
+  }
+}
+
+/* ---------------- Utils ---------------- */
+// Renders the last word of a name in italic gold, matching the site's heading style
+function accentLastWord(name){
+  const parts = String(name).trim().split(/\s+/);
+  if(parts.length === 1) return escapeHtml(parts[0]);
+  const last = parts.pop();
+  return escapeHtml(parts.join(' ')) + ' <span class="accent">' + escapeHtml(last) + '</span>';
+}
+function escapeHtml(str){
+  if(str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function fmtDate(v){
+  if(!v) return '—';
+  const s = String(v);
+  const plain = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(plain){
+    const d = new Date(Date.UTC(+plain[1], +plain[2]-1, +plain[3]));
+    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', timeZone:'UTC' });
+  }
+  const d = new Date(s);
+  if(isNaN(d.getTime())) return s;
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+</script>
+</body>
+</html>
