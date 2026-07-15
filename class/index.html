@@ -112,6 +112,26 @@
     background:linear-gradient(90deg,transparent,var(--azure),var(--azure-light),var(--azure),transparent);
     opacity:.6;
   }
+  /* While revalidating in the background, the top rail becomes a quiet
+     progress sweep. No spinner, no blocking — the page is already usable. */
+  .card.syncing::before{
+    height:2px;opacity:1;
+    background:linear-gradient(90deg,transparent 0%,var(--azure) 45%,var(--azure-light) 50%,var(--azure) 55%,transparent 100%);
+    background-size:45% 100%;background-repeat:no-repeat;
+    animation:railSweep 1.1s linear infinite;
+  }
+  @keyframes railSweep{
+    0%  {background-position:-45% 0}
+    100%{background-position:145% 0}
+  }
+
+  .sync-note{
+    display:none;margin:14px 34px 0;
+    background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px;padding:9px 14px;
+    font-size:11.5px;color:var(--frost-dim);text-align:center;font-weight:600;
+  }
+  .sync-note.show{display:block}
 
   /* ---------- Header ---------- */
   .head{text-align:center;padding:38px 34px 24px;position:relative}
@@ -375,6 +395,18 @@
     border:1px solid rgba(255,255,255,0.08);
   }
 
+  .day-btns{display:flex;gap:6px;flex:0 0 auto;align-items:center}
+  .btn-invite{
+    font-family:'Manrope',sans-serif;
+    font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    color:#04301a;background:#25D366;
+    border:none;border-radius:100px;padding:9px 14px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:5px;
+    transition:transform .15s, background .2s;
+  }
+  .btn-invite:hover{background:#1ebe5b;transform:translateY(-1px)}
+  .btn-invite svg{width:11px;height:11px}
+
   /* ---------- Empty state ---------- */
   .empty{text-align:center;padding:48px 20px}
   .empty svg{width:42px;height:42px;color:var(--azure);opacity:.3;margin-bottom:16px}
@@ -497,6 +529,7 @@
         <div class="status-banner" id="statusBanner">
           This class sheet is currently inactive. Please contact the academy.
         </div>
+        <div class="sync-note" id="syncNote"></div>
 
         <div class="tabs">
           <button class="tab active" data-tab="overview">Overview</button>
@@ -613,7 +646,45 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-/* ---------------- Load ---------------- */
+/* =================================================================
+   ░░  LOAD — stale-while-revalidate  ░░
+
+   Apps Script needs ~3s from cold, and there is no way around that on
+   the first ever open. But there is no reason to pay it twice.
+
+   So: paint the saved copy instantly, then re-check in the background
+   and repaint only if something actually changed. Repeat opens feel
+   instant because they are — the network is no longer in the way.
+   ================================================================= */
+const CACHE_PREFIX = 'mq_class_';
+let cacheKey = '';
+
+function readCache(){
+  try{
+    const raw = localStorage.getItem(cacheKey);
+    if(!raw) return null;
+    const o = JSON.parse(raw);
+    return (o && o.data) ? o : null;
+  }catch(e){ return null; }
+}
+function writeCache(data){
+  try{ localStorage.setItem(cacheKey, JSON.stringify({ at: Date.now(), data: data })); }catch(e){}
+}
+function clearCache(){
+  try{ localStorage.removeItem(cacheKey); }catch(e){}
+}
+
+function setSyncing(on){
+  const card = document.querySelector('#stateSheet .card');
+  if(card) card.classList.toggle('syncing', !!on);
+}
+function setSyncNote(msg){
+  const n = $('syncNote');
+  if(!n) return;
+  if(msg){ n.textContent = msg; n.classList.add('show'); }
+  else   { n.classList.remove('show'); }
+}
+
 (async function load(){
   const params = new URLSearchParams(window.location.search);
   const token = (params.get('t') || '').trim();
@@ -627,25 +698,54 @@ document.querySelectorAll('.tab').forEach(tab => {
     return;
   }
 
+  shareToken = token;
+  cacheKey = CACHE_PREFIX + token;
+
+  // 1. Paint from cache immediately, if we have one.
+  const cached = readCache();
+  if(cached){
+    render(cached.data);
+    showState('stateSheet');
+    setSyncing(true);
+  }
+
+  // 2. Always re-check with the server.
   try{
     const res = await fetch(`${SCRIPT_URL}?action=getClass&token=${encodeURIComponent(token)}`);
     const out = await res.json();
 
     if(out.result !== 'success'){
       if(out.error === 'invalid_token'){
+        // Link was reset. Drop the stale copy and say so, even if we were
+        // already showing it — otherwise a dead link looks alive.
+        clearCache();
         showError('Link not valid', 'This class sheet link is not valid, or it may have been reset by the academy. Please ask for a new link.');
-      } else {
+      } else if(!cached){
         showError('Could not open', out.error || 'Something went wrong. Please try again in a moment.');
       }
+      setSyncing(false);
       return;
     }
 
-    render(out.data);
-    showState('stateSheet');
+    writeCache(out.data);
+
+    // Repaint only if something actually changed — avoids a pointless flash.
+    if(!cached || JSON.stringify(cached.data) !== JSON.stringify(out.data)){
+      render(out.data);
+    }
+    if(!cached) showState('stateSheet');
+    setSyncing(false);
+    setSyncNote('');
 
   }catch(err){
     console.error(err);
-    showError('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
+    if(!cached){
+      showError('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
+    } else {
+      // Offline but we have a copy — showing it beats showing an error.
+      setSyncing(false);
+      setSyncNote('Offline — showing your saved copy');
+    }
   }
 })();
 
@@ -679,6 +779,7 @@ function render(d){
   }
 
   calendars = d.calendars || [];
+  studentNameCache = d.studentName || 'Student';
   renderCalendarStatus();
   renderCalendars();
 }
@@ -690,6 +791,8 @@ function render(d){
    ================================================================= */
 let calendars = [];
 let activeCalIdx = 0;
+let shareToken = '';
+let studentNameCache = '';
 
 const DAYS_FULL  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const DAYS_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -870,19 +973,61 @@ function renderCalBody(){
             <div class="day-n">Day ${d.n}</div>
             <div class="day-date">${fmtDate(d.date)}<span class="day-dow">${DAYS_SHORT[d.date.getDay()]}</span>${isToday ? '<span class="today-tag">Today</span>' : ''}</div>
           </div>
-          ${joinable
-            ? `<a class="btn-join" href="${escapeHtml(d.link)}" target="_blank" rel="noopener">
-                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                 Join
-               </a>`
-            : `<span class="btn-join dead">Join</span>`}
+          <div class="day-btns">
+            ${joinable
+              ? `<button class="btn-invite" data-invite="${isoDate(d.date)}" title="Send this class on WhatsApp">
+                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/></svg>
+                   Invite
+                 </button>`
+              : ''}
+            ${joinable
+              ? `<a class="btn-join" href="${escapeHtml(d.link)}" target="_blank" rel="noopener">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                   Join
+                 </a>`
+              : `<span class="btn-join dead">Join</span>`}
+          </div>
         </div>`;
       }).join('')}
     </div>`;
 
+  $('calBody').querySelectorAll('[data-invite]').forEach(b => {
+    b.addEventListener('click', () => sendInvite(b.dataset.invite));
+  });
+
   // Scroll today's row into view inside the list
   const todayEl = $('calBody').querySelector('.day.today');
   if(todayEl) todayEl.scrollIntoView({ block:'nearest' });
+}
+
+/* ---------------- Invite ----------------
+   WhatsApp has no URL that opens a specific group AND prefills a message —
+   Meta doesn't allow it. wa.me/?text= is the closest thing that exists:
+   it opens WhatsApp with the message written, and you pick the group once.
+
+   The message carries a /join/ link rather than the raw Meet URL, so the
+   student lands on an academy page first, and the Meet link is resolved
+   fresh at click time (change the links later and old invites still work).
+------------------------------------------ */
+function sendInvite(isoDay){
+  const d = parseDate(isoDay);
+  const pretty = d ? d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : isoDay;
+  const url = `${location.origin}/join/?t=${encodeURIComponent(shareToken)}&dt=${encodeURIComponent(isoDay)}`;
+
+  const msg =
+    `Assalamu Alaikum 🌙\n\n` +
+    `*${studentNameCache}* — Quran class\n` +
+    `📅 ${pretty}\n\n` +
+    `Join here:\n${url}\n\n` +
+    `_ManzilulQuran E-learning Academy_`;
+
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function isoDate(d){
+  return d.getFullYear() + '-' +
+         String(d.getMonth()+1).padStart(2,'0') + '-' +
+         String(d.getDate()).padStart(2,'0');
 }
 
 /* ---------------- Utils ---------------- */
