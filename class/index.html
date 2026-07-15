@@ -657,7 +657,15 @@ document.querySelectorAll('.tab').forEach(tab => {
    instant because they are — the network is no longer in the way.
    ================================================================= */
 const CACHE_PREFIX = 'mq_class_';
+
+// Declared here, above the load call below. `let` is in the temporal dead
+// zone until its own line runs — so anything load() touches has to be
+// declared before it, not further down the file.
 let cacheKey = '';
+let shareToken = '';
+let studentNameCache = '';
+let calendars = [];
+let activeCalIdx = 0;
 
 function readCache(){
   try{
@@ -685,7 +693,7 @@ function setSyncNote(msg){
   else   { n.classList.remove('show'); }
 }
 
-(async function load(){
+async function load(){
   const params = new URLSearchParams(window.location.search);
   const token = (params.get('t') || '').trim();
 
@@ -747,7 +755,7 @@ function setSyncNote(msg){
       setSyncNote('Offline — showing your saved copy');
     }
   }
-})();
+}
 
 /* ---------------- Render ---------------- */
 function render(d){
@@ -789,11 +797,6 @@ function render(d){
    The day rows are never stored. The academy saves only the rule
    (start + days + weekly off + links) and we rebuild the days here.
    ================================================================= */
-let calendars = [];
-let activeCalIdx = 0;
-let shareToken = '';
-let studentNameCache = '';
-
 const DAYS_FULL  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const DAYS_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
@@ -1041,6 +1044,11 @@ function escapeHtml(str){
   if(str == null) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+/* =================================================================
+   Boot LAST. load() paints straight from cache on a warm open, which
+   reaches the calendar engine defined below — so it must not run until
+   this whole script has been evaluated.
+   ================================================================= */
 function fmtDate(v){
   if(!v) return '—';
   if(v instanceof Date){
@@ -1057,6 +1065,8 @@ function fmtDate(v){
   if(isNaN(d.getTime())) return s;
   return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
 }
+
+load();
 </script>
 </body>
 </html>
