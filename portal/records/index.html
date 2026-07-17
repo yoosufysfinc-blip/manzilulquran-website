@@ -5,11 +5,11 @@
 <meta name="robots" content="noindex, nofollow" />
 <meta name="googlebot" content="noindex, nofollow" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Records · ManzilulQuran Admin</title>
+<title>Classes · ManzilulQuran Admin</title>
 <link rel="icon" href="/logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Amiri:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
   :root{
@@ -17,15 +17,15 @@
     --emerald-deep:#0a3d2e;
     --emerald:#125c44;
     --emerald-light:#1a7a5a;
+    --emerald-glow:#2dd4a4;
     --gold:#c9a961;
     --gold-light:#e4c987;
     --gold-warm:#ffb86b;
     --cream:#faf6ee;
     --cream-dim:rgba(250,246,238,0.7);
-    --cream-faint:rgba(250,246,238,0.4);
     --ink:#0e1a14;
     --err:#ff9999;
-    --accent:#2dd4a4;   /* swapped per tab at runtime */
+    --glow-warm:rgba(255,200,140,0.3);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   body{
@@ -49,7 +49,7 @@
   .lock-input{
     width:100%;font-family:'Manrope',sans-serif;font-size:16px;font-weight:600;color:var(--ink);
     border:2px solid var(--emerald-light);border-radius:12px;padding:14px 16px;
-    text-align:center;letter-spacing:4px;
+    text-align:center;letter-spacing:4px;transition:border-color .2s;
   }
   .lock-input:focus{outline:none;border-color:var(--emerald);box-shadow:0 0 0 3px rgba(27,122,90,.15)}
   .lock-input.wrong{border-color:#c0392b;animation:shake .4s}
@@ -63,22 +63,12 @@
   .lock-hint{margin-top:22px;padding-top:20px;border-top:1px solid #E8F3EE;font-size:11.5px;color:#5B6B63}
   .lock-hint a{color:var(--emerald-light);text-decoration:none;font-weight:600}
 
-  /* ---------- Shell ---------- */
-  .admin{display:none;max-width:1100px;margin:0 auto}
+  /* ---------- Admin shell ---------- */
+  .admin{display:none;max-width:1180px;margin:0 auto}
   .admin.show{display:block;animation:riseIn .35s ease}
-
-  .crumb{
-    display:inline-flex;align-items:center;gap:7px;
-    color:var(--cream-dim);text-decoration:none;
-    font-size:11.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;
-    margin-bottom:18px;transition:color .2s;
-  }
-  .crumb:hover{color:var(--gold-light)}
-  .crumb svg{width:13px;height:13px}
-
   .admin-head{
     display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
-    margin-bottom:22px;
+    margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid rgba(201,169,110,0.2);
   }
   .admin-head-left{display:flex;align-items:center;gap:16px}
   .admin-logo{width:56px;height:56px;border-radius:50%;border:2px solid rgba(201,169,110,0.5);overflow:hidden;background:#fff;flex:0 0 auto}
@@ -87,107 +77,157 @@
   .admin-title .accent{color:var(--gold-light);font-style:italic;font-weight:500}
   .admin-sub{font-size:12px;color:var(--cream-dim);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
   .admin-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
   .btn-ghost{
     font-family:'Manrope',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
     color:rgba(255,255,255,0.75);background:transparent;border:1px solid rgba(255,255,255,0.2);
     border-radius:100px;padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    transition:background .2s;
   }
   .btn-ghost:hover{background:rgba(255,255,255,0.08)}
   .btn-ghost svg{width:12px;height:12px}
-
-  /* ---------- Tabs: each record type owns a colour ---------- */
-  .tabs{
-    display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px;
-    padding-bottom:20px;border-bottom:1px solid rgba(201,169,110,0.18);
-  }
-  .tab{
-    font-family:'Manrope',sans-serif;
-    font-size:11.5px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
-    color:var(--cream-dim);
-    background:rgba(3,27,19,0.5);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:100px;padding:10px 17px;cursor:pointer;
-    display:inline-flex;align-items:center;gap:8px;
-    transition:all .2s;
-  }
-  .tab .dot{
-    width:7px;height:7px;border-radius:50%;flex:0 0 auto;
-    background:var(--c);
-  }
-  .tab:hover{color:var(--cream);border-color:color-mix(in srgb, var(--c) 45%, transparent)}
-  .tab.on{
+  .btn-gold{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
     color:var(--emerald-deepest);
-    background:var(--c);
-    border-color:transparent;
-    box-shadow:0 6px 20px -8px var(--c);
+    background:linear-gradient(135deg,var(--gold-light),var(--gold));
+    border:none;border-radius:100px;padding:10px 20px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;
+    box-shadow:0 6px 20px -8px rgba(201,169,110,0.6);
+    transition:transform .15s, box-shadow .2s;
   }
-  .tab.on .dot{background:rgba(0,0,0,0.45)}
+  .btn-gold:hover{transform:translateY(-1px);box-shadow:0 10px 26px -8px rgba(201,169,110,0.8)}
+  .btn-gold svg{width:13px;height:13px}
 
   /* ---------- Stats ---------- */
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
-  .stat{
-    background:rgba(3,27,19,0.5);
-    border:1px solid rgba(255,255,255,0.07);
-    border-left:2px solid var(--accent);
-    border-radius:0 13px 13px 0;padding:15px 17px;
-  }
-  .stat-label{font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--accent);opacity:.9;margin-bottom:6px}
-  .stat-value{font-family:'Cormorant Garamond',serif;font-size:29px;font-weight:600;color:var(--cream);line-height:1}
-  .stat-value .mini{font-size:19px;letter-spacing:2px;color:var(--accent)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+  .stat{background:rgba(3,27,19,0.5);border:1px solid rgba(201,169,110,0.2);border-radius:14px;padding:16px 18px}
+  .stat-label{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px}
+  .stat-value{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--cream);line-height:1}
 
-  /* ---------- List ---------- */
-  .list-wrap{
-    background:rgba(3,27,19,0.5);
-    border:1px solid rgba(255,255,255,0.07);
-    border-top:2px solid var(--accent);
-    border-radius:14px;overflow:hidden;
+  /* ---------- Attention / expiring soon ---------- */
+  .alerts{
+    background:linear-gradient(160deg, rgba(255,184,107,0.09), rgba(3,27,19,0.5));
+    border:1px solid rgba(255,184,107,0.3);
+    border-radius:16px;padding:18px 20px;margin-bottom:22px;
+    display:none;
   }
+  .alerts.show{display:block;animation:riseIn .35s ease}
+  .alerts-head{
+    display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;
+  }
+  .alerts-head svg{width:17px;height:17px;color:var(--gold-warm);flex:0 0 auto}
+  .alerts-head h4{
+    font-family:'Manrope',sans-serif;
+    font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+    color:var(--gold-warm);
+  }
+  .alerts-head .count{
+    font-size:10.5px;font-weight:800;letter-spacing:1px;
+    background:var(--gold-warm);color:var(--emerald-deepest);
+    padding:2px 9px;border-radius:100px;
+  }
+  .alert-row{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:11px 14px;margin-bottom:8px;flex-wrap:wrap;
+    background:rgba(3,27,19,0.5);
+    border:1px solid rgba(255,184,107,0.16);
+    border-radius:11px;
+  }
+  .alert-row:last-child{margin-bottom:0}
+  .alert-info{flex:1;min-width:190px}
+  .alert-name{font-size:14.5px;font-weight:700;color:var(--cream);letter-spacing:-.2px}
+  .alert-sub{font-size:11.5px;color:var(--cream-dim);margin-top:3px}
+  .alert-sub b{color:var(--gold-light);font-weight:700}
+  .alert-btns{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .tag{
+    display:inline-block;padding:2px 9px;border-radius:100px;
+    font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
+    margin-left:7px;vertical-align:middle;
+  }
+  .tag.ending{background:rgba(255,184,107,0.16);color:var(--gold-warm);border:1px solid rgba(255,184,107,0.4)}
+  .tag.none  {background:rgba(255,153,153,0.12);color:var(--err);border:1px solid rgba(255,153,153,0.35)}
+  .btn-wa-sm{
+    font-family:'Manrope',sans-serif;
+    font-size:10.5px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
+    background:#25D366;color:#04301a;border:none;border-radius:100px;
+    padding:8px 14px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:5px;
+    transition:background .2s, transform .15s;
+  }
+  .btn-wa-sm:hover{background:#1ebe5b;transform:translateY(-1px)}
+  .btn-wa-sm svg{width:11px;height:11px}
+  .btn-wa-sm.off{
+    background:rgba(255,255,255,0.06);color:var(--cream-faint);
+    cursor:not-allowed;border:1px solid rgba(255,255,255,0.1);
+  }
+  .btn-wa-sm.off:hover{transform:none;background:rgba(255,255,255,0.06)}
+
+  /* ---------- Controls ---------- */
+  .list-wrap{background:rgba(3,27,19,0.5);border:1px solid rgba(201,169,110,0.2);border-radius:14px;overflow:hidden}
   .list-search{
-    padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.07);
+    padding:16px 20px;border-bottom:1px solid rgba(201,169,110,0.15);
     display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   }
-  .list-search svg{width:18px;height:18px;color:var(--accent);flex:0 0 auto}
+  .list-search svg{width:18px;height:18px;color:var(--gold-light);flex:0 0 auto}
   .list-search input{
     flex:1;min-width:150px;font-family:'Manrope',sans-serif;font-size:14px;
     color:var(--cream);background:transparent;border:none;outline:none;
   }
-  .list-search input::placeholder{color:rgba(250,246,238,0.35)}
-  #resultCount{font-size:12px;color:var(--accent);font-weight:700;white-space:nowrap}
+  .list-search input::placeholder{color:rgba(250,246,238,0.4)}
+  #resultCount{font-size:12px;color:var(--gold-light);font-weight:600;white-space:nowrap}
 
+  .filters{
+    display:flex;gap:10px;flex-wrap:wrap;
+    padding:14px 20px;border-bottom:1px solid rgba(201,169,110,0.15);
+  }
+  .filters select{
+    font-family:'Manrope',sans-serif;font-size:12.5px;font-weight:600;color:var(--cream);
+    background:rgba(3,27,19,0.75);border:1px solid rgba(201,169,110,0.25);
+    border-radius:100px;padding:8px 32px 8px 14px;cursor:pointer;outline:none;appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c9a961' stroke-width='3' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 12px center;
+  }
+  .filters select:focus{border-color:var(--gold)}
+  .filters select option{background:var(--emerald-deepest);color:var(--cream)}
+
+  /* ---------- Table ---------- */
   .list-table{width:100%;border-collapse:collapse}
   .list-table thead th{
-    text-align:left;padding:13px 20px;
-    font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;
-    color:var(--accent);opacity:.9;
-    background:rgba(0,0,0,0.22);border-bottom:1px solid rgba(255,255,255,0.06);
+    text-align:left;padding:14px 20px;font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    color:var(--gold-light);background:rgba(3,27,19,0.4);border-bottom:1px solid rgba(201,169,110,0.15);
   }
-  .list-table tbody tr{border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:background .18s}
-  .list-table tbody tr:hover{background:color-mix(in srgb, var(--accent) 7%, transparent)}
+  .list-table tbody tr{border-bottom:1px solid rgba(201,169,110,0.08);transition:background .2s}
+  .list-table tbody tr:hover{background:rgba(201,169,110,0.05)}
   .list-table tbody tr:last-child{border-bottom:none}
   .list-table td{padding:13px 20px;font-size:14px;color:var(--cream);vertical-align:middle}
-  .list-table td.date{color:var(--cream-faint);font-size:12.5px}
-  .list-table td.rating{color:var(--accent);letter-spacing:2px;font-size:16px}
+  .list-table td.date,.list-table td.sid{color:rgba(250,246,238,0.6);font-size:12.5px}
   .list-table td.actions{text-align:right;white-space:nowrap}
   .list-table td.actions button{
-    background:transparent;border:1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-    color:var(--accent);
-    padding:5px 12px;border-radius:100px;cursor:pointer;
-    font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-    margin-left:6px;font-family:'Manrope',sans-serif;transition:all .2s;
+    background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold-light);
+    padding:5px 11px;border-radius:100px;cursor:pointer;font-size:11px;font-weight:600;
+    letter-spacing:.8px;text-transform:uppercase;margin-left:5px;font-family:'Manrope',sans-serif;transition:all .2s;
   }
-  .list-table td.actions button:hover{background:var(--accent);color:var(--emerald-deepest)}
+  .list-table td.actions button:hover{background:var(--gold);color:var(--emerald-deepest);border-color:var(--gold)}
+  .list-table td.actions button.danger{color:var(--err);border-color:rgba(255,153,153,0.3)}
+  .list-table td.actions button.danger:hover{background:#c0392b;color:#fff;border-color:#c0392b}
+
+  .pill{
+    display:inline-block;padding:3px 11px;border-radius:100px;
+    font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  }
+  .pill.active{background:rgba(45,212,164,0.15);color:var(--emerald-glow);border:1px solid rgba(45,212,164,0.4)}
+  .pill.inactive{background:rgba(255,153,153,0.1);color:var(--err);border:1px solid rgba(255,153,153,0.3)}
 
   .loading{text-align:center;padding:60px 20px;color:var(--cream-dim);font-size:14px}
   .loading-spin{
     display:inline-block;width:26px;height:26px;
-    border:3px solid rgba(255,255,255,0.12);border-top-color:var(--accent);
+    border:3px solid rgba(201,169,110,0.2);border-top-color:var(--gold);
     border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px;
   }
   @keyframes spin{to{transform:rotate(360deg)}}
   .empty-state{text-align:center;padding:60px 20px;color:var(--cream-dim);font-size:14px;line-height:1.7}
-  .empty-state svg{width:42px;height:42px;color:var(--accent);opacity:.28;margin-bottom:14px}
 
-  /* ---------- Detail modal ---------- */
+  /* ---------- Modal ---------- */
   .modal-backdrop{
     display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);
     backdrop-filter:blur(6px);z-index:100;
@@ -196,136 +236,206 @@
   .modal-backdrop.show{display:flex;animation:fadeIn .25s ease}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   .modal{
-    background:#fff;color:var(--ink);max-width:760px;width:100%;
-    border-radius:18px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.5);
+    background:linear-gradient(160deg,rgba(18,92,68,0.97) 0%,rgba(3,27,19,0.99) 100%);
+    border:1px solid rgba(201,169,110,0.3);
+    max-width:560px;width:100%;border-radius:20px;overflow:hidden;
+    box-shadow:0 40px 100px rgba(0,0,0,0.6);
     animation:modalIn .35s cubic-bezier(.2,.9,.3,1.1) both;
   }
   @keyframes modalIn{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
-
-  .detail{padding:36px 38px 30px}
-  .detail-head{text-align:center;padding-bottom:22px;border-bottom:2px solid var(--accent);margin-bottom:24px}
-  .detail-logo{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;overflow:hidden;border:2px solid var(--accent);background:#fff}
-  .detail-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
-  .detail-eyebrow{font-size:10px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:#8a7a4e;margin-bottom:6px}
-  .detail-h1{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--emerald)}
-  .detail-h1 .hl{font-style:italic;font-weight:500;color:#8a7a4e}
-  .detail-sub{font-size:12px;color:#666;margin-top:6px}
-
-  .detail-meta{background:#faf6ee;border-left:3px solid var(--accent);padding:14px 18px;margin-bottom:24px;font-size:13px}
-  .detail-meta-row{display:flex;justify-content:space-between;padding:4px 0;gap:14px}
-  .detail-meta-row b{color:var(--emerald);font-weight:800;font-size:11px;letter-spacing:1px;text-transform:uppercase}
-  .detail-meta-row span{color:var(--ink);font-weight:600;text-align:right}
-
-  .detail-row{
-    display:flex;gap:14px;padding:11px 14px;margin-bottom:8px;
-    background:#faf6ee;border:1px solid #ecdcaf;border-radius:8px;
-    font-size:13.5px;page-break-inside:avoid;break-inside:avoid;
+  .modal-head{
+    padding:26px 30px 20px;border-bottom:1px solid rgba(201,169,110,0.2);
   }
-  .detail-row b{color:var(--emerald);font-weight:800;font-size:11px;letter-spacing:1px;text-transform:uppercase;flex:0 0 150px;padding-top:2px}
-  .detail-row span{color:#333;font-weight:500;flex:1;word-break:break-word}
-  .detail-row a{color:var(--emerald-light);font-weight:700}
-
-  /* evaluation-only: every option shown, the chosen one lit up */
-  .detail-q{margin-bottom:18px;page-break-inside:avoid;break-inside:avoid}
-  .detail-q-title{
-    font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;
-    color:var(--emerald);margin-bottom:10px;display:flex;align-items:baseline;gap:8px;
+  .modal-head h3{
+    font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--cream);
   }
-  .detail-q-num{
-    display:inline-block;background:var(--accent);color:#fff;
-    font-family:'Manrope',sans-serif;font-size:10px;font-weight:800;
-    padding:2px 8px;border-radius:100px;letter-spacing:1px;
-  }
-  .detail-options{display:flex;flex-direction:column;gap:6px;margin-left:14px}
-  .detail-option{
-    display:flex;align-items:center;gap:12px;padding:8px 12px;
-    background:#faf6ee;border:1px solid #e6e0ee;border-radius:8px;
-    font-size:13.5px;color:#333;
-  }
-  .detail-option.picked{
-    background:color-mix(in srgb, var(--accent) 14%, #fff);
-    border-color:var(--accent);
-    color:var(--emerald);font-weight:700;
-    box-shadow:0 0 0 1px var(--accent);
-  }
-  .detail-radio{width:16px;height:16px;border-radius:50%;border:2px solid #c3bcd0;flex:0 0 auto}
-  .detail-option.picked .detail-radio{
-    border-color:var(--accent);
-    background:radial-gradient(circle,var(--accent) 0%,var(--accent) 40%,transparent 45%);
-  }
-  .picked-tag{
-    margin-left:auto;font-size:10px;font-weight:800;color:var(--accent);
-    letter-spacing:1.2px;text-transform:uppercase;white-space:nowrap;
-  }
-  .detail-stars{color:var(--accent);font-size:26px;letter-spacing:4px;margin-left:14px;display:flex;align-items:center;gap:12px}
-  .detail-stars-num{font-family:'Manrope',sans-serif;font-size:13px;font-weight:800;color:var(--emerald);letter-spacing:0}
-  .detail-free{
-    margin-left:14px;background:#faf6ee;border:1px solid #ecdcaf;border-radius:8px;
-    padding:12px 14px;font-size:13.5px;color:#333;line-height:1.6;font-style:italic;min-height:40px;
+  .modal-head h3 .accent{color:var(--gold-light);font-style:italic;font-weight:500}
+  .modal-head p{font-size:12.5px;color:var(--cream-dim);margin-top:5px}
+  .modal-body{padding:24px 30px}
+  .modal-foot{
+    padding:16px 30px;display:flex;justify-content:flex-end;gap:10px;
+    border-top:1px solid rgba(201,169,110,0.2);background:rgba(3,27,19,0.4);
   }
 
-  .detail-arabic{text-align:center;font-family:'Amiri',serif;font-size:20px;color:#8a7a4e;margin:24px 0 10px}
-  .detail-foot{text-align:center;padding-top:14px;border-top:1px solid #ddd;font-size:11px;color:#666;margin-top:8px}
-
-  .modal-actions{
-    background:#faf6ee;padding:16px 28px;display:flex;justify-content:flex-end;gap:10px;
-    border-top:1px solid #ecdcaf;
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field.full{grid-column:1/-1}
+  .field label{font-size:10.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-light)}
+  .field label .req{color:var(--gold-warm)}
+  .field input,.field select{
+    font-family:'Manrope',sans-serif;font-size:14.5px;font-weight:500;color:var(--cream);
+    background:rgba(3,27,19,0.7);border:1.5px solid rgba(201,169,110,0.25);
+    border-radius:11px;padding:12px 14px;width:100%;outline:none;appearance:none;
+    transition:border-color .25s, box-shadow .25s;
   }
+  .field input::placeholder{color:rgba(250,246,238,0.32)}
+  .field input:focus,.field select:focus{
+    border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,0.14);
+  }
+  .field select{
+    cursor:pointer;padding-right:38px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%23c9a961' stroke-width='2.5' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 14px center;
+  }
+  .field select option{background:var(--emerald-deepest);color:var(--cream)}
+  .field input[type="date"]{color-scheme:dark}
+  .field .err-msg{font-size:11.5px;color:var(--err);display:none}
+  .field.invalid input,.field.invalid select{border-color:var(--err)}
+  .field.invalid .err-msg{display:block}
+
   .btn-solid{
     font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
-    background:var(--emerald);color:#fff;border:none;border-radius:100px;padding:11px 22px;cursor:pointer;
-    display:inline-flex;align-items:center;gap:6px;
+    background:linear-gradient(135deg,var(--gold-light),var(--gold));color:var(--emerald-deepest);
+    border:none;border-radius:100px;padding:12px 24px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;
   }
-  .btn-solid:hover{background:var(--emerald-light)}
-  .btn-solid svg{width:12px;height:12px}
+  .btn-solid:hover{background:linear-gradient(135deg,var(--gold-warm),var(--gold-light))}
+  .btn-solid[disabled]{opacity:.6;cursor:not-allowed}
+  .btn-solid.danger{background:#c0392b;color:#fff}
+  .btn-solid.danger:hover{background:#e74c3c}
   .btn-outline{
     font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
-    background:transparent;color:var(--emerald);border:1.5px solid var(--emerald);
-    border-radius:100px;padding:10px 22px;cursor:pointer;
+    background:transparent;color:var(--gold-light);border:1.5px solid rgba(201,169,110,0.5);
+    border-radius:100px;padding:11px 24px;cursor:pointer;
   }
-  .btn-outline:hover{background:var(--emerald);color:#fff}
+  .btn-outline:hover{background:rgba(201,169,110,0.12)}
+
+  /* ---------- Share modal ---------- */
+  .share-link-box{
+    display:flex;align-items:center;gap:10px;
+    background:rgba(3,27,19,0.8);border:1.5px solid rgba(201,169,110,0.3);
+    border-radius:11px;padding:12px 14px;margin-bottom:16px;
+  }
+  .share-link-box input{
+    flex:1;background:transparent;border:none;outline:none;
+    font-family:'Manrope',sans-serif;font-size:13px;color:var(--gold-light);
+    font-weight:500;
+  }
+  .share-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .share-actions button{flex:1;min-width:130px;justify-content:center}
+  .btn-wa{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    background:#25D366;color:#04301a;border:none;border-radius:100px;padding:12px 20px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  .btn-wa:hover{background:#1ebe5b}
+  .btn-wa svg{width:14px;height:14px}
+  .warn-box{
+    background:rgba(255,153,153,0.08);border:1px solid rgba(255,153,153,0.3);
+    border-radius:11px;padding:13px 15px;margin-top:16px;
+    font-size:12.5px;color:var(--cream-dim);line-height:1.6;
+  }
+  .warn-box b{color:var(--err)}
+
+  .toast{
+    position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--emerald-deepest);border:1px solid var(--gold);
+    color:var(--cream);padding:13px 24px;border-radius:100px;
+    font-size:13px;font-weight:600;z-index:200;opacity:0;
+    transition:all .3s cubic-bezier(.2,.9,.3,1.2);
+    box-shadow:0 12px 40px rgba(0,0,0,0.5);
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast.err{border-color:var(--err);color:var(--err)}
 
   @media (max-width:700px){
     .admin-title{font-size:22px}
-    .detail{padding:26px 22px 22px}
-    .detail-h1{font-size:21px}
-    .detail-row b{flex:0 0 110px}
+    .fgrid{grid-template-columns:1fr}
 
-    /* rows become cards */
+    /* ── Rows become chips ──────────────────────────────────────────
+       The label/value card ran ~600px per student — five stacked rows
+       plus five wrapped buttons. Scanning 50 students meant scrolling
+       for a minute. A chip is ~62px: the three things you actually scan
+       by (name, ID, course) stay visible, everything else waits behind
+       a tap.
+    ──────────────────────────────────────────────────────────────── */
     .list-table thead{display:none}
-    .list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
-    .list-table tr{
-      border:1px solid rgba(255,255,255,0.09);border-radius:12px;
-      margin:12px 14px;padding:14px 16px;background:rgba(3,27,19,0.45);width:auto;
-    }
-    .list-table td{
-      padding:6px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;border:none;
-    }
-    .list-table td::before{
-      content:attr(data-label);
-      font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;
-      color:var(--accent);flex:0 0 auto;
-    }
-    .list-table td.actions{
-      justify-content:flex-end;padding-top:12px;margin-top:8px;
-      border-top:1px solid rgba(255,255,255,0.08);
-    }
-    .list-table td.actions::before{content:none}
-    .list-table td.actions button{flex:1;margin-left:0;margin-right:6px;padding:9px 12px}
-    .list-table td.actions button:last-child{margin-right:0}
-  }
+    .list-table,.list-table tbody{display:block;width:100%}
 
-  @media print{
-    body{background:#fff;color:#000;padding:0}
-    .admin,.modal-backdrop{position:static;background:#fff;display:block !important}
-    .modal-actions,.list-wrap,.admin-head,.tabs,.stats,.crumb,.lock-screen{display:none !important}
-    .modal-backdrop{background:#fff;padding:0;overflow:visible}
-    .modal{box-shadow:none;max-width:100%;border-radius:0;animation:none}
-    .detail{padding:20px 30px}
-    .detail-row,.detail-meta,.detail-option,.detail-free{
-      background:#faf6ee !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;
+    .list-table tr{
+      position:relative;
+      display:flex;flex-wrap:wrap;align-items:center;
+      gap:2px 7px;
+      margin:8px 14px;padding:12px 38px 12px 14px;
+      width:auto;cursor:pointer;
+      background:rgba(3,27,19,0.5);
+      border:1px solid rgba(201,169,110,0.18);
+      border-radius:14px;
+      transition:border-color .2s, background .2s;
     }
-    .detail-option.picked{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .list-table tr:hover{background:rgba(3,27,19,0.5)}
+    .list-table tr.open{
+      background:rgba(3,27,19,0.8);
+      border-color:rgba(201,169,110,0.45);
+    }
+
+    /* chevron — the only hint that there's more behind the tap */
+    .list-table tr::after{
+      content:'';position:absolute;right:16px;top:19px;
+      width:7px;height:7px;
+      border-right:2px solid var(--gold-light);
+      border-bottom:2px solid var(--gold-light);
+      transform:rotate(45deg);opacity:.4;
+      transition:transform .25s, opacity .2s;
+    }
+    .list-table tr.open::after{transform:rotate(-135deg);top:22px;opacity:.9}
+
+    .list-table td{display:inline;padding:0;border:none;background:none}
+    .list-table td::before{content:none}
+
+    /* Status becomes a dot in front of the name. A whole labelled row
+       to say one word was the worst offender. */
+    .list-table td:nth-child(5){order:0;flex:0 0 8px;line-height:0}
+    .list-table td:nth-child(5) .pill{
+      display:block;width:8px;height:8px;border-radius:50%;
+      font-size:0;padding:0;border:none;letter-spacing:0;
+    }
+    .list-table td:nth-child(5) .pill.active{background:var(--emerald-glow);box-shadow:0 0 7px rgba(45,212,164,.6)}
+    .list-table td:nth-child(5) .pill.inactive{background:var(--err);box-shadow:0 0 7px rgba(255,153,153,.5)}
+
+    /* Name fills the rest of line 1 exactly (8px dot + 7px gap = 15px),
+       which forces ID and Course to wrap onto line 2 together. */
+    .list-table td:nth-child(1){
+      order:1;flex:1 1 calc(100% - 15px);min-width:0;
+      font-size:14.5px;font-weight:700;color:var(--cream);letter-spacing:-.2px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+
+    /* line 2: ID · Course */
+    .list-table td:nth-child(2){
+      order:2;flex:0 0 auto;margin-left:15px;
+      font-size:11.5px;color:var(--cream-faint);font-variant-numeric:tabular-nums;
+    }
+    .list-table td:nth-child(3){
+      order:3;flex:1 1 auto;min-width:0;
+      font-size:11.5px;color:var(--cream-dim);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .list-table td:nth-child(3)::before{
+      content:'·';margin-right:5px;color:var(--cream-faint);opacity:.5;
+    }
+
+    /* Behind the tap */
+    .list-table td:nth-child(4){display:none}
+    .list-table td.actions{display:none}
+
+    .list-table tr.open td:nth-child(4){
+      display:block;order:4;flex:1 1 100%;
+      margin:9px 0 0 15px;
+      font-size:11.5px;color:var(--cream-faint);
+    }
+    .list-table tr.open td:nth-child(4)::before{
+      content:'Joined ';color:var(--gold-light);font-weight:700;
+      font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;
+      opacity:.85;
+    }
+    .list-table tr.open td.actions{
+      display:flex;order:5;flex:1 1 100%;flex-wrap:wrap;gap:6px;
+      justify-content:flex-start;
+      padding-top:11px;margin-top:10px;
+      border-top:1px solid rgba(201,169,110,0.15);
+    }
+    .list-table tr.open td.actions button{margin-left:0;padding:8px 13px;flex:0 0 auto}
   }
 </style>
 </head>
@@ -334,7 +444,7 @@
   <!-- LOCK -->
   <div class="lock-screen" id="lockScreen">
     <div class="lock-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
-    <div class="lock-title">Records</div>
+    <div class="lock-title">Classes</div>
     <div class="lock-sub">Enter the portal password to continue.</div>
     <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="off" autofocus />
     <button class="lock-btn" id="lockBtn">Unlock</button>
@@ -344,20 +454,19 @@
 
   <!-- ADMIN -->
   <div class="admin" id="adminView">
-    <a class="crumb" href="/portal/">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      Portal
-    </a>
-
     <div class="admin-head">
       <div class="admin-head-left">
         <div class="admin-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
         <div>
-          <div class="admin-title">Form <span class="accent">Records</span></div>
-          <div class="admin-sub">Every Submission</div>
+          <div class="admin-title">Class <span class="accent">Sheets</span></div>
+          <div class="admin-sub">Student Workspaces</div>
         </div>
       </div>
       <div class="admin-actions">
+        <button class="btn-gold" id="newClassBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Class Sheet
+        </button>
         <button class="btn-ghost" id="refreshBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
           Refresh
@@ -369,90 +478,262 @@
       </div>
     </div>
 
-    <div class="tabs" id="tabs"></div>
-    <div class="stats" id="stats"></div>
+    <div class="alerts" id="alerts">
+      <div class="alerts-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <h4>Needs attention</h4>
+        <span class="count" id="alertCount">0</span>
+      </div>
+      <div id="alertRows"></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Total class sheets</div><div class="stat-value" id="statTotal">—</div></div>
+      <div class="stat"><div class="stat-label">Active</div><div class="stat-value" id="statActive">—</div></div>
+      <div class="stat"><div class="stat-label">Inactive</div><div class="stat-value" id="statInactive">—</div></div>
+    </div>
 
     <div class="list-wrap">
       <div class="list-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInput" placeholder="Search…" />
+        <input type="text" id="searchInput" placeholder="Search by student name, student ID, or course..." />
         <span id="resultCount"></span>
       </div>
+
+      <div class="filters">
+        <select id="filterCourse"><option value="">All courses</option></select>
+        <select id="filterStatus">
+          <option value="">All status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+        <select id="filterMonth"><option value="">All join months</option></select>
+        <select id="filterYear"><option value="">All join years</option></select>
+        <select id="sortBy">
+          <option value="createdDesc">Recently created</option>
+          <option value="updatedDesc">Recently updated</option>
+          <option value="nameAsc">Student name (A–Z)</option>
+          <option value="joinDesc">Join date (newest)</option>
+          <option value="joinAsc">Join date (oldest)</option>
+          <option value="courseAsc">Course</option>
+          <option value="statusAsc">Status</option>
+        </select>
+      </div>
+
       <div id="listContent">
-        <div class="loading"><div class="loading-spin"></div><div>Loading records…</div></div>
+        <div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>
       </div>
     </div>
   </div>
 
-  <!-- Detail -->
-  <div class="modal-backdrop" id="modal">
+  <!-- CREATE / EDIT MODAL -->
+  <div class="modal-backdrop" id="formModal">
     <div class="modal">
-      <div class="detail" id="detailContent"></div>
-      <div class="modal-actions">
-        <button class="btn-outline" id="closeModalBtn">Close</button>
-        <button class="btn-solid" id="downloadBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download PDF
-        </button>
+      <div class="modal-head">
+        <h3 id="formTitle">New <span class="accent">Class Sheet</span></h3>
+        <p id="formSubtitle">Creates a secure workspace and share link for this student.</p>
+      </div>
+      <div class="modal-body">
+        <div class="fgrid">
+          <div class="field full">
+            <label>Student Name <span class="req">*</span></label>
+            <input type="text" id="fName" placeholder="e.g. Aisha Rahman" />
+            <span class="err-msg">Please enter the student's name.</span>
+          </div>
+          <div class="field">
+            <label>Student ID <span class="req">*</span></label>
+            <input type="text" id="fStudentId" placeholder="e.g. MQ-2026-014" />
+            <span class="err-msg">Please enter a student ID.</span>
+          </div>
+          <div class="field">
+            <label>Join Date <span class="req">*</span></label>
+            <input type="date" id="fJoinDate" />
+            <span class="err-msg">Please pick a join date.</span>
+          </div>
+          <div class="field">
+            <label>Course <span class="req">*</span></label>
+            <select id="fCourse">
+              <option value="" disabled selected>Select course</option>
+              <option value="Hifzul Qur'an">Hifzul Qur'an</option>
+              <option value="Tartheel">Tartheel</option>
+              <option value="Quranul Yawmi">Quranul Yawmi</option>
+              <option value="Madrasa Studies">Madrasa Studies</option>
+              <option value="Tajweedul Qur'an">Tajweedul Qur'an</option>
+              <option value="Tafseerul Qur'an">Tafseerul Qur'an</option>
+              <option value="Dawra">Dawra</option>
+            </select>
+            <span class="err-msg">Please select a course.</span>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="fStatus">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>WhatsApp Group Link</label>
+            <input type="url" id="fWhatsapp" placeholder="https://chat.whatsapp.com/..." />
+            <span class="err-msg">Please enter a valid link (or leave empty).</span>
+          </div>
+          <div class="field full">
+            <label>Contact Number <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— admin only, never shown on the share link</span></label>
+            <input type="tel" id="fPhone" placeholder="+91 98765 43210" />
+            <span class="err-msg">Please enter a valid number (or leave empty).</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="formCancelBtn">Cancel</button>
+        <button class="btn-solid" id="formSaveBtn">Save</button>
       </div>
     </div>
   </div>
+
+  <!-- SHARE MODAL -->
+  <div class="modal-backdrop" id="shareModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Share <span class="accent">Class Sheet</span></h3>
+        <p id="shareSubtitle">Anyone with this link can open this class sheet.</p>
+      </div>
+      <div class="modal-body">
+        <div class="share-link-box">
+          <input type="text" id="shareLinkInput" readonly />
+        </div>
+        <div class="share-actions">
+          <button class="btn-solid" id="copyLinkBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Link
+          </button>
+          <button class="btn-wa" id="waShareBtn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/></svg>
+            WhatsApp
+          </button>
+        </div>
+        <div class="warn-box">
+          <b>Reset Link</b> creates a brand-new link and permanently kills the old one.
+          Use this if a link was shared with the wrong person.
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="shareCloseBtn">Close</button>
+        <button class="btn-solid danger" id="resetLinkBtn">Reset Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM MODAL -->
+  <div class="modal-backdrop" id="confirmModal">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-head">
+        <h3 id="confirmTitle">Are you <span class="accent">sure?</span></h3>
+        <p id="confirmText">This cannot be undone.</p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="confirmCancelBtn">Cancel</button>
+        <button class="btn-solid danger" id="confirmOkBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
 <script>
 /* =================================================================
-   ░░  RECORDS  ░░
-   Every submission the academy receives, in one place.
-
-   Two different backends sit behind this page — the four forms live in
-   the main spreadsheet, evaluations live in their own. The tabs hide
-   that: you just pick a record type and it loads.
+   ░░  CLASSES ADMIN  ░░
    ================================================================= */
 
-const SCRIPT_MASTER = "https://script.google.com/macros/s/AKfycbzhCGlnBG6LthyJW3b-o1qERqvKY3ULuvOyCik6469tpHsRL9bJ2pJgqw6Rnkf9S84pYg/exec";
-const SCRIPT_EVAL   = "https://script.google.com/macros/s/AKfycbzSEfI9CEPSMmQLdPP_oWiT0f61jCfQBl5uNIlU9EXxNuVpIH4Y7PLBKJDgGg70O2YKqA/exec";
+// CONFIG — paste the Classes Apps Script Web App URL here
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
+const PORTAL_PASSWORD = "manzilclass2026";     // Classes only — separate from the main portal
+const ADMIN_API_PASSWORD = "manzil2026admin"; // must match ADMIN_PASSWORD in apps-script-classes.gs
+const SHARE_BASE = window.location.origin + "/class/";
 
-const PORTAL_PASSWORD = "manzil2026";
-const ADMIN_API_PASSWORD = "manzil2026admin";
-const SESSION_KEY = "mq_portal_unlocked_at";
+const SESSION_KEY = "mq_classes_unlocked_at";  // own key, so a portal unlock does NOT open Classes
 const SESSION_MAX_MS = 24 * 60 * 60 * 1000;
 
 const $ = (id) => document.getElementById(id);
+let classes = [];
+let editingId = null;      // null = creating, otherwise Class ID
+let shareTarget = null;    // class object currently in the share modal
+let confirmAction = null;  // function to run on confirm
 
-/* Each record type carries the same colour it has on the Forms page, so a
-   form and its submissions read as one thing. */
-const TABS = [
-  { key:'student',    label:'Registrations', accent:'#2dd4a4', api:'master',
-    title:'Student Registration', listCols:['Timestamp','First Name','Phone','Course'] },
-  { key:'batch',      label:'Batch',         accent:'#5eead4', api:'master',
-    title:'Batch Registration',   listCols:['Timestamp','First Name','Phone','Course'] },
-  { key:'teacher',    label:'Staff',         accent:'#e4c987', api:'master',
-    title:'Staff Application',    listCols:['Timestamp','First Name','Phone','Post'] },
-  { key:'complaint',  label:'Complaints',    accent:'#ff9aa6', api:'master',
-    title:'Complaint',            listCols:['Timestamp','Student Name','Phone','Complaint Type'] },
-  { key:'evaluation', label:'Evaluations',   accent:'#a78bfa', api:'eval',
-    title:'Class Evaluation',     listCols:[] }
-];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS_FULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
-/* The evaluation form's questions, with every option it offered. Needed so
-   the report can show what was NOT picked as well as what was — a lone
-   answer with no alternatives beside it tells you very little. */
-const QUESTIONS = [
-  { key:'satisfaction', label:'Overall satisfaction with learning experience',
-    options:['Very satisfied','Satisfied','Neutral','Dissatisfied','Very dissatisfied'] },
-  { key:'progress', label:'Rating of learning progress',
-    options:['Excellent progress','Good progress','Average progress','Slow progress','No noticeable progress'] },
-  { key:'teacherFit', label:'Is the mentor suitable?',
-    options:['Yes, perfectly suited','Yes, but could be better','Neutral / not sure','We would like to try another teacher'] },
-  { key:'punctuality', label:'Does the teacher attend on time?',
-    options:['Always on time','Sometimes late','Frequently late','Often misses classes'] },
-  { key:'recommend', label:'Would you recommend ManzilulQuran Academy?',
-    options:['Definitely','Probably','Not sure','No'] }
-];
+// Flag a student once their running plan has fewer than this many classes left
+const LOW_CLASS_THRESHOLD = 6;
 
-let current = TABS[0];
-let headers = [];      // forms: column names
-let rows = [];         // forms: arrays  |  evaluations: objects
-let detail = null;
+/* ---------------- Calendar engine ----------------
+   Same rules as /class/ and /join/. Kept inline rather than shared so each
+   page stays a single self-contained upload.
+------------------------------------------------- */
+function parseDate(s){
+  const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!m) return null;
+  return new Date(+m[1], +m[2]-1, +m[3]);
+}
+function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+function today0(){ const t = new Date(); t.setHours(0,0,0,0); return t; }
+function endDate(cal){
+  const s = parseDate(cal.startDate);
+  return s ? addDays(s, (cal.days||1)-1) : null;
+}
+function calStatus(cal){
+  if(!cal.active) return 'Inactive';
+  const s = parseDate(cal.startDate), e = endDate(cal);
+  if(!s || !e) return 'Inactive';
+  const t = today0();
+  if(t < s) return 'Upcoming';
+  if(t > e) return 'Completed';
+  return 'Active';
+}
+function buildDays(cal){
+  const start = parseDate(cal.startDate);
+  if(!start) return [];
+  const off = new Set((cal.weeklyOff||[]).map(n => DAYS_FULL.indexOf(n)).filter(i => i>=0));
+  const links = cal.links || [];
+  const out = [];
+  let linkIdx = 0;
+  for(let i=0;i<cal.days;i++){
+    const date = addDays(start, i);
+    const isOff = off.has(date.getDay());
+    let link = null;
+    if(!isOff && links.length){ link = links[linkIdx % links.length]; linkIdx++; }
+    out.push({ n:i+1, date, isOff, link });
+  }
+  return out;
+}
+
+/* ---------------- Who needs attention? ----------------
+   Two things worth chasing:
+     ending — a plan is running but nearly out of classes
+     none   — the student is active but has no plan at all
+------------------------------------------------------- */
+function classAlert(c){
+  if((c["Status"] || "Active") !== "Active") return null;   // don't nag about paused students
+
+  const cals = c.calendars || [];
+  const running = cals.find(x => calStatus(x) === 'Active');
+
+  if(running){
+    const t = today0().getTime();
+    const left = buildDays(running).filter(d => !d.isOff && d.date.getTime() >= t).length;
+    if(left < LOW_CLASS_THRESHOLD){
+      return { kind:'ending', left, cal:running };
+    }
+    return null;
+  }
+
+  // Nothing running — is anything queued up?
+  if(cals.some(x => calStatus(x) === 'Upcoming')) return null;
+
+  return { kind:'none', left:0, cal:null };
+}
 
 /* ---------------- Lock ---------------- */
 function isUnlocked(){
@@ -465,8 +746,7 @@ function unlock(){
   try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
   $("lockScreen").style.display = "none";
   $("adminView").classList.add("show");
-  renderTabs();
-  load();
+  loadClasses();
 }
 function lock(){
   try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
@@ -485,328 +765,509 @@ function tryPassword(){
   }
 }
 $("lockBtn").onclick = tryPassword;
-$("lockInput").addEventListener("keydown", e => { if(e.key === "Enter") tryPassword(); });
+$("lockInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryPassword(); });
 $("lockAgainBtn").onclick = lock;
-
-/* ---------------- Tabs ---------------- */
-function renderTabs(){
-  $("tabs").innerHTML = TABS.map(t =>
-    `<button class="tab ${t.key === current.key ? 'on' : ''}" data-k="${t.key}" style="--c:${t.accent}">
-       <span class="dot"></span>${t.label}
-     </button>`).join('');
-
-  $("tabs").querySelectorAll('.tab').forEach(b => {
-    b.addEventListener('click', () => {
-      current = TABS.find(t => t.key === b.dataset.k);
-      document.documentElement.style.setProperty('--accent', current.accent);
-      $("searchInput").value = '';
-      renderTabs();
-      load();
-    });
-  });
-  document.documentElement.style.setProperty('--accent', current.accent);
-  $("searchInput").placeholder = current.key === 'evaluation'
-    ? 'Search by student, teacher, or rating (e.g. 5)…'
-    : 'Search by name or phone number…';
-}
-
-/* ---------------- Load ---------------- */
-async function load(){
-  $("listContent").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading records…</div></div>';
-  $("resultCount").textContent = '';
-  $("stats").innerHTML = '';
-
-  try{
-    if(current.api === 'eval'){
-      const res = await fetch(`${SCRIPT_EVAL}?action=list&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
-      const d = await res.json();
-      if(d.result !== 'success') throw new Error(d.error || 'Failed to load');
-      headers = [];
-      rows = d.evaluations || [];
-    } else {
-      const res = await fetch(`${SCRIPT_MASTER}?action=list&formType=${current.key}&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
-      const d = await res.json();
-      if(d.result !== 'success') throw new Error(d.error || 'Failed to load');
-      headers = d.headers || [];
-      rows = d.rows || [];
-    }
-    renderStats();
-    renderList(rows);
-    setCount(rows.length);
-  }catch(err){
-    console.error(err);
-    $("listContent").innerHTML = `<div class="empty-state">Couldn't load ${current.label.toLowerCase()}.<br><br>
-      <small style="color:#ff9999">Error: ${esc(err.message)}</small><br><br>
-      Check the Apps Script is deployed and the admin password matches.</div>`;
-  }
-}
-$("refreshBtn").onclick = load;
-
-function setCount(n){ $("resultCount").textContent = `Showing ${n} of ${rows.length}`; }
-
-/* ---------------- Stats ---------------- */
-function renderStats(){
-  let html = `<div class="stat"><div class="stat-label">Total ${esc(current.label.toLowerCase())}</div>
-              <div class="stat-value">${rows.length}</div></div>`;
-
-  if(current.key === 'evaluation' && rows.length){
-    const nums = rows.map(r => parseFloat(r.rating)).filter(n => !isNaN(n));
-    const avg = nums.length ? (nums.reduce((a,b)=>a+b,0)/nums.length) : 0;
-    const filled = Math.round(avg);
-    html += `<div class="stat"><div class="stat-label">Average rating</div>
-             <div class="stat-value">${avg.toFixed(1)}
-               <span class="mini">${'★'.repeat(filled)}<span style="opacity:.25">${'★'.repeat(5-filled)}</span></span>
-             </div></div>`;
-  }
-  if(rows.length){
-    const latest = current.key === 'evaluation'
-      ? rows[0].timestamp
-      : rows[0][headers.indexOf('Timestamp')];
-    html += `<div class="stat"><div class="stat-label">Most recent</div>
-             <div class="stat-value" style="font-size:15px">${fmtDate(latest, true)}</div></div>`;
-  }
-  $("stats").innerHTML = html;
-}
-
-/* ---------------- List ---------------- */
-function colIdx(name){ return headers.indexOf(name); }
-
-function renderList(items){
-  if(!rows.length){
-    $("listContent").innerHTML = `<div class="empty-state">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
-      </svg>
-      <p>No ${esc(current.label.toLowerCase())} submitted yet.</p></div>`;
-    return;
-  }
-  if(!items.length){
-    $("listContent").innerHTML = '<div class="empty-state">Nothing matches that search.</div>';
-    return;
-  }
-
-  const head = current.key === 'evaluation'
-    ? '<th>Date</th><th>Student</th><th>Teacher</th><th>Rating</th>'
-    : current.listCols.map(c => `<th>${esc(c === 'Timestamp' ? 'Date' : c)}</th>`).join('');
-
-  const body = items.map(item => {
-    const i = rows.indexOf(item);
-    if(current.key === 'evaluation'){
-      const r = parseInt(item.rating,10) || 0;
-      return `<tr data-i="${i}">
-        <td class="date" data-label="Date">${fmtDate(item.timestamp)}</td>
-        <td data-label="Student">${esc(item.studentName || '—')}</td>
-        <td data-label="Teacher">${esc(item.teacherName || '—')}</td>
-        <td class="rating" data-label="Rating">${'★'.repeat(r)}<span style="opacity:.25">${'★'.repeat(5-r)}</span></td>
-        <td class="actions">
-          <button data-a="view" data-i="${i}">View</button>
-          <button data-a="dl" data-i="${i}">Download</button>
-        </td></tr>`;
-    }
-    const cells = current.listCols.map(c => {
-      const ci = colIdx(c);
-      const v = ci >= 0 ? item[ci] : '';
-      const label = c === 'Timestamp' ? 'Date' : c;
-      return c === 'Timestamp'
-        ? `<td class="date" data-label="${esc(label)}">${fmtDate(v)}</td>`
-        : `<td data-label="${esc(label)}">${esc(v || '—')}</td>`;
-    }).join('');
-    return `<tr data-i="${i}">${cells}
-      <td class="actions">
-        <button data-a="view" data-i="${i}">View</button>
-        <button data-a="dl" data-i="${i}">Download</button>
-      </td></tr>`;
-  }).join('');
-
-  $("listContent").innerHTML =
-    `<table class="list-table"><thead><tr>${head}<th style="text-align:right">Actions</th></tr></thead><tbody>${body}</tbody></table>`;
-
-  $("listContent").querySelectorAll('button[data-a]').forEach(b => {
-    b.addEventListener('click', e => {
-      e.stopPropagation();
-      openDetail(+b.dataset.i);
-      if(b.dataset.a === 'dl') setTimeout(()=>window.print(), 200);
-    });
-  });
-  $("listContent").querySelectorAll('tr[data-i]').forEach(tr => {
-    tr.addEventListener('click', () => openDetail(+tr.dataset.i));
-  });
-}
-
-/* ---------------- Search ---------------- */
-$("searchInput").addEventListener('input', e => {
-  const q = e.target.value.trim().toLowerCase();
-  if(!q){ renderList(rows); setCount(rows.length); return; }
-
-  let out;
-  if(current.key === 'evaluation'){
-    out = rows.filter(r =>
-      (r.studentName||'').toLowerCase().includes(q) ||
-      (r.teacherName||'').toLowerCase().includes(q) ||
-      String(r.rating||'') === q);           // type "5" for five-star
-  } else {
-    const dq = q.replace(/\D/g,'');
-    out = rows.filter(row => {
-      const text = row.join(' ').toLowerCase();
-      if(text.includes(q)) return true;
-      if(dq.length >= 3 && row.join(' ').replace(/\D/g,'').includes(dq)) return true;
-      return false;
-    });
-  }
-  renderList(out);
-  setCount(out.length);
-});
-
-/* ---------------- Detail ---------------- */
-function openDetail(i){
-  const item = rows[i];
-  if(!item) return;
-  detail = item;
-
-  const html = current.key === 'evaluation' ? evalDetail(item) : formDetail(item);
-  $("detailContent").innerHTML = html;
-  $("modal").classList.add("show");
-  document.body.style.overflow = "hidden";
-}
-
-function shell(title, sub, inner){
-  return `
-    <div class="detail-head">
-      <div class="detail-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'"></div>
-      <div class="detail-eyebrow">ManzilulQuran · E-Learning Academy</div>
-      <div class="detail-h1">${esc(title)} <span class="hl">Record</span></div>
-      <div class="detail-sub">${esc(sub)}</div>
-    </div>
-    ${inner}
-    <div class="detail-arabic">جَزَاكَ اللهُ خَيْرًا</div>
-    <div class="detail-foot">ManzilulQuran E-learning Academy · manzilulquran.in · info@manzilulquran.in</div>`;
-}
-
-function formDetail(row){
-  let inner = '';
-  headers.forEach((h, i) => {
-    if(h === 'Timestamp') return;
-    const v = row[i] || '—';
-    let out;
-    if(h === 'Payment Receipt' && String(v).startsWith('http')){
-      out = `<a href="${esc(v)}" target="_blank" rel="noopener">Open receipt file →</a>`;
-    } else if(h === 'Birth Date' || h === 'Date of Birth'){
-      out = esc(fmtDateOnly(v));
-    } else if(h === 'Class Time'){
-      out = esc(fmtTimeOnly(v));
-    } else {
-      out = esc(v);
-    }
-    inner += `<div class="detail-row"><b>${esc(h)}</b><span>${out}</span></div>`;
-  });
-  return shell(current.title, 'Submitted ' + fmtDate(row[colIdx('Timestamp')], true), inner);
-}
-
-function evalDetail(e){
-  const r = parseInt(e.rating,10) || 0;
-  let inner = `
-    <div class="detail-meta">
-      <div class="detail-meta-row"><b>Student</b><span>${esc(e.studentName)}</span></div>
-      <div class="detail-meta-row"><b>Teacher</b><span>${esc(e.teacherName)}</span></div>
-    </div>`;
-
-  QUESTIONS.forEach((q, i) => {
-    inner += `<div class="detail-q">
-      <div class="detail-q-title"><span class="detail-q-num">Q${i+1}</span>${esc(q.label)}</div>
-      <div class="detail-options">` +
-      q.options.map(o => {
-        const on = o === e[q.key];
-        return `<div class="detail-option${on ? ' picked' : ''}">
-          <div class="detail-radio"></div><div>${esc(o)}</div>
-          ${on ? '<div class="picked-tag">Parent&#39;s answer</div>' : ''}
-        </div>`;
-      }).join('') +
-      `</div></div>`;
-  });
-
-  inner += `<div class="detail-q">
-      <div class="detail-q-title"><span class="detail-q-num">Q6</span>Overall quality of classes</div>
-      <div class="detail-stars">
-        <span>${'★'.repeat(r)}<span style="opacity:.25">${'★'.repeat(5-r)}</span></span>
-        <span class="detail-stars-num">${r}/5</span>
-      </div>
-    </div>
-    <div class="detail-q">
-      <div class="detail-q-title"><span class="detail-q-num">Q7</span>Suggestions or comments</div>
-      <div class="detail-free">${esc(e.suggestions || '(no suggestions provided)')}</div>
-    </div>`;
-
-  return shell(current.title, 'Submitted ' + fmtDate(e.timestamp, true), inner);
-}
-
-function closeDetail(){
-  $("modal").classList.remove("show");
-  document.body.style.overflow = "";
-  detail = null;
-}
-$("closeModalBtn").onclick = closeDetail;
-$("modal").addEventListener('click', e => { if(e.target === $("modal")) closeDetail(); });
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape' && $("modal").classList.contains('show')) closeDetail();
-});
-
-$("downloadBtn").onclick = () => {
-  const t = document.title;
-  if(detail){
-    const who = current.key === 'evaluation'
-      ? detail.studentName
-      : (detail[colIdx('First Name')] || detail[colIdx('Student Name')] || 'record');
-    document.title = `${current.title} - ${who}`;
-  }
-  window.print();
-  setTimeout(()=>{ document.title = t; }, 1000);
-};
-
-/* ---------------- Utils ---------------- */
-function esc(s){
-  if(s == null) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-                  .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-function fmtDate(v, withTime){
-  if(!v) return '—';
-  const d = (v instanceof Date) ? v : new Date(v);
-  if(isNaN(d.getTime())) return String(v);
-  const o = { day:'numeric', month:'short', year:'numeric' };
-  if(withTime){ o.hour = '2-digit'; o.minute = '2-digit'; }
-  return d.toLocaleDateString('en-GB', o);
-}
-// Birth dates arrive as full ISO timestamps from Sheets — show only the day
-function fmtDateOnly(v){
-  if(!v || v === '—') return '—';
-  const s = String(v);
-  const p = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if(p){
-    const d = new Date(Date.UTC(+p[1], +p[2]-1, +p[3]));
-    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', timeZone:'UTC' });
-  }
-  const d = new Date(s);
-  return isNaN(d.getTime()) ? s : d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
-}
-// Time-only values carry a dummy 1899 date from Sheets — strip it
-function fmtTimeOnly(v){
-  if(!v || v === '—') return '—';
-  const s = String(v);
-  const p = s.match(/^(\d{1,2}):(\d{2})$/);
-  if(p){
-    const d = new Date(); d.setHours(+p[1], +p[2], 0, 0);
-    return d.toLocaleTimeString('en-GB', { hour:'numeric', minute:'2-digit', hour12:true });
-  }
-  const d = new Date(s);
-  return isNaN(d.getTime()) ? s : d.toLocaleTimeString('en-GB', { hour:'numeric', minute:'2-digit', hour12:true });
-}
-
-/* Boot last */
 if(isUnlocked()){
   $("lockScreen").style.display = "none";
   $("adminView").classList.add("show");
-  renderTabs();
-  load();
+  loadClasses();
+}
+
+/* ---------------- Load ---------------- */
+async function loadClasses(){
+  $("listContent").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>';
+  try{
+    if(SCRIPT_URL.startsWith("PASTE_")){
+      throw new Error("SCRIPT_URL is not set in this file yet.");
+    }
+    const res = await fetch(`${SCRIPT_URL}?action=listClasses&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Failed to load");
+
+    classes = data.classes || [];
+    buildFilterOptions();
+    updateStats();
+    renderAlerts();
+    applyView();
+  }catch(err){
+    console.error(err);
+    $("listContent").innerHTML = `<div class="empty-state">Failed to load class sheets.<br><br>
+      <small style="color:#ff9999">Error: ${escapeHtml(err.message)}</small><br><br>
+      Check that the Classes Apps Script is deployed and the URL + admin password match.</div>`;
+  }
+}
+$("refreshBtn").onclick = loadClasses;
+
+/* ---------------- Needs attention panel ---------------- */
+function renderAlerts(){
+  const rows = [];
+  classes.forEach(c => {
+    const a = classAlert(c);
+    if(a) rows.push({ c, a });
+  });
+
+  // Emptiest plans first, then students with no plan at all
+  rows.sort((x, y) => {
+    if(x.a.kind !== y.a.kind) return x.a.kind === 'none' ? 1 : -1;
+    return x.a.left - y.a.left;
+  });
+
+  if(!rows.length){ $("alerts").classList.remove("show"); return; }
+
+  $("alertCount").textContent = rows.length;
+  $("alertRows").innerHTML = rows.map(({c, a}) => {
+    const phone = digits(c["Phone"]);
+    const sub = a.kind === 'ending'
+      ? `<b>${escapeHtml(a.cal.name)}</b> · ${a.left === 0 ? 'no classes left' : a.left + (a.left === 1 ? ' class left' : ' classes left')} · ends ${fmtDate(endDate(a.cal))}`
+      : `No calendar plan running`;
+
+    return `<div class="alert-row">
+      <div class="alert-info">
+        <div class="alert-name">${escapeHtml(c["Student Name"])}
+          <span class="tag ${a.kind}">${a.kind === 'ending' ? 'Ending soon' : 'No plan'}</span>
+        </div>
+        <div class="alert-sub">${escapeHtml(c["Student ID"])} · ${escapeHtml(c["Course"] || '—')} — ${sub}</div>
+      </div>
+      <div class="alert-btns">
+        ${phone
+          ? `<button class="btn-wa-sm" data-wa="${escapeHtml(c["Class ID"])}">
+               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/></svg>
+               Message
+             </button>`
+          : `<span class="btn-wa-sm off" title="Add a contact number to this class sheet">No number</span>`}
+        <button data-cal="${escapeHtml(c["Class ID"])}" style="background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold-light);padding:8px 14px;border-radius:100px;cursor:pointer;font-size:10.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;font-family:'Manrope',sans-serif">Calendars</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  $("alertRows").querySelectorAll('[data-wa]').forEach(b => {
+    b.addEventListener('click', () => {
+      const c = classes.find(x => x["Class ID"] === b.dataset.wa);
+      if(c) messageStudent(c);
+    });
+  });
+  $("alertRows").querySelectorAll('[data-cal]').forEach(b => {
+    b.addEventListener('click', () => {
+      window.location.href = "/portal/classes/calendars.html?id=" + encodeURIComponent(b.dataset.cal);
+    });
+  });
+
+  $("alerts").classList.add("show");
+}
+
+/* Opens a 1-to-1 WhatsApp chat with the student.
+   The number lives only in the admin sheet — it is never sent to the share
+   link, so nobody holding a class sheet link can see or reach it. */
+function messageStudent(c){
+  const phone = digits(c["Phone"]);
+  if(!phone){ toast("No contact number saved for this student", true); return; }
+
+  const a = classAlert(c);
+  let body;
+  if(a && a.kind === 'ending'){
+    body = a.left === 0
+      ? `Your *${a.cal.name}* has finished. Shall we set up the next plan, in shā’ Allāh?`
+      : `Your *${a.cal.name}* has only *${a.left}* ${a.left === 1 ? 'class' : 'classes'} left (ends ${fmtDate(endDate(a.cal))}). Shall we set up the next plan, in shā’ Allāh?`;
+  } else {
+    body = `We haven't set up your next class plan yet. Shall we arrange it, in shā’ Allāh?`;
+  }
+
+  const msg = `Assalamu Alaikum 🌙\n\n*${c["Student Name"]}*\n${body}\n\n_ManzilulQuran E-learning Academy_`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+}
+
+/* Strip to digits. A bare 10-digit number is assumed Indian and gets 91,
+   which covers how numbers are usually typed here. Anything already
+   carrying a country code is left alone. */
+function digits(v){
+  let d = String(v || "").replace(/\D/g, "");
+  if(!d) return "";
+  if(d.length === 10) d = "91" + d;
+  return d;
+}
+
+/* ---------------- Stats ---------------- */
+function updateStats(){
+  $("statTotal").textContent = classes.length;
+  $("statActive").textContent = classes.filter(c => c["Status"] === "Active").length;
+  $("statInactive").textContent = classes.filter(c => c["Status"] !== "Active").length;
+}
+
+/* ---------------- Filters ---------------- */
+function buildFilterOptions(){
+  // Courses present in the data
+  const courses = [...new Set(classes.map(c => c["Course"]).filter(Boolean))].sort();
+  const cSel = $("filterCourse");
+  const cVal = cSel.value;
+  cSel.innerHTML = '<option value="">All courses</option>' +
+    courses.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  cSel.value = cVal;
+
+  // Months
+  const mSel = $("filterMonth");
+  const mVal = mSel.value;
+  mSel.innerHTML = '<option value="">All join months</option>' +
+    MONTHS.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+  mSel.value = mVal;
+
+  // Years present in the data
+  const years = [...new Set(classes.map(c => {
+    const d = new Date(c["Join Date"]);
+    return isNaN(d.getTime()) ? null : d.getFullYear();
+  }).filter(Boolean))].sort((a,b)=>b-a);
+  const ySel = $("filterYear");
+  const yVal = ySel.value;
+  ySel.innerHTML = '<option value="">All join years</option>' +
+    years.map(y => `<option value="${y}">${y}</option>`).join('');
+  ySel.value = yVal;
+}
+
+["filterCourse","filterStatus","filterMonth","filterYear","sortBy"].forEach(id => {
+  $(id).addEventListener("change", applyView);
+});
+$("searchInput").addEventListener("input", applyView);
+
+function applyView(){
+  const q      = $("searchInput").value.trim().toLowerCase();
+  const course = $("filterCourse").value;
+  const status = $("filterStatus").value;
+  const month  = $("filterMonth").value;
+  const year   = $("filterYear").value;
+  const sort   = $("sortBy").value;
+
+  let list = classes.filter(c => {
+    if(q){
+      const hay = [c["Student Name"], c["Student ID"], c["Course"]].join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    if(course && c["Course"] !== course) return false;
+    if(status && (c["Status"] || "Active") !== status) return false;
+    if(month !== "" || year !== ""){
+      const d = new Date(c["Join Date"]);
+      if(isNaN(d.getTime())) return false;
+      if(month !== "" && d.getMonth() !== parseInt(month,10)) return false;
+      if(year !== ""  && d.getFullYear() !== parseInt(year,10)) return false;
+    }
+    return true;
+  });
+
+  const t = (v) => { const d = new Date(v); return isNaN(d.getTime()) ? 0 : d.getTime(); };
+  const s = (v) => String(v || "").toLowerCase();
+
+  list.sort((a,b) => {
+    switch(sort){
+      case "updatedDesc": return t(b["Last Updated"]) - t(a["Last Updated"]);
+      case "nameAsc":     return s(a["Student Name"]).localeCompare(s(b["Student Name"]));
+      case "joinDesc":    return t(b["Join Date"]) - t(a["Join Date"]);
+      case "joinAsc":     return t(a["Join Date"]) - t(b["Join Date"]);
+      case "courseAsc":   return s(a["Course"]).localeCompare(s(b["Course"]));
+      case "statusAsc":   return s(a["Status"]).localeCompare(s(b["Status"]));
+      case "createdDesc":
+      default:            return t(b["Created Date"]) - t(a["Created Date"]);
+    }
+  });
+
+  renderList(list);
+  $("resultCount").textContent = `Showing ${list.length} of ${classes.length}`;
+}
+
+/* ---------------- List ---------------- */
+function renderList(items){
+  if(!classes.length){
+    $("listContent").innerHTML = `<div class="empty-state">
+      No class sheets yet.<br>Click <b style="color:var(--gold-light)">New Class Sheet</b> to create the first one.
+    </div>`;
+    return;
+  }
+  if(!items.length){
+    $("listContent").innerHTML = '<div class="empty-state">No class sheets match these filters.</div>';
+    return;
+  }
+
+  const rows = items.map(c => {
+    const isActive = (c["Status"] || "Active") === "Active";
+    return `<tr>
+      <td data-label="Student">${escapeHtml(c["Student Name"] || "—")}</td>
+      <td class="sid" data-label="Student ID">${escapeHtml(c["Student ID"] || "—")}</td>
+      <td data-label="Course">${escapeHtml(c["Course"] || "—")}</td>
+      <td class="date" data-label="Joined">${fmtDate(c["Join Date"])}</td>
+      <td data-label="Status"><span class="pill ${isActive ? 'active':'inactive'}">${isActive ? 'Active':'Inactive'}</span></td>
+      <td class="actions">
+        <button data-act="cal"   data-id="${escapeHtml(c["Class ID"])}">Calendars</button>
+        <button data-act="open"  data-id="${escapeHtml(c["Class ID"])}">Open</button>
+        <button data-act="share" data-id="${escapeHtml(c["Class ID"])}">Share</button>
+        <button data-act="edit"  data-id="${escapeHtml(c["Class ID"])}">Edit</button>
+        <button data-act="del"   data-id="${escapeHtml(c["Class ID"])}" class="danger">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  $("listContent").innerHTML = `<table class="list-table">
+    <thead><tr>
+      <th>Student</th><th>Student ID</th><th>Course</th><th>Joined</th><th>Status</th>
+      <th style="text-align:right">Actions</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+
+  $("listContent").querySelectorAll("button[data-act]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();   // don't let the tap collapse the chip underneath
+      const c = classes.find(x => x["Class ID"] === btn.dataset.id);
+      if(!c) return;
+      const act = btn.dataset.act;
+      if(act === "cal")   window.location.href = "/portal/classes/calendars.html?id=" + encodeURIComponent(c["Class ID"]);
+      if(act === "open")  window.open(shareUrl(c), "_blank");
+      if(act === "share") openShare(c);
+      if(act === "edit")  openForm(c);
+      if(act === "del")   askDelete(c);
+    });
+  });
+
+  // Tap a chip to reveal its actions. Only one open at a time — otherwise
+  // the list grows back into the wall of cards this replaced.
+  $("listContent").querySelectorAll("tr").forEach(tr => {
+    tr.addEventListener("click", () => {
+      const wasOpen = tr.classList.contains("open");
+      $("listContent").querySelectorAll("tr.open").forEach(o => o.classList.remove("open"));
+      if(!wasOpen) tr.classList.add("open");
+    });
+  });
+}
+
+function shareUrl(c){ return SHARE_BASE + "?t=" + encodeURIComponent(c["Share Token"]); }
+
+/* ---------------- Create / Edit ---------------- */
+$("newClassBtn").onclick = () => openForm(null);
+
+function openForm(c){
+  editingId = c ? c["Class ID"] : null;
+  $("formTitle").innerHTML = c ? 'Edit <span class="accent">Class Sheet</span>' : 'New <span class="accent">Class Sheet</span>';
+  $("formSubtitle").textContent = c
+    ? "Changes apply immediately. The share link stays the same."
+    : "Creates a secure workspace and share link for this student.";
+
+  $("fName").value      = c ? (c["Student Name"] || "") : "";
+  $("fStudentId").value = c ? (c["Student ID"] || "") : "";
+  $("fCourse").value    = c ? (c["Course"] || "") : "";
+  $("fJoinDate").value  = c ? toDateInput(c["Join Date"]) : "";
+  $("fWhatsapp").value  = c ? (c["WhatsApp Group Link"] || "") : "";
+  $("fPhone").value     = c ? (c["Phone"] || "") : "";
+  $("fStatus").value    = c ? (c["Status"] || "Active") : "Active";
+
+  document.querySelectorAll("#formModal .field").forEach(f => f.classList.remove("invalid"));
+  openModal("formModal");
+  setTimeout(()=>$("fName").focus(), 200);
+}
+
+$("formCancelBtn").onclick = () => closeModal("formModal");
+
+$("formSaveBtn").onclick = async () => {
+  if(!validateForm()) return;
+
+  const btn = $("formSaveBtn");
+  btn.disabled = true;
+  const oldLabel = btn.textContent;
+  btn.textContent = "Saving…";
+
+  try{
+    const payload = {
+      action:      editingId ? "updateClass" : "createClass",
+      password:    ADMIN_API_PASSWORD,
+      classId:     editingId,
+      studentName: $("fName").value.trim(),
+      studentId:   $("fStudentId").value.trim(),
+      course:      $("fCourse").value,
+      joinDate:    $("fJoinDate").value,
+      whatsapp:    $("fWhatsapp").value.trim(),
+      phone:       $("fPhone").value.trim(),
+      status:      $("fStatus").value
+    };
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Save failed");
+
+    closeModal("formModal");
+    toast(editingId ? "Class sheet updated" : "Class sheet created");
+    await loadClasses();
+
+    // Straight after creating, show the share link — that's the whole point
+    if(!editingId && data.token){
+      const created = classes.find(x => x["Share Token"] === data.token);
+      if(created) openShare(created);
+    }
+  }catch(err){
+    console.error(err);
+    toast(err.message, true);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = oldLabel;
+  }
+};
+
+function validateForm(){
+  let ok = true;
+  const mark = (el, bad) => {
+    const f = el.closest(".field");
+    f.classList.toggle("invalid", bad);
+    if(bad) ok = false;
+  };
+  mark($("fName"),      !$("fName").value.trim());
+  mark($("fStudentId"), !$("fStudentId").value.trim());
+  mark($("fCourse"),    !$("fCourse").value);
+  mark($("fJoinDate"),  !$("fJoinDate").value);
+
+  const wa = $("fWhatsapp").value.trim();
+  mark($("fWhatsapp"), !!wa && !/^https?:\/\//i.test(wa));
+
+  return ok;
+}
+document.querySelectorAll("#formModal input, #formModal select").forEach(el => {
+  el.addEventListener("input",  () => el.closest(".field").classList.remove("invalid"));
+  el.addEventListener("change", () => el.closest(".field").classList.remove("invalid"));
+});
+
+/* ---------------- Share ---------------- */
+function openShare(c){
+  shareTarget = c;
+  $("shareSubtitle").textContent = `${c["Student Name"]} · ${c["Student ID"]}`;
+  $("shareLinkInput").value = shareUrl(c);
+  openModal("shareModal");
+}
+$("shareCloseBtn").onclick = () => closeModal("shareModal");
+
+$("copyLinkBtn").onclick = async () => {
+  const url = $("shareLinkInput").value;
+  try{
+    await navigator.clipboard.writeText(url);
+    toast("Link copied to clipboard");
+  }catch(e){
+    $("shareLinkInput").select();
+    document.execCommand("copy");
+    toast("Link copied");
+  }
+};
+
+$("waShareBtn").onclick = () => {
+  if(!shareTarget) return;
+  const msg = `Assalamu Alaikum 👋\n\n*${shareTarget["Student Name"]}* — ManzilulQuran class sheet:\n${shareUrl(shareTarget)}\n\nAll class details are in this link, in shā’ Allāh.`;
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+};
+
+$("resetLinkBtn").onclick = () => {
+  if(!shareTarget) return;
+  askConfirm(
+    "Reset this link?",
+    `The current link for ${shareTarget["Student Name"]} will stop working immediately. Anyone still using it will lose access.`,
+    async () => {
+      try{
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action:"resetToken", password: ADMIN_API_PASSWORD, classId: shareTarget["Class ID"] })
+        });
+        const data = await res.json();
+        if(data.result !== "success") throw new Error(data.error || "Reset failed");
+
+        shareTarget["Share Token"] = data.token;
+        $("shareLinkInput").value = shareUrl(shareTarget);
+        toast("New link created — old link is dead");
+        loadClasses();
+      }catch(err){
+        toast(err.message, true);
+      }
+    }
+  );
+};
+
+/* ---------------- Delete ---------------- */
+function askDelete(c){
+  askConfirm(
+    "Delete this class sheet?",
+    `${c["Student Name"]} (${c["Student ID"]}) will be permanently removed, and their share link will stop working. This cannot be undone.`,
+    async () => {
+      try{
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action:"deleteClass", password: ADMIN_API_PASSWORD, classId: c["Class ID"] })
+        });
+        const data = await res.json();
+        if(data.result !== "success") throw new Error(data.error || "Delete failed");
+        toast("Class sheet deleted");
+        loadClasses();
+      }catch(err){
+        toast(err.message, true);
+      }
+    }
+  );
+}
+
+/* ---------------- Confirm modal ---------------- */
+function askConfirm(title, text, onOk){
+  $("confirmTitle").innerHTML = escapeHtml(title).replace(/(\?)$/, '<span class="accent">$1</span>');
+  $("confirmText").textContent = text;
+  confirmAction = onOk;
+  openModal("confirmModal");
+}
+$("confirmCancelBtn").onclick = () => { confirmAction = null; closeModal("confirmModal"); };
+$("confirmOkBtn").onclick = async () => {
+  const fn = confirmAction;
+  confirmAction = null;
+  closeModal("confirmModal");
+  if(fn) await fn();
+};
+
+/* ---------------- Modal helpers ---------------- */
+function openModal(id){
+  $(id).classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closeModal(id){
+  $(id).classList.remove("show");
+  if(!document.querySelector(".modal-backdrop.show")) document.body.style.overflow = "";
+}
+document.querySelectorAll(".modal-backdrop").forEach(m => {
+  m.addEventListener("click", e => { if(e.target === m) closeModal(m.id); });
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape"){
+    const open = document.querySelector(".modal-backdrop.show");
+    if(open) closeModal(open.id);
+  }
+});
+
+/* ---------------- Toast ---------------- */
+let toastTimer = null;
+function toast(msg, isErr){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.toggle("err", !!isErr);
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 3000);
+}
+
+/* ---------------- Utils ---------------- */
+function escapeHtml(str){
+  if(str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function fmtDate(v){
+  if(!v) return '—';
+  const d = (v instanceof Date) ? v : new Date(v);
+  if(isNaN(d.getTime())) return String(v);
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function toDateInput(v){
+  if(!v) return '';
+  const d = new Date(v);
+  if(isNaN(d.getTime())) return String(v).slice(0,10);
+  return d.toISOString().slice(0,10);
 }
 </script>
 </body>
