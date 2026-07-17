@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Records · ManzilulQuran Admin</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Amiri:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --emerald-deepest:#031b13;
+    --emerald-deep:#0a3d2e;
+    --emerald:#125c44;
+    --emerald-light:#1a7a5a;
+    --gold:#c9a961;
+    --gold-light:#e4c987;
+    --gold-warm:#ffb86b;
+    --cream:#faf6ee;
+    --cream-dim:rgba(250,246,238,0.7);
+    --cream-faint:rgba(250,246,238,0.4);
+    --ink:#0e1a14;
+    --err:#ff9999;
+    --accent:#2dd4a4;   /* swapped per tab at runtime */
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Manrope',sans-serif;
+    background:radial-gradient(ellipse at top,var(--emerald-deep) 0%,var(--emerald-deepest) 65%,#000 100%);
+    color:var(--cream);min-height:100vh;padding:36px 20px 60px;
+  }
+
+  /* ---------- Lock ---------- */
+  .lock-screen{
+    max-width:420px;width:100%;background:#fff;color:var(--ink);
+    border-radius:22px;padding:44px 32px 36px;
+    box-shadow:0 30px 80px rgba(0,0,0,0.4);text-align:center;
+    animation:riseIn .35s ease;margin:80px auto 0;
+  }
+  @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .lock-logo{width:80px;height:80px;border-radius:50%;border:3px solid var(--emerald-light);margin:0 auto 22px;overflow:hidden;background:#fff}
+  .lock-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .lock-title{font-size:22px;font-weight:800;color:var(--emerald);margin-bottom:6px}
+  .lock-sub{font-size:13.5px;color:#5B6B63;font-weight:500;margin-bottom:24px}
+  .lock-input{
+    width:100%;font-family:'Manrope',sans-serif;font-size:16px;font-weight:600;color:var(--ink);
+    border:2px solid var(--emerald-light);border-radius:12px;padding:14px 16px;
+    text-align:center;letter-spacing:4px;
+  }
+  .lock-input:focus{outline:none;border-color:var(--emerald);box-shadow:0 0 0 3px rgba(27,122,90,.15)}
+  .lock-input.wrong{border-color:#c0392b;animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  .lock-btn{
+    width:100%;margin-top:16px;font-family:'Manrope',sans-serif;font-size:15px;font-weight:800;
+    color:#fff;background:var(--emerald);border:none;border-radius:12px;padding:14px;cursor:pointer;
+  }
+  .lock-btn:hover{background:var(--emerald-light)}
+  .lock-error{color:#c0392b;font-size:12.5px;font-weight:600;margin-top:12px;min-height:16px}
+  .lock-hint{margin-top:22px;padding-top:20px;border-top:1px solid #E8F3EE;font-size:11.5px;color:#5B6B63}
+  .lock-hint a{color:var(--emerald-light);text-decoration:none;font-weight:600}
+
+  /* ---------- Shell ---------- */
+  .admin{display:none;max-width:1100px;margin:0 auto}
+  .admin.show{display:block;animation:riseIn .35s ease}
+
+  .crumb{
+    display:inline-flex;align-items:center;gap:7px;
+    color:var(--cream-dim);text-decoration:none;
+    font-size:11.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;
+    margin-bottom:18px;transition:color .2s;
+  }
+  .crumb:hover{color:var(--gold-light)}
+  .crumb svg{width:13px;height:13px}
+
+  .admin-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    margin-bottom:22px;
+  }
+  .admin-head-left{display:flex;align-items:center;gap:16px}
+  .admin-logo{width:56px;height:56px;border-radius:50%;border:2px solid rgba(201,169,110,0.5);overflow:hidden;background:#fff;flex:0 0 auto}
+  .admin-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .admin-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--cream);line-height:1.1}
+  .admin-title .accent{color:var(--gold-light);font-style:italic;font-weight:500}
+  .admin-sub{font-size:12px;color:var(--cream-dim);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+  .admin-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn-ghost{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+    color:rgba(255,255,255,0.75);background:transparent;border:1px solid rgba(255,255,255,0.2);
+    border-radius:100px;padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,0.08)}
+  .btn-ghost svg{width:12px;height:12px}
+
+  /* ---------- Tabs: each record type owns a colour ---------- */
+  .tabs{
+    display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px;
+    padding-bottom:20px;border-bottom:1px solid rgba(201,169,110,0.18);
+  }
+  .tab{
+    font-family:'Manrope',sans-serif;
+    font-size:11.5px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
+    color:var(--cream-dim);
+    background:rgba(3,27,19,0.5);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:100px;padding:10px 17px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:all .2s;
+  }
+  .tab .dot{
+    width:7px;height:7px;border-radius:50%;flex:0 0 auto;
+    background:var(--c);
+  }
+  .tab:hover{color:var(--cream);border-color:color-mix(in srgb, var(--c) 45%, transparent)}
+  .tab.on{
+    color:var(--emerald-deepest);
+    background:var(--c);
+    border-color:transparent;
+    box-shadow:0 6px 20px -8px var(--c);
+  }
+  .tab.on .dot{background:rgba(0,0,0,0.45)}
+
+  /* ---------- Stats ---------- */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+  .stat{
+    background:rgba(3,27,19,0.5);
+    border:1px solid rgba(255,255,255,0.07);
+    border-left:2px solid var(--accent);
+    border-radius:0 13px 13px 0;padding:15px 17px;
+  }
+  .stat-label{font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--accent);opacity:.9;margin-bottom:6px}
+  .stat-value{font-family:'Cormorant Garamond',serif;font-size:29px;font-weight:600;color:var(--cream);line-height:1}
+  .stat-value .mini{font-size:19px;letter-spacing:2px;color:var(--accent)}
+
+  /* ---------- List ---------- */
+  .list-wrap{
+    background:rgba(3,27,19,0.5);
+    border:1px solid rgba(255,255,255,0.07);
+    border-top:2px solid var(--accent);
+    border-radius:14px;overflow:hidden;
+  }
+  .list-search{
+    padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.07);
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  }
+  .list-search svg{width:18px;height:18px;color:var(--accent);flex:0 0 auto}
+  .list-search input{
+    flex:1;min-width:150px;font-family:'Manrope',sans-serif;font-size:14px;
+    color:var(--cream);background:transparent;border:none;outline:none;
+  }
+  .list-search input::placeholder{color:rgba(250,246,238,0.35)}
+  #resultCount{font-size:12px;color:var(--accent);font-weight:700;white-space:nowrap}
+
+  .list-table{width:100%;border-collapse:collapse}
+  .list-table thead th{
+    text-align:left;padding:13px 20px;
+    font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;
+    color:var(--accent);opacity:.9;
+    background:rgba(0,0,0,0.22);border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .list-table tbody tr{border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:background .18s}
+  .list-table tbody tr:hover{background:color-mix(in srgb, var(--accent) 7%, transparent)}
+  .list-table tbody tr:last-child{border-bottom:none}
+  .list-table td{padding:13px 20px;font-size:14px;color:var(--cream);vertical-align:middle}
+  .list-table td.date{color:var(--cream-faint);font-size:12.5px}
+  .list-table td.rating{color:var(--accent);letter-spacing:2px;font-size:16px}
+  .list-table td.actions{text-align:right;white-space:nowrap}
+  .list-table td.actions button{
+    background:transparent;border:1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    color:var(--accent);
+    padding:5px 12px;border-radius:100px;cursor:pointer;
+    font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+    margin-left:6px;font-family:'Manrope',sans-serif;transition:all .2s;
+  }
+  .list-table td.actions button:hover{background:var(--accent);color:var(--emerald-deepest)}
+
+  .loading{text-align:center;padding:60px 20px;color:var(--cream-dim);font-size:14px}
+  .loading-spin{
+    display:inline-block;width:26px;height:26px;
+    border:3px solid rgba(255,255,255,0.12);border-top-color:var(--accent);
+    border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty-state{text-align:center;padding:60px 20px;color:var(--cream-dim);font-size:14px;line-height:1.7}
+  .empty-state svg{width:42px;height:42px;color:var(--accent);opacity:.28;margin-bottom:14px}
+
+  /* ---------- Detail modal ---------- */
+  .modal-backdrop{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(6px);z-index:100;
+    align-items:flex-start;justify-content:center;padding:30px 20px;overflow-y:auto;
+  }
+  .modal-backdrop.show{display:flex;animation:fadeIn .25s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal{
+    background:#fff;color:var(--ink);max-width:760px;width:100%;
+    border-radius:18px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.5);
+    animation:modalIn .35s cubic-bezier(.2,.9,.3,1.1) both;
+  }
+  @keyframes modalIn{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+  .detail{padding:36px 38px 30px}
+  .detail-head{text-align:center;padding-bottom:22px;border-bottom:2px solid var(--accent);margin-bottom:24px}
+  .detail-logo{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;overflow:hidden;border:2px solid var(--accent);background:#fff}
+  .detail-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .detail-eyebrow{font-size:10px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:#8a7a4e;margin-bottom:6px}
+  .detail-h1{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--emerald)}
+  .detail-h1 .hl{font-style:italic;font-weight:500;color:#8a7a4e}
+  .detail-sub{font-size:12px;color:#666;margin-top:6px}
+
+  .detail-meta{background:#faf6ee;border-left:3px solid var(--accent);padding:14px 18px;margin-bottom:24px;font-size:13px}
+  .detail-meta-row{display:flex;justify-content:space-between;padding:4px 0;gap:14px}
+  .detail-meta-row b{color:var(--emerald);font-weight:800;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+  .detail-meta-row span{color:var(--ink);font-weight:600;text-align:right}
+
+  .detail-row{
+    display:flex;gap:14px;padding:11px 14px;margin-bottom:8px;
+    background:#faf6ee;border:1px solid #ecdcaf;border-radius:8px;
+    font-size:13.5px;page-break-inside:avoid;break-inside:avoid;
+  }
+  .detail-row b{color:var(--emerald);font-weight:800;font-size:11px;letter-spacing:1px;text-transform:uppercase;flex:0 0 150px;padding-top:2px}
+  .detail-row span{color:#333;font-weight:500;flex:1;word-break:break-word}
+  .detail-row a{color:var(--emerald-light);font-weight:700}
+
+  /* evaluation-only: every option shown, the chosen one lit up */
+  .detail-q{margin-bottom:18px;page-break-inside:avoid;break-inside:avoid}
+  .detail-q-title{
+    font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;
+    color:var(--emerald);margin-bottom:10px;display:flex;align-items:baseline;gap:8px;
+  }
+  .detail-q-num{
+    display:inline-block;background:var(--accent);color:#fff;
+    font-family:'Manrope',sans-serif;font-size:10px;font-weight:800;
+    padding:2px 8px;border-radius:100px;letter-spacing:1px;
+  }
+  .detail-options{display:flex;flex-direction:column;gap:6px;margin-left:14px}
+  .detail-option{
+    display:flex;align-items:center;gap:12px;padding:8px 12px;
+    background:#faf6ee;border:1px solid #e6e0ee;border-radius:8px;
+    font-size:13.5px;color:#333;
+  }
+  .detail-option.picked{
+    background:color-mix(in srgb, var(--accent) 14%, #fff);
+    border-color:var(--accent);
+    color:var(--emerald);font-weight:700;
+    box-shadow:0 0 0 1px var(--accent);
+  }
+  .detail-radio{width:16px;height:16px;border-radius:50%;border:2px solid #c3bcd0;flex:0 0 auto}
+  .detail-option.picked .detail-radio{
+    border-color:var(--accent);
+    background:radial-gradient(circle,var(--accent) 0%,var(--accent) 40%,transparent 45%);
+  }
+  .picked-tag{
+    margin-left:auto;font-size:10px;font-weight:800;color:var(--accent);
+    letter-spacing:1.2px;text-transform:uppercase;white-space:nowrap;
+  }
+  .detail-stars{color:var(--accent);font-size:26px;letter-spacing:4px;margin-left:14px;display:flex;align-items:center;gap:12px}
+  .detail-stars-num{font-family:'Manrope',sans-serif;font-size:13px;font-weight:800;color:var(--emerald);letter-spacing:0}
+  .detail-free{
+    margin-left:14px;background:#faf6ee;border:1px solid #ecdcaf;border-radius:8px;
+    padding:12px 14px;font-size:13.5px;color:#333;line-height:1.6;font-style:italic;min-height:40px;
+  }
+
+  .detail-arabic{text-align:center;font-family:'Amiri',serif;font-size:20px;color:#8a7a4e;margin:24px 0 10px}
+  .detail-foot{text-align:center;padding-top:14px;border-top:1px solid #ddd;font-size:11px;color:#666;margin-top:8px}
+
+  .modal-actions{
+    background:#faf6ee;padding:16px 28px;display:flex;justify-content:flex-end;gap:10px;
+    border-top:1px solid #ecdcaf;
+  }
+  .btn-solid{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    background:var(--emerald);color:#fff;border:none;border-radius:100px;padding:11px 22px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn-solid:hover{background:var(--emerald-light)}
+  .btn-solid svg{width:12px;height:12px}
+  .btn-outline{
+    font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    background:transparent;color:var(--emerald);border:1.5px solid var(--emerald);
+    border-radius:100px;padding:10px 22px;cursor:pointer;
+  }
+  .btn-outline:hover{background:var(--emerald);color:#fff}
+
+  @media (max-width:700px){
+    .admin-title{font-size:22px}
+    .detail{padding:26px 22px 22px}
+    .detail-h1{font-size:21px}
+    .detail-row b{flex:0 0 110px}
+
+    /* rows become cards */
+    .list-table thead{display:none}
+    .list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
+    .list-table tr{
+      border:1px solid rgba(255,255,255,0.09);border-radius:12px;
+      margin:12px 14px;padding:14px 16px;background:rgba(3,27,19,0.45);width:auto;
+    }
+    .list-table td{
+      padding:6px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;border:none;
+    }
+    .list-table td::before{
+      content:attr(data-label);
+      font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;
+      color:var(--accent);flex:0 0 auto;
+    }
+    .list-table td.actions{
+      justify-content:flex-end;padding-top:12px;margin-top:8px;
+      border-top:1px solid rgba(255,255,255,0.08);
+    }
+    .list-table td.actions::before{content:none}
+    .list-table td.actions button{flex:1;margin-left:0;margin-right:6px;padding:9px 12px}
+    .list-table td.actions button:last-child{margin-right:0}
+  }
+
+  @media print{
+    body{background:#fff;color:#000;padding:0}
+    .admin,.modal-backdrop{position:static;background:#fff;display:block !important}
+    .modal-actions,.list-wrap,.admin-head,.tabs,.stats,.crumb,.lock-screen{display:none !important}
+    .modal-backdrop{background:#fff;padding:0;overflow:visible}
+    .modal{box-shadow:none;max-width:100%;border-radius:0;animation:none}
+    .detail{padding:20px 30px}
+    .detail-row,.detail-meta,.detail-option,.detail-free{
+      background:#faf6ee !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;
+    }
+    .detail-option.picked{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+  <!-- LOCK -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
+    <div class="lock-title">Records</div>
+    <div class="lock-sub">Enter the portal password to continue.</div>
+    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="off" autofocus />
+    <button class="lock-btn" id="lockBtn">Unlock</button>
+    <div class="lock-error" id="lockError">&nbsp;</div>
+    <div class="lock-hint">Admin access only.<br><a href="/portal/">← Back to portal</a></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="admin" id="adminView">
+    <a class="crumb" href="/portal/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Portal
+    </a>
+
+    <div class="admin-head">
+      <div class="admin-head-left">
+        <div class="admin-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
+        <div>
+          <div class="admin-title">Form <span class="accent">Records</span></div>
+          <div class="admin-sub">Every Submission</div>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-ghost" id="refreshBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          Refresh
+        </button>
+        <button class="btn-ghost" id="lockAgainBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Lock
+        </button>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabs"></div>
+    <div class="stats" id="stats"></div>
+
+    <div class="list-wrap">
+      <div class="list-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search…" />
+        <span id="resultCount"></span>
+      </div>
+      <div id="listContent">
+        <div class="loading"><div class="loading-spin"></div><div>Loading records…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal">
+      <div class="detail" id="detailContent"></div>
+      <div class="modal-actions">
+        <button class="btn-outline" id="closeModalBtn">Close</button>
+        <button class="btn-solid" id="downloadBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* =================================================================
+   ░░  RECORDS  ░░
+   Every submission the academy receives, in one place.
+
+   Two different backends sit behind this page — the four forms live in
+   the main spreadsheet, evaluations live in their own. The tabs hide
+   that: you just pick a record type and it loads.
+   ================================================================= */
+
+const SCRIPT_MASTER = "https://script.google.com/macros/s/AKfycbzhCGlnBG6LthyJW3b-o1qERqvKY3ULuvOyCik6469tpHsRL9bJ2pJgqw6Rnkf9S84pYg/exec";
+const SCRIPT_EVAL   = "https://script.google.com/macros/s/AKfycbzSEfI9CEPSMmQLdPP_oWiT0f61jCfQBl5uNIlU9EXxNuVpIH4Y7PLBKJDgGg70O2YKqA/exec";
+
+const PORTAL_PASSWORD = "manzil2026";
+const ADMIN_API_PASSWORD = "manzil2026admin";
+const SESSION_KEY = "mq_portal_unlocked_at";
+const SESSION_MAX_MS = 24 * 60 * 60 * 1000;
+
+const $ = (id) => document.getElementById(id);
+
+/* Each record type carries the same colour it has on the Forms page, so a
+   form and its submissions read as one thing. */
+const TABS = [
+  { key:'student',    label:'Registrations', accent:'#2dd4a4', api:'master',
+    title:'Student Registration', listCols:['Timestamp','First Name','Phone','Course'] },
+  { key:'batch',      label:'Batch',         accent:'#5eead4', api:'master',
+    title:'Batch Registration',   listCols:['Timestamp','First Name','Phone','Course'] },
+  { key:'teacher',    label:'Staff',         accent:'#e4c987', api:'master',
+    title:'Staff Application',    listCols:['Timestamp','First Name','Phone','Post'] },
+  { key:'complaint',  label:'Complaints',    accent:'#ff9aa6', api:'master',
+    title:'Complaint',            listCols:['Timestamp','Student Name','Phone','Complaint Type'] },
+  { key:'evaluation', label:'Evaluations',   accent:'#a78bfa', api:'eval',
+    title:'Class Evaluation',     listCols:[] }
+];
+
+/* The evaluation form's questions, with every option it offered. Needed so
+   the report can show what was NOT picked as well as what was — a lone
+   answer with no alternatives beside it tells you very little. */
+const QUESTIONS = [
+  { key:'satisfaction', label:'Overall satisfaction with learning experience',
+    options:['Very satisfied','Satisfied','Neutral','Dissatisfied','Very dissatisfied'] },
+  { key:'progress', label:'Rating of learning progress',
+    options:['Excellent progress','Good progress','Average progress','Slow progress','No noticeable progress'] },
+  { key:'teacherFit', label:'Is the mentor suitable?',
+    options:['Yes, perfectly suited','Yes, but could be better','Neutral / not sure','We would like to try another teacher'] },
+  { key:'punctuality', label:'Does the teacher attend on time?',
+    options:['Always on time','Sometimes late','Frequently late','Often misses classes'] },
+  { key:'recommend', label:'Would you recommend ManzilulQuran Academy?',
+    options:['Definitely','Probably','Not sure','No'] }
+];
+
+let current = TABS[0];
+let headers = [];      // forms: column names
+let rows = [];         // forms: arrays  |  evaluations: objects
+let detail = null;
+
+/* ---------------- Lock ---------------- */
+function isUnlocked(){
+  try{
+    const at = parseInt(sessionStorage.getItem(SESSION_KEY) || "0", 10);
+    return at && (Date.now() - at) < SESSION_MAX_MS;
+  }catch(e){ return false; }
+}
+function unlock(){
+  try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  renderTabs();
+  load();
+}
+function lock(){
+  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  $("adminView").classList.remove("show");
+  $("lockScreen").style.display = "";
+  $("lockInput").value = "";
+  setTimeout(()=>$("lockInput").focus(), 100);
+}
+function tryPassword(){
+  if(($("lockInput").value || "").trim() === PORTAL_PASSWORD){ unlock(); }
+  else{
+    $("lockInput").classList.add("wrong");
+    $("lockError").textContent = "Wrong password. Try again.";
+    setTimeout(()=>$("lockInput").classList.remove("wrong"), 400);
+    $("lockInput").select();
+  }
+}
+$("lockBtn").onclick = tryPassword;
+$("lockInput").addEventListener("keydown", e => { if(e.key === "Enter") tryPassword(); });
+$("lockAgainBtn").onclick = lock;
+
+/* ---------------- Tabs ---------------- */
+function renderTabs(){
+  $("tabs").innerHTML = TABS.map(t =>
+    `<button class="tab ${t.key === current.key ? 'on' : ''}" data-k="${t.key}" style="--c:${t.accent}">
+       <span class="dot"></span>${t.label}
+     </button>`).join('');
+
+  $("tabs").querySelectorAll('.tab').forEach(b => {
+    b.addEventListener('click', () => {
+      current = TABS.find(t => t.key === b.dataset.k);
+      document.documentElement.style.setProperty('--accent', current.accent);
+      $("searchInput").value = '';
+      renderTabs();
+      load();
+    });
+  });
+  document.documentElement.style.setProperty('--accent', current.accent);
+  $("searchInput").placeholder = current.key === 'evaluation'
+    ? 'Search by student, teacher, or rating (e.g. 5)…'
+    : 'Search by name or phone number…';
+}
+
+/* ---------------- Load ---------------- */
+async function load(){
+  $("listContent").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading records…</div></div>';
+  $("resultCount").textContent = '';
+  $("stats").innerHTML = '';
+
+  try{
+    if(current.api === 'eval'){
+      const res = await fetch(`${SCRIPT_EVAL}?action=list&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
+      const d = await res.json();
+      if(d.result !== 'success') throw new Error(d.error || 'Failed to load');
+      headers = [];
+      rows = d.evaluations || [];
+    } else {
+      const res = await fetch(`${SCRIPT_MASTER}?action=list&formType=${current.key}&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
+      const d = await res.json();
+      if(d.result !== 'success') throw new Error(d.error || 'Failed to load');
+      headers = d.headers || [];
+      rows = d.rows || [];
+    }
+    renderStats();
+    renderList(rows);
+    setCount(rows.length);
+  }catch(err){
+    console.error(err);
+    $("listContent").innerHTML = `<div class="empty-state">Couldn't load ${current.label.toLowerCase()}.<br><br>
+      <small style="color:#ff9999">Error: ${esc(err.message)}</small><br><br>
+      Check the Apps Script is deployed and the admin password matches.</div>`;
+  }
+}
+$("refreshBtn").onclick = load;
+
+function setCount(n){ $("resultCount").textContent = `Showing ${n} of ${rows.length}`; }
+
+/* ---------------- Stats ---------------- */
+function renderStats(){
+  let html = `<div class="stat"><div class="stat-label">Total ${esc(current.label.toLowerCase())}</div>
+              <div class="stat-value">${rows.length}</div></div>`;
+
+  if(current.key === 'evaluation' && rows.length){
+    const nums = rows.map(r => parseFloat(r.rating)).filter(n => !isNaN(n));
+    const avg = nums.length ? (nums.reduce((a,b)=>a+b,0)/nums.length) : 0;
+    const filled = Math.round(avg);
+    html += `<div class="stat"><div class="stat-label">Average rating</div>
+             <div class="stat-value">${avg.toFixed(1)}
+               <span class="mini">${'★'.repeat(filled)}<span style="opacity:.25">${'★'.repeat(5-filled)}</span></span>
+             </div></div>`;
+  }
+  if(rows.length){
+    const latest = current.key === 'evaluation'
+      ? rows[0].timestamp
+      : rows[0][headers.indexOf('Timestamp')];
+    html += `<div class="stat"><div class="stat-label">Most recent</div>
+             <div class="stat-value" style="font-size:15px">${fmtDate(latest, true)}</div></div>`;
+  }
+  $("stats").innerHTML = html;
+}
+
+/* ---------------- List ---------------- */
+function colIdx(name){ return headers.indexOf(name); }
+
+function renderList(items){
+  if(!rows.length){
+    $("listContent").innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+      </svg>
+      <p>No ${esc(current.label.toLowerCase())} submitted yet.</p></div>`;
+    return;
+  }
+  if(!items.length){
+    $("listContent").innerHTML = '<div class="empty-state">Nothing matches that search.</div>';
+    return;
+  }
+
+  const head = current.key === 'evaluation'
+    ? '<th>Date</th><th>Student</th><th>Teacher</th><th>Rating</th>'
+    : current.listCols.map(c => `<th>${esc(c === 'Timestamp' ? 'Date' : c)}</th>`).join('');
+
+  const body = items.map(item => {
+    const i = rows.indexOf(item);
+    if(current.key === 'evaluation'){
+      const r = parseInt(item.rating,10) || 0;
+      return `<tr data-i="${i}">
+        <td class="date" data-label="Date">${fmtDate(item.timestamp)}</td>
+        <td data-label="Student">${esc(item.studentName || '—')}</td>
+        <td data-label="Teacher">${esc(item.teacherName || '—')}</td>
+        <td class="rating" data-label="Rating">${'★'.repeat(r)}<span style="opacity:.25">${'★'.repeat(5-r)}</span></td>
+        <td class="actions">
+          <button data-a="view" data-i="${i}">View</button>
+          <button data-a="dl" data-i="${i}">Download</button>
+        </td></tr>`;
+    }
+    const cells = current.listCols.map(c => {
+      const ci = colIdx(c);
+      const v = ci >= 0 ? item[ci] : '';
+      const label = c === 'Timestamp' ? 'Date' : c;
+      return c === 'Timestamp'
+        ? `<td class="date" data-label="${esc(label)}">${fmtDate(v)}</td>`
+        : `<td data-label="${esc(label)}">${esc(v || '—')}</td>`;
+    }).join('');
+    return `<tr data-i="${i}">${cells}
+      <td class="actions">
+        <button data-a="view" data-i="${i}">View</button>
+        <button data-a="dl" data-i="${i}">Download</button>
+      </td></tr>`;
+  }).join('');
+
+  $("listContent").innerHTML =
+    `<table class="list-table"><thead><tr>${head}<th style="text-align:right">Actions</th></tr></thead><tbody>${body}</tbody></table>`;
+
+  $("listContent").querySelectorAll('button[data-a]').forEach(b => {
+    b.addEventListener('click', e => {
+      e.stopPropagation();
+      openDetail(+b.dataset.i);
+      if(b.dataset.a === 'dl') setTimeout(()=>window.print(), 200);
+    });
+  });
+  $("listContent").querySelectorAll('tr[data-i]').forEach(tr => {
+    tr.addEventListener('click', () => openDetail(+tr.dataset.i));
+  });
+}
+
+/* ---------------- Search ---------------- */
+$("searchInput").addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase();
+  if(!q){ renderList(rows); setCount(rows.length); return; }
+
+  let out;
+  if(current.key === 'evaluation'){
+    out = rows.filter(r =>
+      (r.studentName||'').toLowerCase().includes(q) ||
+      (r.teacherName||'').toLowerCase().includes(q) ||
+      String(r.rating||'') === q);           // type "5" for five-star
+  } else {
+    const dq = q.replace(/\D/g,'');
+    out = rows.filter(row => {
+      const text = row.join(' ').toLowerCase();
+      if(text.includes(q)) return true;
+      if(dq.length >= 3 && row.join(' ').replace(/\D/g,'').includes(dq)) return true;
+      return false;
+    });
+  }
+  renderList(out);
+  setCount(out.length);
+});
+
+/* ---------------- Detail ---------------- */
+function openDetail(i){
+  const item = rows[i];
+  if(!item) return;
+  detail = item;
+
+  const html = current.key === 'evaluation' ? evalDetail(item) : formDetail(item);
+  $("detailContent").innerHTML = html;
+  $("modal").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+function shell(title, sub, inner){
+  return `
+    <div class="detail-head">
+      <div class="detail-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'"></div>
+      <div class="detail-eyebrow">ManzilulQuran · E-Learning Academy</div>
+      <div class="detail-h1">${esc(title)} <span class="hl">Record</span></div>
+      <div class="detail-sub">${esc(sub)}</div>
+    </div>
+    ${inner}
+    <div class="detail-arabic">جَزَاكَ اللهُ خَيْرًا</div>
+    <div class="detail-foot">ManzilulQuran E-learning Academy · manzilulquran.in · info@manzilulquran.in</div>`;
+}
+
+function formDetail(row){
+  let inner = '';
+  headers.forEach((h, i) => {
+    if(h === 'Timestamp') return;
+    const v = row[i] || '—';
+    let out;
+    if(h === 'Payment Receipt' && String(v).startsWith('http')){
+      out = `<a href="${esc(v)}" target="_blank" rel="noopener">Open receipt file →</a>`;
+    } else if(h === 'Birth Date' || h === 'Date of Birth'){
+      out = esc(fmtDateOnly(v));
+    } else if(h === 'Class Time'){
+      out = esc(fmtTimeOnly(v));
+    } else {
+      out = esc(v);
+    }
+    inner += `<div class="detail-row"><b>${esc(h)}</b><span>${out}</span></div>`;
+  });
+  return shell(current.title, 'Submitted ' + fmtDate(row[colIdx('Timestamp')], true), inner);
+}
+
+function evalDetail(e){
+  const r = parseInt(e.rating,10) || 0;
+  let inner = `
+    <div class="detail-meta">
+      <div class="detail-meta-row"><b>Student</b><span>${esc(e.studentName)}</span></div>
+      <div class="detail-meta-row"><b>Teacher</b><span>${esc(e.teacherName)}</span></div>
+    </div>`;
+
+  QUESTIONS.forEach((q, i) => {
+    inner += `<div class="detail-q">
+      <div class="detail-q-title"><span class="detail-q-num">Q${i+1}</span>${esc(q.label)}</div>
+      <div class="detail-options">` +
+      q.options.map(o => {
+        const on = o === e[q.key];
+        return `<div class="detail-option${on ? ' picked' : ''}">
+          <div class="detail-radio"></div><div>${esc(o)}</div>
+          ${on ? '<div class="picked-tag">Parent&#39;s answer</div>' : ''}
+        </div>`;
+      }).join('') +
+      `</div></div>`;
+  });
+
+  inner += `<div class="detail-q">
+      <div class="detail-q-title"><span class="detail-q-num">Q6</span>Overall quality of classes</div>
+      <div class="detail-stars">
+        <span>${'★'.repeat(r)}<span style="opacity:.25">${'★'.repeat(5-r)}</span></span>
+        <span class="detail-stars-num">${r}/5</span>
+      </div>
+    </div>
+    <div class="detail-q">
+      <div class="detail-q-title"><span class="detail-q-num">Q7</span>Suggestions or comments</div>
+      <div class="detail-free">${esc(e.suggestions || '(no suggestions provided)')}</div>
+    </div>`;
+
+  return shell(current.title, 'Submitted ' + fmtDate(e.timestamp, true), inner);
+}
+
+function closeDetail(){
+  $("modal").classList.remove("show");
+  document.body.style.overflow = "";
+  detail = null;
+}
+$("closeModalBtn").onclick = closeDetail;
+$("modal").addEventListener('click', e => { if(e.target === $("modal")) closeDetail(); });
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && $("modal").classList.contains('show')) closeDetail();
+});
+
+$("downloadBtn").onclick = () => {
+  const t = document.title;
+  if(detail){
+    const who = current.key === 'evaluation'
+      ? detail.studentName
+      : (detail[colIdx('First Name')] || detail[colIdx('Student Name')] || 'record');
+    document.title = `${current.title} - ${who}`;
+  }
+  window.print();
+  setTimeout(()=>{ document.title = t; }, 1000);
+};
+
+/* ---------------- Utils ---------------- */
+function esc(s){
+  if(s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                  .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function fmtDate(v, withTime){
+  if(!v) return '—';
+  const d = (v instanceof Date) ? v : new Date(v);
+  if(isNaN(d.getTime())) return String(v);
+  const o = { day:'numeric', month:'short', year:'numeric' };
+  if(withTime){ o.hour = '2-digit'; o.minute = '2-digit'; }
+  return d.toLocaleDateString('en-GB', o);
+}
+// Birth dates arrive as full ISO timestamps from Sheets — show only the day
+function fmtDateOnly(v){
+  if(!v || v === '—') return '—';
+  const s = String(v);
+  const p = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(p){
+    const d = new Date(Date.UTC(+p[1], +p[2]-1, +p[3]));
+    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', timeZone:'UTC' });
+  }
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? s : d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+// Time-only values carry a dummy 1899 date from Sheets — strip it
+function fmtTimeOnly(v){
+  if(!v || v === '—') return '—';
+  const s = String(v);
+  const p = s.match(/^(\d{1,2}):(\d{2})$/);
+  if(p){
+    const d = new Date(); d.setHours(+p[1], +p[2], 0, 0);
+    return d.toLocaleTimeString('en-GB', { hour:'numeric', minute:'2-digit', hour12:true });
+  }
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? s : d.toLocaleTimeString('en-GB', { hour:'numeric', minute:'2-digit', hour12:true });
+}
+
+/* Boot last */
+if(isUnlocked()){
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  renderTabs();
+  load();
+}
+</script>
+</body>
+</html>
