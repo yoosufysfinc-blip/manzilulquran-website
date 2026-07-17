@@ -576,11 +576,11 @@
 
 // CONFIG — paste the Classes Apps Script Web App URL here
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
-const PORTAL_PASSWORD = "manzil2026";
+const PORTAL_PASSWORD = "manzilclass2026";     // Classes only — separate from the main portal
 const ADMIN_API_PASSWORD = "manzil2026admin"; // must match ADMIN_PASSWORD in apps-script-classes.gs
 const SHARE_BASE = window.location.origin + "/class/";
 
-const SESSION_KEY = "mq_portal_unlocked_at";
+const SESSION_KEY = "mq_classes_unlocked_at";  // own key, so a portal unlock does NOT open Classes
 const SESSION_MAX_MS = 24 * 60 * 60 * 1000;
 
 const $ = (id) => document.getElementById(id);
