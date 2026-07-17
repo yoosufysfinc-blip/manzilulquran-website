@@ -342,27 +342,100 @@
     .admin-title{font-size:22px}
     .fgrid{grid-template-columns:1fr}
 
-    /* rows become cards */
+    /* ── Rows become chips ──────────────────────────────────────────
+       The label/value card ran ~600px per student — five stacked rows
+       plus five wrapped buttons. Scanning 50 students meant scrolling
+       for a minute. A chip is ~62px: the three things you actually scan
+       by (name, ID, course) stay visible, everything else waits behind
+       a tap.
+    ──────────────────────────────────────────────────────────────── */
     .list-table thead{display:none}
-    .list-table,.list-table tbody,.list-table tr,.list-table td{display:block;width:100%}
+    .list-table,.list-table tbody{display:block;width:100%}
+
     .list-table tr{
-      border:1px solid rgba(201,169,110,0.2);border-radius:12px;
-      margin:12px 14px;padding:14px 16px;background:rgba(3,27,19,0.45);width:auto;
+      position:relative;
+      display:flex;flex-wrap:wrap;align-items:center;
+      gap:2px 7px;
+      margin:8px 14px;padding:12px 38px 12px 14px;
+      width:auto;cursor:pointer;
+      background:rgba(3,27,19,0.5);
+      border:1px solid rgba(201,169,110,0.18);
+      border-radius:14px;
+      transition:border-color .2s, background .2s;
     }
-    .list-table td{
-      padding:6px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;border:none;
+    .list-table tr:hover{background:rgba(3,27,19,0.5)}
+    .list-table tr.open{
+      background:rgba(3,27,19,0.8);
+      border-color:rgba(201,169,110,0.45);
     }
-    .list-table td::before{
-      content:attr(data-label);
-      font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-      color:var(--gold-light);flex:0 0 auto;
+
+    /* chevron — the only hint that there's more behind the tap */
+    .list-table tr::after{
+      content:'';position:absolute;right:16px;top:19px;
+      width:7px;height:7px;
+      border-right:2px solid var(--gold-light);
+      border-bottom:2px solid var(--gold-light);
+      transform:rotate(45deg);opacity:.4;
+      transition:transform .25s, opacity .2s;
     }
-    .list-table td.actions{
-      justify-content:flex-start;flex-wrap:wrap;gap:6px;
-      padding-top:12px;margin-top:8px;border-top:1px solid rgba(201,169,110,0.15);
+    .list-table tr.open::after{transform:rotate(-135deg);top:22px;opacity:.9}
+
+    .list-table td{display:inline;padding:0;border:none;background:none}
+    .list-table td::before{content:none}
+
+    /* Status becomes a dot in front of the name. A whole labelled row
+       to say one word was the worst offender. */
+    .list-table td:nth-child(5){order:0;flex:0 0 8px;line-height:0}
+    .list-table td:nth-child(5) .pill{
+      display:block;width:8px;height:8px;border-radius:50%;
+      font-size:0;padding:0;border:none;letter-spacing:0;
     }
-    .list-table td.actions::before{content:none}
-    .list-table td.actions button{margin-left:0;padding:8px 14px}
+    .list-table td:nth-child(5) .pill.active{background:var(--emerald-glow);box-shadow:0 0 7px rgba(45,212,164,.6)}
+    .list-table td:nth-child(5) .pill.inactive{background:var(--err);box-shadow:0 0 7px rgba(255,153,153,.5)}
+
+    /* Name fills the rest of line 1 exactly (8px dot + 7px gap = 15px),
+       which forces ID and Course to wrap onto line 2 together. */
+    .list-table td:nth-child(1){
+      order:1;flex:1 1 calc(100% - 15px);min-width:0;
+      font-size:14.5px;font-weight:700;color:var(--cream);letter-spacing:-.2px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+
+    /* line 2: ID · Course */
+    .list-table td:nth-child(2){
+      order:2;flex:0 0 auto;margin-left:15px;
+      font-size:11.5px;color:var(--cream-faint);font-variant-numeric:tabular-nums;
+    }
+    .list-table td:nth-child(3){
+      order:3;flex:1 1 auto;min-width:0;
+      font-size:11.5px;color:var(--cream-dim);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .list-table td:nth-child(3)::before{
+      content:'·';margin-right:5px;color:var(--cream-faint);opacity:.5;
+    }
+
+    /* Behind the tap */
+    .list-table td:nth-child(4){display:none}
+    .list-table td.actions{display:none}
+
+    .list-table tr.open td:nth-child(4){
+      display:block;order:4;flex:1 1 100%;
+      margin:9px 0 0 15px;
+      font-size:11.5px;color:var(--cream-faint);
+    }
+    .list-table tr.open td:nth-child(4)::before{
+      content:'Joined ';color:var(--gold-light);font-weight:700;
+      font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;
+      opacity:.85;
+    }
+    .list-table tr.open td.actions{
+      display:flex;order:5;flex:1 1 100%;flex-wrap:wrap;gap:6px;
+      justify-content:flex-start;
+      padding-top:11px;margin-top:10px;
+      border-top:1px solid rgba(201,169,110,0.15);
+    }
+    .list-table tr.open td.actions button{margin-left:0;padding:8px 13px;flex:0 0 auto}
   }
 </style>
 </head>
@@ -576,7 +649,7 @@
 
 // CONFIG — paste the Classes Apps Script Web App URL here
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
-const PORTAL_PASSWORD = "mqwing7safwa";     // Classes only — separate from the main portal
+const PORTAL_PASSWORD = "manzilclass2026";     // Classes only — separate from the main portal
 const ADMIN_API_PASSWORD = "manzil2026admin"; // must match ADMIN_PASSWORD in apps-script-classes.gs
 const SHARE_BASE = window.location.origin + "/class/";
 
@@ -938,7 +1011,8 @@ function renderList(items){
   </table>`;
 
   $("listContent").querySelectorAll("button[data-act]").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();   // don't let the tap collapse the chip underneath
       const c = classes.find(x => x["Class ID"] === btn.dataset.id);
       if(!c) return;
       const act = btn.dataset.act;
@@ -947,6 +1021,16 @@ function renderList(items){
       if(act === "share") openShare(c);
       if(act === "edit")  openForm(c);
       if(act === "del")   askDelete(c);
+    });
+  });
+
+  // Tap a chip to reveal its actions. Only one open at a time — otherwise
+  // the list grows back into the wall of cards this replaced.
+  $("listContent").querySelectorAll("tr").forEach(tr => {
+    tr.addEventListener("click", () => {
+      const wasOpen = tr.classList.contains("open");
+      $("listContent").querySelectorAll("tr.open").forEach(o => o.classList.remove("open"));
+      if(!wasOpen) tr.classList.add("open");
     });
   });
 }
