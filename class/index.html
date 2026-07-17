@@ -365,6 +365,25 @@
     background:linear-gradient(90deg, rgba(91,157,255,0.16), rgba(91,157,255,0.04));
     border-left:3px solid var(--azure);
   }
+
+  /* The day an invite pointed at — pulses a few times so the eye lands on
+     it, then settles. Without this the student arrives on a 40-row list
+     with no idea which row the message was about. */
+  .day.spotlight{
+    background:linear-gradient(90deg, rgba(147,197,253,0.2), rgba(91,157,255,0.05));
+    border-left:3px solid var(--azure-light);
+    animation:spotlightPulse 1.3s ease-out 3;
+  }
+  @keyframes spotlightPulse{
+    0%,100%{box-shadow:inset 0 0 0 0 rgba(147,197,253,0)}
+    50%    {box-shadow:inset 0 0 44px -8px rgba(147,197,253,0.4)}
+  }
+  .invited-tag{
+    display:inline-block;margin-left:8px;
+    font-size:8.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--void);background:var(--mint);
+    padding:2px 7px;border-radius:100px;vertical-align:middle;
+  }
   .day.today .day-n{color:var(--azure-light)}
   .day.past{opacity:.5}
 
@@ -637,13 +656,14 @@ function showError(title, text){
 }
 
 /* ---------------- Tabs ---------------- */
+function activateTab(name){
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('show'));
+  const panel = $('panel-' + name);
+  if(panel) panel.classList.add('show');
+}
 document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('show'));
-    tab.classList.add('active');
-    $('panel-' + tab.dataset.tab).classList.add('show');
-  });
+  tab.addEventListener('click', () => activateTab(tab.dataset.tab));
 });
 
 /* =================================================================
@@ -666,6 +686,7 @@ let shareToken = '';
 let studentNameCache = '';
 let calendars = [];
 let activeCalIdx = 0;
+let focusDate = '';        // ?d=YYYY-MM-DD — the day an invite pointed at
 
 function readCache(){
   try{
@@ -708,6 +729,7 @@ async function load(){
 
   shareToken = token;
   cacheKey = CACHE_PREFIX + token;
+  focusDate = (params.get('d') || '').trim();
 
   // 1. Paint from cache immediately, if we have one.
   const cached = readCache();
@@ -884,11 +906,18 @@ function renderCalendars(){
 
   if(!calendars.length) return;  // keep the empty state already in the HTML
 
-  // Open on whatever is running; otherwise the next upcoming; otherwise the first.
-  let start = calendars.findIndex(c => calStatus(c) === 'Active');
+  // Arrived from an invite? Open the calendar that actually contains that
+  // day. Otherwise: whatever is running, then the next upcoming, then the first.
+  let start = -1;
+  if(focusDate){
+    start = calendars.findIndex(c => buildDays(c).some(d => isoDate(d.date) === focusDate));
+  }
+  if(start < 0) start = calendars.findIndex(c => calStatus(c) === 'Active');
   if(start < 0) start = calendars.findIndex(c => calStatus(c) === 'Upcoming');
   if(start < 0) start = 0;
   activeCalIdx = start;
+
+  if(focusDate) activateTab('calendar');
 
   area.innerHTML = `<div class="cal-chips" id="calChips"></div><div id="calBody"></div>`;
   renderChips();
@@ -961,8 +990,9 @@ function renderCalBody(){
       ${days.map(d => {
         const isToday = d.date.getTime() === t;
         const isPast  = d.date.getTime() < t;
+        const isFocus = !!focusDate && isoDate(d.date) === focusDate;
         if(d.isOff){
-          return `<div class="day off ${isPast ? 'past' : ''}">
+          return `<div class="day off ${isFocus ? 'spotlight' : ''} ${isPast && !isFocus ? 'past' : ''}">
             <div class="day-left">
               <div class="day-n">Day ${d.n}</div>
               <div class="day-date">${fmtDate(d.date)}<span class="day-dow">${DAYS_SHORT[d.date.getDay()]}</span></div>
@@ -971,10 +1001,10 @@ function renderCalBody(){
           </div>`;
         }
         const joinable = canJoin && d.link;
-        return `<div class="day ${isToday ? 'today' : ''} ${isPast && !isToday ? 'past' : ''}">
+        return `<div class="day ${isFocus ? 'spotlight' : (isToday ? 'today' : '')} ${isPast && !isToday && !isFocus ? 'past' : ''}">
           <div class="day-left">
             <div class="day-n">Day ${d.n}</div>
-            <div class="day-date">${fmtDate(d.date)}<span class="day-dow">${DAYS_SHORT[d.date.getDay()]}</span>${isToday ? '<span class="today-tag">Today</span>' : ''}</div>
+            <div class="day-date">${fmtDate(d.date)}<span class="day-dow">${DAYS_SHORT[d.date.getDay()]}</span>${isToday ? '<span class="today-tag">Today</span>' : ''}${isFocus && !isToday ? '<span class="invited-tag">Invited</span>' : ''}</div>
           </div>
           <div class="day-btns">
             ${joinable
@@ -998,9 +1028,9 @@ function renderCalBody(){
     b.addEventListener('click', () => sendInvite(b.dataset.invite));
   });
 
-  // Scroll today's row into view inside the list
-  const todayEl = $('calBody').querySelector('.day.today');
-  if(todayEl) todayEl.scrollIntoView({ block:'nearest' });
+  // Scroll to the invited day if we came from an invite, otherwise to today
+  const target = $('calBody').querySelector('.day.spotlight') || $('calBody').querySelector('.day.today');
+  if(target) target.scrollIntoView({ block:'center', behavior:'smooth' });
 }
 
 /* ---------------- Invite ----------------
