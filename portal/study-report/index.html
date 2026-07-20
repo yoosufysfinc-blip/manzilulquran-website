@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ManzilulQuran · Hifz Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050f0c; --bg2:#08170f; --panel:rgba(14,38,29,.66); --panel2:rgba(20,52,40,.5);
+  --line:rgba(201,169,110,.16); --line2:rgba(201,169,110,.32);
+  --em:#1B7A5A; --em2:#2fae7f; --emGlow:rgba(47,174,127,.35);
+  --gold:#C9A96E; --gold2:#e8cf9a; --goldGlow:rgba(201,169,110,.28);
+  --ink:#eef7f0; --mut:#8fb3a2; --dim:#5d7d6e;
+  --bad:#e07a6a; --warn:#e0b76a; --ok:#57c98f;
+  --r:18px; --r2:12px;
+  --disp:'Marcellus',serif; --ui:'Outfit',system-ui,sans-serif; --ar:'Amiri',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--ui); background:var(--bg); color:var(--ink); min-height:100vh;
+  background-image:
+    radial-gradient(1100px 600px at 85% -10%, rgba(27,122,90,.22), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(201,169,110,.10), transparent 55%),
+    radial-gradient(700px 700px at 50% 45%, rgba(11,77,59,.16), transparent 70%);
+  background-attachment:fixed;
+}
+/* subtle geometric star field */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; opacity:.05; z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23C9A96E' stroke-width='1'%3E%3Cpath d='M60 12 L74 46 L108 60 L74 74 L60 108 L46 74 L12 60 L46 46 Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size:120px 120px;
+}
+.app{position:relative; z-index:1; max-width:1280px; margin:0 auto; padding:22px 22px 90px}
+/* ---------- header ---------- */
+header{display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:10px 4px 22px}
+.crest{
+  width:54px;height:54px;border-radius:16px; display:grid;place-items:center; flex:0 0 auto;
+  background:linear-gradient(140deg,#0B4D3B,#1B7A5A); border:1px solid var(--line2);
+  box-shadow:0 0 24px var(--emGlow), inset 0 0 18px rgba(0,0,0,.35);
+  font-size:26px; color:var(--gold2);
+}
+.htitle h1{font-family:var(--disp); font-weight:400; font-size:clamp(20px,3vw,28px); letter-spacing:.04em}
+.htitle h1 em{font-style:normal; color:var(--gold2)}
+.htitle p{color:var(--mut); font-size:13px; letter-spacing:.14em; text-transform:uppercase; margin-top:2px}
+.hspacer{flex:1}
+.student-chip{
+  display:flex;align-items:center;gap:10px; padding:9px 16px; border-radius:999px;
+  background:var(--panel); border:1px solid var(--line);
+}
+.student-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--ok); box-shadow:0 0 10px var(--ok); animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.student-chip b{font-weight:600}
+.student-chip span{color:var(--mut);font-size:12px}
+/* ---------- nav ---------- */
+nav{
+  display:flex; gap:6px; padding:6px; border-radius:16px; margin-bottom:26px; flex-wrap:wrap;
+  background:var(--panel); border:1px solid var(--line); backdrop-filter:blur(10px);
+  position:sticky; top:10px; z-index:50;
+}
+nav button{
+  font-family:var(--ui); font-size:14px; font-weight:500; letter-spacing:.02em;
+  color:var(--mut); background:transparent; border:0; padding:10px 18px; border-radius:11px;
+  cursor:pointer; transition:.25s; display:flex; align-items:center; gap:8px;
+}
+nav button:hover{color:var(--ink)}
+nav button.active{
+  color:#06150f; background:linear-gradient(135deg,var(--gold2),var(--gold));
+  box-shadow:0 4px 18px var(--goldGlow); font-weight:600;
+}
+/* ---------- generic panels ---------- */
+.view{display:none; animation:rise .45s ease both}
+.view.on{display:block}
+@keyframes rise{from{opacity:0; transform:translateY(14px)}to{opacity:1; transform:none}}
+.grid{display:grid; gap:16px}
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+  padding:20px; backdrop-filter:blur(12px); position:relative; overflow:hidden;
+  transition:border-color .3s, transform .3s, box-shadow .3s;
+}
+.card:hover{border-color:var(--line2)}
+.card h3{font-family:var(--disp); font-weight:400; font-size:17px; letter-spacing:.05em; color:var(--gold2); margin-bottom:14px; display:flex; align-items:center; gap:9px}
+.card h3 .sub{font-family:var(--ui); font-size:11px; color:var(--dim); letter-spacing:.12em; text-transform:uppercase; margin-left:auto}
+/* KPI cards */
+.kpis{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.kpi{padding:18px 18px 16px; cursor:default}
+.kpi:hover{transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.kpi .lab{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--mut)}
+.kpi .val{font-family:var(--disp); font-size:clamp(26px,3vw,34px); margin-top:6px; color:var(--ink)}
+.kpi .val small{font-size:15px; color:var(--dim)}
+.kpi .sub{font-size:12px; color:var(--dim); margin-top:4px}
+.kpi::after{content:""; position:absolute; inset:auto 0 0 0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); opacity:0; transition:.3s}
+.kpi:hover::after{opacity:.8}
+.kpi.gold .val{color:var(--gold2)}
+.kpi.green .val{color:var(--em2)}
+/* dashboard layout */
+.dash-top{grid-template-columns:340px 1fr}
+@media(max-width:900px){.dash-top{grid-template-columns:1fr}}
+.ringwrap{display:flex; flex-direction:column; align-items:center; gap:8px}
+.ringlabel{text-align:center}
+.ringlabel .big{font-family:var(--disp); font-size:40px; color:var(--gold2)}
+.ringlabel .cap{font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--mut)}
+svg text{font-family:var(--ui)}
+.legend{display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--mut); margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+/* heatmap */
+.heat{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
+.heat .dow{font-size:10px; letter-spacing:.1em; color:var(--dim); text-align:center; text-transform:uppercase}
+.heat .cell{
+  aspect-ratio:1; border-radius:8px; background:rgba(255,255,255,.04); border:1px solid transparent;
+  display:grid; place-items:center; font-size:11px; color:var(--dim); position:relative; transition:.2s;
+}
+.heat .cell:hover{transform:scale(1.12); z-index:2}
+.heat .cell.h0{background:rgba(255,255,255,.04)}
+.heat .cell.hol{background:rgba(224,122,106,.10); color:#8a5f58}
+.heat .cell.p{color:#dff5e8}
+.heat .cell.h1{background:rgba(27,122,90,.35)}
+.heat .cell.h2{background:rgba(27,122,90,.6)}
+.heat .cell.h3{background:rgba(47,174,127,.75); box-shadow:0 0 10px rgba(47,174,127,.4)}
+.heat .cell.h4{background:linear-gradient(135deg,#2fae7f,#C9A96E); color:#06150f; font-weight:600; box-shadow:0 0 14px rgba(201,169,110,.45)}
+.heat .cell.abs{background:rgba(224,122,106,.22)}
+/* tables */
+.tblwrap{overflow-x:auto; border-radius:var(--r2); border:1px solid var(--line)}
+table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:760px}
+thead th{
+  text-align:left; font-weight:600; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--gold); padding:12px 12px; background:rgba(11,77,59,.35); border-bottom:1px solid var(--line);
+  position:sticky; top:0;
+}
+tbody td{padding:9px 12px; border-bottom:1px solid rgba(255,255,255,.05); vertical-align:middle}
+tbody tr{transition:background .2s}
+tbody tr:hover{background:rgba(201,169,110,.05)}
+tbody tr.holiday{opacity:.42}
+tbody tr.holiday td:first-child{color:var(--bad)}
+tbody tr.today-row{background:rgba(201,169,110,.09); box-shadow:inset 3px 0 0 var(--gold)}
+.datecell b{font-weight:600}
+.datecell span{color:var(--dim); font-size:11px; margin-left:6px}
+/* controls */
+input,select,textarea{
+  font-family:var(--ui); font-size:13.5px; color:var(--ink);
+  background:rgba(5,20,14,.7); border:1px solid var(--line); border-radius:9px; padding:8px 10px;
+  transition:border-color .2s, box-shadow .2s; outline:none; max-width:100%;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,169,110,.14)}
+input[type=number]{width:74px; text-align:center}
+input::placeholder{color:var(--dim)}
+select{cursor:pointer}
+option{background:#0a1f16; color:var(--ink)}
+.btn{
+  font-family:var(--ui); font-weight:600; font-size:13.5px; cursor:pointer; border:0; border-radius:11px;
+  padding:10px 18px; display:inline-flex; align-items:center; gap:8px; transition:.25s; letter-spacing:.02em;
+}
+.btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold)); color:#06150f; box-shadow:0 4px 16px var(--goldGlow)}
+.btn.gold:hover{transform:translateY(-2px); box-shadow:0 8px 24px var(--goldGlow)}
+.btn.ghost{background:transparent; border:1px solid var(--line2); color:var(--gold2)}
+.btn.ghost:hover{background:rgba(201,169,110,.08)}
+.btn.danger{background:transparent; border:1px solid rgba(224,122,106,.4); color:var(--bad)}
+.btn.danger:hover{background:rgba(224,122,106,.1)}
+.btn.sm{padding:6px 12px; font-size:12px; border-radius:8px}
+/* toggle check (present) */
+.pv{width:30px;height:30px;border-radius:9px;border:1px solid var(--line2);background:transparent;cursor:pointer;
+  display:grid;place-items:center;color:transparent;font-size:15px;transition:.2s}
+.pv.on{background:linear-gradient(135deg,#2fae7f,#1B7A5A); color:#06150f; border-color:transparent; box-shadow:0 0 12px var(--emGlow)}
+.pv.abs{background:rgba(224,122,106,.18); color:var(--bad); border-color:rgba(224,122,106,.35)}
+/* portion picker chips */
+.portion{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.portion select.surah{min-width:150px; max-width:170px}
+.portion select.ayah{width:74px}
+.portion .dash{color:var(--dim)}
+.pchip{
+  display:inline-flex; align-items:center; gap:7px; padding:5px 10px; border-radius:8px; font-size:12.5px;
+  background:rgba(27,122,90,.18); border:1px solid rgba(47,174,127,.25); color:#c9ecd9; cursor:pointer; transition:.2s;
+}
+.pchip:hover{border-color:var(--gold)}
+.pchip .arname{font-family:var(--ar); font-size:15px; color:var(--gold2)}
+.pchip.empty{background:transparent; border-style:dashed; color:var(--dim)}
+/* month tabs */
+.mtabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px}
+.mtab{
+  padding:8px 15px; border-radius:11px; font-size:13px; font-weight:500; cursor:pointer;
+  background:var(--panel2); border:1px solid var(--line); color:var(--mut); transition:.2s;
+}
+.mtab:hover{color:var(--ink)}
+.mtab.on{background:linear-gradient(135deg,#0B4D3B,#1B7A5A); color:#eafff4; border-color:transparent; box-shadow:0 4px 14px var(--emGlow)}
+.mtab.add{border-style:dashed; color:var(--gold2)}
+/* daily layout */
+.daily-grid{grid-template-columns:1fr 300px}
+@media(max-width:1000px){.daily-grid{grid-template-columns:1fr}}
+.mstat{display:flex; justify-content:space-between; padding:8px 2px; border-bottom:1px dashed rgba(255,255,255,.06); font-size:13.5px}
+.mstat span{color:var(--mut)}
+.mstat b{font-weight:600}
+.delta.up{color:var(--ok)} .delta.down{color:var(--bad)} .delta.flat{color:var(--dim)}
+/* progress bars */
+.pbar{height:8px; border-radius:99px; background:rgba(255,255,255,.07); overflow:hidden; min-width:90px}
+.pbar i{display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,var(--em2),var(--gold)); width:0; transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.status{font-size:11px; font-weight:600; letter-spacing:.06em; padding:4px 10px; border-radius:99px; text-transform:uppercase}
+.status.done{background:rgba(87,201,143,.15); color:var(--ok)}
+.status.prog{background:rgba(224,183,106,.15); color:var(--warn)}
+.status.not{background:rgba(255,255,255,.07); color:var(--dim)}
+.grade{font-family:var(--disp); font-size:17px}
+.grade.gA{color:var(--ok)} .grade.gB{color:var(--gold2)} .grade.gC{color:var(--warn)} .grade.gF{color:var(--bad)}
+/* settings */
+.set-grid{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.frow{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px dashed rgba(255,255,255,.06)}
+.frow label{color:var(--mut); font-size:13.5px}
+.chk{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--mut); cursor:pointer}
+.chk input{width:16px;height:16px;accent-color:var(--gold)}
+.taglist{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+.tag{display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:99px; background:rgba(27,122,90,.18); border:1px solid rgba(47,174,127,.25); font-size:13px}
+.tag button{background:none;border:0;color:var(--bad);cursor:pointer;font-size:14px;line-height:1}
+/* toast + modal */
+#toast{
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(80px); opacity:0;
+  background:linear-gradient(135deg,#0B4D3B,#155f47); border:1px solid var(--line2); color:#eafff4;
+  padding:12px 22px; border-radius:13px; font-size:14px; z-index:200; transition:.35s; box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+#toast.show{transform:translateX(-50%) translateY(0); opacity:1}
+.modal-bg{position:fixed; inset:0; background:rgba(2,10,7,.75); backdrop-filter:blur(6px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.modal-bg.on{display:flex; animation:rise .3s ease}
+.modal{background:#0a2018; border:1px solid var(--line2); border-radius:20px; padding:26px; width:min(440px,100%); box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal h3{font-family:var(--disp); color:var(--gold2); font-weight:400; margin-bottom:18px; font-size:19px}
+.modal .row{display:flex; gap:10px; margin-bottom:14px; align-items:center}
+.modal .row label{width:110px; color:var(--mut); font-size:13px; flex:0 0 auto}
+.modal .row select,.modal .row input{flex:1}
+.modal .actions{display:flex; justify-content:flex-end; gap:10px; margin-top:20px}
+/* chart tooltip */
+.tip{position:fixed; pointer-events:none; background:#0a2018; border:1px solid var(--line2); border-radius:10px; padding:8px 12px; font-size:12.5px; z-index:150; opacity:0; transition:opacity .15s; box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.tip b{color:var(--gold2)}
+.empty-note{color:var(--dim); font-size:13.5px; text-align:center; padding:26px 10px}
+footer{margin-top:44px; text-align:center; color:var(--dim); font-size:12px; letter-spacing:.08em}
+footer b{color:var(--gold)}
+
+/* ---------- roster / auth ---------- */
+.roster{grid-template-columns:repeat(auto-fill,minmax(235px,1fr))}
+.scard{cursor:pointer; padding:18px}
+.scard:hover{transform:translateY(-4px); box-shadow:0 14px 34px rgba(0,0,0,.4); border-color:var(--line2)}
+.scard .sname{font-family:var(--disp); font-size:18px; letter-spacing:.03em; margin-bottom:2px}
+.scard .smeta{font-size:12px; color:var(--mut)}
+.scard .srow{display:flex; align-items:center; gap:14px; margin-top:12px}
+.scard .sstats{font-size:12.5px; color:var(--mut); line-height:1.7}
+.scard .sstats b{color:var(--gold2); font-weight:600}
+.scard .sactions{display:flex; gap:6px; margin-top:14px; opacity:0; transition:.25s}
+.scard:hover .sactions{opacity:1}
+.scard.addcard{border-style:dashed; display:grid; place-items:center; min-height:170px; color:var(--gold2); font-size:15px; text-align:center}
+.scard.addcard .plus{font-size:34px; font-family:var(--disp)}
+.auth-card{max-width:430px; margin:7vh auto 0}
+.auth-card .frow{border-bottom:0; flex-direction:column; align-items:stretch; gap:6px}
+.auth-card input{width:100%}
+.auth-card .hint{font-size:12.5px; color:var(--dim); line-height:1.6; margin-top:10px}
+.auth-card .hint code{color:var(--gold2); background:rgba(201,169,110,.1); padding:1px 6px; border-radius:5px}
+.dot.sync{background:var(--warn)!important; box-shadow:0 0 10px var(--warn)!important}
+.dot.err{background:var(--bad)!important; box-shadow:0 0 10px var(--bad)!important}
+.roster-head{display:flex; align-items:center; gap:12px; margin-bottom:18px; flex-wrap:wrap}
+.roster-head h2{font-family:var(--disp); font-weight:400; font-size:22px; color:var(--gold2); letter-spacing:.04em}
+
+
+/* ---------- view / edit mode ---------- */
+body.viewonly .pv,body.viewonly .lnin,body.viewonly .pchip,body.viewonly .tdone,
+body.viewonly #addTaskBtn,body.viewonly #addExamBtn,body.viewonly .mtab.add,
+body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .edel{
+  pointer-events:none; opacity:.5; filter:saturate(.6)}
+.crest{cursor:pointer; user-select:none; transition:.25s}
+.crest.editing{border-color:var(--gold); box-shadow:0 0 26px var(--goldGlow),0 0 50px var(--emGlow); animation:crestPulse 1.8s infinite}
+@keyframes crestPulse{0%,100%{box-shadow:0 0 22px var(--goldGlow),0 0 44px var(--emGlow)}50%{box-shadow:0 0 40px var(--goldGlow),0 0 80px var(--emGlow)}}
+.crest.burst{animation:burstPop .55s cubic-bezier(.2,1.6,.4,1)}
+@keyframes burstPop{0%{transform:scale(1)}35%{transform:scale(1.35) rotate(-8deg)}100%{transform:scale(1)}}
+.burst-ring{position:fixed; border-radius:50%; border:2px solid var(--gold2); pointer-events:none; z-index:300; animation:ringOut .6s ease-out forwards}
+@keyframes ringOut{from{opacity:.95; transform:scale(.2)}to{opacity:0; transform:scale(1)}}
+#flash{position:fixed; inset:0; pointer-events:none; z-index:299; opacity:0;
+  background:radial-gradient(circle at 12% 8%, rgba(201,169,110,.4), transparent 55%); transition:opacity .5s}
+#flash.on{opacity:1; transition:opacity .08s}
+.modebadge{font-size:10px; letter-spacing:.14em; text-transform:uppercase; padding:3px 9px; border-radius:99px; margin-left:8px}
+.modebadge.view{background:rgba(255,255,255,.08); color:var(--mut)}
+.modebadge.edit{background:linear-gradient(135deg,var(--gold2),var(--gold)); color:#06150f; font-weight:700}
+.pm-list{display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 14px}
+.pm-list .pchip button{background:none;border:0;color:var(--bad);cursor:pointer;font-size:13px}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important; transition:none!important}
+}
+@media(max-width:640px){
+  .app{padding:14px 12px 70px}
+  nav{position:static}
+  nav button{padding:9px 12px; font-size:13px}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="crest" id="crest" title="ManzilulQuran">☪</div>
+    <div class="htitle">
+      <h1>Manzilul<em>Quran</em> · Hifz Command Center</h1>
+      <p>Daily Hifz Data Report System</p>
+    </div>
+    <div class="hspacer"></div>
+    <button class="btn ghost sm" id="backRoster" style="display:none">← All students</button>
+    <div class="student-chip" id="chipBox" style="display:none"><span class="dot" id="syncDot" title="sync status"></span><div><b id="chipStudent">Student</b><br><span id="chipDate"></span></div></div>
+  </header>
+
+  <nav id="nav" style="display:none">
+    <button data-v="dash" class="active">◈ Dashboard</button>
+    <button data-v="daily">☑ Daily Log</button>
+    <button data-v="tasks">✎ Tasks</button>
+    <button data-v="exams">🎓 Exams</button>
+  </nav>
+
+
+  <!-- ================= CONNECT (first-run setup) ================= -->
+  <section class="view" id="v-connect">
+    <div class="card auth-card">
+      <h3>Connect to Supabase</h3>
+      <div class="frow"><label>Project URL</label><input id="cnUrl" placeholder="https://xxxx.supabase.co"></div>
+      <div class="frow"><label>Anon public key</label><input id="cnKey" placeholder="eyJhbGciOi..."></div>
+      <div style="margin-top:16px"><button class="btn gold" id="cnSave" style="width:100%;justify-content:center">Connect</button></div>
+      <div class="hint">Find both in your Supabase dashboard → <code>Project Settings → API</code>. This is saved only in this browser. Run the setup SQL once (provided with this file) before connecting. No login accounts are needed.</div>
+    </div>
+  </section>
+
+  <!-- ================= ADMIN PIN ================= -->
+  <section class="view" id="v-login">
+    <div class="card auth-card">
+      <h3>Admin access</h3>
+      <div class="frow"><label>Admin PIN</label><input id="pinInput" type="password" placeholder="••••" autocomplete="off"></div>
+      <div style="margin-top:16px"><button class="btn gold" id="pinBtn" style="width:100%;justify-content:center">Open student list</button></div>
+      <div class="hint">The PIN is the <code>ADMIN_PIN</code> value set inside this file. It's asked once per device. Teachers opening a shared student link never see this screen.</div>
+      <div style="margin-top:14px;text-align:center"><button class="btn ghost sm" id="lgReconfig">Change Supabase project</button></div>
+    </div>
+  </section>
+
+  <!-- ================= ROSTER ================= -->
+  <section class="view" id="v-roster">
+    <div class="roster-head">
+      <h2>Students · Hifz Systems</h2>
+      <span style="color:var(--dim);font-size:13px" id="rosterCount"></span>
+      <span style="flex:1"></span>
+      <button class="btn ghost sm" id="rosterRefresh">↻ Refresh</button>
+      <button class="btn ghost sm" id="logoutBtn">🔒 Lock</button>
+    </div>
+    <div class="grid roster" id="rosterGrid"></div>
+  </section>
+
+  <!-- ================= DASHBOARD ================= -->
+  <section class="view on" id="v-dash">
+    <div class="grid kpis" id="kpiRow"></div>
+
+    <div class="grid dash-top" style="margin-top:16px">
+      <div class="card ringwrap">
+        <h3>Qur'an Completion <span class="sub">30 Juz Ring</span></h3>
+        <div id="juzRing"></div>
+        <div class="ringlabel">
+          <div class="big" id="ringPct">0%</div>
+          <div class="cap" id="ringSub">of 9,060 lines</div>
+        </div>
+        <div class="legend">
+          <span><i style="background:linear-gradient(135deg,#2fae7f,#C9A96E)"></i>Memorised</span>
+          <span><i style="background:rgba(255,255,255,.12)"></i>Remaining</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Lines Memorised per Month <span class="sub">with cumulative curve</span></h3>
+        <div id="monthChart"></div>
+      </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:1fr 1fr; margin-top:16px" id="dashRow2">
+      <div class="card">
+        <h3>Attendance Trend <span class="sub">% per month</span></h3>
+        <div id="attChart"></div>
+      </div>
+      <div class="card">
+        <h3><span id="heatTitle">This Month</span> <span class="sub">activity heatmap</span></h3>
+        <div class="heat" id="heatmap"></div>
+        <div class="legend" style="margin-top:12px">
+          <span><i style="background:rgba(27,122,90,.35)"></i>Light</span>
+          <span><i style="background:rgba(47,174,127,.75)"></i>Strong</span>
+          <span><i style="background:linear-gradient(135deg,#2fae7f,#C9A96E)"></i>Best</span>
+          <span><i style="background:rgba(224,122,106,.22)"></i>Absent</span>
+          <span><i style="background:rgba(224,122,106,.10)"></i>Holiday</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>Monthly Portion Summary <span class="sub">cumulative record</span></h3>
+      <div class="tblwrap"><table id="portionTable">
+        <thead><tr><th>Month</th><th>Present</th><th>Class Days</th><th>Attend %</th><th>Lines</th><th>Pages</th><th>Cum. Lines</th><th>Cum. Pages</th><th>% of Qur'an</th><th>Juz ≈</th><th>Lines Δ</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ================= DAILY LOG ================= -->
+  <section class="view" id="v-daily">
+    <div class="mtabs" id="mtabs"></div>
+    <div class="grid daily-grid">
+      <div class="card" style="padding:0">
+        <div class="tblwrap" style="border:0; max-height:640px; overflow:auto">
+          <table id="dailyTable">
+            <thead><tr><th style="width:110px">Date</th><th style="width:46px">✓</th><th>New Lesson</th><th>Sabq (Revision)</th><th>Old Lesson</th><th style="width:84px">Lines</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h3 id="mdashTitle">Month Dashboard</h3>
+          <div id="mdash"></div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>▲ vs Previous Month</h3>
+          <div id="mdelta"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TASKS ================= -->
+  <section class="view" id="v-tasks">
+    <div class="grid kpis" id="taskSummary"></div>
+    <div class="card" style="margin-top:16px">
+      <h3>Memorisation Tasks <span class="sub"><button class="btn gold sm" id="addTaskBtn">＋ New Task</button></span></h3>
+      <div class="tblwrap"><table id="taskTable">
+        <thead><tr><th>#</th><th>Task</th><th>Portion</th><th>Target</th><th>Done</th><th>Remaining</th><th style="min-width:140px">Progress</th><th>Status</th><th>Due</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <div class="empty-note" id="taskEmpty" style="display:none">No tasks yet — press ＋ New Task to assign the first memorisation goal.</div>
+    </div>
+  </section>
+
+  <!-- ================= EXAMS ================= -->
+  <section class="view" id="v-exams">
+    <div class="grid kpis" id="examSummary"></div>
+    <div class="card" style="margin-top:16px">
+      <h3>Exam Results <span class="sub"><button class="btn gold sm" id="addExamBtn">＋ New Exam</button></span></h3>
+      <div class="tblwrap"><table id="examTable">
+        <thead><tr><th>#</th><th>Date</th><th>Portion Tested</th><th>Lines</th><th>Examiner</th><th>Marks</th><th>%</th><th>Grade</th><th>Mistakes</th><th>Remarks</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <div class="empty-note" id="examEmpty" style="display:none">No exams recorded yet — press ＋ New Exam after the first assessment.</div>
+    </div>
+  </section>
+
+  <!-- ================= SETTINGS ================= -->
+  <section class="view" id="v-settings">
+    <div class="grid set-grid">
+      <div class="card">
+        <h3>Academy &amp; Student</h3>
+        <div class="frow"><label>Academy</label><input id="cfgAcademy" style="width:220px"></div>
+        <div class="frow"><label>Student name</label><input id="cfgStudent" style="width:220px"></div>
+        <div class="frow"><label>Lines per page</label><input id="cfgLpp" type="number" min="1"></div>
+        <div class="frow"><label>Full Qur'an (lines)</label><input id="cfgTotal" type="number" min="1" style="width:100px"></div>
+      </div>
+      <div class="card">
+        <h3>Weekly Holidays <span class="sub">greyed out in every month</span></h3>
+        <div id="cfgWeekly" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px"></div>
+      </div>
+      <div class="card">
+        <h3>Specific Holiday Dates <span class="sub">Eid, breaks…</span></h3>
+        <div style="display:flex; gap:10px"><input type="date" id="cfgHolDate"><button class="btn ghost sm" id="cfgHolAdd">Add date</button></div>
+        <div class="taglist" id="cfgHolList"></div>
+      </div>
+      <div class="card">
+        <h3>Examiners <span class="sub">exam dropdown</span></h3>
+        <div style="display:flex; gap:10px"><input id="cfgExName" placeholder="Examiner name" style="flex:1"><button class="btn ghost sm" id="cfgExAdd">Add</button></div>
+        <div class="taglist" id="cfgExList"></div>
+      </div>
+      <div class="card">
+        <h3>Data</h3>
+        <p style="color:var(--mut); font-size:13px; margin-bottom:14px">Everything is saved automatically in this browser. Export a backup file regularly, and import it to restore or move to another device.</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button class="btn gold" id="exportBtn">⬇ Export backup (JSON)</button>
+          <button class="btn ghost" id="importBtn">⬆ Import backup</button>
+          <input type="file" id="importFile" accept=".json" style="display:none">
+          <button class="btn danger" id="resetBtn">Reset all data</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Manzilul<b>Quran</b> E-learning Academy · manzilulquran.in · Hifz Command Center</footer>
+</div>
+
+
+<!-- student modal -->
+<div class="modal-bg" id="studentModal">
+  <div class="modal">
+    <h3 id="smTitle">Add a student</h3>
+    <div class="row"><label>Student name</label><input id="smName" placeholder="e.g. Atiyya Ahasn"></div>
+    <div class="actions"><button class="btn ghost" data-close>Cancel</button><button class="btn gold" id="smSave">Create system</button></div>
+  </div>
+</div>
+
+<!-- add month modal -->
+<div class="modal-bg" id="monthModal">
+  <div class="modal">
+    <h3>Add a new month</h3>
+    <div class="row"><label>Month</label><select id="nmMonth"></select></div>
+    <div class="row"><label>Year</label><select id="nmYear"></select></div>
+    <div class="actions"><button class="btn ghost" data-close>Cancel</button><button class="btn gold" id="nmCreate">Create month</button></div>
+  </div>
+</div>
+
+<!-- task modal -->
+<div class="modal-bg" id="taskModal">
+  <div class="modal">
+    <h3 id="taskModalTitle">New memorisation task</h3>
+    <div class="row"><label>Task name</label><input id="tmName" placeholder="e.g. Memorise Surah Al-Mulk"></div>
+    <div class="row"><label>Surah</label><select id="tmSurah"></select></div>
+    <div class="row"><label>Ayah range</label><select id="tmA1" class="ayah"></select><span class="dash">→</span><select id="tmA2" class="ayah"></select></div>
+    <div class="row"><label>Target lines</label><input id="tmTarget" type="number" min="1" value="15"></div>
+    <div class="row"><label>Lines done</label><input id="tmDone" type="number" min="0" value="0"></div>
+    <div class="row"><label>Due date</label><input id="tmDue" type="date"></div>
+    <div class="actions"><button class="btn ghost" data-close>Cancel</button><button class="btn gold" id="tmSave">Save task</button></div>
+  </div>
+</div>
+
+<!-- exam modal -->
+<div class="modal-bg" id="examModal">
+  <div class="modal">
+    <h3 id="examModalTitle">New exam result</h3>
+    <div class="row"><label>Date</label><input id="emDate" type="date"></div>
+    <div class="row"><label>Surah tested</label><select id="emSurah"></select></div>
+    <div class="row"><label>Ayah range</label><select id="emA1" class="ayah"></select><span class="dash">→</span><select id="emA2" class="ayah"></select></div>
+    <div class="row"><label>Lines</label><input id="emLines" type="number" min="0"></div>
+    <div class="row"><label>Examiner</label><select id="emExaminer"></select></div>
+    <div class="row"><label>Max marks</label><input id="emMax" type="number" min="1" value="100"></div>
+    <div class="row"><label>Obtained</label><input id="emObt" type="number" min="0"></div>
+    <div class="row"><label>Mistakes</label><input id="emMist" type="number" min="0" value="0"></div>
+    <div class="row"><label>Remarks</label><input id="emRem" placeholder="Optional notes"></div>
+    <div class="actions"><button class="btn ghost" data-close>Cancel</button><button class="btn gold" id="emSave">Save exam</button></div>
+  </div>
+</div>
+
+<!-- portion picker modal (multi-surah) -->
+<div class="modal-bg" id="portionModal">
+  <div class="modal">
+    <h3 id="pmTitle">Select portions</h3>
+    <div class="pm-list" id="pmList"></div>
+    <div class="row"><label>Surah</label><select id="pmSurah"></select></div>
+    <div class="row"><label>From ayah</label><select id="pmA1" class="ayah"></select><span class="dash">→</span><label style="width:auto">to</label><select id="pmA2" class="ayah"></select></div>
+    <div class="row"><span></span><button class="btn ghost sm" id="pmAdd" style="margin-left:auto">＋ Add this portion</button></div>
+    <div class="actions">
+      <button class="btn danger sm" id="pmClear">Clear all</button>
+      <span style="flex:1"></span>
+      <button class="btn ghost" data-close>Cancel</button>
+      <button class="btn gold" id="pmSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="flash"></div>
+<div class="tip" id="tip"></div>
+<script>
+"use strict";
+/* ================= QURAN DATA ================= */
+const SURAHS=[["Al-Fatihah","الفاتحة",7],["Al-Baqarah","البقرة",286],["Aal Imran","آل عمران",200],["An-Nisa","النساء",176],["Al-Ma'idah","المائدة",120],["Al-An'am","الأنعام",165],["Al-A'raf","الأعراف",206],["Al-Anfal","الأنفال",75],["At-Tawbah","التوبة",129],["Yunus","يونس",109],["Hud","هود",123],["Yusuf","يوسف",111],["Ar-Ra'd","الرعد",43],["Ibrahim","إبراهيم",52],["Al-Hijr","الحجر",99],["An-Nahl","النحل",128],["Al-Isra","الإسراء",111],["Al-Kahf","الكهف",110],["Maryam","مريم",98],["Ta-Ha","طه",135],["Al-Anbiya","الأنبياء",112],["Al-Hajj","الحج",78],["Al-Mu'minun","المؤمنون",118],["An-Nur","النور",64],["Al-Furqan","الفرقان",77],["Ash-Shu'ara","الشعراء",227],["An-Naml","النمل",93],["Al-Qasas","القصص",88],["Al-Ankabut","العنكبوت",69],["Ar-Rum","الروم",60],["Luqman","لقمان",34],["As-Sajdah","السجدة",30],["Al-Ahzab","الأحزاب",73],["Saba","سبأ",54],["Fatir","فاطر",45],["Ya-Sin","يس",83],["As-Saffat","الصافات",182],["Sad","ص",88],["Az-Zumar","الزمر",75],["Ghafir","غافر",85],["Fussilat","فصلت",54],["Ash-Shura","الشورى",53],["Az-Zukhruf","الزخرف",89],["Ad-Dukhan","الدخان",59],["Al-Jathiyah","الجاثية",37],["Al-Ahqaf","الأحقاف",35],["Muhammad","محمد",38],["Al-Fath","الفتح",29],["Al-Hujurat","الحجرات",18],["Qaf","ق",45],["Adh-Dhariyat","الذاريات",60],["At-Tur","الطور",49],["An-Najm","النجم",62],["Al-Qamar","القمر",55],["Ar-Rahman","الرحمن",78],["Al-Waqi'ah","الواقعة",96],["Al-Hadid","الحديد",29],["Al-Mujadila","المجادلة",22],["Al-Hashr","الحشر",24],["Al-Mumtahanah","الممتحنة",13],["As-Saff","الصف",14],["Al-Jumu'ah","الجمعة",11],["Al-Munafiqun","المنافقون",11],["At-Taghabun","التغابن",18],["At-Talaq","الطلاق",12],["At-Tahrim","التحريم",12],["Al-Mulk","الملك",30],["Al-Qalam","القلم",52],["Al-Haqqah","الحاقة",52],["Al-Ma'arij","المعارج",44],["Nuh","نوح",28],["Al-Jinn","الجن",28],["Al-Muzzammil","المزمل",20],["Al-Muddaththir","المدثر",56],["Al-Qiyamah","القيامة",40],["Al-Insan","الإنسان",31],["Al-Mursalat","المرسلات",50],["An-Naba","النبأ",40],["An-Nazi'at","النازعات",46],["Abasa","عبس",42],["At-Takwir","التكوير",29],["Al-Infitar","الانفطار",19],["Al-Mutaffifin","المطففين",36],["Al-Inshiqaq","الانشقاق",25],["Al-Buruj","البروج",22],["At-Tariq","الطارق",17],["Al-A'la","الأعلى",19],["Al-Ghashiyah","الغاشية",26],["Al-Fajr","الفجر",30],["Al-Balad","البلد",20],["Ash-Shams","الشمس",15],["Al-Layl","الليل",21],["Ad-Duha","الضحى",11],["Ash-Sharh","الشرح",8],["At-Tin","التين",8],["Al-Alaq","العلق",19],["Al-Qadr","القدر",5],["Al-Bayyinah","البينة",8],["Az-Zalzalah","الزلزلة",8],["Al-Adiyat","العاديات",11],["Al-Qari'ah","القارعة",11],["At-Takathur","التكاثر",8],["Al-Asr","العصر",3],["Al-Humazah","الهمزة",9],["Al-Fil","الفيل",5],["Quraysh","قريش",4],["Al-Ma'un","الماعون",7],["Al-Kawthar","الكوثر",3],["Al-Kafirun","الكافرون",6],["An-Nasr","النصر",3],["Al-Masad","المسد",5],["Al-Ikhlas","الإخلاص",4],["Al-Falaq","الفلق",5],["An-Nas","الناس",6]];
+const DOWS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const MONTH_NAMES=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+/* ================= STATE ================= */
+
+const defaultState=()=>({
+  config:{academy:"ManzilulQuran E-learning Academy",student:"Student Name",lpp:15,total:9060,weekly:[false,false,false,false,false,false,false],holDates:[],examiners:["Ustadh"]},
+  months:{},tasks:[],exams:[]
+});
+let S=defaultState();
+let CAN_EDIT=true;
+const canEdit=()=>CAN_EDIT;
+const normPortions=v=>Array.isArray(v)?v:(v&&v.s!=null?[v]:[]);
+function save(){if(window.persistState)persistState();}
+let activeMonth=null;           // "YYYY-MM"
+let portionCtx=null;            // {mKey,day,field} for portion modal
+let editTaskId=null, editExamId=null;
+
+/* ================= HELPERS ================= */
+const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());};
+const fmt=n=>Number(n||0).toLocaleString("en-IN");
+const monthLabel=k=>{const[y,m]=k.split("-");return MONTH_NAMES[+m-1]+" "+y;};
+const monthShort=k=>{const[y,m]=k.split("-");return MONTH_NAMES[+m-1].slice(0,3)+" '"+y.slice(2);};
+const daysInMonth=k=>{const[y,m]=k.split("-").map(Number);return new Date(y,m,0).getDate();};
+function isClassDay(k,day){
+  const[y,m]=k.split("-").map(Number);
+  const dow=(new Date(y,m-1,day).getDay()+6)%7; // 0=Mon
+  if(S.config.weekly[dow])return false;
+  if(S.config.holDates.includes(k+"-"+pad(day)))return false;
+  return true;
+}
+function monthKeys(){return Object.keys(S.months).sort();}
+function dayRec(k,day){const m=S.months[k];return m&&m.days[pad(day)]||{};}
+function setDay(k,day,patch){const m=S.months[k];const d=pad(day);m.days[d]=Object.assign(m.days[d]||{},patch);save();}
+function portionText(p,withAr){
+  if(!p||p.s==null)return null;
+  const s=SURAHS[p.s];
+  let t=(p.s+1)+". "+s[0];
+  if(p.a1!=null){t+=" · "+p.a1+(p.a2&&p.a2!==p.a1?"–"+p.a2:"");}
+  return withAr?{t,ar:s[1]}:t;
+}
+function monthStats(k){
+  const dim=daysInMonth(k),m=S.months[k];
+  let classDays=0,present=0,absent=0,lines=0;
+  for(let d=1;d<=dim;d++){
+    if(!isClassDay(k,d))continue;
+    classDays++;
+    const r=m?m.days[pad(d)]||{}:{};
+    if(r.p===1)present++; else if(r.p===0)absent++;
+    lines+=Number(r.ln||0);
+  }
+  const exams=S.exams.filter(e=>e.date&&e.date.startsWith(k)).length;
+  return{classDays,present,absent,lines,pages:lines/S.config.lpp,att:classDays?present/classDays*100:0,avg:present?lines/present:0,exams};
+}
+function allStats(){
+  const keys=monthKeys();let cum=0;const rows=keys.map(k=>{const st=monthStats(k);cum+=st.lines;return Object.assign({k,cum},st);});
+  const totPresent=rows.reduce((a,r)=>a+r.present,0),totClass=rows.reduce((a,r)=>a+r.classDays,0);
+  return{rows,cumLines:cum,att:totClass?totPresent/totClass*100:0,totPresent,totClass};
+}
+function currentStreak(){
+  // consecutive class days present, walking back from today (or last recorded day)
+  const keys=monthKeys();if(!keys.length)return 0;
+  let d=new Date();let streak=0;let first=true;
+  for(let guard=0;guard<800;guard++){
+    const k=d.getFullYear()+"-"+pad(d.getMonth()+1),day=d.getDate();
+    if(k<keys[0])break;                       // walked past all tracked months
+    if(S.months[k]&&isClassDay(k,day)){
+      const r=dayRec(k,day);
+      if(r.p===1){streak++;}
+      else if(first&&r.p==null){/* today not marked yet — skip it */}
+      else break;                             // absent or unmarked gap ends the streak
+      first=false;
+    }
+    d.setDate(d.getDate()-1);
+  }
+  return streak;
+}
+function projectedKhatm(){
+  const {rows,cumLines}=allStats();
+  const remaining=S.config.total-cumLines;
+  if(remaining<=0)return{txt:"Complete! ماشاء الله",sub:"Khatm achieved"};
+  const recent=rows.slice(-3).filter(r=>r.lines>0);
+  if(!recent.length)return{txt:"—",sub:"Needs pace data"};
+  const perMonth=recent.reduce((a,r)=>a+r.lines,0)/recent.length;
+  const monthsLeft=remaining/perMonth;
+  if(monthsLeft>600)return{txt:"—",sub:"Needs pace data"};
+  const d=new Date();d.setMonth(d.getMonth()+Math.ceil(monthsLeft));
+  return{txt:MONTH_NAMES[d.getMonth()].slice(0,3)+" "+d.getFullYear(),sub:"~"+Math.ceil(monthsLeft)+" months at current pace"};
+}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2400);}
+function countUp(el,val,dec=0,suffix=""){
+  const dur=(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)?0:900;const t0=performance.now();
+  function step(t){const p=dur?Math.min(1,(t-t0)/dur):1,e=1-Math.pow(1-p,3);
+    el.textContent=(val*e).toFixed(dec).replace(/\B(?=(\d{3})+(?!\d))/g,",")+suffix;
+    if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+
+/* ================= SURAH PICKER WIDGETS ================= */
+function fillSurahSelect(sel,withNone){
+  sel.innerHTML=(withNone?'<option value="">— Surah —</option>':"")+SURAHS.map((s,i)=>`<option value="${i}">${i+1}. ${s[0]} · ${s[1]}</option>`).join("");
+}
+function fillAyahSelect(sel,count,val){
+  let h="";for(let i=1;i<=count;i++)h+=`<option value="${i}"${i===val?" selected":""}>${i}</option>`;
+  sel.innerHTML=h;
+}
+function bindSurahAyah(surahSel,a1Sel,a2Sel){
+  const sync=()=>{const i=surahSel.value===""?null:+surahSel.value;
+    const c=i==null?1:SURAHS[i][2];
+    fillAyahSelect(a1Sel,c,1);fillAyahSelect(a2Sel,c,c);};
+  surahSel.addEventListener("change",sync);
+  a1Sel.addEventListener("change",()=>{if(+a2Sel.value<+a1Sel.value)a2Sel.value=a1Sel.value;});
+  sync();
+}
+</script>
+<script>
+"use strict";
+/* ================= NAV ================= */
+$("#nav").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  $$("#nav button").forEach(x=>x.classList.toggle("active",x===b));
+  $$(".view").forEach(v=>v.classList.remove("on"));
+  $("#v-"+b.dataset.v).classList.add("on");
+  renderAll();
+});
+$$(".modal-bg").forEach(m=>{
+  m.addEventListener("click",e=>{if(e.target===m||e.target.hasAttribute("data-close"))m.classList.remove("on");});
+});
+
+/* ================= DASHBOARD ================= */
+function renderKPIs(){
+  const A=allStats(),cfg=S.config;
+  const pages=A.cumLines/cfg.lpp, pct=A.cumLines/cfg.total*100;
+  const streak=currentStreak(), kh=projectedKhatm();
+  const avg=A.totPresent?A.cumLines/A.totPresent:0;
+  const kpis=[
+    {lab:"Lines Memorised",val:A.cumLines,dec:0,cls:"gold",sub:"of "+fmt(cfg.total)+" lines"},
+    {lab:"Pages Memorised",val:pages,dec:1,cls:"",sub:"of "+Math.round(cfg.total/cfg.lpp)+" pages"},
+    {lab:"% of Qur'an",val:pct,dec:1,suf:"%",cls:"green",sub:"Juz ≈ "+(pct*0.3).toFixed(1)+" / 30"},
+    {lab:"Overall Attendance",val:A.att,dec:1,suf:"%",cls:"",sub:A.totPresent+" of "+A.totClass+" class days"},
+    {lab:"Current Streak",val:streak,dec:0,cls:"gold",sub:streak?"class days present in a row":"mark today to start"},
+    {lab:"Avg Lines / Day",val:avg,dec:1,cls:"",sub:"per present day"},
+    {lab:"Projected Khatm",txt:kh.txt,cls:"green",sub:kh.sub},
+  ];
+  $("#kpiRow").innerHTML=kpis.map((k,i)=>`<div class="card kpi ${k.cls}" style="animation:rise .4s ${i*0.06}s ease both">
+    <div class="lab">${k.lab}</div><div class="val" data-i="${i}">${k.txt?esc(k.txt):"0"}</div><div class="sub">${esc(k.sub)}</div></div>`).join("");
+  kpis.forEach((k,i)=>{if(k.txt==null)countUp($(`#kpiRow .val[data-i="${i}"]`),k.val,k.dec,k.suf||"");});
+}
+function renderJuzRing(){
+  const A=allStats(),cfg=S.config;
+  const pct=Math.min(1,A.cumLines/cfg.total);
+  const R=108,CX=140,CY=140,SW=17,C=2*Math.PI*R;
+  const gap=0.028;                                    // radians gap between juz segments
+  let segs="";
+  for(let j=0;j<30;j++){
+    const a0=-Math.PI/2+j*(2*Math.PI/30)+gap/2, a1=-Math.PI/2+(j+1)*(2*Math.PI/30)-gap/2;
+    const segStart=j/30, segEnd=(j+1)/30;
+    let fillFrac=0;
+    if(pct>=segEnd)fillFrac=1; else if(pct>segStart)fillFrac=(pct-segStart)/(segEnd-segStart);
+    const arc=(aa,bb,col,op,w)=>{const x0=CX+R*Math.cos(aa),y0=CY+R*Math.sin(aa),x1=CX+R*Math.cos(bb),y1=CY+R*Math.sin(bb);
+      const large=(bb-aa)>Math.PI?1:0;
+      return `<path d="M${x0.toFixed(2)} ${y0.toFixed(2)} A${R} ${R} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}" stroke="${col}" stroke-width="${w}" fill="none" stroke-linecap="round" opacity="${op}"/>`;};
+    segs+=arc(a0,a1,"rgba(255,255,255,.09)",1,SW);
+    if(fillFrac>0){const am=a0+(a1-a0)*fillFrac;
+      segs+=arc(a0,Math.max(am,a0+0.001),`url(#gGold)`,1,SW);
+    }
+  }
+  const juzDone=Math.floor(pct*30);
+  $("#juzRing").innerHTML=`<svg width="280" height="280" viewBox="0 0 280 280">
+    <defs><linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2fae7f"/><stop offset="1" stop-color="#C9A96E"/></linearGradient></defs>
+    <circle cx="${CX}" cy="${CY}" r="${R-SW-6}" fill="rgba(11,77,59,.18)" stroke="rgba(201,169,110,.12)"/>
+    <g class="ringsegs" style="opacity:0;transition:opacity 1s">${segs}</g>
+    <text x="${CX}" y="${CY-12}" text-anchor="middle" font-size="40" font-family="Marcellus,serif" fill="#e8cf9a" id="ringNum">0</text>
+    <text x="${CX}" y="${CY+14}" text-anchor="middle" font-size="10" letter-spacing="2" fill="#8fb3a2">JUZ COMPLETE</text>
+    <text x="${CX}" y="${CY+34}" text-anchor="middle" font-size="11" fill="#5d7d6e">${fmt(A.cumLines)} / ${fmt(cfg.total)} lines</text>
+  </svg>`;
+  requestAnimationFrame(()=>{$(".ringsegs").style.opacity=1;});
+  countUp($("#ringNum"),juzDone,0);
+  $("#ringPct").textContent=(pct*100).toFixed(1)+"%";
+  $("#ringSub").textContent="of the Holy Qur'an memorised";
+}
+function svgLineBar(rows,valKey,cumKey,w,h){
+  if(!rows.length)return '<div class="empty-note">Add a month and log daily lines to light up this chart.</div>';
+  const P={l:40,r:cumKey?46:16,t:14,b:30};
+  const iw=w-P.l-P.r, ih=h-P.t-P.b;
+  const maxV=Math.max(1,...rows.map(r=>r[valKey]));
+  const maxC=cumKey?Math.max(1,...rows.map(r=>r[cumKey])):0;
+  const bw=Math.min(38,iw/rows.length*0.55), step=iw/rows.length;
+  let bars="",labels="",pts=[];
+  rows.forEach((r,i)=>{
+    const x=P.l+step*i+step/2, bh=r[valKey]/maxV*ih;
+    bars+=`<rect x="${(x-bw/2).toFixed(1)}" y="${(P.t+ih-bh).toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="6" fill="url(#gBar)" class="bar" data-tip="<b>${monthLabel(r.k)}</b><br>${fmt(r[valKey])} lines · ${r.pages.toFixed(1)} pages${cumKey?"<br>Cumulative: "+fmt(r[cumKey]):""}" style="transform-origin:${x}px ${P.t+ih}px"/>`;
+    labels+=`<text x="${x}" y="${h-10}" text-anchor="middle" font-size="10" fill="#5d7d6e">${monthShort(r.k)}</text>`;
+    if(cumKey)pts.push([x,P.t+ih-r[cumKey]/maxC*ih]);
+  });
+  let curve="";
+  if(cumKey&&pts.length){
+    const d=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+    curve=`<path d="${d}" fill="none" stroke="#e8cf9a" stroke-width="2.5" stroke-linecap="round" class="curve"/>`+
+      pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#e8cf9a"/>`).join("");
+  }
+  const gridY=[0,.25,.5,.75,1].map(f=>`<line x1="${P.l}" x2="${w-P.r}" y1="${(P.t+ih*(1-f)).toFixed(1)}" y2="${(P.t+ih*(1-f)).toFixed(1)}" stroke="rgba(255,255,255,.05)"/>
+    <text x="${P.l-8}" y="${(P.t+ih*(1-f)+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#5d7d6e">${Math.round(maxV*f)}</text>`).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto">
+    <defs><linearGradient id="gBar" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#0B4D3B"/><stop offset="1" stop-color="#2fae7f"/></linearGradient></defs>
+    ${gridY}${bars}${curve}${labels}</svg>`;
+}
+function svgAttLine(rows,w,h){
+  if(!rows.length)return '<div class="empty-note">Attendance appears here once class days are marked.</div>';
+  const P={l:40,r:16,t:14,b:30}, iw=w-P.l-P.r, ih=h-P.t-P.b, step=iw/Math.max(1,rows.length-1||1);
+  const pts=rows.map((r,i)=>[P.l+(rows.length>1?step*i:iw/2), P.t+ih-(r.att/100)*ih]);
+  const d=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area=d+` L${pts[pts.length-1][0].toFixed(1)} ${P.t+ih} L${pts[0][0].toFixed(1)} ${P.t+ih} Z`;
+  const grid=[0,25,50,75,100].map(v=>`<line x1="${P.l}" x2="${w-P.r}" y1="${(P.t+ih*(1-v/100)).toFixed(1)}" y2="${(P.t+ih*(1-v/100)).toFixed(1)}" stroke="rgba(255,255,255,.05)"/>
+    <text x="${P.l-8}" y="${(P.t+ih*(1-v/100)+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#5d7d6e">${v}%</text>`).join("");
+  const labels=rows.map((r,i)=>`<text x="${pts[i][0]}" y="${h-10}" text-anchor="middle" font-size="10" fill="#5d7d6e">${monthShort(r.k)}</text>`).join("");
+  const dots=rows.map((r,i)=>`<circle cx="${pts[i][0]}" cy="${pts[i][1]}" r="4.5" fill="#2fae7f" stroke="#050f0c" stroke-width="2" class="bar" data-tip="<b>${monthLabel(r.k)}</b><br>Attendance ${r.att.toFixed(1)}%<br>${r.present}/${r.classDays} class days"/>`).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto">
+    <defs><linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(47,174,127,.35)"/><stop offset="1" stop-color="rgba(47,174,127,0)"/></linearGradient></defs>
+    ${grid}<path d="${area}" fill="url(#gArea)"/><path d="${d}" fill="none" stroke="#2fae7f" stroke-width="2.5" stroke-linecap="round" class="curve"/>${dots}${labels}</svg>`;
+}
+function renderHeat(){
+  const keys=monthKeys();
+  const nowK=new Date().getFullYear()+"-"+pad(new Date().getMonth()+1);
+  const k=S.months[nowK]?nowK:(keys[keys.length-1]||null);
+  const box=$("#heatmap");
+  if(!k){box.innerHTML="";$("#heatTitle").textContent="This Month";box.insertAdjacentHTML("beforeend",'<div class="empty-note" style="grid-column:1/-1">No months yet.</div>');return;}
+  $("#heatTitle").textContent=monthLabel(k);
+  const dim=daysInMonth(k);
+  const[y,m]=k.split("-").map(Number);
+  const firstDow=(new Date(y,m-1,1).getDay()+6)%7;
+  const maxL=Math.max(1,...Array.from({length:dim},(_,i)=>Number(dayRec(k,i+1).ln||0)));
+  let h=["Mo","Tu","We","Th","Fr","Sa","Su"].map(d=>`<div class="dow">${d}</div>`).join("");
+  for(let i=0;i<firstDow;i++)h+="<div></div>";
+  for(let d=1;d<=dim;d++){
+    const r=dayRec(k,d), cls=isClassDay(k,d)?"":"hol";
+    let lvl="h0", tip=`<b>${monthLabel(k).split(" ")[0]} ${d}</b><br>`;
+    if(cls==="hol"){tip+="Holiday";}
+    else{
+      const ln=Number(r.ln||0);
+      if(r.p===0){lvl="abs";tip+="Absent";}
+      else if(ln>0){const f=ln/maxL; lvl=f>0.99?"h4":f>0.66?"h3":f>0.33?"h2":"h1"; tip+=ln+" lines memorised";}
+      else if(r.p===1){lvl="h1";tip+="Present · no lines logged";}
+      else tip+="Not marked";
+    }
+    h+=`<div class="cell ${cls} ${lvl} ${lvl!=='h0'?'p':''} bar" data-tip="${tip}">${d}</div>`;
+  }
+  box.innerHTML=h;
+}
+function renderPortionTable(){
+  const A=allStats();const tb=$("#portionTable tbody");const cfg=S.config;
+  let prev=null;
+  tb.innerHTML=A.rows.map(r=>{
+    const delta=prev==null?"—":r.lines-prev;
+    const dcls=prev==null?"flat":delta>0?"up":delta<0?"down":"flat";
+    const dtxt=prev==null?"—":(delta>0?"▲ +":delta<0?"▼ ":"＝ ")+fmt(Math.abs(delta));
+    prev=r.lines;
+    return `<tr><td><b>${monthLabel(r.k)}</b></td><td>${r.present}</td><td>${r.classDays}</td><td>${r.att.toFixed(1)}%</td>
+      <td>${fmt(r.lines)}</td><td>${r.pages.toFixed(1)}</td><td style="color:var(--gold2)">${fmt(r.cum)}</td>
+      <td>${(r.cum/cfg.lpp).toFixed(1)}</td><td>${(r.cum/cfg.total*100).toFixed(2)}%</td><td>${(r.cum/cfg.total*30).toFixed(1)}</td>
+      <td class="delta ${dcls}">${dtxt}</td></tr>`;
+  }).join("")||'<tr><td colspan="11"><div class="empty-note">No months yet — open Daily Log and add your first month.</div></td></tr>';
+}
+function renderDash(){renderKPIs();renderJuzRing();
+  const A=allStats();
+  $("#monthChart").innerHTML=svgLineBar(A.rows,"lines","cum",560,260);
+  $("#attChart").innerHTML=svgAttLine(A.rows,520,240);
+  renderHeat();renderPortionTable();bindTips();
+}
+/* tooltips */
+function bindTips(){
+  const tip=$("#tip");
+  $$(".bar").forEach(el=>{
+    el.onmousemove=e=>{tip.innerHTML=el.dataset.tip;tip.style.opacity=1;
+      tip.style.left=Math.min(innerWidth-170,e.clientX+14)+"px";tip.style.top=(e.clientY+14)+"px";};
+    el.onmouseleave=()=>tip.style.opacity=0;
+  });
+}
+</script>
+<script>
+"use strict";
+/* ================= DAILY LOG ================= */
+function ensureFirstMonth(){
+  if(monthKeys().length)return;
+  const d=new Date();addMonth(d.getFullYear(),d.getMonth()+1,false);
+}
+function addMonth(y,m,announce=true){
+  const k=y+"-"+pad(m);
+  if(S.months[k]){activeMonth=k;toast(monthLabel(k)+" already exists");renderDaily();return;}
+  S.months[k]={days:{}};save();activeMonth=k;
+  if(announce)toast(monthLabel(k)+" added ✓");
+  renderDaily();
+}
+function renderMTabs(){
+  const keys=monthKeys();
+  if(!activeMonth||!S.months[activeMonth])activeMonth=keys[keys.length-1]||null;
+  $("#mtabs").innerHTML=keys.map(k=>`<div class="mtab ${k===activeMonth?"on":""}" data-k="${k}">${monthLabel(k)}</div>`).join("")
+    +`<div class="mtab add" id="addMonthTab">＋ Add month</div>`;
+  $$("#mtabs .mtab[data-k]").forEach(t=>t.onclick=()=>{activeMonth=t.dataset.k;renderDaily();});
+  $("#addMonthTab").onclick=openMonthModal;
+}
+function openMonthModal(){
+  if(!canEdit())return;
+  const keys=monthKeys();
+  let sy,sm;
+  if(keys.length){const[y,m]=keys[keys.length-1].split("-").map(Number);sm=m===12?1:m+1;sy=m===12?y+1:y;}
+  else{const d=new Date();sy=d.getFullYear();sm=d.getMonth()+1;}
+  $("#nmMonth").innerHTML=MONTH_NAMES.map((n,i)=>`<option value="${i+1}"${i+1===sm?" selected":""}>${n}</option>`).join("");
+  const yNow=new Date().getFullYear();
+  let yh="";for(let y=yNow-2;y<=yNow+6;y++)yh+=`<option value="${y}"${y===sy?" selected":""}>${y}</option>`;
+  $("#nmYear").innerHTML=yh;
+  $("#monthModal").classList.add("on");
+}
+$("#nmCreate").onclick=()=>{addMonth(+$("#nmYear").value,+$("#nmMonth").value);$("#monthModal").classList.remove("on");};
+
+function portionCell(k,day,field){
+  const list=normPortions(dayRec(k,day)[field]);
+  const chips=list.map(p=>`<span class="pchip" data-d="${day}" data-f="${field}"><span class="arname">${SURAHS[p.s][1]}</span>${esc(portionText(p))}</span>`).join(" ");
+  return `<span class="portion">${chips}<span class="pchip empty" data-d="${day}" data-f="${field}">＋</span></span>`;
+}
+function renderDaily(){
+  renderMTabs();
+  const tb=$("#dailyTable tbody");
+  if(!activeMonth){tb.innerHTML='<tr><td colspan="6"><div class="empty-note">Add your first month to begin daily tracking.</div></td></tr>';$("#mdash").innerHTML="";$("#mdelta").innerHTML="";return;}
+  const k=activeMonth,dim=daysInMonth(k),today=todayStr();
+  const[y,m]=k.split("-").map(Number);
+  let h="";
+  for(let d=1;d<=dim;d++){
+    const dt=k+"-"+pad(d), r=dayRec(k,d), cls=isClassDay(k,d);
+    const dow=DOWS[(new Date(y,m-1,d).getDay()+6)%7].slice(0,3);
+    const pState=r.p===1?"on":r.p===0?"abs":"";
+    const pMark=r.p===1?"✓":r.p===0?"✗":"·";
+    h+=`<tr class="${cls?"":"holiday"} ${dt===today?"today-row":""}">
+      <td class="datecell"><b>${d}</b><span>${dow}</span></td>
+      <td>${cls?`<button class="pv ${pState}" data-d="${d}" title="present / absent / clear">${pMark}</button>`:'<span style="color:var(--bad);font-size:11px">OFF</span>'}</td>
+      <td>${cls?portionCell(k,d,"nl"):""}</td>
+      <td>${cls?portionCell(k,d,"sq"):""}</td>
+      <td>${cls?portionCell(k,d,"ol"):""}</td>
+      <td>${cls?`<input type="number" min="0" value="${r.ln??""}" placeholder="0" data-d="${d}" class="lnin" style="width:64px">`:""}</td>
+    </tr>`;
+  }
+  tb.innerHTML=h;
+  tb.querySelectorAll(".pv").forEach(b=>b.onclick=()=>{
+    if(!canEdit())return;
+    const d=+b.dataset.d, r=dayRec(k,d);
+    const next=r.p===1?0:r.p===0?null:1;
+    setDay(k,d,{p:next});renderDaily();
+  });
+  tb.querySelectorAll(".lnin").forEach(inp=>inp.onchange=()=>{
+    if(!canEdit()){renderDaily();return;}
+    const v=inp.value===""?null:Math.max(0,+inp.value);
+    setDay(k,+inp.dataset.d,{ln:v});renderMonthDash();
+  });
+  tb.querySelectorAll(".pchip").forEach(c=>c.onclick=()=>{if(!canEdit())return;openPortionModal(k,+c.dataset.d,c.dataset.f);});
+  renderMonthDash();
+  // auto-scroll to today
+  const tr=tb.querySelector(".today-row");if(tr&&tr.scrollIntoView)tr.scrollIntoView({block:"center"});
+}
+function renderMonthDash(){
+  const k=activeMonth;if(!k)return;
+  const st=monthStats(k);
+  $("#mdashTitle").textContent="📊 "+monthLabel(k);
+  const rows=[["Days Present",st.present],["Class Days",st.classDays],["Days Absent",st.absent],
+    ["Attendance %",st.att.toFixed(1)+"%"],["Total Lines",fmt(st.lines)],["Pages",st.pages.toFixed(1)],
+    ["Avg Lines/Day",st.avg.toFixed(1)],["Exams",st.exams]];
+  $("#mdash").innerHTML=rows.map(r=>`<div class="mstat"><span>${r[0]}</span><b>${r[1]}</b></div>`).join("");
+  // deltas vs previous existing month
+  const keys=monthKeys(), idx=keys.indexOf(k);
+  if(idx<=0){$("#mdelta").innerHTML='<div class="empty-note" style="padding:12px">First tracked month</div>';return;}
+  const pv=monthStats(keys[idx-1]);
+  const mk=(label,d,suf)=>{const cls=d>0?"up":d<0?"down":"flat", sym=d>0?"▲ +":d<0?"▼ ":"＝ ";
+    return `<div class="mstat"><span>${label}</span><b class="delta ${cls}">${sym}${Math.abs(d).toFixed(1)}${suf}</b></div>`;};
+  $("#mdelta").innerHTML=mk("Attendance Δ",st.att-pv.att,"%")+mk("Lines Δ",st.lines-pv.lines,"");
+}
+/* portion modal (multi-surah) */
+let pmDraft=[];
+function renderPmList(){
+  $("#pmList").innerHTML=pmDraft.length?pmDraft.map((p,i)=>
+    `<span class="pchip"><span class="arname">${SURAHS[p.s][1]}</span>${esc(portionText(p))}<button data-i="${i}" title="Remove">✕</button></span>`).join("")
+    :'<span style="color:var(--dim);font-size:12.5px">No portions yet — pick a surah below and press ＋ Add.</span>';
+  $("#pmList").querySelectorAll("button").forEach(b=>b.onclick=()=>{pmDraft.splice(+b.dataset.i,1);renderPmList();});
+}
+function openPortionModal(k,day,field){
+  portionCtx={k,day,field};
+  const names={nl:"New lesson",sq:"Sabq (revision)",ol:"Old lesson"};
+  $("#pmTitle").textContent=names[field]+" · "+monthLabel(k).split(" ")[0]+" "+day;
+  const sSel=$("#pmSurah"),a1=$("#pmA1"),a2=$("#pmA2");
+  fillSurahSelect(sSel,true);
+  if(!sSel._bound){bindSurahAyah(sSel,a1,a2);sSel._bound=true;}
+  sSel.value="";sSel.dispatchEvent(new Event("change"));
+  pmDraft=normPortions(dayRec(k,day)[field]).map(p=>({...p}));
+  renderPmList();
+  $("#portionModal").classList.add("on");
+}
+$("#pmAdd").onclick=()=>{
+  const sv=$("#pmSurah").value;
+  if(sv===""){toast("Choose a surah first");return;}
+  pmDraft.push({s:+sv,a1:+$("#pmA1").value,a2:+$("#pmA2").value});
+  renderPmList();
+  $("#pmSurah").value="";$("#pmSurah").dispatchEvent(new Event("change"));
+};
+$("#pmSave").onclick=()=>{
+  const{k,day,field}=portionCtx;
+  // if a surah is picked but not yet added, include it
+  const sv=$("#pmSurah").value;
+  if(sv!=="")pmDraft.push({s:+sv,a1:+$("#pmA1").value,a2:+$("#pmA2").value});
+  setDay(k,day,{[field]:pmDraft.length?pmDraft:null});
+  $("#portionModal").classList.remove("on");renderDaily();toast(pmDraft.length+" portion"+(pmDraft.length===1?"":"s")+" saved ✓");
+};
+$("#pmClear").onclick=()=>{
+  const{k,day,field}=portionCtx;
+  setDay(k,day,{[field]:null});
+  $("#portionModal").classList.remove("on");renderDaily();
+};
+
+/* ================= TASKS ================= */
+function taskStatus(t){const p=t.target?t.done/t.target:0;return p>=1?["done","Completed"]:t.done>0?["prog","In progress"]:["not","Not started"];}
+function renderTasks(){
+  const tb=$("#taskTable tbody");
+  const list=S.tasks;
+  $("#taskEmpty").style.display=list.length?"none":"block";
+  tb.innerHTML=list.map((t,i)=>{
+    const pct=t.target?Math.min(100,t.done/t.target*100):0;
+    const[scls,slab]=taskStatus(t);
+    const p=t.portion?portionText(t.portion):null;
+    const overdue=t.due&&t.due<todayStr()&&pct<100;
+    return `<tr>
+      <td style="color:var(--dim)">${i+1}</td>
+      <td><b>${esc(t.name)}</b></td>
+      <td>${p?`<span class="pchip"><span class="arname">${SURAHS[t.portion.s][1]}</span>${esc(p)}</span>`:'<span style="color:var(--dim)">—</span>'}</td>
+      <td>${t.target}</td>
+      <td><input type="number" min="0" max="${t.target}" value="${t.done}" data-id="${t.id}" class="tdone"></td>
+      <td>${Math.max(0,t.target-t.done)}</td>
+      <td><div style="display:flex;align-items:center;gap:10px"><div class="pbar"><i data-w="${pct}"></i></div><span style="font-size:12px;color:var(--mut)">${pct.toFixed(0)}%</span></div></td>
+      <td><span class="status ${scls}">${slab}</span></td>
+      <td style="font-size:12px;color:${overdue?"var(--bad)":"var(--mut)"}">${t.due||"—"}${overdue?" ⚠":""}</td>
+      <td style="white-space:nowrap"><button class="btn ghost sm tedit" data-id="${t.id}">✎</button> <button class="btn danger sm tdel" data-id="${t.id}">✕</button></td>
+    </tr>`;
+  }).join("");
+  requestAnimationFrame(()=>tb.querySelectorAll(".pbar i").forEach(b=>b.style.width=b.dataset.w+"%"));
+  tb.querySelectorAll(".tdone").forEach(inp=>inp.onchange=()=>{
+    if(!canEdit()){renderTasks();return;}
+    const t=S.tasks.find(x=>x.id===inp.dataset.id);t.done=Math.max(0,Math.min(t.target,+inp.value||0));save();renderTasks();
+  });
+  tb.querySelectorAll(".tdel").forEach(b=>b.onclick=()=>{if(!canEdit())return;if(confirm("Delete this task?")){S.tasks=S.tasks.filter(x=>x.id!==b.dataset.id);save();renderTasks();}});
+  tb.querySelectorAll(".tedit").forEach(b=>b.onclick=()=>openTaskModal(b.dataset.id));
+  // summary
+  const done=list.filter(t=>taskStatus(t)[0]==="done").length;
+  const prog=list.filter(t=>taskStatus(t)[0]==="prog").length;
+  const avg=list.length?list.reduce((a,t)=>a+(t.target?Math.min(1,t.done/t.target):0),0)/list.length*100:0;
+  const cards=[["Total Tasks",list.length,""],["Completed",done,"green"],["In Progress",prog,"gold"],["Not Started",list.length-done-prog,""],["Avg Completion",avg.toFixed(0)+"%","gold"]];
+  $("#taskSummary").innerHTML=cards.map(c=>`<div class="card kpi ${c[2]}"><div class="lab">${c[0]}</div><div class="val">${c[1]}</div></div>`).join("");
+}
+function openTaskModal(id){
+  if(!canEdit())return;
+  editTaskId=id||null;
+  $("#taskModalTitle").textContent=id?"Edit task":"New memorisation task";
+  const sSel=$("#tmSurah"),a1=$("#tmA1"),a2=$("#tmA2");
+  fillSurahSelect(sSel,true);
+  if(!sSel._bound){bindSurahAyah(sSel,a1,a2);sSel._bound=true;}
+  if(id){const t=S.tasks.find(x=>x.id===id);
+    $("#tmName").value=t.name;$("#tmTarget").value=t.target;$("#tmDone").value=t.done;$("#tmDue").value=t.due||"";
+    if(t.portion){sSel.value=t.portion.s;sSel.dispatchEvent(new Event("change"));a1.value=t.portion.a1;a2.value=t.portion.a2;}
+    else{sSel.value="";sSel.dispatchEvent(new Event("change"));}
+  }else{
+    $("#tmName").value="";$("#tmTarget").value=15;$("#tmDone").value=0;$("#tmDue").value="";
+    sSel.value="";sSel.dispatchEvent(new Event("change"));
+  }
+  $("#taskModal").classList.add("on");
+}
+$("#addTaskBtn").onclick=()=>openTaskModal(null);
+$("#tmSave").onclick=()=>{
+  const name=$("#tmName").value.trim();if(!name){toast("Give the task a name");return;}
+  const sv=$("#tmSurah").value;
+  const portion=sv===""?null:{s:+sv,a1:+$("#tmA1").value,a2:+$("#tmA2").value};
+  const rec={name,portion,target:Math.max(1,+$("#tmTarget").value||1),done:Math.max(0,+$("#tmDone").value||0),due:$("#tmDue").value||null};
+  if(editTaskId){Object.assign(S.tasks.find(x=>x.id===editTaskId),rec);}
+  else{rec.id="t"+Date.now();S.tasks.push(rec);}
+  save();$("#taskModal").classList.remove("on");renderTasks();toast("Task saved ✓");
+};
+</script>
+<script>
+"use strict";
+/* ================= EXAMS ================= */
+function gradeOf(pct){ // pct 0..1
+  if(pct>=0.9)return["A+","gA"];if(pct>=0.8)return["A","gA"];if(pct>=0.7)return["B+","gB"];
+  if(pct>=0.6)return["B","gB"];if(pct>=0.5)return["C","gC"];if(pct>=0.4)return["D","gC"];return["F","gF"];
+}
+function renderExams(){
+  const tb=$("#examTable tbody");
+  const list=[...S.exams].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  $("#examEmpty").style.display=list.length?"none":"block";
+  tb.innerHTML=list.map((e,i)=>{
+    const pct=e.max?e.obt/e.max:0, [g,gc]=gradeOf(pct);
+    const p=e.portion?portionText(e.portion):null;
+    return `<tr>
+      <td style="color:var(--dim)">${i+1}</td>
+      <td>${e.date||"—"}</td>
+      <td>${p?`<span class="pchip"><span class="arname">${SURAHS[e.portion.s][1]}</span>${esc(p)}</span>`:'—'}</td>
+      <td>${e.lines||"—"}</td>
+      <td>${esc(e.examiner||"—")}</td>
+      <td>${e.obt} / ${e.max}</td>
+      <td><b>${(pct*100).toFixed(1)}%</b></td>
+      <td><span class="grade ${gc}">${g}</span></td>
+      <td>${e.mist??0}</td>
+      <td style="font-size:12px;color:var(--mut);max-width:180px">${esc(e.rem||"")}</td>
+      <td style="white-space:nowrap"><button class="btn ghost sm eedit" data-id="${e.id}">✎</button> <button class="btn danger sm edel" data-id="${e.id}">✕</button></td>
+    </tr>`;
+  }).join("");
+  tb.querySelectorAll(".edel").forEach(b=>b.onclick=()=>{if(!canEdit())return;if(confirm("Delete this exam?")){S.exams=S.exams.filter(x=>x.id!==b.dataset.id);save();renderExams();}});
+  tb.querySelectorAll(".eedit").forEach(b=>b.onclick=()=>openExamModal(b.dataset.id));
+  const avg=list.length?list.reduce((a,e)=>a+(e.max?e.obt/e.max:0),0)/list.length*100:0;
+  const best=list.length?Math.max(...list.map(e=>e.max?e.obt/e.max*100:0)):0;
+  const totalMist=list.reduce((a,e)=>a+(+e.mist||0),0);
+  const cards=[["Exams Taken",list.length,""],["Average Score",avg.toFixed(1)+"%","gold"],["Best Score",best.toFixed(1)+"%","green"],["Total Mistakes",totalMist,""]];
+  $("#examSummary").innerHTML=cards.map(c=>`<div class="card kpi ${c[2]}"><div class="lab">${c[0]}</div><div class="val">${c[1]}</div></div>`).join("");
+}
+function openExamModal(id){
+  if(!canEdit())return;
+  editExamId=id||null;
+  $("#examModalTitle").textContent=id?"Edit exam result":"New exam result";
+  const sSel=$("#emSurah"),a1=$("#emA1"),a2=$("#emA2");
+  fillSurahSelect(sSel,true);
+  if(!sSel._bound){bindSurahAyah(sSel,a1,a2);sSel._bound=true;}
+  $("#emExaminer").innerHTML='<option value="">— Examiner —</option>'+S.config.examiners.map(x=>`<option>${esc(x)}</option>`).join("");
+  if(id){const e=S.exams.find(x=>x.id===id);
+    $("#emDate").value=e.date||"";$("#emLines").value=e.lines||"";$("#emMax").value=e.max;$("#emObt").value=e.obt;
+    $("#emMist").value=e.mist||0;$("#emRem").value=e.rem||"";$("#emExaminer").value=e.examiner||"";
+    if(e.portion){sSel.value=e.portion.s;sSel.dispatchEvent(new Event("change"));a1.value=e.portion.a1;a2.value=e.portion.a2;}
+    else{sSel.value="";sSel.dispatchEvent(new Event("change"));}
+  }else{
+    $("#emDate").value=todayStr();$("#emLines").value="";$("#emMax").value=100;$("#emObt").value="";
+    $("#emMist").value=0;$("#emRem").value="";sSel.value="";sSel.dispatchEvent(new Event("change"));
+  }
+  $("#examModal").classList.add("on");
+}
+$("#addExamBtn").onclick=()=>openExamModal(null);
+$("#emSave").onclick=()=>{
+  const max=Math.max(1,+$("#emMax").value||1), obt=Math.max(0,+$("#emObt").value||0);
+  if(obt>max){toast("Obtained marks can't exceed max");return;}
+  const sv=$("#emSurah").value;
+  const rec={date:$("#emDate").value||todayStr(),portion:sv===""?null:{s:+sv,a1:+$("#emA1").value,a2:+$("#emA2").value},
+    lines:+$("#emLines").value||null,examiner:$("#emExaminer").value||"",max,obt,mist:+$("#emMist").value||0,rem:$("#emRem").value.trim()};
+  if(editExamId){Object.assign(S.exams.find(x=>x.id===editExamId),rec);}
+  else{rec.id="e"+Date.now();S.exams.push(rec);}
+  save();$("#examModal").classList.remove("on");renderExams();toast("Exam saved ✓");
+};
+
+/* ================= SETTINGS ================= */
+function renderSettings(){
+  const c=S.config;
+  $("#cfgAcademy").value=c.academy;$("#cfgStudent").value=c.student;
+  $("#cfgLpp").value=c.lpp;$("#cfgTotal").value=c.total;
+  $("#cfgWeekly").innerHTML=DOWS.map((d,i)=>`<label class="chk"><input type="checkbox" data-i="${i}" ${c.weekly[i]?"checked":""}> ${d}</label>`).join("");
+  $$("#cfgWeekly input").forEach(x=>x.onchange=()=>{c.weekly[+x.dataset.i]=x.checked;save();toast(DOWS[+x.dataset.i]+(x.checked?" marked OFF everywhere":" is a class day again"));});
+  $("#cfgHolList").innerHTML=c.holDates.sort().map(d=>`<span class="tag">${d}<button data-d="${d}">✕</button></span>`).join("")||'<span style="color:var(--dim);font-size:12px">No specific holidays yet.</span>';
+  $$("#cfgHolList button").forEach(b=>b.onclick=()=>{c.holDates=c.holDates.filter(x=>x!==b.dataset.d);save();renderSettings();});
+  $("#cfgExList").innerHTML=c.examiners.map(x=>`<span class="tag">${esc(x)}<button data-x="${esc(x)}">✕</button></span>`).join("")||'<span style="color:var(--dim);font-size:12px">Add examiners for the exam dropdown.</span>';
+  $$("#cfgExList button").forEach(b=>b.onclick=()=>{c.examiners=c.examiners.filter(x=>x!==b.dataset.x);save();renderSettings();});
+}
+["cfgAcademy","cfgStudent"].forEach(id=>$( "#"+id).addEventListener("change",e=>{
+  S.config[id==="cfgAcademy"?"academy":"student"]=e.target.value.trim()||S.config[id==="cfgAcademy"?"academy":"student"];
+  save();renderChip();toast("Saved ✓");
+}));
+$("#cfgLpp").addEventListener("change",e=>{S.config.lpp=Math.max(1,+e.target.value||15);save();toast("Lines per page updated");});
+$("#cfgTotal").addEventListener("change",e=>{S.config.total=Math.max(1,+e.target.value||9060);save();toast("Total lines updated");});
+$("#cfgHolAdd").onclick=()=>{const v=$("#cfgHolDate").value;if(!v)return;
+  if(!S.config.holDates.includes(v))S.config.holDates.push(v);save();renderSettings();toast("Holiday added");};
+$("#cfgExAdd").onclick=()=>{const v=$("#cfgExName").value.trim();if(!v)return;
+  if(!S.config.examiners.includes(v))S.config.examiners.push(v);$("#cfgExName").value="";save();renderSettings();};
+
+/* export / import / reset */
+$("#exportBtn").onclick=()=>{
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="hifz-backup-"+(S.config.student||"student").replace(/\s+/g,"_")+"-"+todayStr()+".json";
+  a.click();URL.revokeObjectURL(a.href);toast("Backup exported ⬇");
+};
+$("#importBtn").onclick=()=>$("#importFile").click();
+$("#importFile").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{
+    const data=JSON.parse(rd.result);
+    if(!data.config||!data.months)throw 0;
+    S=Object.assign(defaultState(),data);save();activeMonth=null;renderAll();renderChip();toast("Backup imported ✓");
+  }catch(err){toast("That file isn't a valid backup");}};
+  rd.readAsText(f);e.target.value="";
+};
+$("#resetBtn").onclick=()=>{
+  if(confirm("Reset ALL data? This deletes every month, task and exam. Export a backup first."))
+  if(confirm("Are you absolutely sure?")){const nm=S.config.student;S=defaultState();S.config.student=nm;save();activeMonth=null;renderAll();renderChip();toast("All data reset");}
+};
+
+/* ================= BOOT ================= */
+function renderChip(){
+  $("#chipStudent").textContent=S.config.student;
+  $("#chipDate").textContent=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+}
+function renderAll(){
+  const on=$(".view.on").id;
+  if(on==="v-dash")renderDash();
+  if(on==="v-daily")renderDaily();
+  if(on==="v-tasks")renderTasks();
+  if(on==="v-exams")renderExams();
+  if(on==="v-settings")renderSettings();
+}
+renderChip();
+</script>
+<script>
+"use strict";
+/* ================= SUPABASE BACKEND & ROSTER ================= */
+/* ============================================================
+   FILL THIS ONCE before uploading to your website (GitHub):
+   Supabase Dashboard → Project Settings → API
+   ============================================================ */
+const SUPA_URL="https://ymdkormhtsrndbjhydzt.supabase.co";
+const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZGtvcm1odHNybmRiamh5ZHp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ0Nzg2MTksImV4cCI6MjEwMDA1NDYxOX0.iuP0-Kum5P66JvmeqNWPNtfI3K-kL5d7_ib_Pn6Q81U";
+const ADMIN_PIN="";  // your private PIN for the student list & settings.
+                     // Leave "" to open the list with no PIN at all.
+
+const CONN_KEY="mq_conn_v1";
+let CONN=null;try{CONN=JSON.parse(localStorage.getItem(CONN_KEY)||"null");}catch(e){}
+if(SUPA_URL&&SUPA_KEY)CONN={url:SUPA_URL,key:SUPA_KEY};
+let LINK=null; // {sid,tok} when opened through a shared teacher link
+let sb=null, roster=[], currentId=null, pushTimer=null, pushErrShown=false, editStudentId=null;
+
+function showOnly(id){
+  if(LINK&&id==="v-settings")id="v-dash";   // settings is admin-only
+  $$(".view").forEach(v=>v.classList.remove("on"));
+  $("#"+id).classList.add("on");
+  const inSystem=["v-dash","v-daily","v-tasks","v-exams","v-settings"].includes(id);
+  $("#nav").style.display=inSystem?"flex":"none";
+  $("#backRoster").style.display=inSystem?"inline-flex":"none";
+  $("#chipBox").style.display=inSystem?"flex":"none";
+}
+function setSync(state){ // "ok" | "sync" | "err"
+  const d=$("#syncDot");d.classList.remove("sync","err");
+  if(state==="sync")d.classList.add("sync");
+  if(state==="err")d.classList.add("err");
+  d.title=state==="ok"?"Saved to cloud":state==="sync"?"Saving…":"Cloud save failed — data kept locally";
+}
+
+/* ---- boot ---- */
+function bootBackend(){
+  if(!window.supabase){
+    showOnly("v-connect");
+    toast("Couldn't load the Supabase library — check your internet connection");
+    return;
+  }
+  const q=new URLSearchParams(location.search);
+  if(q.get("s")&&q.get("t")){
+    if(!CONN||!CONN.url||!CONN.key){showOnly("v-connect");toast("This link needs SUPA_URL/SUPA_KEY set inside the file");return;}
+    linkBoot(q.get("s"),q.get("t"));
+    return;
+  }
+  if(!CONN||!CONN.url||!CONN.key){showOnly("v-connect");return;}
+  initClient();
+}
+
+/* ---- teacher link mode (no password) ---- */
+async function linkBoot(sid,tok){
+  sb=window.supabase.createClient(CONN.url,CONN.key);
+  showOnly("v-roster");$("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">Opening student system…</div>';
+  $("#logoutBtn").style.display="none";$("#rosterRefresh").style.display="none";
+  const{data,error}=await sb.rpc("get_student_by_token",{sid,tok});
+  if(error||!data||!data.length){
+    $("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">This link is invalid or has been revoked.<br>Ask the academy admin for a fresh link.</div>';
+    return;
+  }
+  const row=data[0];
+  LINK={sid,tok};
+  currentId=row.id;
+  loadStateFrom(row);
+  CAN_EDIT=false;document.body.classList.add("viewonly");
+  renderModeBadge();
+  renderChip();setSync("ok");
+  showOnly("v-dash");
+  $("#backRoster").style.display="none";
+  $$("#nav button").forEach(x=>x.classList.toggle("active",x.dataset.v==="dash"));
+  renderAll();
+  toast("Viewing "+row.name+" — double-tap the ☪ logo to edit");
+}
+function loadStateFrom(row){
+  S=Object.assign(defaultState(),row.state||{});
+  S.config=Object.assign(defaultState().config,(row.state||{}).config||{});
+  if(!S.config.student||S.config.student==="Student Name")S.config.student=row.name;
+  S.months=S.months||{};S.tasks=S.tasks||[];S.exams=S.exams||[];
+  activeMonth=null;ensureFirstMonth();
+}
+function renderModeBadge(){
+  let b=$("#modeBadge");
+  if(!b){b=document.createElement("span");b.id="modeBadge";$("#chipStudent").after(b);}
+  if(!LINK){b.remove();return;}
+  b.className="modebadge "+(CAN_EDIT?"edit":"view");
+  b.textContent=CAN_EDIT?"Editing":"View only";
+}
+/* logo double-tap → unlock/lock editing (teacher links only) */
+function unlockBurst(){
+  const c=$("#crest"),r=c.getBoundingClientRect();
+  c.classList.remove("burst");void c.offsetWidth;c.classList.add("burst");
+  const ring=document.createElement("div");ring.className="burst-ring";
+  const size=Math.max(innerWidth,innerHeight)*1.4;
+  ring.style.cssText+=`width:${size}px;height:${size}px;left:${r.left+r.width/2-size/2}px;top:${r.top+r.height/2-size/2}px;`;
+  document.body.appendChild(ring);setTimeout(()=>ring.remove(),650);
+  const f=$("#flash");f.classList.add("on");setTimeout(()=>f.classList.remove("on"),120);
+}
+function toggleEditMode(){
+  if(!LINK)return;                       // admin is always editable
+  CAN_EDIT=!CAN_EDIT;
+  document.body.classList.toggle("viewonly",!CAN_EDIT);
+  $("#crest").classList.toggle("editing",CAN_EDIT);
+  unlockBurst();renderModeBadge();renderAll();
+  toast(CAN_EDIT?"✎ Edit mode unlocked":"🔒 View mode");
+}
+(function(){
+  const c=document.getElementById("crest");
+  c.addEventListener("dblclick",toggleEditMode);
+  let lastTap=0;
+  c.addEventListener("touchend",e=>{
+    const now=Date.now();
+    if(now-lastTap<350){e.preventDefault();toggleEditMode();}
+    lastTap=now;
+  });
+})();
+const ADMIN_OK_KEY="mq_admin_ok_v1";
+function adminUnlocked(){return !ADMIN_PIN||localStorage.getItem(ADMIN_OK_KEY)===ADMIN_PIN;}
+async function initClient(){
+  try{
+    sb=window.supabase.createClient(CONN.url,CONN.key);
+    if(adminUnlocked())enterRoster();else showOnly("v-login");
+  }catch(e){showOnly("v-connect");toast("Couldn't connect — check URL and key");}
+}
+$("#cnSave").onclick=()=>{
+  const url=$("#cnUrl").value.trim().replace(/\/+$/,""), key=$("#cnKey").value.trim();
+  if(!/^https:\/\/.+supabase\.(co|in|com)/.test(url)||key.length<20){toast("That doesn't look like a valid URL + anon key");return;}
+  CONN={url,key};localStorage.setItem(CONN_KEY,JSON.stringify(CONN));initClient();
+};
+$("#pinBtn").onclick=()=>{
+  if($("#pinInput").value===ADMIN_PIN&&ADMIN_PIN){
+    localStorage.setItem(ADMIN_OK_KEY,ADMIN_PIN);$("#pinInput").value="";enterRoster();
+  }else toast("Wrong PIN");
+};
+$("#pinInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("#pinBtn").click();});
+$("#lgReconfig").onclick=()=>{localStorage.removeItem(CONN_KEY);CONN=(SUPA_URL&&SUPA_KEY)?{url:SUPA_URL,key:SUPA_KEY}:null;showOnly("v-connect");};
+$("#logoutBtn").onclick=()=>{
+  if(!ADMIN_PIN){toast("No PIN set inside the file — the list stays open");return;}
+  localStorage.removeItem(ADMIN_OK_KEY);showOnly("v-login");toast("Locked");
+};
+
+/* ---- roster ---- */
+async function enterRoster(){
+  currentId=null;showOnly("v-roster");
+  await fetchRoster();
+}
+async function fetchRoster(){
+  $("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">Loading students…</div>';
+  const{data,error}=await sb.from("students").select("id,name,state,updated_at,share_token").order("name");
+  if(error){
+    $("#rosterGrid").innerHTML=`<div class="empty-note" style="grid-column:1/-1">Couldn't load students: ${esc(error.message)}<br>Did you run the setup SQL in Supabase?</div>`;
+    return;
+  }
+  roster=data||[];renderRoster();
+}
+function summarize(state){
+  const keep=S, keepAM=activeMonth;
+  S=Object.assign(defaultState(),state||{});
+  S.config=Object.assign(defaultState().config,(state||{}).config||{});
+  let out;
+  try{const A=allStats();out={lines:A.cumLines,pct:A.cumLines/S.config.total*100,att:A.att,months:A.rows.length};}
+  catch(e){out={lines:0,pct:0,att:0,months:0};}
+  S=keep;activeMonth=keepAM;
+  return out;
+}
+function miniRing(pct){
+  const r=22,c=2*Math.PI*r,off=c*(1-Math.min(1,pct/100));
+  return `<svg width="58" height="58" viewBox="0 0 58 58">
+    <circle cx="29" cy="29" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
+    <circle cx="29" cy="29" r="${r}" fill="none" stroke="url(#gGoldR)" stroke-width="6" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 29 29)"/>
+    <defs><linearGradient id="gGoldR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2fae7f"/><stop offset="1" stop-color="#C9A96E"/></linearGradient></defs>
+    <text x="29" y="33" text-anchor="middle" font-size="11" fill="#e8cf9a">${pct.toFixed(0)}%</text></svg>`;
+}
+function renderRoster(){
+  $("#rosterCount").textContent=roster.length+" student"+(roster.length===1?"":"s");
+  const cards=roster.map((r,i)=>{
+    const sm=summarize(r.state);
+    const upd=r.updated_at?new Date(r.updated_at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}):"—";
+    return `<div class="card scard" data-id="${r.id}" style="animation:rise .4s ${i*0.05}s ease both">
+      <div class="sname">${esc(r.name)}</div>
+      <div class="smeta">Updated ${upd} · ${sm.months} month${sm.months===1?"":"s"} tracked</div>
+      <div class="srow">${miniRing(sm.pct)}
+        <div class="sstats"><b>${fmt(sm.lines)}</b> lines memorised<br><b>${sm.att.toFixed(0)}%</b> attendance</div></div>
+      <div class="sactions">
+        <button class="btn ghost sm sopen">Open →</button>
+        <button class="btn gold sm sshare" title="Copy teacher link">🔗 Share</button>
+        <button class="btn ghost sm ssettings" title="Settings (admin)">⚙</button>
+        <button class="btn ghost sm srename" title="Rename">✎</button>
+        <button class="btn danger sm sdel" title="Delete">✕</button>
+      </div>
+    </div>`;
+  }).join("");
+  $("#rosterGrid").innerHTML=cards+`<div class="card scard addcard" id="addStudentCard"><div><div class="plus">＋</div>Add student<br><span style="font-size:12px;color:var(--dim)">create a new Hifz system</span></div></div>`;
+  $$("#rosterGrid .scard[data-id]").forEach(c=>{
+    const id=c.dataset.id;
+    c.addEventListener("click",e=>{if(e.target.closest(".srename,.sdel,.sshare,.ssettings"))return;openStudent(id);});
+    c.querySelector(".srename").onclick=()=>openStudentModal(id);
+    c.querySelector(".ssettings").onclick=()=>openStudent(id,{settings:true});
+    c.querySelector(".sshare").onclick=async()=>{
+      const r=roster.find(x=>x.id===id);
+      if(location.protocol==="file:"){toast("Share links work once the file is hosted on your website, not from file://");return;}
+      const url=location.origin+location.pathname+"?s="+id+"&t="+r.share_token;
+      try{await navigator.clipboard.writeText(url);toast("Teacher link copied — send it on WhatsApp ✓");}
+      catch(e){prompt("Copy this teacher link:",url);}
+    };
+    c.querySelector(".sdel").onclick=async()=>{
+      const r=roster.find(x=>x.id===id);
+      if(!confirm(`Delete ${r.name}'s entire system? This cannot be undone.`))return;
+      if(!confirm("Are you absolutely sure? Export a backup first if unsure."))return;
+      const{error}=await sb.from("students").delete().eq("id",id);
+      if(error){toast("Delete failed: "+error.message);return;}
+      toast(r.name+" removed");fetchRoster();
+    };
+  });
+  $("#addStudentCard").onclick=()=>openStudentModal(null);
+}
+$("#rosterRefresh").onclick=fetchRoster;
+
+/* add / rename student */
+function openStudentModal(id){
+  editStudentId=id;
+  $("#smTitle").textContent=id?"Rename student":"Add a student";
+  $("#smSave").textContent=id?"Save name":"Create system";
+  $("#smName").value=id?(roster.find(x=>x.id===id)||{}).name||"":"";
+  $("#studentModal").classList.add("on");
+  setTimeout(()=>$("#smName").focus(),50);
+}
+$("#smSave").onclick=async()=>{
+  const name=$("#smName").value.trim();
+  if(!name){toast("Enter the student's name");return;}
+  if(editStudentId){
+    const r=roster.find(x=>x.id===editStudentId);
+    const st=Object.assign(defaultState(),r.state||{});
+    st.config=Object.assign(defaultState().config,(r.state||{}).config||{},{student:name});
+    const{error}=await sb.from("students").update({name,state:st,updated_at:new Date().toISOString()}).eq("id",editStudentId);
+    if(error){toast("Rename failed: "+error.message);return;}
+  }else{
+    const st=defaultState();st.config.student=name;
+    const{error}=await sb.from("students").insert({name,state:st});
+    if(error){toast("Couldn't create: "+error.message);return;}
+    toast(name+"'s system created ✓");
+  }
+  $("#studentModal").classList.remove("on");fetchRoster();
+};
+$("#smName").addEventListener("keydown",e=>{if(e.key==="Enter")$("#smSave").click();});
+
+/* ---- open a student's system ---- */
+function openStudent(id,opts){
+  const r=roster.find(x=>x.id===id);if(!r)return;
+  currentId=id;pushErrShown=false;
+  loadStateFrom(r);
+  renderChip();setSync("ok");
+  const startView=opts&&opts.settings?"v-settings":"v-dash";
+  showOnly(startView);
+  $$("#nav button").forEach(x=>x.classList.toggle("active",x.dataset.v==="dash"&&startView==="v-dash"));
+  renderAll();
+}
+$("#backRoster").onclick=async()=>{
+  if(pushTimer){clearTimeout(pushTimer);await pushNow();}
+  enterRoster();
+};
+
+/* ---- persistence: local cache + debounced cloud push ---- */
+function persistState(){
+  if(!currentId||!canEdit())return;
+  try{localStorage.setItem("mq_cache_"+currentId,JSON.stringify(S));}catch(e){}
+  setSync("sync");
+  clearTimeout(pushTimer);
+  pushTimer=setTimeout(pushNow,900);
+}
+async function pushNow(){
+  if(!currentId||!sb)return;
+  pushTimer=null;
+  let error;
+  if(LINK){
+    const res=await sb.rpc("update_student_by_token",{sid:LINK.sid,tok:LINK.tok,new_state:S,new_name:S.config.student});
+    error=res.error||(res.data===false?{message:"link no longer valid"}:null);
+  }else{
+    const res=await sb.from("students")
+      .update({state:S,name:S.config.student,updated_at:new Date().toISOString()})
+      .eq("id",currentId);
+    error=res.error;
+  }
+  if(error){
+    setSync("err");
+    if(!pushErrShown){toast("Cloud save failed — changes are kept in this browser");pushErrShown=true;}
+    return;
+  }
+  pushErrShown=false;setSync("ok");
+  const r=roster.find(x=>x.id===currentId);
+  if(r){r.state=JSON.parse(JSON.stringify(S));r.name=S.config.student;}
+}
+window.addEventListener("beforeunload",()=>{if(pushTimer){/* last resort: cache already saved */}});
+
+bootBackend();
+</script>
+</body>
+</html>
