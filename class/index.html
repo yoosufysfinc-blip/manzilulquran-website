@@ -436,6 +436,37 @@
   }
   .empty p{font-size:13px;color:var(--frost-dim);line-height:1.65;max-width:350px;margin:0 auto}
 
+  /* ---------- Study material ---------- */
+  .sm-course{
+    background:linear-gradient(150deg, rgba(91,157,255,0.14) 0%, rgba(29,44,92,0.35) 100%);
+    border:1px solid rgba(91,157,255,0.3); border-radius:16px; padding:20px 22px; margin-bottom:18px;
+  }
+  .sm-kicker{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--azure-light);opacity:.85}
+  .sm-course h3{font-family:'Manrope',sans-serif;font-size:19px;font-weight:800;color:var(--frost);letter-spacing:-.3px;margin:7px 0 6px}
+  .sm-course p{font-size:13px;color:var(--frost-dim);line-height:1.6}
+  .sm-open{
+    display:inline-flex;align-items:center;gap:8px;margin-top:14px;text-decoration:none;
+    background:linear-gradient(135deg, var(--azure) 0%, var(--iris) 100%); color:#fff;
+    font-size:13px;font-weight:700;letter-spacing:.2px;padding:11px 20px;border-radius:11px;
+    transition:transform .2s, box-shadow .2s; box-shadow:0 6px 18px rgba(91,157,255,0.25);
+  }
+  .sm-open:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(91,157,255,0.35)}
+  .sm-label{font-size:10.5px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--frost-faint);margin:20px 0 11px}
+  .sm-list{display:grid;gap:9px}
+  .sm-item{
+    display:flex;align-items:center;gap:14px;text-decoration:none;
+    background:rgba(29,44,92,0.4);border:1px solid rgba(91,157,255,0.18);border-radius:12px;
+    padding:13px 16px;transition:.2s;
+  }
+  .sm-item:hover{border-color:rgba(91,157,255,0.5);background:rgba(29,44,92,0.68);transform:translateX(3px)}
+  .sm-n{
+    width:32px;height:32px;flex:0 0 auto;border-radius:9px;display:grid;place-items:center;
+    background:rgba(91,157,255,0.18);color:var(--azure-light);font-size:13px;font-weight:800;
+  }
+  .sm-t{flex:1;min-width:0;font-size:14px;font-weight:600;color:var(--frost)}
+  .sm-go{color:var(--frost-faint);font-size:17px;font-weight:700}
+  .sm-note{font-size:12px;color:var(--frost-faint);margin-top:16px;line-height:1.6;text-align:center}
+
   /* ---------- Error ---------- */
   .err-card{
     max-width:450px;margin:70px auto 0;text-align:center;
@@ -553,6 +584,7 @@
         <div class="tabs">
           <button class="tab active" data-tab="overview">Overview</button>
           <button class="tab" data-tab="calendar">Calendar Sheets</button>
+          <button class="tab" data-tab="material" id="tabMaterial" hidden>Study Material</button>
         </div>
 
         <!-- Overview -->
@@ -602,6 +634,20 @@
               </svg>
               <h4>No calendar sheets yet</h4>
               <p>Your class schedule and join links will appear here once the academy publishes them, in shā’ Allāh.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Study Material -->
+        <div class="tab-panel" id="panel-material">
+          <div id="smArea">
+            <div class="empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+              <h4>No study material yet</h4>
+              <p>Your lesson material will appear here once the academy assigns it, in sh\u0101\u2019 All\u0101h.</p>
             </div>
           </div>
         </div>
@@ -780,6 +826,76 @@ async function load(){
 }
 
 /* ---------------- Render ---------------- */
+/* =================================================================
+   STUDY MATERIAL
+   The catalog is a mirror of the one in portal/classes/index.html.
+   Whatever the admin ticked arrives as d.studyMaterial, a JSON string:
+     {"course":"foundation-of-islamic-studies","lessons":[1,4,7]}
+   An empty lessons array means the whole course.
+   ================================================================= */
+const SM_CATALOG = {
+  "foundation-of-islamic-studies": {
+    title: "Foundation of Islamic Studies",
+    blurb: "The beautiful basics \u2014 faith, worship, the Qur\u2019an, the prophets and more. In English and Malayalam.",
+    path : "/portal/study-material/foundation-of-islamic-studies/islamic-foundations.html",
+    lessons: [
+      "The Six Articles of Faith",
+      "The Five Pillars of Islam",
+      "Getting to Know Allah",
+      "Wudu \u2014 Getting Clean for Prayer",
+      "Sawm \u2014 Fasting in Ramadan",
+      "Salah & the Friday Prayer",
+      "Makkah & Madinah",
+      "The Holy Qur\u2019an",
+      "The Prophets of Allah (25)",
+      "The Angels \u2014 Malaikah (10)"
+    ]
+  }
+};
+
+function smParse(raw){
+  if(!raw) return null;
+  try{
+    const o = (typeof raw === "string") ? JSON.parse(raw) : raw;
+    if(!o || !o.course || !SM_CATALOG[o.course]) return null;
+    return { course:o.course, lessons: Array.isArray(o.lessons) ? o.lessons.map(Number).filter(n=>n>0) : [] };
+  }catch(e){ return null; }
+}
+
+function renderStudyMaterial(raw){
+  const tab = $('tabMaterial');
+  const sm  = smParse(raw);
+  if(!sm){ tab.hidden = true; return; }   // nothing assigned -> no tab at all
+
+  const cat  = SM_CATALOG[sm.course];
+  const all  = sm.lessons.length === 0;
+  const nums = all ? cat.lessons.map((_,i)=>i+1) : sm.lessons.filter(n => n <= cat.lessons.length);
+  if(!nums.length){ tab.hidden = true; return; }
+
+  tab.hidden = false;
+
+  const firstHash = all ? "" : ("#lesson" + nums[0]);
+  const rows = nums.map(n =>
+    `<a class="sm-item" href="${cat.path}#lesson${n}" target="_blank" rel="noopener">
+       <span class="sm-n">${n}</span>
+       <span class="sm-t">${escapeHtml(cat.lessons[n-1])}</span>
+       <span class="sm-go">\u203a</span>
+     </a>`).join("");
+
+  $('smArea').innerHTML = `
+    <div class="sm-course">
+      <div class="sm-kicker">Your course</div>
+      <h3>${escapeHtml(cat.title)}</h3>
+      <p>${cat.blurb}</p>
+      <a class="sm-open" href="${cat.path}${firstHash}" target="_blank" rel="noopener">
+        Open the book \u2192
+      </a>
+    </div>
+    <div class="sm-label">${all ? "All " + nums.length + " lessons" : nums.length + " lesson" + (nums.length>1?"s":"") + " for you"}</div>
+    <div class="sm-list">${rows}</div>
+    <div class="sm-note">Tap any lesson to open it. You can switch between English and \u0d2e\u0d32\u0d2f\u0d3e\u0d33\u0d02 inside the book.</div>`;
+}
+
 function render(d){
   const isActive = (d.status || 'Active') === 'Active';
 
@@ -812,6 +928,7 @@ function render(d){
   studentNameCache = d.studentName || 'Student';
   renderCalendarStatus();
   renderCalendars();
+  renderStudyMaterial(d.studyMaterial);
 }
 
 /* =================================================================
