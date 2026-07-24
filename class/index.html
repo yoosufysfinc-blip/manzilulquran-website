@@ -439,8 +439,20 @@
   /* ---------- Study material ---------- */
   .sm-course{
     background:linear-gradient(150deg, rgba(91,157,255,0.14) 0%, rgba(29,44,92,0.35) 100%);
-    border:1px solid rgba(91,157,255,0.3); border-radius:16px; padding:20px 22px; margin-bottom:18px;
+    border:1px solid rgba(91,157,255,0.3); border-radius:16px; padding:20px 52px 20px 22px; margin-bottom:0;
+    cursor:pointer; position:relative; transition:border-color .2s, background .2s, transform .2s;
   }
+  .sm-course:hover{border-color:rgba(91,157,255,0.6);transform:translateY(-1px)}
+  .sm-chev{position:absolute;top:22px;right:20px;width:26px;height:26px;border-radius:50%;
+    background:rgba(91,157,255,0.2);color:var(--azure-light);display:grid;place-items:center;
+    font-size:12px;font-weight:800;transition:transform .25s}
+  .sm-block.open .sm-chev{transform:rotate(180deg);background:rgba(91,157,255,0.35);color:#fff}
+  .sm-tap{font-size:11.5px;color:var(--frost-faint);margin-top:12px;font-style:italic}
+  .sm-block.open .sm-tap{display:none}
+  .sm-label,.sm-list{display:none}
+  .sm-block.open .sm-label{display:block}
+  .sm-block.open .sm-list{display:grid;animation:smIn .22s ease-out}
+  @keyframes smIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
   .sm-kicker{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--azure-light);opacity:.85}
   .sm-course h3{font-family:'Manrope',sans-serif;font-size:19px;font-weight:800;color:var(--frost);letter-spacing:-.3px;margin:7px 0 6px}
   .sm-course p{font-size:13px;color:var(--frost-dim);line-height:1.6}
@@ -451,7 +463,7 @@
     transition:transform .2s, box-shadow .2s; box-shadow:0 6px 18px rgba(91,157,255,0.25);
   }
   .sm-open:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(91,157,255,0.35)}
-  .sm-label{font-size:10.5px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--frost-faint);margin:20px 0 11px}
+  .sm-label{font-size:10.5px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--frost-faint);margin:16px 0 11px}
   .sm-list{display:grid;gap:9px}
   .sm-item{
     display:flex;align-items:center;gap:14px;text-decoration:none;
@@ -906,6 +918,8 @@ function smBlock(entry, n, many){
       <h3>${escapeHtml(cat.title)}</h3>
       <p>${cat.blurb}</p>
       <a class="sm-open" href="${cat.path}${all ? "" : "#lesson"+nums[0]}" target="_blank" rel="noopener">Open the book \u2192</a>
+      <div class="sm-tap">Tap this card to see your ${nums.length} lesson${nums.length>1?"s":""} \u25be</div>
+      <span class="sm-chev">\u25be</span>
     </div>
     <div class="sm-label">${all ? "All " + nums.length + " lessons"
                                 : nums.length + " lesson" + (nums.length>1?"s":"") + " for you"}</div>
@@ -924,7 +938,22 @@ function renderStudyMaterial(raw){
 
   tab.hidden = false;
   $('smArea').innerHTML = blocks.join("") +
-    `<div class="sm-note">Tap any lesson to open it. You can switch between English and \u0d2e\u0d32\u0d2f\u0d3e\u0d33\u0d02 inside the book.</div>`;
+    `<div class="sm-note">Tap a course to see its lessons. You can switch between English and \u0d2e\u0d32\u0d2f\u0d3e\u0d33\u0d02 inside the book.</div>`;
+
+  /* the card opens and closes its own lesson list */
+  $('smArea').querySelectorAll('.sm-block').forEach(function(block){
+    const card = block.querySelector('.sm-course');
+    card.addEventListener('click', function(){ block.classList.toggle('open'); });
+    /* the "Open the book" link must not collapse the card */
+    const open = block.querySelector('.sm-open');
+    if(open) open.addEventListener('click', function(e){ e.stopPropagation(); });
+  });
+
+  /* with a single course, open it straight away \u2014 nothing to choose between */
+  if(blocks.length === 1){
+    const only = $('smArea').querySelector('.sm-block');
+    if(only) only.classList.add('open');
+  }
 }
 
 function render(d){
