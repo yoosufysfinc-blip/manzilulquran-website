@@ -269,19 +269,27 @@
     transition:border-color .25s, box-shadow .25s;
   }
   .field input::placeholder{color:rgba(250,246,238,0.32)}
-  /* ---------- study material picker ---------- */
-  .sm-box{margin-top:10px;border:1.5px dashed rgba(201,169,110,0.3);border-radius:12px;padding:13px 14px;background:rgba(3,27,19,0.45)}
-  .sm-box[hidden]{display:none}
-  .sm-hint{font-size:11.5px;color:var(--cream-dim);margin-bottom:10px;line-height:1.5}
-  .sm-lessons{display:flex;flex-wrap:wrap;gap:7px}
-  .sm-chk{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--cream-dim);
-    background:rgba(3,27,19,0.7);border:1.5px solid rgba(201,169,110,0.22);border-radius:99px;padding:7px 13px;cursor:pointer;transition:.2s;user-select:none}
+  /* ---------- study material picker (multi-course) ---------- */
+  .sm-wrap{margin-top:10px;display:flex;flex-direction:column;gap:9px}
+  .sm-course{border:1.5px solid rgba(201,169,110,0.25);border-radius:12px;background:rgba(3,27,19,0.45);overflow:hidden;transition:.2s}
+  .sm-course.on{border-color:var(--gold);background:rgba(201,169,110,0.07)}
+  .sm-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
+  .sm-head input{width:auto;margin:0;accent-color:var(--gold);cursor:pointer;flex:0 0 auto}
+  .sm-head b{font-family:'Manrope',sans-serif;font-size:13.5px;font-weight:700;color:var(--cream-dim);letter-spacing:.2px}
+  .sm-course.on .sm-head b{color:var(--cream)}
+  .sm-head .sm-count{margin-left:auto;font-size:11px;font-weight:700;color:var(--gold-light);white-space:nowrap}
+  .sm-body{padding:0 14px 13px;display:none}
+  .sm-course.on .sm-body{display:block}
+  .sm-hint{font-size:11.5px;color:var(--cream-dim);margin-bottom:9px;line-height:1.5}
+  .sm-lessons{display:flex;flex-wrap:wrap;gap:6px}
+  .sm-chk{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--cream-dim);
+    background:rgba(3,27,19,0.7);border:1.5px solid rgba(201,169,110,0.22);border-radius:99px;padding:6px 12px;cursor:pointer;transition:.2s;user-select:none}
   .sm-chk:hover{border-color:rgba(201,169,110,0.5);color:var(--cream)}
   .sm-chk input{width:auto;margin:0;accent-color:var(--gold)}
-  .sm-chk.on{background:rgba(201,169,110,0.16);border-color:var(--gold);color:var(--cream)}
-  .sm-tools{display:flex;gap:8px;margin-top:11px}
-  .sm-tools button{font-family:'Manrope',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
-    background:transparent;border:1.5px solid rgba(201,169,110,0.3);color:var(--gold-light);border-radius:9px;padding:6px 12px;cursor:pointer;transition:.2s}
+  .sm-chk.on{background:rgba(201,169,110,0.18);border-color:var(--gold);color:var(--cream)}
+  .sm-tools{display:flex;gap:8px;margin-top:10px}
+  .sm-tools button{font-family:'Manrope',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+    background:transparent;border:1.5px solid rgba(201,169,110,0.3);color:var(--gold-light);border-radius:8px;padding:5px 11px;cursor:pointer;transition:.2s}
   .sm-tools button:hover{background:var(--gold);color:var(--emerald-deepest);border-color:var(--gold)}
   .field input:focus,.field select:focus{
     border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,0.14);
@@ -594,18 +602,8 @@
             <span class="err-msg">Please enter a valid link (or leave empty).</span>
           </div>
           <div class="field full">
-            <label>Study Material <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— shown to the student in their class sheet</span></label>
-            <select id="fSmCourse">
-              <option value="">— No study material —</option>
-            </select>
-            <div class="sm-box" id="fSmBox" hidden>
-              <div class="sm-hint" id="fSmHint">Tick the lessons this student may open. Leave all unticked to give the whole course.</div>
-              <div class="sm-lessons" id="fSmLessons"></div>
-              <div class="sm-tools">
-                <button type="button" id="smAll">Select all</button>
-                <button type="button" id="smNone">Clear</button>
-              </div>
-            </div>
+            <label>Study Material <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— tick any courses this student may open</span></label>
+            <div class="sm-wrap" id="fSmList"></div>
           </div>
           <div class="field full">
             <label>Contact Number <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— admin only, never shown on the share link</span></label>
@@ -1070,9 +1068,8 @@ $("newClassBtn").onclick = () => openForm(null);
 
 /* =================================================================
    STUDY MATERIAL CATALOG
-   Add a new course here and it appears in the picker automatically.
-   `path` must match the file on the site. Keep keys in sync with the
-   copy of this catalog inside the class sheet page.
+   Add a course here and it appears in the picker automatically.
+   Keep this list in sync with the copy inside the class sheet page.
    ================================================================= */
 const SM_CATALOG = {
   "tharbiya-level-2": {
@@ -1109,50 +1106,84 @@ const SM_CATALOG = {
   }
 };
 
-/* Parse whatever is stored in the sheet cell into {course, lessons[]} */
+/* Stored in the sheet cell as an ARRAY, so a student can hold several
+   courses at once:
+     [{"course":"...","lessons":[1,4]},{"course":"...","lessons":[]}]
+   An empty lessons array means the whole course.
+   Older single-course values ({"course":...}) are still read correctly. */
 function smParse(raw){
-  if(!raw) return { course:"", lessons:[] };
+  if(!raw) return [];
   try{
-    const o = JSON.parse(raw);
-    return { course: o.course || "", lessons: Array.isArray(o.lessons) ? o.lessons.map(Number) : [] };
-  }catch(e){ return { course:"", lessons:[] }; }
+    const o = (typeof raw === "string") ? JSON.parse(raw) : raw;
+    const arr = Array.isArray(o) ? o : (o && o.course ? [o] : []);
+    return arr.filter(x => x && x.course && SM_CATALOG[x.course])
+              .map(x => ({ course: x.course,
+                           lessons: Array.isArray(x.lessons) ? x.lessons.map(Number).filter(n => n > 0) : [] }));
+  }catch(e){ return []; }
 }
-/* Build the stored string. Empty course -> empty cell. */
-function smStringify(course, lessons){
-  if(!course) return "";
-  return JSON.stringify({ course: course, lessons: lessons.slice().sort((a,b)=>a-b) });
+function smStringify(list){
+  const clean = (list || []).filter(x => x && x.course)
+    .map(x => ({ course: x.course, lessons: (x.lessons || []).slice().sort((a,b) => a-b) }));
+  return clean.length ? JSON.stringify(clean) : "";
 }
 
-function smFillCourses(){
-  const sel = $("fSmCourse");
-  Object.keys(SM_CATALOG).forEach(key => {
-    const o = document.createElement("option");
-    o.value = key; o.textContent = SM_CATALOG[key].title;
-    sel.appendChild(o);
-  });
-}
-function smRenderLessons(courseKey, checked){
-  const box = $("fSmBox"), wrap = $("fSmLessons");
-  if(!courseKey || !SM_CATALOG[courseKey]){ box.hidden = true; wrap.innerHTML = ""; return; }
-  box.hidden = false;
-  const set = new Set((checked||[]).map(Number));
-  wrap.innerHTML = SM_CATALOG[courseKey].lessons.map((t,i) => {
-    const n = i+1;
-    return `<label class="sm-chk${set.has(n)?' on':''}" title="${escapeHtml(t)}">
-      <input type="checkbox" value="${n}"${set.has(n)?' checked':''}> ${n}
-    </label>`;
+/* Build one block per course, pre-ticked from `assigned` */
+function smBuild(assigned){
+  const byKey = {};
+  (assigned || []).forEach(x => byKey[x.course] = new Set(x.lessons));
+  const wrap = $("fSmList");
+  wrap.innerHTML = Object.keys(SM_CATALOG).map(key => {
+    const cat = SM_CATALOG[key], on = key in byKey, set = byKey[key] || new Set();
+    const chips = cat.lessons.map((t,i) => {
+      const n = i+1, tick = set.has(n);
+      return `<label class="sm-chk${tick?' on':''}" title="${escapeHtml(t)}">
+                <input type="checkbox" value="${n}"${tick?' checked':''}> ${n}
+              </label>`;
+    }).join("");
+    return `<div class="sm-course${on?' on':''}" data-key="${key}">
+      <label class="sm-head">
+        <input type="checkbox" class="sm-on"${on?' checked':''}>
+        <b>${escapeHtml(cat.title)}</b>
+        <span class="sm-count"></span>
+      </label>
+      <div class="sm-body">
+        <div class="sm-hint">Tick the lessons this student may open. Leave all unticked to give the whole course.</div>
+        <div class="sm-lessons">${chips}</div>
+        <div class="sm-tools">
+          <button type="button" class="sm-all">Select all</button>
+          <button type="button" class="sm-none">Clear</button>
+        </div>
+      </div>
+    </div>`;
   }).join("");
-  wrap.querySelectorAll("input").forEach(cb => {
-    cb.onchange = () => cb.closest(".sm-chk").classList.toggle("on", cb.checked);
+
+  wrap.querySelectorAll(".sm-course").forEach(box => {
+    const on = box.querySelector(".sm-on");
+    const chips = [...box.querySelectorAll(".sm-lessons input")];
+    const sync = () => {
+      box.classList.toggle("on", on.checked);
+      const n = chips.filter(c => c.checked).length;
+      box.querySelector(".sm-count").textContent =
+        !on.checked ? "" : (n === 0 ? "whole course" : n + " of " + chips.length);
+      chips.forEach(c => c.closest(".sm-chk").classList.toggle("on", c.checked));
+    };
+    on.onchange = sync;
+    chips.forEach(c => c.onchange = sync);
+    box.querySelector(".sm-all").onclick  = () => { chips.forEach(c => c.checked = true);  sync(); };
+    box.querySelector(".sm-none").onclick = () => { chips.forEach(c => c.checked = false); sync(); };
+    sync();
   });
 }
-function smSelected(){
-  return [...document.querySelectorAll("#fSmLessons input:checked")].map(cb => Number(cb.value));
+
+/* Read the picker back out */
+function smCollect(){
+  return [...document.querySelectorAll("#fSmList .sm-course")]
+    .filter(box => box.querySelector(".sm-on").checked)
+    .map(box => ({
+      course : box.dataset.key,
+      lessons: [...box.querySelectorAll(".sm-lessons input:checked")].map(c => Number(c.value))
+    }));
 }
-smFillCourses();
-$("fSmCourse").onchange = () => smRenderLessons($("fSmCourse").value, []);
-$("smAll").onclick  = () => { document.querySelectorAll("#fSmLessons input").forEach(cb=>{cb.checked=true;cb.closest(".sm-chk").classList.add("on");}); };
-$("smNone").onclick = () => { document.querySelectorAll("#fSmLessons input").forEach(cb=>{cb.checked=false;cb.closest(".sm-chk").classList.remove("on");}); };
 
 function openForm(c){
   editingId = c ? c["Class ID"] : null;
@@ -1169,9 +1200,7 @@ function openForm(c){
   $("fPhone").value     = c ? (c["Phone"] || "") : "";
   $("fStatus").value    = c ? (c["Status"] || "Active") : "Active";
 
-  const sm = smParse(c ? c["Study Material"] : "");
-  $("fSmCourse").value = sm.course;
-  smRenderLessons(sm.course, sm.lessons);
+  smBuild(smParse(c ? c["Study Material"] : ""));
 
   document.querySelectorAll("#formModal .field").forEach(f => f.classList.remove("invalid"));
   openModal("formModal");
@@ -1200,7 +1229,7 @@ $("formSaveBtn").onclick = async () => {
       whatsapp:    $("fWhatsapp").value.trim(),
       phone:       $("fPhone").value.trim(),
       status:      $("fStatus").value,
-      studyMaterial: smStringify($("fSmCourse").value, smSelected())
+      studyMaterial: smStringify(smCollect())
     };
     const res = await fetch(SCRIPT_URL, {
       method: "POST",
