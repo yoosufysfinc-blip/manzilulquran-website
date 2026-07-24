@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Islamic Foundations · ManzilulQuran Study Material</title>
+<link rel="icon" href="/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Amiri:wght@400;700&family=Baloo+Chettan+2:wght@400;500;600;700&family=Anek+Malayalam:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF6EA; --paper2:#F4ECD8; --card:#FFFDF7;
+  --ink:#12362A; --ink2:#2C5647; --soft:#6E8A7C;
+  --em:#0B4D3B; --em2:#1B7A5A; --em3:#2FA98C;
+  --gold:#C9A96E; --gold2:#B4934E; --goldSoft:#EFE0BC;
+  --honey:#E6A94E; --rose:#D98A7A; --sky:#5FA8C4;
+  --line:#E7DCC2; --shadow:rgba(11,77,59,.10);
+  --disp:'Fredoka',sans-serif; --body:'Nunito',sans-serif; --ar:'Amiri',serif;
+  --ml-disp:'Baloo Chettan 2','Noto Sans Malayalam',system-ui,sans-serif;
+  --ml-body:'Anek Malayalam','Noto Sans Malayalam',system-ui,sans-serif;
+  --r:20px; --r2:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body); color:var(--ink); background:var(--paper);
+  line-height:1.65; font-size:17px;
+  background-image:
+    radial-gradient(1200px 500px at 100% -5%, rgba(201,169,110,.14), transparent 60%),
+    radial-gradient(900px 500px at -10% 100%, rgba(47,169,140,.10), transparent 55%);
+  background-attachment:fixed;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cpath d='M45 8 L54 27 L74 18 L65 38 L83 45 L65 52 L74 72 L54 63 L45 82 L36 63 L16 72 L25 52 L7 45 L25 38 L16 18 L36 27 Z' fill='none' stroke='%230B4D3B' stroke-width='1'/%3E%3C/svg%3E");
+  background-size:90px 90px;}
+
+/* top reading progress bar */
+.topbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:70;background:transparent}
+.topbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--em3),var(--gold));transition:width .2s}
+
+/* controls */
+.menu-btn{position:fixed;top:14px;left:14px;z-index:65;background:var(--em);color:#fff;border:0;width:48px;height:48px;border-radius:14px;font-size:20px;cursor:pointer;box-shadow:0 6px 18px var(--shadow);display:grid;place-items:center;transition:.2s}
+.menu-btn:hover{background:var(--em2)}
+.langtoggle{position:fixed;top:14px;right:14px;z-index:65;display:flex;background:var(--em);border:1.5px solid var(--gold);border-radius:99px;padding:4px;box-shadow:0 8px 22px var(--shadow)}
+.langtoggle button{border:0;background:transparent;color:#dfeee7;font-family:var(--body);font-weight:700;font-size:13px;padding:7px 15px;border-radius:99px;cursor:pointer;transition:.22s;line-height:1}
+.langtoggle button:hover{color:#fff}
+.langtoggle button.on{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#0B3227}
+.langtoggle #mlBtn{font-family:'Baloo Chettan 2','Noto Sans Malayalam',sans-serif;font-size:15px;padding:5px 15px}
+
+/* page indicator pill */
+.pagepill{position:fixed;bottom:16px;right:16px;z-index:60;background:var(--em);color:#f3ead2;font-family:var(--disp);font-weight:600;font-size:13px;padding:8px 16px;border-radius:99px;box-shadow:0 8px 22px var(--shadow);border:1px solid var(--gold);opacity:.94}
+
+/* ---------- DRAWER menu (anchor links only) ---------- */
+.scrim{position:fixed;inset:0;background:rgba(6,30,22,.55);z-index:80;opacity:0;pointer-events:none;transition:.3s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;height:100vh;width:300px;max-width:86vw;z-index:85;
+  background:linear-gradient(180deg,#0B4D3B,#0a3f31);color:#f3ead2;padding:24px 20px;overflow-y:auto;
+  border-right:3px solid var(--gold);transform:translateX(-105%);transition:transform .32s cubic-bezier(.3,.8,.3,1)}
+.drawer.open{transform:none}
+.drawer-brand{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.drawer-logo{width:46px;height:46px;border-radius:50%;border:2px solid var(--gold);overflow:hidden;background:#fff;display:grid;place-items:center;color:var(--gold);font-size:20px;flex:0 0 auto;position:relative}
+.drawer-logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.drawer-brand b{font-family:var(--disp);font-weight:600;font-size:15px;line-height:1.2}
+.drawer-brand span{font-size:11px;color:var(--goldSoft);letter-spacing:.1em;text-transform:uppercase}
+.drawer h4{font-family:var(--disp);font-weight:500;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:24px 4px 12px}
+.jump{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:#dfeee7;text-decoration:none;font-weight:600;font-size:15px;margin-bottom:6px;transition:.2s;border:1px solid transparent}
+.jump:hover{background:rgba(255,255,255,.07)}
+.jump.here{background:rgba(201,169,110,.16);border-color:rgba(201,169,110,.4)}
+.jump .pg{width:30px;height:30px;flex:0 0 auto;border-radius:9px;background:rgba(201,169,110,.2);color:var(--goldSoft);display:grid;place-items:center;font-family:var(--disp);font-weight:700;font-size:14px}
+.jump small{display:block;font-weight:400;font-size:12px;color:#9fc0b2;margin-top:2px}
+.drawer-close{margin-top:20px;width:100%;background:transparent;border:1px solid rgba(255,255,255,.2);color:#cfe2d8;padding:10px;border-radius:10px;font-family:var(--body);font-weight:700;cursor:pointer;transition:.2s}
+.drawer-close:hover{background:rgba(255,255,255,.08)}
+
+/* ---------- BOOK (single column) ---------- */
+.book{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:0 22px 70px}
+
+/* cover */
+.cover{text-align:center;padding:84px 10px 40px}
+.cover .crest{width:84px;height:84px;border-radius:50%;border:3px solid var(--gold);margin:0 auto 20px;overflow:hidden;background:#fff;display:grid;place-items:center;color:var(--gold);font-size:34px;position:relative;box-shadow:0 10px 30px var(--shadow)}
+.cover .crest img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cover .eyebrow{justify-content:center}
+.cover h1{font-family:var(--disp);font-weight:700;font-size:clamp(30px,6vw,48px);color:var(--em);line-height:1.1;margin:12px 0 12px}
+.cover .sub{font-size:18px;color:var(--ink2);max-width:52ch;margin:0 auto}
+.cover .bismillah{margin-top:30px}
+.cover-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:34px auto 0;max-width:560px;text-align:left}
+.cover-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--ink);transition:.2s}
+.cover-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 20px var(--shadow)}
+.cover-card .cn{width:38px;height:38px;flex:0 0 auto;border-radius:10px;background:var(--goldSoft);color:var(--em);display:grid;place-items:center;font-family:var(--disp);font-weight:700}
+.cover-card b{font-family:var(--disp);font-weight:600;font-size:14.5px;color:var(--em);display:block;line-height:1.2}
+.cover-card span{font-size:12px;color:var(--soft)}
+
+.eyebrow{font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--gold)}
+.bismillah{font-family:var(--ar);font-size:26px;color:var(--gold2);text-align:center;margin:8px 0;direction:rtl}
+.bismillah-t{text-align:center;font-size:13px;color:var(--soft);font-style:italic}
+
+/* lesson / chapter */
+.lesson{padding-top:40px;scroll-margin-top:8px;border-top:2px dashed var(--line);margin-top:26px}
+.lesson:first-of-type{border-top:0}
+.chapter-head{display:flex;align-items:center;gap:18px;margin-bottom:10px}
+.chapter-num{width:64px;height:64px;flex:0 0 auto;position:relative;display:grid;place-items:center;color:#fff;font-family:var(--disp);font-weight:700;font-size:26px}
+.chapter-num svg{position:absolute;inset:0;width:100%;height:100%}
+.chapter-num span{position:relative;z-index:1}
+.chapter-head .ct .eyebrow{margin-bottom:4px}
+.chapter-head h2{font-family:var(--disp);font-weight:700;font-size:clamp(24px,4vw,32px);color:var(--em);line-height:1.12}
+.chapter-head .k{font-family:var(--ar);font-size:17px;color:var(--gold2)}
+.lesson > p{margin-top:16px}
+.lesson > p b{color:var(--em2)}
+.sec-sub{font-family:var(--disp);font-weight:600;font-size:19px;color:var(--em2);margin:28px 0 4px}
+
+.callout{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;margin-top:22px;box-shadow:0 8px 24px var(--shadow)}
+
+/* belief cards */
+.grid6{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:22px}
+.bcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:18px;display:flex;gap:14px;align-items:flex-start;transition:.25s;position:relative;overflow:hidden}
+.bcard:hover{transform:translateY(-3px);box-shadow:0 12px 26px var(--shadow);border-color:var(--gold)}
+.bcard .ic{width:44px;height:44px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;font-size:22px;background:var(--goldSoft);color:var(--em)}
+.bcard h3{font-family:var(--disp);font-weight:600;font-size:16px;color:var(--em);margin-bottom:3px}
+.bcard h3 .ar{font-family:var(--ar);color:var(--gold2);font-size:15px;font-weight:400;margin-left:5px}
+.bcard p{font-size:14px;color:var(--ink2);line-height:1.55}
+.bcard .n{position:absolute;top:8px;right:12px;font-family:var(--disp);font-weight:700;font-size:30px;color:var(--goldSoft)}
+
+/* pillars visual */
+.pillars{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:24px;align-items:end}
+.pillar{text-align:center}
+.pillar .cap{background:var(--em);color:#fff;font-family:var(--disp);font-weight:600;font-size:13px;padding:8px 4px;border-radius:10px 10px 0 0}
+.pillar .shaft{background:linear-gradient(180deg,var(--card),var(--paper2));border:1px solid var(--line);border-top:0;border-bottom:0;padding:16px 8px;font-size:12.5px;color:var(--ink2);min-height:116px;display:flex;align-items:center;justify-content:center}
+.pillar .ar{font-family:var(--ar);color:var(--gold2);font-size:15px;display:block;margin-top:4px}
+.pillar-base{height:14px;background:linear-gradient(180deg,var(--gold),var(--gold2));border-radius:0 0 10px 10px;grid-column:1/-1;margin-top:-1px}
+.pillars-ground{grid-column:1/-1;text-align:center;font-size:13px;color:var(--soft);margin-top:8px;font-style:italic}
+
+/* names grid */
+.names{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:22px}
+.name{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:16px 18px;display:flex;align-items:center;gap:14px;transition:.2s}
+.name:hover{border-color:var(--gold);box-shadow:0 8px 20px var(--shadow)}
+.name .arn{font-family:var(--ar);font-size:26px;color:var(--em);flex:0 0 auto;min-width:62px;text-align:center}
+.name .mean b{font-family:var(--disp);font-weight:600;color:var(--em2);display:block;font-size:15px}
+.name .mean span{font-size:13.5px;color:var(--ink2)}
+
+/* wudu steps */
+.wudu{margin-top:22px;display:grid;gap:12px}
+.wstep{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:16px 18px;display:flex;gap:16px;align-items:flex-start;transition:.2s;position:relative}
+.wstep:hover{border-color:var(--gold);box-shadow:0 8px 20px var(--shadow)}
+.wstep .wn{width:40px;height:40px;flex:0 0 auto;border-radius:50%;background:linear-gradient(135deg,var(--em2),var(--em));color:#fff;display:grid;place-items:center;font-family:var(--disp);font-weight:700;font-size:17px}
+.wstep .we{font-size:26px;flex:0 0 auto}
+.wstep h3{font-family:var(--disp);font-weight:600;font-size:16px;color:var(--em);margin-bottom:2px}
+.wstep p{font-size:14px;color:var(--ink2);line-height:1.55}
+.wstep .times{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--gold2);background:var(--goldSoft);padding:2px 9px;border-radius:99px;margin-left:6px;white-space:nowrap}
+
+/* image placeholder */
+.asset-img{margin:26px 0}
+.ph{border:2.5px dashed var(--gold);background:repeating-linear-gradient(135deg,rgba(201,169,110,.05),rgba(201,169,110,.05) 12px,rgba(201,169,110,.10) 12px,rgba(201,169,110,.10) 24px);border-radius:var(--r);padding:30px 24px;text-align:center;color:var(--ink2)}
+.ph .picon{font-size:34px}
+.ph .pid{display:inline-block;font-family:var(--disp);font-weight:600;font-size:11px;letter-spacing:.08em;background:var(--em);color:#fff;padding:4px 12px;border-radius:99px;margin:10px 0 8px}
+.ph .palt{font-weight:700;color:var(--em);font-size:16px;max-width:52ch;margin:0 auto 4px}
+.ph .pcap{font-size:13px;color:var(--soft)}
+.ph .pbtn{margin-top:14px;background:transparent;border:1px solid var(--gold);color:var(--gold2);font-family:var(--body);font-weight:700;font-size:12.5px;padding:7px 16px;border-radius:99px;cursor:pointer;transition:.2s}
+.ph .pbtn:hover{background:var(--goldSoft)}
+.ph .pprompt{display:none;text-align:left;margin-top:14px;background:#fffdf7;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--ink2)}
+.ph .pprompt.show{display:block}
+.ph .pprompt b{color:var(--em);font-family:var(--disp)}
+.ph .pprompt ul{margin:8px 0 0 18px}.ph .pprompt li{margin:3px 0}
+.asset-img.ready img{width:100%;border-radius:var(--r);box-shadow:0 12px 30px var(--shadow)}
+.asset-img .fig{font-size:13px;color:var(--soft);text-align:center;margin-top:8px;font-style:italic}
+
+/* did you know / activity / keywords / remember */
+.dyk{background:linear-gradient(135deg,rgba(95,168,196,.12),rgba(47,169,140,.10));border:1px solid rgba(95,168,196,.3);border-radius:var(--r);padding:18px 22px;margin-top:22px;display:flex;gap:14px;align-items:flex-start}
+.dyk .e{font-size:26px;flex:0 0 auto}
+.dyk b{font-family:var(--disp);color:var(--em);display:block;margin-bottom:2px}
+.dyk p{font-size:14.5px;color:var(--ink2)}
+.activity{background:#fff;border:2px solid var(--honey);border-radius:var(--r);padding:22px 24px;margin-top:24px;position:relative;box-shadow:0 8px 24px rgba(230,169,78,.14)}
+.activity::before{content:attr(data-label);position:absolute;top:-12px;left:22px;background:var(--honey);color:#fff;font-family:var(--disp);font-weight:600;font-size:11px;letter-spacing:.12em;padding:4px 14px;border-radius:99px}
+.activity h3{font-family:var(--disp);font-weight:600;font-size:18px;color:var(--em);margin:6px 0 8px}
+.activity ol,.activity ul{margin:8px 0 0 20px}.activity li{margin:6px 0;font-size:15px}
+.activity .tip{font-size:13px;color:var(--soft);margin-top:12px;font-style:italic}
+.keywords{background:var(--paper2);border:1px dashed var(--gold2);border-radius:var(--r);padding:18px 22px;margin-top:24px}
+.keywords h4{font-family:var(--disp);font-weight:600;color:var(--em);font-size:15px;margin-bottom:10px}
+.kw{display:flex;flex-wrap:wrap;gap:8px}
+.kw span{background:#fff;border:1px solid var(--line);border-radius:99px;padding:6px 13px;font-size:13.5px;color:var(--ink2)}
+.kw span b{color:var(--em2);font-family:var(--disp)}
+.kw span .ar{font-family:var(--ar);color:var(--gold2);margin-left:4px}
+.remember{background:linear-gradient(135deg,rgba(47,169,140,.12),rgba(201,169,110,.12));border:1px solid rgba(47,169,140,.3);border-radius:var(--r);padding:18px 22px;margin-top:22px;display:flex;gap:14px;align-items:flex-start}
+.remember .e{font-size:24px;flex:0 0 auto}
+.remember b{font-family:var(--disp);color:var(--em);display:block;margin-bottom:3px}
+.remember p{font-size:14.5px;color:var(--ink2)}
+
+/* quiz */
+.quiz{background:linear-gradient(135deg,#0B4D3B,#12604a);color:#f3ead2;border-radius:var(--r);padding:28px 26px;margin-top:30px}
+.quiz h3{font-family:var(--disp);font-weight:600;font-size:21px;color:#fff;margin-bottom:4px}
+.quiz .qsub{color:var(--goldSoft);font-size:13.5px;margin-bottom:18px}
+.q{margin-bottom:20px}
+.q p{font-weight:700;margin-bottom:10px;color:#fff}
+.q .opts{display:grid;gap:8px}
+.opt{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;padding:11px 16px;cursor:pointer;font-family:var(--body);font-weight:600;font-size:14.5px;color:#eadfc4;text-align:left;transition:.18s}
+.opt:hover{background:rgba(255,255,255,.13)}
+.opt.correct{background:rgba(47,169,140,.35);border-color:var(--em3);color:#fff}
+.opt.wrong{background:rgba(217,138,122,.3);border-color:var(--rose);color:#fff}
+.qfb{font-size:13.5px;margin-top:8px;min-height:18px;color:var(--goldSoft)}
+.quiz-score{text-align:center;font-family:var(--disp);font-weight:600;font-size:17px;color:#fff;margin-top:8px}
+
+/* book page number ornament */
+.pagenum{text-align:center;font-family:var(--disp);font-weight:600;color:var(--gold2);font-size:15px;margin-top:40px;letter-spacing:.1em}
+.pagenum::before,.pagenum::after{content:"❃";margin:0 12px;color:var(--gold);font-size:13px}
+
+/* completion */
+.done-panel{background:linear-gradient(135deg,#0B4D3B,#155f47);color:#f3ead2;border-radius:var(--r);padding:34px 28px;margin-top:44px;text-align:center;border:2px solid var(--gold)}
+.done-panel .big{font-size:44px}
+.done-panel h3{font-family:var(--disp);font-weight:700;font-size:24px;color:#fff;margin:8px 0 8px}
+.done-panel p{color:var(--goldSoft);max-width:50ch;margin:0 auto}
+.done-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:22px auto 0;max-width:520px;text-align:left}
+.done-list div{background:rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;font-size:14px;display:flex;gap:8px;align-items:center}
+.footer-note{text-align:center;color:var(--soft);font-size:12.5px;margin-top:34px}
+.footer-note b{color:var(--gold2)}
+
+/* ---------- memorisation widget ---------- */
+.memzone{background:linear-gradient(135deg,rgba(11,77,59,.06),rgba(201,169,110,.12));border:2px solid var(--gold);border-radius:var(--r);padding:24px;margin-top:26px}
+.memtitle{font-family:var(--disp);font-weight:700;color:var(--em);font-size:19px;margin-bottom:6px}
+.memintro{font-size:14.5px;color:var(--ink2);margin-bottom:16px}
+.memctrl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.membtn{font-family:var(--body);font-weight:700;font-size:13.5px;border:0;border-radius:10px;padding:9px 15px;cursor:pointer;background:linear-gradient(135deg,var(--em2),var(--em));color:#fff;transition:.2s}
+.membtn:hover{transform:translateY(-1px)}
+.membtn:disabled{opacity:.5;cursor:default;transform:none}
+.membtn.ghost{background:transparent;border:1px solid var(--gold2);color:var(--gold2)}
+.memprog{height:9px;background:rgba(11,77,59,.1);border-radius:99px;overflow:hidden}
+.memprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--em3),var(--gold));border-radius:99px;transition:width .5s}
+.memlab{font-size:12.5px;color:var(--soft);margin:8px 0 14px;text-align:center;font-weight:700}
+.memparts{display:grid;gap:10px}
+.mempart{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;transition:.2s}
+.mempart.done{border-color:var(--em3);background:linear-gradient(135deg,rgba(47,169,140,.08),#fffdf7)}
+.mpnum{width:30px;height:30px;flex:0 0 auto;border-radius:50%;background:var(--goldSoft);color:var(--em);display:grid;place-items:center;font-family:var(--disp);font-weight:700;font-size:14px}
+.mpbody{flex:1;min-width:0}
+.mpar{font-family:var(--ar);font-size:27px;color:var(--em);line-height:1.95;direction:rtl;text-align:right}
+.mptr{font-size:14px;color:var(--em2);font-style:italic;margin-top:5px;font-weight:600}
+.mpmean{font-size:13.5px;color:var(--ink2);margin-top:2px}
+.mpstar{flex:0 0 auto;align-self:center;font-family:var(--body);font-weight:700;font-size:12px;border:1px solid var(--gold);background:transparent;color:var(--gold2);border-radius:99px;padding:6px 12px;cursor:pointer;transition:.2s;white-space:nowrap}
+.mempart.done .mpstar{background:var(--em3);border-color:var(--em3);color:#fff}
+.memdone{margin-top:14px;text-align:center;font-family:var(--disp);font-weight:600;color:var(--em);background:rgba(47,169,140,.16);border-radius:12px;padding:12px}
+/* prayer position chips reuse .kw */
+body.lang-ml .memtitle,body.lang-ml .membtn,body.lang-ml .memdone{font-family:var(--ml-disp)}
+@media(max-width:760px){.mempart{flex-wrap:wrap}.mpstar{align-self:flex-start}.mpar{font-size:23px}}
+
+/* ---------- review checkpoints ---------- */
+.review{background:linear-gradient(135deg,#0B4D3B,#12604a);color:#f3ead2;border-radius:var(--r);padding:28px 26px;margin:38px 0}
+.review-head{margin-bottom:16px}
+.rv-badge{display:inline-block;font-family:var(--disp);font-weight:700;font-size:11px;letter-spacing:.18em;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#06150f;padding:4px 12px;border-radius:99px;margin-bottom:10px}
+.review-head h2{font-family:var(--disp);font-weight:700;font-size:22px;color:#fff}
+.review-head p{color:var(--goldSoft);font-size:14px;margin-top:4px}
+.revcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.revcard{text-align:left;font-family:var(--body);background:rgba(255,255,255,.07);border:1.5px solid rgba(201,169,110,.3);border-radius:14px;padding:16px;cursor:pointer;transition:.2s;color:#eadfc4}
+.revcard:hover{background:rgba(255,255,255,.12);border-color:var(--gold)}
+.revcard .rq{display:block;font-weight:700;font-size:14.5px;color:#fff}
+.revcard .rhint{display:block;font-size:11.5px;color:var(--goldSoft);margin-top:8px;font-style:italic}
+.revcard .ra{display:none;font-size:14px;color:#c6ecd8;margin-top:10px;font-weight:600;border-top:1px dashed rgba(201,169,110,.3);padding-top:8px}
+.revcard.open .ra{display:block}
+.revcard.open .rhint{display:none}
+body.lang-ml .review-head h2,body.lang-ml .revcard .rq{font-family:var(--ml-disp)}
+
+/* ---------- Claude-drawn SVG illustrations ---------- */
+.asset-svg{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:0 10px 26px var(--shadow);text-align:center}
+.asset-svg svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.svg-prompt{margin-top:10px;text-align:center}
+.svg-prompt .pprompt{text-align:left}
+
+/* ---------- prophets grid ---------- */
+.prophets{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px;margin-top:20px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 10px 10px;text-align:center;transition:.2s;position:relative}
+.pcard:hover{border-color:var(--gold);box-shadow:0 6px 16px var(--shadow);transform:translateY(-2px)}
+.pcard i{position:absolute;top:6px;left:7px;font-style:normal;font-family:var(--disp);font-weight:700;font-size:10px;color:var(--goldSoft);background:var(--em);min-width:18px;height:18px;padding:0 3px;border-radius:9px;display:inline-grid;place-items:center}
+.pcard .ar{font-family:var(--ar);color:var(--gold2);font-size:20px;display:block;line-height:1.4}
+.pcard b{display:block;font-family:var(--disp);font-weight:600;color:var(--em);font-size:13.5px;margin-top:2px}
+.pcard em{display:block;font-style:normal;font-size:10px;color:var(--soft);margin-top:1px}
+body.lang-ml .pcard b{font-family:var(--ml-disp)}
+
+/* Malayalam typography */
+body.lang-ml{font-family:var(--ml-body);line-height:1.9;font-size:17.5px}
+body.lang-ml h1,body.lang-ml h2,body.lang-ml h3,body.lang-ml .chapter-head h2,
+body.lang-ml .bcard h3,body.lang-ml .activity h3,body.lang-ml .quiz h3,
+body.lang-ml .drawer-brand b,body.lang-ml .jump,body.lang-ml .name .mean b,
+body.lang-ml .dyk b,body.lang-ml .pillar .cap,body.lang-ml .eyebrow,
+body.lang-ml .cover h1,body.lang-ml .sec-sub,body.lang-ml .wstep h3,
+body.lang-ml .keywords h4,body.lang-ml .remember b,body.lang-ml .cover-card b,
+body.lang-ml .done-panel h3,body.lang-ml .q p,body.lang-ml .pagenum{font-family:var(--ml-disp)}
+body.lang-ml .lead,body.lang-ml .cover .sub{line-height:1.8}
+body.lang-ml .bcard p,body.lang-ml .name .mean span,body.lang-ml .wstep p{line-height:1.75}
+body.lang-ml .pillar .shaft{font-size:12.5px;line-height:1.65}
+
+@media(max-width:760px){
+  .grid6,.names,.cover-cards,.done-list{grid-template-columns:1fr}
+  .pillars{grid-template-columns:1fr;align-items:stretch}.pillar-base{display:none}
+  .book{padding:0 16px 60px}.cover{padding:78px 6px 30px}
+  .chapter-num{width:54px;height:54px;font-size:22px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="topbar"><i id="progBar"></i></div>
+<button class="menu-btn" id="menuBtn" aria-label="Open lessons menu">☰</button>
+<div class="langtoggle" id="langToggle"><button id="enBtn" class="on">EN</button><button id="mlBtn">മലയാളം</button></div>
+<div class="pagepill" id="pagePill">Page 1 / 4</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-brand">
+    <div class="drawer-logo">☪<img src="/og-image.jpg" alt="" onerror="this.remove()"></div>
+    <div><b data-i18n="brand">Study Material</b><span>ManzilulQuran</span></div>
+  </div>
+  <h4 data-i18n="course">Course · Islamic Foundations</h4>
+  <a class="jump" href="#lesson1"><span class="pg">1</span><span><span data-i18n="j1">The Six Articles of Faith</span><small data-i18n="j1s">What we believe · Iman</small></span></a>
+  <a class="jump" href="#lesson2"><span class="pg">2</span><span><span data-i18n="j2">The Five Pillars of Islam</span><small data-i18n="j2s">What we do · Islam</small></span></a>
+  <a class="jump" href="#lesson3"><span class="pg">3</span><span><span data-i18n="j3">Getting to Know Allah</span><small data-i18n="j3s">His beautiful names</small></span></a>
+  <a class="jump" href="#lesson4"><span class="pg">4</span><span><span data-i18n="j4">Wudu — Getting Clean for Prayer</span><small data-i18n="j4s">Step by step</small></span></a>
+  <a class="jump" href="#lesson5"><span class="pg">5</span><span><span data-i18n="j5">Sawm — Fasting in Ramadan</span><small data-i18n="j5s">The happy month</small></span></a>
+  <a class="jump" href="#lesson6"><span class="pg">6</span><span><span data-i18n="j6">Salah &amp; Friday Prayer</span><small data-i18n="j6s">Talking to Allah</small></span></a>
+  <a class="jump" href="#lesson7"><span class="pg">7</span><span><span data-i18n="j7">Makkah &amp; Madinah</span><small data-i18n="j7s">The two holy cities</small></span></a>
+  <a class="jump" href="#lesson8"><span class="pg">8</span><span><span data-i18n="j8">The Holy Qur'an</span><small data-i18n="j8s">Its light &amp; rewards</small></span></a>
+  <a class="jump" href="#lesson9"><span class="pg">9</span><span><span data-i18n="j9">The Prophets of Allah</span><small data-i18n="j9s">The 25 prophets</small></span></a>
+  <a class="jump" href="#lesson10"><span class="pg">10</span><span><span data-i18n="j10">The Angels</span><small data-i18n="j10s">Made of light</small></span></a>
+  <button class="drawer-close" id="drawerClose" data-i18n="close">Close menu</button>
+</aside>
+
+<div class="book">
+
+  <!-- ===================== COVER ===================== -->
+  <header class="cover" id="top">
+    <div class="crest">☪<img src="/og-image.jpg" alt="" onerror="this.remove()"></div>
+    <div class="eyebrow" data-i18n="coverEye">ManzilulQuran · Study Material</div>
+    <h1 data-i18n="coverTitle">Islamic Foundations</h1>
+    <p class="sub" data-i18n="coverSub">Four gentle lessons for young learners — what we believe, what we do, our loving Allah, and how we get clean for prayer. Tap the ☰ menu any time to jump between lessons.</p>
+    <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+    <div class="bismillah-t" data-i18n="bismt">In the name of Allah, the Most Kind, the Most Merciful.</div>
+    <div class="cover-cards">
+      <a class="cover-card" href="#lesson1"><span class="cn">1</span><span><b data-i18n="j1">The Six Articles of Faith</b><span data-i18n="j1s">What we believe · Iman</span></span></a>
+      <a class="cover-card" href="#lesson2"><span class="cn">2</span><span><b data-i18n="j2">The Five Pillars of Islam</b><span data-i18n="j2s">What we do · Islam</span></span></a>
+      <a class="cover-card" href="#lesson3"><span class="cn">3</span><span><b data-i18n="j3">Getting to Know Allah</b><span data-i18n="j3s">His beautiful names</span></span></a>
+      <a class="cover-card" href="#lesson4"><span class="cn">4</span><span><b data-i18n="j4">Wudu for Prayer</b><span data-i18n="j4s">Step by step</span></span></a>
+      <a class="cover-card" href="#lesson5"><span class="cn">5</span><span><b data-i18n="j5">Sawm — Fasting in Ramadan</b><span data-i18n="j5s">The happy month</span></span></a>
+      <a class="cover-card" href="#lesson6"><span class="cn">6</span><span><b data-i18n="j6">Salah &amp; Friday Prayer</b><span data-i18n="j6s">Talking to Allah</span></span></a>
+      <a class="cover-card" href="#lesson7"><span class="cn">7</span><span><b data-i18n="j7">Makkah &amp; Madinah</b><span data-i18n="j7s">The two holy cities</span></span></a>
+      <a class="cover-card" href="#lesson8"><span class="cn">8</span><span><b data-i18n="j8">The Holy Qur'an</b><span data-i18n="j8s">Its light &amp; rewards</span></span></a>
+      <a class="cover-card" href="#lesson9"><span class="cn">9</span><span><b data-i18n="j9">The Prophets of Allah</b><span data-i18n="j9s">The 25 prophets</span></span></a>
+      <a class="cover-card" href="#lesson10"><span class="cn">10</span><span><b data-i18n="j10">The Angels</b><span data-i18n="j10s">Made of light</span></span></a>
+    </div>
+  </header>
+
+  <!-- ===================== LESSON 1 ===================== -->
+  <section class="lesson" id="lesson1">
+    <div class="chapter-head">
+      <div class="chapter-num"><svg viewBox="0 0 64 64"><path d="M32 4 L39 22 L59 17 L46 33 L59 49 L39 44 L32 62 L25 44 L5 49 L18 33 L5 17 L25 22 Z" fill="#1B7A5A"/></svg><span>1</span></div>
+      <div class="ct"><div class="eyebrow" data-i18n="l1eye">Lesson One · What We Believe</div><h2 data-i18n="l1h">The Six Articles of Faith</h2><div class="k">أَرْكَانُ الإِيمَان</div></div>
+    </div>
+
+    <p data-i18n="l1p1">Every strong building begins with a strong foundation you cannot even see — the part hidden under the ground. Our <b>faith</b> is like that hidden foundation. In Arabic we call it <b>Iman</b>, and it lives quietly inside your heart. Iman means the important truths a Muslim believes, even though we cannot see them with our eyes.</p>
+    <p data-i18n="l1p2">Our beloved Prophet Muhammad ﷺ taught us that there are <b>six</b> of these beliefs. Think of them as six shining stars. When all six are in your heart, your faith is complete and bright. Let's meet each one.</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-001-HERO"></div>
+
+    <div class="grid6">
+      <div class="bcard"><span class="n">1</span><div class="ic">☝️</div><div><h3 data-i18n="l1c1t">Belief in Allah</h3><p data-i18n="l1c1d">We believe there is only <b>one</b> God — Allah. He was not born and He has no children. He made the whole universe, and He alone deserves our worship. Nothing is like Him.</p></div></div>
+      <div class="bcard"><span class="n">2</span><div class="ic">✨</div><div><h3 data-i18n="l1c2t">Belief in the Angels <span class="ar">مَلائِكة</span></h3><p data-i18n="l1c2d">Allah created angels from light. We cannot see them, but they never disobey Allah. Jibreel brought Allah's words to the prophets, and two angels stay with each of us to write what we do.</p></div></div>
+      <div class="bcard"><span class="n">3</span><div class="ic">📖</div><div><h3 data-i18n="l1c3t">Belief in the Holy Books <span class="ar">كُتُب</span></h3><p data-i18n="l1c3d">Allah sent guidance in holy books: the Tawrah, the Zabur, and the Injeel came to earlier prophets. The <b>Qur'an</b> is the final book, sent to Muhammad ﷺ, and Allah keeps it perfect and unchanged forever.</p></div></div>
+      <div class="bcard"><span class="n">4</span><div class="ic">🕌</div><div><h3 data-i18n="l1c4t">Belief in the Prophets <span class="ar">رُسُل</span></h3><p data-i18n="l1c4d">Allah sent many kind prophets to guide people — like Adam, Nuh, Ibrahim, Musa and Isa (peace be upon them all). Muhammad ﷺ is the <b>very last</b> prophet; no prophet will come after him.</p></div></div>
+      <div class="bcard"><span class="n">5</span><div class="ic">🌅</div><div><h3 data-i18n="l1c5t">Belief in the Last Day <span class="ar">الآخِرة</span></h3><p data-i18n="l1c5d">One day this world will end. Allah will bring everyone back to life and ask about how we lived. Those who believed and did good will enter Jannah (Paradise). Allah is perfectly fair and endlessly merciful.</p></div></div>
+      <div class="bcard"><span class="n">6</span><div class="ic">🌟</div><div><h3 data-i18n="l1c6t">Belief in Allah's Plan <span class="ar">قَدَر</span></h3><p data-i18n="l1c6d">Allah knows everything that has happened and everything that will happen. Nothing takes place without His knowledge and wisdom. So we work hard, make du'a, and trust that Allah's plan is always best.</p></div></div>
+    </div>
+
+    <div class="asset-img" data-asset="IMG-FOUND-001-A"></div>
+
+    <div class="dyk"><span class="e">💡</span><div><b data-i18n="l1dykt">Did you know?</b><p data-i18n="l1dykp">Two angels travel with you all day long. One writes down your good deeds and the other your mistakes. So even a small kindness that nobody sees — like helping your mother or feeding a cat — is never, ever lost.</p></div></div>
+
+    <div class="activity" data-label="✎ ACTIVITY" data-labelml="✎ പ്രവർത്തനം">
+      <h3 data-i18n="l1at">Build your Star of Faith ⭐</h3>
+      <p data-i18n="l1ap">On a big sheet of paper, draw a six-pointed star. Give each point one Article of Faith, in your own words.</p>
+      <ol><li data-i18n="l1al1">Colour each point a different colour.</li><li data-i18n="l1al2">Write the word <b>IMAN</b> in the middle.</li><li data-i18n="l1al3">Show it to a parent or teacher and explain each point out loud.</li></ol>
+      <p class="tip" data-i18n="l1atip">The point you explain most easily is the one you understand best. Which was the hardest to explain?</p>
+    </div>
+
+    <div class="keywords"><h4 data-i18n="kwt">🔑 New words to remember</h4><div class="kw" data-i18n-html="l1kw"><span><b>Iman</b> <span class="ar">إيمان</span> — faith / belief</span><span><b>Malaikah</b> <span class="ar">ملائكة</span> — angels</span><span><b>Qur'an</b> <span class="ar">قرآن</span> — Allah's final book</span><span><b>Akhirah</b> <span class="ar">آخرة</span> — the Last Day</span></div></div>
+
+    <div class="remember"><span class="e">⭐</span><div><b data-i18n="remt">Remember</b><p data-i18n="l1rem">Iman is what we believe in our heart. There are six Articles of Faith, and the Prophet ﷺ taught every one of them to us.</p></div></div>
+
+    <div class="pagenum" data-i18n="pg1">Page 1</div>
+  </section>
+
+  <!-- ===================== LESSON 2 ===================== -->
+  <section class="lesson" id="lesson2">
+    <div class="chapter-head">
+      <div class="chapter-num"><svg viewBox="0 0 64 64"><path d="M32 4 L39 22 L59 17 L46 33 L59 49 L39 44 L32 62 L25 44 L5 49 L18 33 L5 17 L25 22 Z" fill="#C9A96E"/></svg><span>2</span></div>
+      <div class="ct"><div class="eyebrow" data-i18n="l2eye">Lesson Two · What We Do</div><h2 data-i18n="l2h">The Five Pillars of Islam</h2><div class="k">أَرْكَانُ الإِسْلام</div></div>
+    </div>
+
+    <p data-i18n="l2p1">In Lesson 1 we learned what a Muslim believes in the <b>heart</b>. Now we learn what a Muslim <b>does</b> with the body. Islam stands on five great actions, just like a roof stands on five strong pillars. If one pillar is missing, the building is not complete. These five are called the <b>Five Pillars of Islam</b>.</p>
+
+    <div class="pillars">
+      <div class="pillar"><div class="cap" data-i18n="l2pc1">Shahada</div><div class="shaft"><span data-i18n="l2ps1">Believing and saying that Allah is the only God and Muhammad ﷺ is His Messenger</span><span class="ar">الشَّهادة</span></div></div>
+      <div class="pillar"><div class="cap" data-i18n="l2pc2">Salah</div><div class="shaft"><span data-i18n="l2ps2">Praying to Allah five times every day</span><span class="ar">الصَّلاة</span></div></div>
+      <div class="pillar"><div class="cap" data-i18n="l2pc3">Zakat</div><div class="shaft"><span data-i18n="l2ps3">Giving a small share of our wealth to those in need</span><span class="ar">الزَّكاة</span></div></div>
+      <div class="pillar"><div class="cap" data-i18n="l2pc4">Sawm</div><div class="shaft"><span data-i18n="l2ps4">Fasting in Ramadan, once we are old enough</span><span class="ar">الصَّوم</span></div></div>
+      <div class="pillar"><div class="cap" data-i18n="l2pc5">Hajj</div><div class="shaft"><span data-i18n="l2ps5">Visiting the Kaaba in Makkah once, if we are able</span><span class="ar">الحَجّ</span></div></div>
+      <div class="pillar-base"></div>
+      <div class="pillars-ground" data-i18n="l2ground">🏛️ Five pillars holding up one beautiful home — Islam</div>
+    </div>
+
+    <div class="sec-sub" data-i18n="l2sub1">1 · Shahada — the words of a Muslim</div>
+    <p data-i18n="l2t1">The first pillar is the most important. When you say these words and believe them in your heart, you are a Muslim:</p>
+    <div class="callout">
+      <div class="bismillah" style="font-size:24px;margin:6px 0 6px">لَا إِلَٰهَ إِلَّا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ</div>
+      <div class="bismillah-t" data-i18n="l2shat"><b>La ilaha illa Allah, Muhammadun Rasulullah</b><br>"There is no god but Allah, and Muhammad ﷺ is the Messenger of Allah."</div>
+    </div>
+
+    <div class="sec-sub" data-i18n="l2sub2">2 to 5 · Prayer, charity, fasting, pilgrimage</div>
+    <p data-i18n="l2t2"><b>Salah</b> is our prayer five times a day — a beautiful appointment to talk with Allah. <b>Zakat</b> means giving a little of what we own to the poor, so no one is left hungry. <b>Sawm</b> is fasting in the month of Ramadan; grown-ups stop eating and drinking from dawn to sunset, which teaches patience and thankfulness. <b>Hajj</b> is the great journey to the Kaaba in Makkah, made once in a lifetime by those who are able.</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-001-B"></div>
+
+    <div class="dyk"><span class="e">🕋</span><div><b data-i18n="l2dykt">Did you know?</b><p data-i18n="l2dykp">Wherever a Muslim stands to pray — in Kerala, in Makkah, or even on a mountain — they all turn to face the very same building: the <b>Kaaba</b>. At every moment of the day, somewhere on earth, someone is praying towards it.</p></div></div>
+
+    <div class="activity" data-label="✎ ACTIVITY" data-labelml="✎ പ്രവർത്തനം">
+      <h3 data-i18n="l2at">Five Fingers, Five Pillars ✋</h3>
+      <p data-i18n="l2ap">Your own hand can help you remember! Trace your hand on paper and label each finger with one pillar.</p>
+      <ul><li data-i18n="l2al1"><b>Thumb</b> — Shahada (the strongest one, it comes first)</li><li data-i18n="l2al2"><b>Index</b> — Salah &nbsp;•&nbsp; <b>Middle</b> — Zakat</li><li data-i18n="l2al3"><b>Ring</b> — Sawm &nbsp;•&nbsp; <b>Little finger</b> — Hajj</li></ul>
+      <p class="tip" data-i18n="l2atip">Now the Five Pillars are always with you — right there on your hand!</p>
+    </div>
+
+    <div class="keywords"><h4 data-i18n="kwt">🔑 New words to remember</h4><div class="kw" data-i18n-html="l2kw"><span><b>Shahada</b> <span class="ar">شهادة</span> — the words of faith</span><span><b>Salah</b> <span class="ar">صلاة</span> — daily prayer</span><span><b>Zakat</b> <span class="ar">زكاة</span> — giving charity</span><span><b>Sawm</b> <span class="ar">صوم</span> — fasting</span><span><b>Hajj</b> <span class="ar">حجّ</span> — the pilgrimage</span></div></div>
+
+    <div class="remember"><span class="e">⭐</span><div><b data-i18n="remt">Remember</b><p data-i18n="l2rem">The Five Pillars are the actions that hold up a Muslim's life: Shahada, Salah, Zakat, Sawm and Hajj.</p></div></div>
+
+    <div class="pagenum" data-i18n="pg2">Page 2</div>
+  </section>
+
+  <!-- ===================== LESSON 3 ===================== -->
+  <section class="lesson" id="lesson3">
+    <div class="chapter-head">
+      <div class="chapter-num"><svg viewBox="0 0 64 64"><path d="M32 4 L39 22 L59 17 L46 33 L59 49 L39 44 L32 62 L25 44 L5 49 L18 33 L5 17 L25 22 Z" fill="#2FA98C"/></svg><span>3</span></div>
+      <div class="ct"><div class="eyebrow" data-i18n="l3eye">Lesson Three · Our Loving Allah</div><h2 data-i18n="l3h">Getting to Know Allah</h2><div class="k">أَسْماءُ اللهِ الحُسْنَى</div></div>
+    </div>
+
+    <p data-i18n="l3p1">We believe in Allah — but what is Allah <b>like</b>? Allah is greater than anything we can picture in our minds. To help us know and love Him, Allah told us His <b>beautiful names</b>. There are ninety-nine of them, and each name is like a little window that lets us see something wonderful about our Creator. Here are eight to begin with.</p>
+
+    <div class="names">
+      <div class="name"><div class="arn">الرَّحْمَٰن</div><div class="mean"><b>Ar-Rahman</b><span data-i18n="l3n1">The Most Kind — His kindness is greater than any mother's or father's love.</span></div></div>
+      <div class="name"><div class="arn">الْخَالِق</div><div class="mean"><b>Al-Khaliq</b><span data-i18n="l3n2">The Creator — He made the stars, the seas, every animal, and you.</span></div></div>
+      <div class="name"><div class="arn">الْعَلِيم</div><div class="mean"><b>Al-'Aleem</b><span data-i18n="l3n3">The All-Knowing — He knows everything, even the secret thoughts in your heart.</span></div></div>
+      <div class="name"><div class="arn">السَّمِيع</div><div class="mean"><b>As-Samee'</b><span data-i18n="l3n4">The All-Hearing — He hears every whisper and every quiet du'a you make.</span></div></div>
+      <div class="name"><div class="arn">الْبَصِير</div><div class="mean"><b>Al-Baseer</b><span data-i18n="l3n5">The All-Seeing — nothing is ever hidden from Him, in light or in darkness.</span></div></div>
+      <div class="name"><div class="arn">الرَّزَّاق</div><div class="mean"><b>Ar-Razzaq</b><span data-i18n="l3n6">The Provider — He gives food, rain, and every good thing we need to live.</span></div></div>
+      <div class="name"><div class="arn">الْغَفُور</div><div class="mean"><b>Al-Ghafoor</b><span data-i18n="l3n7">The Forgiving — whenever we truly say sorry, He forgives us with love.</span></div></div>
+      <div class="name"><div class="arn">الْوَاحِد</div><div class="mean"><b>Al-Wahid</b><span data-i18n="l3n8">The One — there is only one Allah, and no one and nothing is like Him.</span></div></div>
+    </div>
+
+    <p data-i18n="l3p2" style="margin-top:24px">Allah is not like anything we can imagine. He was not born, and He has no children. He never gets tired and He never sleeps. In one short surah of the Qur'an, Allah teaches us exactly who He is:</p>
+    <div class="callout">
+      <div class="bismillah" style="font-size:22px;line-height:1.9">قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ</div>
+      <div class="bismillah-t" data-i18n="l3ikht"><b>Surah Al-Ikhlas</b> — "Say, He is Allah, the One. Allah, the Eternal. He did not give birth, nor was He born. And there is none equal to Him."</div>
+    </div>
+
+    <div class="asset-img" data-asset="IMG-FOUND-001-C"></div>
+
+    <div class="dyk"><span class="e">🌍</span><div><b data-i18n="l3dykt">Did you know?</b><p data-i18n="l3dykp">You can spot Allah's names everywhere around you. A sweet mango to eat? That is <b>Ar-Razzaq</b>, the Provider. Rain that helps the paddy fields grow? That is His kindness, <b>Ar-Rahman</b>. The world is full of little signs of Allah.</p></div></div>
+
+    <div class="activity" data-label="✎ ACTIVITY" data-labelml="✎ പ്രവർത്തനം">
+      <h3 data-i18n="l3at">Allah's Name Detective Hunt 🔍</h3>
+      <p data-i18n="l3ap">For one whole day, become a "name detective"!</p>
+      <ol><li data-i18n="l3al1">Pick <b>one</b> beautiful name of Allah from above.</li><li data-i18n="l3al2">Look around your home and outside. Find <b>three</b> things that remind you of that name.</li><li data-i18n="l3al3">Draw them, and under each write: "This shows me Allah is ______."</li></ol>
+      <p class="tip" data-i18n="l3atip">For <b>Al-Khaliq</b> (The Creator) you might draw a tree, a butterfly, and the moon.</p>
+    </div>
+
+    <div class="keywords"><h4 data-i18n="kwt">🔑 New words to remember</h4><div class="kw" data-i18n-html="l3kw"><span><b>Asma-ul-Husna</b> <span class="ar">أسماء الحسنى</span> — Allah's beautiful names</span><span><b>Ar-Rahman</b> — The Most Kind</span><span><b>Al-Khaliq</b> — The Creator</span><span><b>Tawhid</b> <span class="ar">توحيد</span> — Allah is One</span></div></div>
+
+    <div class="remember"><span class="e">⭐</span><div><b data-i18n="remt">Remember</b><p data-i18n="l3rem">Allah is One. He has beautiful names that teach us about Him, and there is nothing at all like Him.</p></div></div>
+
+    <div class="pagenum" data-i18n="pg3">Page 3</div>
+  </section>
+
+  <!-- ===================== REVIEW 1 (Lessons 1–3) ===================== -->
+  <div class="review" id="review1">
+    <div class="review-head"><span class="rv-badge">✦ REVIEW</span><h2 data-i18n="rv1h">What do you remember?</h2><p data-i18n="rv1s">A quick look back at Lessons 1–3. Tap each card to check yourself!</p></div>
+    <div class="revcards">
+      <button class="revcard"><span class="rq" data-i18n="rv1q1">How many Articles of Faith (Iman) are there?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv1a1">Six — belief in Allah, the angels, the books, the prophets, the Last Day, and Allah's plan.</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv1q2">Name the Five Pillars of Islam.</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv1a2">Shahada, Salah, Zakat, Sawm and Hajj.</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv1q3">What does the name Ar-Rahman mean?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv1a3">The Most Kind — kinder than anyone in the world.</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv1q4">Who is the last Prophet of Allah?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv1a4">Prophet Muhammad ﷺ.</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv1q5">How many gods do Muslims believe in?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv1a5">One — Allah alone. This is called Tawhid.</span></button>
+    </div>
+  </div>
+
+  <!-- ===================== LESSON 4 · WUDU ===================== -->
+  <section class="lesson" id="lesson4">
+    <div class="chapter-head">
+      <div class="chapter-num"><svg viewBox="0 0 64 64"><path d="M32 4 L39 22 L59 17 L46 33 L59 49 L39 44 L32 62 L25 44 L5 49 L18 33 L5 17 L25 22 Z" fill="#5FA8C4"/></svg><span>4</span></div>
+      <div class="ct"><div class="eyebrow" data-i18n="l4eye">Lesson Four · Getting Ready</div><h2 data-i18n="l4h">Wudu — Getting Clean for Prayer</h2><div class="k">الوُضُوء</div></div>
+    </div>
+
+    <p data-i18n="l4p1">Before we stand to pray our Salah, we make ourselves fresh and clean in a special way. This washing is called <b>Wudu</b>. It is not just ordinary washing — it prepares our body and heart to stand before Allah. The Prophet ﷺ told us that Wudu even washes away our small mistakes, like water washing dust from leaves. 🌿</p>
+    <p data-i18n="l4p2">Wudu has a beautiful order. Let's learn it step by step. Before you begin, make the <b>intention</b> in your heart that you are making Wudu for Allah, and say <b>Bismillah</b>.</p>
+
+    <div class="wudu">
+      <div class="wstep"><div class="wn">1</div><div class="we">🤲</div><div><h3 data-i18n="l4s1t">Intention &amp; Bismillah</h3><p data-i18n="l4s1d">Quietly decide in your heart: "I am making Wudu to pray for Allah." Then say <b>Bismillah</b> — "In the name of Allah."</p></div></div>
+      <div class="wstep"><div class="wn">2</div><div class="we">🖐️</div><div><h3 data-i18n="l4s2t">Wash your hands <span class="times">×3</span></h3><p data-i18n="l4s2d">Wash both hands up to the wrists, three times, letting the water reach between your fingers.</p></div></div>
+      <div class="wstep"><div class="wn">3</div><div class="we">👄</div><div><h3 data-i18n="l4s3t">Rinse your mouth <span class="times">×3</span></h3><p data-i18n="l4s3d">Take a little water into your mouth and swish it around, three times.</p></div></div>
+      <div class="wstep"><div class="wn">4</div><div class="we">👃</div><div><h3 data-i18n="l4s4t">Rinse your nose <span class="times">×3</span></h3><p data-i18n="l4s4d">Gently sniff a little water into your nose and blow it out, three times.</p></div></div>
+      <div class="wstep"><div class="wn">5</div><div class="we">😊</div><div><h3 data-i18n="l4s5t">Wash your face <span class="times">×3</span></h3><p data-i18n="l4s5d">Wash your whole face — from the top of your forehead to your chin, and ear to ear — three times.</p></div></div>
+      <div class="wstep"><div class="wn">6</div><div class="we">💪</div><div><h3 data-i18n="l4s6t">Wash your arms <span class="times">×3</span></h3><p data-i18n="l4s6d">Wash your right arm up to the elbow three times, then your left arm three times.</p></div></div>
+      <div class="wstep"><div class="wn">7</div><div class="we">🧑</div><div><h3 data-i18n="l4s7t">Wipe your head <span class="times">×1</span></h3><p data-i18n="l4s7d">With wet hands, gently wipe over your head once. This wiping is called <b>masah</b>.</p></div></div>
+      <div class="wstep"><div class="wn">8</div><div class="we">👂</div><div><h3 data-i18n="l4s8t">Wipe your ears <span class="times">×1</span></h3><p data-i18n="l4s8d">With your wet fingers, wipe inside and behind both ears, once.</p></div></div>
+      <div class="wstep"><div class="wn">9</div><div class="we">🦶</div><div><h3 data-i18n="l4s9t">Wash your feet <span class="times">×3</span></h3><p data-i18n="l4s9d">Wash your right foot up to the ankle three times, then your left foot three times. Don't forget between the toes!</p></div></div>
+    </div>
+
+    <div class="asset-img" data-asset="IMG-FOUND-004-STEPS"></div>
+
+    <div class="callout">
+      <b data-i18n="l4duat" style="font-family:var(--disp);color:var(--em);display:block;margin-bottom:8px">🌟 A short du'a after Wudu</b>
+      <div class="bismillah" style="font-size:20px;line-height:1.9">أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ</div>
+      <div class="bismillah-t" data-i18n="l4duad">"I bear witness that there is no god but Allah, and that Muhammad ﷺ is His servant and Messenger."</div>
+    </div>
+
+    <div class="dyk"><span class="e">💧</span><div><b data-i18n="l4dykt">Did you know?</b><p data-i18n="l4dykp">Some things end our Wudu and we must make it again — like using the toilet, passing wind, or falling into a deep sleep. After that, we simply make Wudu once more before we pray. And remember: never waste water, even at the tap — the Prophet ﷺ taught us to use only a little.</p></div></div>
+
+    <div class="activity" data-label="✎ ACTIVITY" data-labelml="✎ പ്രവർത്തനം">
+      <h3 data-i18n="l4at">Wudu Practice Chart 💦</h3>
+      <p data-i18n="l4ap">Let's turn the nine steps into a fun chart!</p>
+      <ol><li data-i18n="l4al1">Draw nine little boxes and number them 1 to 9.</li><li data-i18n="l4al2">In each box, draw the body part you wash in that step.</li><li data-i18n="l4al3">Practise real Wudu with a grown-up, ticking each box as you go.</li></ol>
+      <p class="tip" data-i18n="l4atip">Doing the steps in the right order is part of a beautiful Wudu. Can you say all nine from memory?</p>
+    </div>
+
+    <div class="keywords"><h4 data-i18n="kwt">🔑 New words to remember</h4><div class="kw" data-i18n-html="l4kw"><span><b>Wudu</b> <span class="ar">وضوء</span> — washing before prayer</span><span><b>Niyyah</b> <span class="ar">نيّة</span> — intention</span><span><b>Masah</b> <span class="ar">مسح</span> — gently wiping</span><span><b>Bismillah</b> <span class="ar">بسم الله</span> — "In Allah's name"</span></div></div>
+
+    <div class="remember"><span class="e">⭐</span><div><b data-i18n="remt">Remember</b><p data-i18n="l4rem">Wudu makes us clean and ready to pray. It has nine steps, done in order, beginning with intention and Bismillah.</p></div></div>
+
+    <div class="pagenum" data-i18n="pg4">Page 4</div>
+  </section>
+
+  <!-- ===================== LESSON 5 · SAWM ===================== -->
+  <section class="lesson" id="lesson5">
+    <div class="chapter-head">
+      <div class="chapter-num"><svg viewBox="0 0 64 64"><path d="M32 4 L39 22 L59 17 L46 33 L59 49 L39 44 L32 62 L25 44 L5 49 L18 33 L5 17 L25 22 Z" fill="#E6A94E"/></svg><span>5</span></div>
+      <div class="ct"><div class="eyebrow" data-i18n="l5eye">Lesson Five · The Happy Month</div><h2 data-i18n="l5h">Sawm — The Beautiful Month of Fasting</h2><div class="k">الصَّوم · رَمَضان</div></div>
+    </div>
+
+    <p data-i18n="l5p1">Once every year a very special guest arrives — the month of <b>Ramadan</b>. Muslim homes fill with excitement: lanterns go up, the smell of good food drifts from the kitchen, and families wake together before the sun. In this month grown-up Muslims keep the fourth Pillar of Islam: <b>Sawm</b>, which means fasting.</p>
+    <p data-i18n="l5p2">To fast means that from the first light of dawn until the sun sets, we do not eat or drink anything at all — not even water. We do it to obey Allah, to grow closer to Him, and to feel in our own tummies what a hungry person feels every day. It makes our hearts kinder and stronger. 💛</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-005-HERO"></div>
+
+    <div class="sec-sub" data-i18n="l5sub1">A day of fasting, step by step</div>
+    <div class="wudu">
+      <div class="wstep"><div class="wn">1</div><div class="we">🌙</div><div><h3 data-i18n="l5d1t">Suhoor — the early meal</h3><p data-i18n="l5d1d">Before dawn, the whole family wakes up and eats a light meal called <b>Suhoor</b>. It gives us strength for the day. This is also when we make our <b>intention</b> (niyyah) in the heart to fast for Allah.</p></div></div>
+      <div class="wstep"><div class="wn">2</div><div class="we">🌅</div><div><h3 data-i18n="l5d2t">Fajr — the fast begins</h3><p data-i18n="l5d2d">When the Fajr adhan calls at dawn, we stop eating and drinking and pray the morning prayer. Now our fast has begun!</p></div></div>
+      <div class="wstep"><div class="wn">3</div><div class="we">☀️</div><div><h3 data-i18n="l5d3t">Daytime — a fast of the whole self</h3><p data-i18n="l5d3d">All day we take no food or drink. But fasting is more than that: we keep our tongue and hands good too — no lying, no fighting, no unkind words. We read Qur'an, help others, and stay cheerful.</p></div></div>
+      <div class="wstep"><div class="wn">4</div><div class="we">🌇</div><div><h3 data-i18n="l5d4t">Iftar — breaking the fast</h3><p data-i18n="l5d4d">At sunset (Maghrib) it is time for <b>Iftar</b>! Following the Prophet ﷺ, we break our fast with a date and some water, say our du'a, and then pray Maghrib. The first sip of water after a long day is pure joy.</p></div></div>
+      <div class="wstep"><div class="wn">5</div><div class="we">🕌</div><div><h3 data-i18n="l5d5t">Night — Taraweeh &amp; togetherness</h3><p data-i18n="l5d5d">At night many Muslims pray special prayers called <b>Taraweeh</b> at the masjid, and families spend happy time together before resting for the next day's fast.</p></div></div>
+    </div>
+
+    <div class="callout">
+      <b data-i18n="l5whot" style="font-family:var(--disp);color:var(--em);display:block;margin-bottom:6px">👨‍👩‍👧 Who has to fast?</b>
+      <p data-i18n="l5whop">Every healthy grown-up Muslim fasts the whole month of Ramadan. Children like you are not required yet — but many practise by fasting part of the day, and a little more each year, until you can fast the whole day. And Allah is always kind: those who are ill, travelling far, or very old do not fast then; they may fast later or feed someone in need instead.</p>
+    </div>
+
+    <div class="sec-sub" data-i18n="l5sub2">What breaks the fast — and what doesn't</div>
+    <div class="grid6">
+      <div class="bcard"><div class="ic" style="background:rgba(217,138,122,.22)">❌</div><div><h3 data-i18n="l5brt">These break the fast</h3><p data-i18n="l5brd">Eating or drinking <b>on purpose</b>, or making yourself vomit, breaks the fast. If that happens, the day's fast is spoiled and must be made up later.</p></div></div>
+      <div class="bcard"><div class="ic" style="background:rgba(47,169,140,.22)">✅</div><div><h3 data-i18n="l5okt">These do NOT break it</h3><p data-i18n="l5okd">Rinsing your mouth, brushing your teeth, having a bath or a swim, and smelling nice food are all fine. And if you <b>forget</b> and eat by mistake — your fast still counts! Allah fed you.</p></div></div>
+    </div>
+
+    <div class="dyk"><span class="e">🚪</span><div><b data-i18n="l5dykt">Did you know?</b><p data-i18n="l5dykp">There is a special gate in Jannah (Paradise) called <b>Ar-Rayyan</b>. On the Last Day, only the people who used to fast will be invited to enter through it — and after they all pass, it will close. Fasting has its very own doorway to Paradise!</p></div></div>
+
+    <div class="remember" style="border-color:rgba(230,169,78,.4);background:linear-gradient(135deg,rgba(230,169,78,.14),rgba(201,169,110,.14))"><span class="e">💛</span><div><b data-i18n="l5lovet">Why we love Ramadan</b><p data-i18n="l5lovep">The Prophet ﷺ said a fasting person has two joys: the happiness of Iftar, and a greater happiness when they meet Allah. Ramadan brings the family together at dawn and sunset, teaches us to share with the poor, and ends with the big celebration of <b>Eid al-Fitr</b> — new clothes, sweets, and thanks to Allah!</p></div></div>
+
+    <div class="activity" data-label="✎ ACTIVITY" data-labelml="✎ പ്രവർത്തനം">
+      <h3 data-i18n="l5at">My Ramadan Star Chart 🌟</h3>
+      <p data-i18n="l5ap">Make your own Ramadan chart to fill with good deeds!</p>
+      <ol><li data-i18n="l5al1">Draw 30 little stars in rows — one for each day of Ramadan.</li><li data-i18n="l5al2">Each day, do one good deed (share food, help at home, read Qur'an) and colour a star.</li><li data-i18n="l5al3">Help set the Iftar table — arrange the dates and water for your family.</li></ol>
+      <p class="tip" data-i18n="l5atip">Even if you fast only half a day, you are practising and growing. Every year you will become stronger!</p>
+    </div>
+
+    <div class="keywords"><h4 data-i18n="kwt">🔑 New words to remember</h4><div class="kw" data-i18n-html="l5kw"><span><b>Sawm</b> <span class="ar">صوم</span> — fasting</span><span><b>Ramadan</b> <span class="ar">رمضان</span> — the month of fasting</span><span><b>Suhoor</b> <span class="ar">سحور</span> — the meal before dawn</span><span><b>Iftar</b> <span class="ar">إفطار</span> — breaking the fast</span><span><b>Eid al-Fitr</b> <span class="ar">عيد الفطر</span> — the festival after Ramadan</span></div></div>
+
+    <div class="remember"><span class="e">⭐</span><div><b data-i18n="remt">Remember</b><p data-i18n="l5rem">Sawm is the fourth Pillar of Islam. In Ramadan we fast from dawn to sunset — growing our love for Allah and our care for others.</p></div></div>
+
+    <div class="pagenum" data-i18n="pg5">Page 5</div>
+  </section>
+
+  <!-- ===================== LESSON 6 · SALAH ===================== -->
+  <section class="lesson" id="lesson6">
+    <div class="chapter-head">
+      <div class="chapter-num"><svg viewBox="0 0 64 64"><path d="M32 4 L39 22 L59 17 L46 33 L59 49 L39 44 L32 62 L25 44 L5 49 L18 33 L5 17 L25 22 Z" fill="#8E7CC3"/></svg><span>6</span></div>
+      <div class="ct"><div class="eyebrow" data-i18n="l6eye">Lesson Six · Talking to Allah</div><h2 data-i18n="l6h">Salah — The Daily Prayers &amp; Friday Prayer</h2><div class="k">الصَّلاة · الجُمُعة</div></div>
+    </div>
+
+    <p data-i18n="l6p1">Imagine having a special appointment to talk with the King of everything — five times, every single day. That is <b>Salah</b>, our prayer, the second Pillar of Islam. In Salah we stand before Allah, thank Him, ask Him, and feel close to Him. It is a gift that keeps our hearts shining all day long.</p>
+    <p data-i18n="l6p2">Allah has given us five prayers, spread across the day like five little lamps — one at dawn, and the others through the day and night. Let's meet them.</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-006-HERO"></div>
+
+    <div class="sec-sub" data-i18n="l6sub1">The five daily prayers</div>
+    <div class="grid6">
+      <div class="bcard"><div class="ic">🌄</div><div><h3 data-i18n="l6pf">Fajr <span class="ar">الفجر</span></h3><p data-i18n="l6pfd">At dawn, before sunrise · 2 rak'ah</p></div></div>
+      <div class="bcard"><div class="ic">☀️</div><div><h3 data-i18n="l6pd">Dhuhr <span class="ar">الظهر</span></h3><p data-i18n="l6pdd">Just after midday · 4 rak'ah</p></div></div>
+      <div class="bcard"><div class="ic">🌤️</div><div><h3 data-i18n="l6pa">Asr <span class="ar">العصر</span></h3><p data-i18n="l6pad">In the late afternoon · 4 rak'ah</p></div></div>
+      <div class="bcard"><div class="ic">🌇</div><div><h3 data-i18n="l6pm">Maghrib <span class="ar">المغرب</span></h3><p data-i18n="l6pmd">Just after sunset · 3 rak'ah</p></div></div>
+      <div class="bcard"><div class="ic">🌙</div><div><h3 data-i18n="l6pi">Isha <span class="ar">العشاء</span></h3><p data-i18n="l6pid">At night · 4 rak'ah</p></div></div>
+    </div>
+
+    <div class="asset-img" data-asset="IMG-FOUND-006-TIMES"></div>
+
+    <div class="sec-sub" data-i18n="l6sub2">How we pray — the four positions</div>
+    <p data-i18n="l6posp">Each part of the prayer is called a <b>rak'ah</b>, and in every rak'ah we move gently through four positions, each with its own beautiful name:</p>
+    <div class="keywords" style="border-style:solid;border-color:var(--line)"><div class="kw" data-i18n-html="l6poslist">
+      <span>🧍 <b>Qiyam</b> <span class="ar">قيام</span> — standing</span>
+      <span>🙇 <b>Ruku</b> <span class="ar">ركوع</span> — bowing</span>
+      <span>🤲 <b>Sujood</b> <span class="ar">سجود</span> — prostrating</span>
+      <span>🧎 <b>Julus</b> <span class="ar">جلوس</span> — sitting</span>
+    </div></div>
+    <p data-i18n="l6posp2">In <b>Sujood</b>, when our forehead touches the ground, we are at our very closest to Allah. 💚</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-006-POSITIONS"></div>
+
+    <!-- ===== Memorisation task: Wajjahtu ===== -->
+    <div class="memzone" id="wajZone">
+      <h3 class="memtitle" id="wajTitle">🧠 Memorise the opening du'a — "Wajjahtu"</h3>
+      <p class="memintro" id="wajIntro">We say this quietly at the very start of Salah…</p>
+      <div class="memctrl">
+        <button class="membtn" id="wajReveal">Show next part →</button>
+        <button class="membtn ghost" id="wajTest">Test me (hide meaning)</button>
+        <button class="membtn ghost" id="wajReset">Reset</button>
+      </div>
+      <div class="memprog"><i id="wajBar"></i></div>
+      <div class="memlab" id="wajLab">0 / 6 parts memorised</div>
+      <div class="memparts" id="wajParts"></div>
+      <div class="memdone" id="wajDone" style="display:none"></div>
+    </div>
+
+    <div class="sec-sub" data-i18n="l6sub3">Jumu'ah — the special Friday prayer</div>
+    <p data-i18n="l6fp1">Friday is the best day of the week for Muslims. On Friday, the midday Dhuhr prayer becomes a special prayer called <b>Jumu'ah</b>, prayed together at the masjid. First the imam gives a <b>khutbah</b> (a short talk to teach and remind us), and then everyone prays two rak'ah side by side, like one big family.</p>
+    <p data-i18n="l6fp2">To get ready for Jumu'ah, it is lovely to follow the Prophet ﷺ: take a bath (ghusl), wear clean and nice clothes, put on a little perfume, go to the masjid early, and sit quietly to listen well to the khutbah.</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-006-JUMUAH"></div>
+
+    <div class="dyk"><span class="e">💧</span><div><b data-i18n="l6dykt">Did you know?</b><p data-i18n="l6dykp">The Prophet ﷺ asked: if a river flowed at your door and you bathed in it five times a day, would any dirt stay on you? "None," said his companions. He said the five daily prayers are just like that — Allah washes away our little mistakes with each prayer. ✨</p></div></div>
+
+    <div class="activity" data-label="✎ ACTIVITY" data-labelml="✎ പ്രവർത്തനം">
+      <h3 data-i18n="l6at">My Prayer Timetable ⏰</h3>
+      <p data-i18n="l6ap">Make a prayer timetable and become the prayer-helper of your home!</p>
+      <ol><li data-i18n="l6al1">Write the five prayers in order: Fajr, Dhuhr, Asr, Maghrib, Isha.</li><li data-i18n="l6al2">Ask a grown-up the time of each prayer in your town and write it beside each name.</li><li data-i18n="l6al3">Tick each prayer you pray today — and try to remind your family too!</li></ol>
+      <p class="tip" data-i18n="l6atip">Can you also name the four positions and say Wajjahtu from memory?</p>
+    </div>
+
+    <div class="keywords"><h4 data-i18n="kwt">🔑 New words to remember</h4><div class="kw" data-i18n-html="l6kw"><span><b>Salah</b> <span class="ar">صلاة</span> — prayer</span><span><b>Rak'ah</b> <span class="ar">ركعة</span> — one unit of prayer</span><span><b>Sujood</b> <span class="ar">سجود</span> — prostration</span><span><b>Jumu'ah</b> <span class="ar">جمعة</span> — Friday prayer</span><span><b>Khutbah</b> <span class="ar">خطبة</span> — the Friday talk</span><span><b>Wajjahtu</b> <span class="ar">وجّهت</span> — the opening du'a</span></div></div>
+
+    <div class="remember"><span class="e">⭐</span><div><b data-i18n="remt">Remember</b><p data-i18n="l6rem">Salah is the second Pillar. We pray five times a day — Fajr, Dhuhr, Asr, Maghrib, Isha — and on Fridays we pray Jumu'ah together at the masjid.</p></div></div>
+
+    <div class="pagenum" data-i18n="pg6">Page 6</div>
+  </section>
+
+  <!-- ===================== REVIEW 2 (Lessons 4–6) ===================== -->
+  <div class="review" id="review2">
+    <div class="review-head"><span class="rv-badge">✦ REVIEW</span><h2 data-i18n="rv2h">What do you remember?</h2><p data-i18n="rv2s">A quick look back at Lessons 4–6. Tap each card to check yourself!</p></div>
+    <div class="revcards">
+      <button class="revcard"><span class="rq" data-i18n="rv2q1">What do we say before starting Wudu?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv2a1">Bismillah. Wudu has nine steps, done in order.</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv2q2">In which month do Muslims fast?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv2a2">Ramadan — from dawn until sunset.</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv2q3">What do we break our fast with, and when?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv2a3">With dates and water, at sunset (Maghrib).</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv2q4">How many prayers do we pray each day?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv2a4">Five — Fajr, Dhuhr, Asr, Maghrib and Isha.</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv2q5">What is the special Friday prayer called?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv2a5">Jumu'ah — prayed together at the masjid.</span></button>
+    </div>
+  </div>
+
+  <!-- ===================== LESSON 7 · MAKKAH & MADINAH ===================== -->
+  <section class="lesson" id="lesson7">
+    <div class="chapter-head">
+      <div class="chapter-num"><svg viewBox="0 0 64 64"><path d="M32 4 L39 22 L59 17 L46 33 L59 49 L39 44 L32 62 L25 44 L5 49 L18 33 L5 17 L25 22 Z" fill="#C97F52"/></svg><span>7</span></div>
+      <div class="ct"><div class="eyebrow" data-i18n="l7eye">Lesson Seven · The Two Holy Cities</div><h2 data-i18n="l7h">Makkah &amp; Madinah</h2><div class="k">مكة · المدينة</div></div>
+    </div>
+
+    <p data-i18n="l7p1">Of all the cities in the world, two are the most beloved to Muslims: <b>Makkah</b> and <b>Madinah</b>. Each city holds one of the greatest and most beautiful masjids on earth, and Muslims everywhere dream of visiting them one day. (Makkah is also the city where our Prophet ﷺ was born, and Madinah where he later lived.) Today, let's explore the two cities and their wonderful masjids.</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-007-HERO"></div>
+
+    <div class="sec-sub" data-i18n="l7sub1">Makkah &amp; the Great Mosque</div>
+    <p data-i18n="l7mk1">In the heart of Makkah stands the biggest masjid in the whole world — <b>Masjid al-Haram</b>, "the Sacred Mosque". It is so enormous that more than a million people can pray in it together! In the very centre of this masjid, in an open courtyard under the open sky, stands the most special building of all: the <b>Kaaba</b>.</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-007-HARAM"></div>
+
+    <div class="sec-sub" data-i18n="l7sub2">The Ka'aba — the House of Allah</div>
+    <p data-i18n="l7kb1">The <b>Kaaba</b> is a cube-shaped building, and it is the very <b>first house</b> ever built on earth for the worship of Allah. That is why we call it <b>Baytullah</b> — "the House of Allah". Long ago, Prophet Ibrahim and his son Isma'il (peace be upon them) raised its walls together.</p>
+    <p data-i18n="l7kb2">The Kaaba is covered by a beautiful black cloth called the <b>Kiswah</b>, embroidered with golden words from the Qur'an. It has a tall <b>golden door</b>, and set into one corner is a special stone called the <b>Hajar al-Aswad</b> (the Black Stone). Wherever they are in the world, Muslims turn to face the Kaaba when they pray — this direction is called the <b>Qibla</b>. During Hajj and Umrah, pilgrims walk around the Kaaba seven times with love; this beautiful act is called <b>Tawaf</b>.</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-007-KAABA"></div>
+
+    <div class="dyk"><span class="e">✨</span><div><b data-i18n="l7dykt">Did you know?</b><p data-i18n="l7dykp">The black cloth that covers the Kaaba — the Kiswah — is replaced with a brand-new one every single year! The old cloth is carefully cut into pieces. And the great door of the Kaaba is made of pure gold.</p></div></div>
+
+    <div class="sec-sub" data-i18n="l7sub3">Madinah &amp; the Prophet's Mosque</div>
+    <p data-i18n="l7md1">A few days' journey from Makkah lies the calm and green city of <b>Madinah</b>. Here stands the second most beloved masjid in the world: <b>Masjid an-Nabawi</b>, "the Prophet's Mosque". You can spot it at once by its famous <b>green dome</b> and its tall minarets. It was first built long ago and has been made larger and more beautiful over many, many years, until today millions can pray inside its calm and shining halls.</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-007-NABAWI"></div>
+
+    <div class="activity" data-label="✎ ACTIVITY" data-labelml="✎ പ്രവർത്തനം">
+      <h3 data-i18n="l7at">Draw the Ka'aba 🕋</h3>
+      <p data-i18n="l7ap">Become an artist and draw the House of Allah!</p>
+      <ol><li data-i18n="l7al1">Draw the Kaaba as a tall black cube with a golden door.</li><li data-i18n="l7al2">Add the golden band of writing around it (the Kiswah), and mark the corner of the Black Stone.</li><li data-i18n="l7al3">Draw little arrows in a circle around it to show pilgrims doing Tawaf.</li></ol>
+      <p class="tip" data-i18n="l7atip">Can you point out which way the Qibla is from your own home?</p>
+    </div>
+
+    <div class="keywords"><h4 data-i18n="kwt">🔑 New words to remember</h4><div class="kw" data-i18n-html="l7kw"><span><b>Kaaba</b> <span class="ar">كعبة</span> — the House of Allah</span><span><b>Baytullah</b> <span class="ar">بيت الله</span> — "House of Allah"</span><span><b>Qibla</b> <span class="ar">قبلة</span> — the prayer direction</span><span><b>Tawaf</b> <span class="ar">طواف</span> — walking around the Kaaba</span><span><b>Kiswah</b> <span class="ar">كسوة</span> — the Kaaba's black cloth</span><span><b>Masjid al-Haram</b> <span class="ar">المسجد الحرام</span> — the Sacred Mosque</span></div></div>
+
+    <div class="remember"><span class="e">⭐</span><div><b data-i18n="remt">Remember</b><p data-i18n="l7rem">Makkah is home to Masjid al-Haram and the Kaaba — the House of Allah that every Muslim faces in prayer. Madinah is home to Masjid an-Nabawi with its green dome. These are the two most beloved masjids in the world.</p></div></div>
+
+    <div class="pagenum" data-i18n="pg7">Page 7</div>
+  </section>
+
+  <!-- ===================== LESSON 8 · THE QUR'AN ===================== -->
+  <section class="lesson" id="lesson8">
+    <div class="chapter-head">
+      <div class="chapter-num"><svg viewBox="0 0 64 64"><path d="M32 4 L39 22 L59 17 L46 33 L59 49 L39 44 L32 62 L25 44 L5 49 L18 33 L5 17 L25 22 Z" fill="#1B7A5A"/></svg><span>8</span></div>
+      <div class="ct"><div class="eyebrow" data-i18n="l8eye">Lesson Eight · Allah's Own Words</div><h2 data-i18n="l8h">The Holy Qur'an</h2><div class="k">القُرآن الكَريم</div></div>
+    </div>
+
+    <p data-i18n="l8p1">Imagine a letter written especially for you by the One who made the whole universe. That is the <b>Qur'an</b> — the true words of <b>Allah</b>, sent down to our Prophet Muhammad ﷺ through the angel Jibreel. It is the greatest and most precious book in all the world, and Allah has promised to keep it perfect and unchanged forever.</p>
+    <p data-i18n="l8p2">The Qur'an has 114 chapters, called <b>surahs</b>, and it is written in beautiful Arabic. Millions of Muslims — young and old — have even learnt the whole Qur'an by heart!</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-008-HERO"></div>
+
+    <div class="sec-sub" data-i18n="l8sub1">The Qur'an is the light of our life</div>
+    <p data-i18n="l8life1">The Qur'an is like a <b>light</b> that shows us the way in everything we do. It teaches us how to pray, how to be honest and kind, how to love and obey our parents, how to help those in need, and how to grow close to Allah. Whenever we feel sad or worried, the Qur'an brings comfort to our hearts — it is our very best friend for the whole of life.</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-008-LIGHT"></div>
+
+    <p data-i18n="l8life2">That is why we try to read a little of the Qur'an <b>every day</b>, listen to it with love, understand its meaning, and do our best to live by it. A home in which the Qur'an is read is a home filled with light and peace. ✨</p>
+
+    <div class="sec-sub" data-i18n="l8sub2">The wonderful rewards of the Qur'an</div>
+    <p data-i18n="l8rw1">Allah is so generous that He rewards us for every single moment we spend with His book. Our Prophet ﷺ told us something amazing: for reading just <b>one letter</b> of the Qur'an, you receive <b>ten good deeds</b> (hasanat)! He said that "Alif-Lam-Mim" is not one letter — Alif is a letter, Lam is a letter, and Mim is a letter. So even those three little letters bring you <b>thirty</b> rewards.</p>
+
+    <div class="asset-img" data-asset="IMG-FOUND-008-REWARD"></div>
+
+    <div class="callout">
+      <b data-i18n="l8rwt" style="font-family:var(--disp);color:var(--em);display:block;margin-bottom:8px">🌟 More beautiful rewards</b>
+      <p data-i18n="l8rw2">The Prophet ﷺ also taught us:<br>• <b>"The best of you are those who learn the Qur'an and teach it."</b><br>• On the Last Day, the Qur'an will come and <b>speak up for</b> the friends who used to read it.<br>• Whoever reads the Qur'an beautifully is with the noble angels — and whoever finds it hard and keeps trying gets <b>double</b> the reward for trying!</p>
+    </div>
+
+    <div class="dyk"><span class="e">💚</span><div><b data-i18n="l8dykt">Did you know?</b><p data-i18n="l8dykp">Because every letter gives ten rewards, reading even a short surah fills your book of good deeds with hundreds of rewards! Just saying <b>Bismillah</b> (19 letters) brings around 190 good deeds, in shaa Allah.</p></div></div>
+
+    <div class="activity" data-label="✎ ACTIVITY" data-labelml="✎ പ്രവർത്തനം">
+      <h3 data-i18n="l8at">My Daily Qur'an Stars 📖</h3>
+      <p data-i18n="l8ap">Start a beautiful daily habit with the Qur'an!</p>
+      <ol><li data-i18n="l8al1">Make a small chart with the seven days of the week.</li><li data-i18n="l8al2">Each day, read a little of the Qur'an (even one line) and colour a star.</li><li data-i18n="l8al3">Count the letters in one short line and multiply by ten — see how many rewards you earned!</li></ol>
+      <p class="tip" data-i18n="l8atip">A small amount every day is more beloved to Allah than a lot only once.</p>
+    </div>
+
+    <div class="keywords"><h4 data-i18n="kwt">🔑 New words to remember</h4><div class="kw" data-i18n-html="l8kw"><span><b>Qur'an</b> <span class="ar">قرآن</span> — Allah's holy book</span><span><b>Surah</b> <span class="ar">سورة</span> — a chapter of the Qur'an</span><span><b>Ayah</b> <span class="ar">آية</span> — a verse (a line)</span><span><b>Wahy</b> <span class="ar">وحي</span> — revelation from Allah</span><span><b>Hasanat</b> <span class="ar">حسنات</span> — good-deed rewards</span><span><b>Hafiz</b> <span class="ar">حافظ</span> — one who memorises the Qur'an</span></div></div>
+
+    <div class="remember"><span class="e">⭐</span><div><b data-i18n="remt">Remember</b><p data-i18n="l8rem">The Qur'an is Allah's own words and the light of our life. We read a little every day — and for every single letter, Allah gives us ten rewards.</p></div></div>
+
+    <div class="pagenum" data-i18n="pg8">Page 8</div>
+  </section>
+
+  <!-- ===================== LESSON 9 · THE PROPHETS ===================== -->
+  <section class="lesson" id="lesson9">
+    <div class="chapter-head">
+      <div class="chapter-num"><svg viewBox="0 0 64 64"><path d="M32 4 L39 22 L59 17 L46 33 L59 49 L39 44 L32 62 L25 44 L5 49 L18 33 L5 17 L25 22 Z" fill="#4A78B5"/></svg><span>9</span></div>
+      <div class="ct"><div class="eyebrow" data-i18n="l9eye">Lesson Nine · Allah's Messengers</div><h2 data-i18n="l9h">The Prophets of Allah</h2><div class="k">الأنبياء</div></div>
+    </div>
+
+    <p data-i18n="l9p1">Allah is so merciful that He never left people alone without guidance. To every nation, in every age, He sent kind and truthful teachers called <b>prophets</b> — in Arabic, a prophet is a <b>Nabi</b>. A prophet who was given a special message or holy book to share is also called a <b>Rasul</b> (a messenger). And every single prophet taught the very same beautiful message: <b>worship Allah alone</b>, and be good to people.</p>
+    <p data-i18n="l9p2">Allah sent a great many prophets — far more than we could ever count. But <b>twenty-five</b> of them are named for us in the Qur'an. Here they all are:</p>
+
+    <div class="prophets" data-i18n-html="l9list">
+      <span class="pcard"><i>1</i><span class="ar">آدم</span><b>Adam</b><em>(as)</em></span>
+      <span class="pcard"><i>2</i><span class="ar">إدريس</span><b>Idris</b><em>(as)</em></span>
+      <span class="pcard"><i>3</i><span class="ar">نوح</span><b>Nuh</b><em>(as)</em></span>
+      <span class="pcard"><i>4</i><span class="ar">هود</span><b>Hud</b><em>(as)</em></span>
+      <span class="pcard"><i>5</i><span class="ar">صالح</span><b>Salih</b><em>(as)</em></span>
+      <span class="pcard"><i>6</i><span class="ar">إبراهيم</span><b>Ibrahim</b><em>(as)</em></span>
+      <span class="pcard"><i>7</i><span class="ar">لوط</span><b>Lut</b><em>(as)</em></span>
+      <span class="pcard"><i>8</i><span class="ar">إسماعيل</span><b>Isma'il</b><em>(as)</em></span>
+      <span class="pcard"><i>9</i><span class="ar">إسحاق</span><b>Ishaq</b><em>(as)</em></span>
+      <span class="pcard"><i>10</i><span class="ar">يعقوب</span><b>Ya'qub</b><em>(as)</em></span>
+      <span class="pcard"><i>11</i><span class="ar">يوسف</span><b>Yusuf</b><em>(as)</em></span>
+      <span class="pcard"><i>12</i><span class="ar">أيوب</span><b>Ayyub</b><em>(as)</em></span>
+      <span class="pcard"><i>13</i><span class="ar">شعيب</span><b>Shu'ayb</b><em>(as)</em></span>
+      <span class="pcard"><i>14</i><span class="ar">موسى</span><b>Musa</b><em>(as)</em></span>
+      <span class="pcard"><i>15</i><span class="ar">هارون</span><b>Harun</b><em>(as)</em></span>
+      <span class="pcard"><i>16</i><span class="ar">ذو الكفل</span><b>Dhul-Kifl</b><em>(as)</em></span>
+      <span class="pcard"><i>17</i><span class="ar">داود</span><b>Dawud</b><em>(as)</em></span>
+      <span class="pcard"><i>18</i><span class="ar">سليمان</span><b>Sulayman</b><em>(as)</em></span>
+      <span class="pcard"><i>19</i><span class="ar">إلياس</span><b>Ilyas</b><em>(as)</em></span>
+      <span class="pcard"><i>20</i><span class="ar">اليسع</span><b>Al-Yasa</b><em>(as)</em></span>
+      <span class="pcard"><i>21</i><span class="ar">يونس</span><b>Yunus</b><em>(as)</em></span>
+      <span class="pcard"><i>22</i><span class="ar">زكريا</span><b>Zakariyya</b><em>(as)</em></span>
+      <span class="pcard"><i>23</i><span class="ar">يحيى</span><b>Yahya</b><em>(as)</em></span>
+      <span class="pcard"><i>24</i><span class="ar">عيسى</span><b>Isa</b><em>(as)</em></span>
+      <span class="pcard" style="border-color:var(--gold)"><i>25</i><span class="ar">محمد</span><b>Muhammad</b><em>ﷺ</em></span>
+    </div>
+
+    <div class="callout">
+      <p data-i18n="l9note">The <b>first</b> prophet was Adam (as), and the <b>very last</b> is our own beloved Prophet Muhammad ﷺ — no prophet will come after him. Five of the prophets are called the <b>Ulul-Azm</b>, the greatest and most patient messengers: <b>Nuh, Ibrahim, Musa, Isa,</b> and <b>Muhammad ﷺ</b>.</p>
+    </div>
+
+    <div class="asset-img" data-asset="IMG-FOUND-009-HERO"></div>
+
+    <div class="dyk"><span class="e">🚢</span><div><b data-i18n="l9dykt">Did you know?</b><p data-i18n="l9dykp">Every prophet has a wonderful true story. Prophet Nuh (as) built a giant ark to save the believers from a great flood. Prophet Yunus (as) was kept safe inside a huge fish. Prophet Sulayman (as) could even speak with the birds and the ants! Each story teaches us to trust Allah completely.</p></div></div>
+
+    <div class="activity" data-label="✎ ACTIVITY" data-labelml="✎ പ്രവർത്തനം">
+      <h3 data-i18n="l9at">Prophet Story Time 📖</h3>
+      <p data-i18n="l9ap">Become a storyteller of the prophets!</p>
+      <ol><li data-i18n="l9al1">Choose <b>one</b> prophet from the list above.</li><li data-i18n="l9al2">With a parent or teacher, learn one story about that prophet.</li><li data-i18n="l9al3">Draw your favourite part, then tell the story to your family.</li></ol>
+      <p class="tip" data-i18n="l9atip">When we say a prophet's name, we say "alayhis salam" (as) — "peace be upon him". For our Prophet Muhammad we say ﷺ.</p>
+    </div>
+
+    <div class="keywords"><h4 data-i18n="kwt">🔑 New words to remember</h4><div class="kw" data-i18n-html="l9kw"><span><b>Nabi</b> <span class="ar">نبي</span> — a prophet</span><span><b>Rasul</b> <span class="ar">رسول</span> — a messenger</span><span><b>Anbiya</b> <span class="ar">أنبياء</span> — the prophets</span><span><b>Ulul-Azm</b> <span class="ar">أولو العزم</span> — the five greatest prophets</span><span><b>Adam (as)</b> — the first prophet</span><span><b>Muhammad ﷺ</b> — the last prophet</span></div></div>
+
+    <div class="remember"><span class="e">⭐</span><div><b data-i18n="remt">Remember</b><p data-i18n="l9rem">Allah sent many prophets to guide people, and 25 are named in the Qur'an. The first was Adam (as) and the last is Muhammad ﷺ. They all taught us to worship Allah alone.</p></div></div>
+
+    <div class="pagenum" data-i18n="pg9">Page 9</div>
+  </section>
+
+  <!-- ===================== REVIEW 3 (Lessons 7–9) ===================== -->
+  <div class="review" id="review3">
+    <div class="review-head"><span class="rv-badge">✦ REVIEW</span><h2 data-i18n="rv3h">What do you remember?</h2><p data-i18n="rv3s">A quick look back at Lessons 7–9. Tap each card to check yourself!</p></div>
+    <div class="revcards">
+      <button class="revcard"><span class="rq" data-i18n="rv3q1">What is the House of Allah in Makkah called?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv3a1">The Kaaba (Baytullah).</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv3q2">Which direction do Muslims face in prayer?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv3a2">The Qibla — towards the Kaaba.</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv3q3">How many rewards for reading one letter of the Qur'an?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv3a3">Ten good deeds (hasanat).</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv3q4">How many prophets are named in the Qur'an?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv3a4">Twenty-five. The first is Adam (as), the last is Muhammad ﷺ.</span></button>
+      <button class="revcard"><span class="rq" data-i18n="rv3q5">Who are the five greatest prophets (Ulul-Azm)?</span><span class="rhint" data-i18n="rvhint">Tap to reveal ▾</span><span class="ra" data-i18n="rv3a5">Nuh, Ibrahim, Musa, Isa and Muhammad ﷺ.</span></button>
+    </div>
+  </div>
+
+  <!-- ===================== LESSON 10 · THE ANGELS ===================== -->
+  <section class="lesson" id="lesson10">
+    <div class="chapter-head">
+      <div class="chapter-num"><svg viewBox="0 0 64 64"><path d="M32 4 L39 22 L59 17 L46 33 L59 49 L39 44 L32 62 L25 44 L5 49 L18 33 L5 17 L25 22 Z" fill="#C99A3E"/></svg><span>10</span></div>
+      <div class="ct"><div class="eyebrow" data-i18n="l10eye">Lesson Ten · Made of Light</div><h2 data-i18n="l10h">The Angels — Malaikah</h2><div class="k">الملائكة</div></div>
+    </div>
+
+    <p data-i18n="l10p1">Do you remember, from Lesson 1, that believing in the <b>angels</b> is one of the Articles of Faith? Angels — <b>malaikah</b> in Arabic — are wonderful creatures that Allah made out of pure <b>light</b> (noor). We cannot see them with our eyes, but they are always near. They never eat, never sleep, and never grow tired — and they <b>always</b> obey Allah, never once disobeying Him.</p>
+    <p data-i18n="l10p2">Allah created countless angels, far more than anyone could ever count. But some are named for us, and each one has a special duty. Here are ten of them:</p>
+
+    <div class="grid6" data-i18n-html="l10list">
+      <div class="bcard"><span class="n">1</span><div class="ic">📜</div><div><h3>Jibreel <span class="ar">جبريل</span></h3><p>Brings Allah's words (revelation) to the prophets. He is the greatest angel.</p></div></div>
+      <div class="bcard"><span class="n">2</span><div class="ic">🌧️</div><div><h3>Mika'il <span class="ar">ميكائيل</span></h3><p>In charge of the rain and of provision (rizq) for all creatures.</p></div></div>
+      <div class="bcard"><span class="n">3</span><div class="ic">🎺</div><div><h3>Israfil <span class="ar">إسرافيل</span></h3><p>Will blow the great Trumpet (Sur) on the Last Day.</p></div></div>
+      <div class="bcard"><span class="n">4</span><div class="ic">🕊️</div><div><h3>Malak al-Mawt <span class="ar">ملك الموت</span></h3><p>The Angel of Death (Izra'il), who gently takes the souls.</p></div></div>
+      <div class="bcard"><span class="n">5</span><div class="ic">❓</div><div><h3>Munkar <span class="ar">منكر</span></h3><p>Questions people in the grave about their faith.</p></div></div>
+      <div class="bcard"><span class="n">6</span><div class="ic">❓</div><div><h3>Nakir <span class="ar">نكير</span></h3><p>The companion of Munkar, who also questions in the grave.</p></div></div>
+      <div class="bcard"><span class="n">7</span><div class="ic">✅</div><div><h3>Raqib <span class="ar">رقيب</span></h3><p>Writes down all the good deeds that we do.</p></div></div>
+      <div class="bcard"><span class="n">8</span><div class="ic">📝</div><div><h3>Atid <span class="ar">عتيد</span></h3><p>Writes down the mistakes we do, so we can turn back to Allah.</p></div></div>
+      <div class="bcard"><span class="n">9</span><div class="ic">🔥</div><div><h3>Malik <span class="ar">مالك</span></h3><p>The keeper and guardian of the Fire (Jahannam).</p></div></div>
+      <div class="bcard"><span class="n">10</span><div class="ic">🌷</div><div><h3>Ridwan <span class="ar">رضوان</span></h3><p>The keeper and guardian of Paradise (Jannah).</p></div></div>
+    </div>
+
+    <div class="callout">
+      <p data-i18n="l10note">Two of these angels are especially close to <b>you</b>: <b>Raqib and Atid</b>, together called the <b>Kiraman Katibin</b> — "the honourable writers". They write down everything you do, the good and the not-so-good. So let's fill their books with beautiful deeds! 💚</p>
+    </div>
+
+    <div class="asset-img" data-asset="IMG-FOUND-010-HERO"></div>
+
+    <div class="dyk"><span class="e">✨</span><div><b data-i18n="l10dykt">Did you know?</b><p data-i18n="l10dykp">Angels love good gatherings! When people come together to learn about Allah or to read the Qur'an, angels gather around them, and Allah lovingly mentions those people to the angels. So a class like yours may have angels visiting it right now!</p></div></div>
+
+    <div class="activity" data-label="✎ ACTIVITY" data-labelml="✎ പ്രവർത്തനം">
+      <h3 data-i18n="l10at">Angel Duty Chart ✨</h3>
+      <p data-i18n="l10ap">Make a chart of the angels and their special jobs!</p>
+      <ol><li data-i18n="l10al1">Write the names of the ten angels down one side of a page.</li><li data-i18n="l10al2">Beside each name, draw a little symbol for its duty (a raincloud, a trumpet, a pen...).</li><li data-i18n="l10al3">Circle Raqib and Atid, and promise them a page full of good deeds!</li></ol>
+      <p class="tip" data-i18n="l10atip">Remember: angels are made of light and we cannot draw what they look like — so we draw their duties instead.</p>
+    </div>
+
+    <div class="keywords"><h4 data-i18n="kwt">🔑 New words to remember</h4><div class="kw" data-i18n-html="l10kw"><span><b>Malaikah</b> <span class="ar">ملائكة</span> — the angels</span><span><b>Jibreel</b> <span class="ar">جبريل</span> — brings revelation</span><span><b>Mika'il</b> <span class="ar">ميكائيل</span> — rain &amp; provision</span><span><b>Israfil</b> <span class="ar">إسرافيل</span> — the Trumpet</span><span><b>Malak al-Mawt</b> <span class="ar">ملك الموت</span> — the Angel of Death</span><span><b>Kiraman Katibin</b> <span class="ar">كرام كاتبين</span> — the two writing angels</span></div></div>
+
+    <div class="remember"><span class="e">⭐</span><div><b data-i18n="remt">Remember</b><p data-i18n="l10rem">Angels are made of light and always obey Allah. We cannot see them, but we know ten by name — including Jibreel, and Raqib and Atid who write down our deeds.</p></div></div>
+
+    <div class="pagenum" data-i18n="pg10">Page 10</div>
+  </section>
+
+  <!-- ===================== QUIZ ===================== -->
+  <section class="quiz" id="quiz">
+    <h3 data-i18n="quizh">★ Let's See What You Remember!</h3>
+    <p class="qsub" data-i18n="quizsub">Tap the answer you think is right. Missing one is fine — that's how we learn!</p>
+    <div class="q" data-correct="1"><p data-i18n="q1">1. How many Articles of Faith (Iman) are there?</p><div class="opts"><button class="opt" data-i18n="q1o1">Three</button><button class="opt" data-i18n="q1o2">Six</button><button class="opt" data-i18n="q1o3">Ten</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="0"><p data-i18n="q2">2. Which is the <b>first</b> Pillar of Islam?</p><div class="opts"><button class="opt" data-i18n="q2o1">Shahada</button><button class="opt" data-i18n="q2o2">Hajj</button><button class="opt" data-i18n="q2o3">Sawm</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="2"><p data-i18n="q3">3. What does <b>Ar-Razzaq</b> mean?</p><div class="opts"><button class="opt" data-i18n="q3o1">The All-Seeing</button><button class="opt" data-i18n="q3o2">The Forgiving</button><button class="opt" data-i18n="q3o3">The Provider</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="1"><p data-i18n="q4">4. In Wudu, how many times do we wash the face?</p><div class="opts"><button class="opt" data-i18n="q4o1">One time</button><button class="opt" data-i18n="q4o2">Three times</button><button class="opt" data-i18n="q4o3">Five times</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="1"><p data-i18n="q5">5. Who is the <b>last</b> Prophet of Allah?</p><div class="opts"><button class="opt" data-i18n="q5o1">Prophet Musa (peace be upon him)</button><button class="opt" data-i18n="q5o2">Prophet Muhammad ﷺ</button><button class="opt" data-i18n="q5o3">Prophet Adam (peace be upon him)</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="0"><p data-i18n="q6">6. In which month do Muslims fast?</p><div class="opts"><button class="opt" data-i18n="q6o1">Ramadan</button><button class="opt" data-i18n="q6o2">Shawwal</button><button class="opt" data-i18n="q6o3">Muharram</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="1"><p data-i18n="q7">7. How many prayers do Muslims pray each day?</p><div class="opts"><button class="opt" data-i18n="q7o1">Three</button><button class="opt" data-i18n="q7o2">Five</button><button class="opt" data-i18n="q7o3">Seven</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="0"><p data-i18n="q8">8. Which special prayer is on Fridays?</p><div class="opts"><button class="opt" data-i18n="q8o1">Jumu'ah</button><button class="opt" data-i18n="q8o2">Taraweeh</button><button class="opt" data-i18n="q8o3">Eid prayer</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="0"><p data-i18n="q9">9. In which city was Prophet Muhammad ﷺ born?</p><div class="opts"><button class="opt" data-i18n="q9o1">Makkah</button><button class="opt" data-i18n="q9o2">Madinah</button><button class="opt" data-i18n="q9o3">Cairo</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="0"><p data-i18n="q10">10. What is the cube-shaped House of Allah in Makkah called?</p><div class="opts"><button class="opt" data-i18n="q10o1">The Kaaba</button><button class="opt" data-i18n="q10o2">The Minbar</button><button class="opt" data-i18n="q10o3">The Mihrab</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="1"><p data-i18n="q11">11. How many good deeds do you get for reading just one letter of the Qur'an?</p><div class="opts"><button class="opt" data-i18n="q11o1">One</button><button class="opt" data-i18n="q11o2">Ten</button><button class="opt" data-i18n="q11o3">A hundred</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="0"><p data-i18n="q12">12. Whose words are the Holy Qur'an?</p><div class="opts"><button class="opt" data-i18n="q12o1">Allah's words</button><button class="opt" data-i18n="q12o2">A poet's words</button><button class="opt" data-i18n="q12o3">The angels' words</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="0"><p data-i18n="q13">13. Who was the very first prophet?</p><div class="opts"><button class="opt" data-i18n="q13o1">Adam (as)</button><button class="opt" data-i18n="q13o2">Nuh (as)</button><button class="opt" data-i18n="q13o3">Musa (as)</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="1"><p data-i18n="q14">14. How many prophets are named in the Qur'an?</p><div class="opts"><button class="opt" data-i18n="q14o1">10</button><button class="opt" data-i18n="q14o2">25</button><button class="opt" data-i18n="q14o3">100</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="0"><p data-i18n="q15">15. Which angel brings Allah's words to the prophets?</p><div class="opts"><button class="opt" data-i18n="q15o1">Jibreel</button><button class="opt" data-i18n="q15o2">Malik</button><button class="opt" data-i18n="q15o3">Israfil</button></div><div class="qfb"></div></div>
+    <div class="q" data-correct="0"><p data-i18n="q16">16. What did Allah create the angels from?</p><div class="opts"><button class="opt" data-i18n="q16o1">Light</button><button class="opt" data-i18n="q16o2">Clay</button><button class="opt" data-i18n="q16o3">Water</button></div><div class="qfb"></div></div>
+    <div class="quiz-score" id="quizScore"></div>
+  </section>
+
+  <!-- ===================== COMPLETION ===================== -->
+  <div class="done-panel" id="donePanel">
+    <div class="big">🌙</div>
+    <h3 data-i18n="doneh">Mashallah — you finished all ten lessons!</h3>
+    <p data-i18n="donep">You have learned the foundations every Muslim holds dear. Keep them in your heart and share them with a friend.</p>
+    <div class="done-list">
+      <div><span>✅</span><span data-i18n="dl1">The Six Articles of Faith</span></div>
+      <div><span>✅</span><span data-i18n="dl2">The Five Pillars of Islam</span></div>
+      <div><span>✅</span><span data-i18n="dl3">Allah's beautiful names</span></div>
+      <div><span>✅</span><span data-i18n="dl4">How to make Wudu</span></div>
+      <div><span>✅</span><span data-i18n="dl5">How to fast in Ramadan</span></div>
+      <div><span>✅</span><span data-i18n="dl6">The daily prayers &amp; Jumu'ah</span></div>
+      <div><span>✅</span><span data-i18n="dl7">Makkah, Madinah &amp; the Kaaba</span></div>
+      <div><span>✅</span><span data-i18n="dl8">The Holy Qur'an — its light &amp; rewards</span></div>
+      <div><span>✅</span><span data-i18n="dl9">The Prophets of Allah (25)</span></div>
+      <div><span>✅</span><span data-i18n="dl10">The Angels — Malaikah (10)</span></div>
+    </div>
+  </div>
+
+  <div class="footer-note">Manzilul<b>Quran</b> E-learning Academy · <span data-i18n="foot">Islamic Foundations · Lessons 1–10</span></div>
+</div>
+<script>
+"use strict";
+const LANG={current:"en"};
+const L=()=>LANG.current;
+
+/* =================================================================
+   MALAYALAM CONTENT (native Malayalam — written fresh, not a
+   word-for-word translation of the English)
+   ================================================================= */
+const ML={
+brand:"പഠന സാമഗ്രി", course:"കോഴ്‌സ് · ഇസ്‌ലാമിക അടിസ്ഥാനങ്ങൾ", close:"മെനു അടയ്ക്കൂ",
+j1:"ഈമാൻ കാര്യങ്ങൾ ആറ്", j1s:"നാം വിശ്വസിക്കുന്നത് · ഈമാൻ",
+j2:"ഇസ്‌ലാമിന്റെ പഞ്ചസ്തംഭങ്ങൾ", j2s:"നാം ചെയ്യുന്നത് · ഇസ്‌ലാം",
+j3:"അല്ലാഹുവിനെ അറിയാം", j3s:"അവന്റെ മനോഹര നാമങ്ങൾ",
+j4:"വുദൂ — നമസ്കാരത്തിന് ശുദ്ധിയാകാം", j4s:"ഘട്ടം ഘട്ടമായി",
+coverEye:"മൻസിലുൽ ഖുർആൻ · പഠന സാമഗ്രി", coverTitle:"ഇസ്‌ലാമിക അടിസ്ഥാനങ്ങൾ",
+coverSub:"കുട്ടികൾക്കായി നാല് ലളിത പാഠങ്ങൾ — നാം വിശ്വസിക്കുന്നത്, നാം ചെയ്യുന്നത്, നമ്മുടെ സ്നേഹനിധിയായ അല്ലാഹു, പിന്നെ നമസ്കാരത്തിന് എങ്ങനെ ശുദ്ധിയാകാം. പാഠങ്ങൾക്കിടയിൽ പോകാൻ എപ്പോൾ വേണമെങ്കിലും ☰ മെനു അമർത്തൂ.",
+bismt:"പരമകാരുണികനും കരുണാനിധിയുമായ അല്ലാഹുവിന്റെ നാമത്തിൽ.",
+kwt:"🔑 ഓർത്തുവയ്ക്കാൻ പുതിയ വാക്കുകൾ", remt:"ഓർക്കുക",
+
+l1eye:"ഒന്നാം പാഠം · നാം വിശ്വസിക്കുന്നത്", l1h:"ഈമാൻ കാര്യങ്ങൾ ആറ്",
+l1p1:"ഉറപ്പുള്ള ഏതൊരു കെട്ടിടവും തുടങ്ങുന്നത് കാണാൻ പോലും കഴിയാത്ത അടിത്തറയിൽ നിന്നാണ് — മണ്ണിനടിയിൽ ഒളിഞ്ഞിരിക്കുന്ന ഭാഗം. നമ്മുടെ <b>വിശ്വാസവും</b> അതുപോലെ ഹൃദയത്തിനുള്ളിൽ ഒളിഞ്ഞിരിക്കുന്ന അടിത്തറയാണ്. അറബിയിൽ അതിനെ <b>ഈമാൻ</b> എന്ന് പറയുന്നു. കണ്ണുകൊണ്ട് കാണാൻ കഴിയില്ലെങ്കിലും ഒരു മുസ്‌ലിം ഉറച്ചു വിശ്വസിക്കുന്ന സത്യങ്ങളാണ് ഈമാൻ.",
+l1p2:"ഈ വിശ്വാസങ്ങൾ <b>ആറ്</b> എണ്ണമുണ്ടെന്ന് നമ്മുടെ പ്രിയ നബി മുഹമ്മദ് ﷺ പഠിപ്പിച്ചു. അവയെ ആറ് തിളങ്ങുന്ന നക്ഷത്രങ്ങളായി കരുതൂ. ആറും ഹൃദയത്തിലുണ്ടെങ്കിൽ നിന്റെ വിശ്വാസം പൂർണവും പ്രകാശമുള്ളതുമാകും. ഓരോന്നും നമുക്ക് പരിചയപ്പെടാം.",
+l1c1t:"അല്ലാഹുവിൽ വിശ്വാസം",
+l1c1d:"ഒരേയൊരു ദൈവം മാത്രമേയുള്ളൂ എന്ന് നാം വിശ്വസിക്കുന്നു — <b>അല്ലാഹു</b>. അവൻ ജനിച്ചിട്ടില്ല, അവന് മക്കളില്ല. അവൻ ഈ പ്രപഞ്ചം മുഴുവൻ സൃഷ്ടിച്ചു. അവനെ മാത്രമേ നാം ആരാധിക്കാവൂ. അവനെപ്പോലെ യാതൊന്നുമില്ല.",
+l1c2t:"മലക്കുകളിൽ വിശ്വാസം <span class=\"ar\">مَلائِكة</span>",
+l1c2d:"അല്ലാഹു മലക്കുകളെ പ്രകാശത്തിൽ നിന്ന് സൃഷ്ടിച്ചു. നമുക്കവരെ കാണാനാവില്ല, പക്ഷേ അവർ ഒരിക്കലും അല്ലാഹുവിനെ ധിക്കരിക്കില്ല. ജിബ്‌രീൽ (അ) പ്രവാചകന്മാർക്ക് അല്ലാഹുവിന്റെ വചനങ്ങൾ എത്തിച്ചു; നമ്മുടെ പ്രവൃത്തികൾ എഴുതാൻ രണ്ട് മലക്കുകൾ നമ്മോടൊപ്പമുണ്ട്.",
+l1c3t:"വിശുദ്ധ ഗ്രന്ഥങ്ങളിൽ വിശ്വാസം <span class=\"ar\">كُتُب</span>",
+l1c3d:"അല്ലാഹു വിശുദ്ധ ഗ്രന്ഥങ്ങളിലൂടെ മാർഗദർശനം നൽകി. തൗറാത്ത്, സബൂർ, ഇഞ്ചീൽ എന്നിവ മുൻപ്രവാചകന്മാർക്ക് ലഭിച്ചു. <b>ഖുർആൻ</b> ആണ് അവസാന ഗ്രന്ഥം; മുഹമ്മദ് നബി ﷺ ക്ക് അവതരിച്ചത്. അല്ലാഹു അതിനെ എന്നേക്കും മാറ്റമില്ലാതെ കാത്തുസൂക്ഷിക്കുന്നു.",
+l1c4t:"പ്രവാചകന്മാരിൽ വിശ്വാസം <span class=\"ar\">رُسُل</span>",
+l1c4d:"ജനങ്ങളെ നേർവഴി കാണിക്കാൻ അല്ലാഹു നിരവധി ദയയുള്ള പ്രവാചകന്മാരെ അയച്ചു — ആദം, നൂഹ്, ഇബ്രാഹീം, മൂസാ, ഈസാ (എല്ലാവർക്കും സമാധാനം). മുഹമ്മദ് നബി ﷺ ആണ് <b>അവസാന</b> പ്രവാചകൻ; അദ്ദേഹത്തിന് ശേഷം പ്രവാചകനില്ല.",
+l1c5t:"അന്ത്യദിനത്തിൽ വിശ്വാസം <span class=\"ar\">الآخِرة</span>",
+l1c5d:"ഒരു ദിവസം ഈ ലോകം അവസാനിക്കും. അല്ലാഹു എല്ലാവരെയും വീണ്ടും ജീവിപ്പിക്കുകയും നാം എങ്ങനെ ജീവിച്ചുവെന്ന് ചോദിക്കുകയും ചെയ്യും. വിശ്വസിച്ച് നന്മ ചെയ്തവർ സ്വർഗത്തിൽ (ജന്നത്ത്) പ്രവേശിക്കും. അല്ലാഹു തികഞ്ഞ നീതിമാനും അതിരറ്റ കരുണയുള്ളവനുമാണ്.",
+l1c6t:"അല്ലാഹുവിന്റെ വിധിയിൽ വിശ്വാസം <span class=\"ar\">قَدَر</span>",
+l1c6d:"സംഭവിച്ചതും സംഭവിക്കാനിരിക്കുന്നതുമെല്ലാം അല്ലാഹു അറിയുന്നു. അവന്റെ അറിവും യുക്തിയും ഇല്ലാതെ ഒന്നും നടക്കില്ല. അതിനാൽ നാം കഠിനമായി പരിശ്രമിക്കുകയും പ്രാർത്ഥിക്കുകയും അല്ലാഹുവിന്റെ വിധി എപ്പോഴും ഏറ്റവും നല്ലതാണെന്ന് വിശ്വസിക്കുകയും ചെയ്യുന്നു.",
+l1dykt:"നിനക്കറിയാമോ?",
+l1dykp:"രണ്ട് മലക്കുകൾ ദിവസം മുഴുവൻ നിന്നോടൊപ്പം സഞ്ചരിക്കുന്നു. ഒരാൾ നിന്റെ നന്മകൾ എഴുതുന്നു, മറ്റൊരാൾ തെറ്റുകളും. അതിനാൽ ആരും കാണാത്ത ഒരു ചെറിയ നന്മ പോലും — ഉമ്മയെ സഹായിക്കുന്നതോ ഒരു പൂച്ചയ്ക്ക് ഭക്ഷണം കൊടുക്കുന്നതോ — ഒരിക്കലും നഷ്ടപ്പെടില്ല.",
+l1at:"നിന്റെ ഈമാൻ നക്ഷത്രം വരയ്ക്കൂ ⭐",
+l1ap:"ഒരു വലിയ കടലാസിൽ ആറ് കോണുള്ള ഒരു നക്ഷത്രം വരയ്ക്കൂ. ഓരോ കോണിലും ഈമാനിന്റെ ഒരു കാര്യം നിന്റെ സ്വന്തം വാക്കുകളിൽ എഴുതൂ.",
+l1al1:"ഓരോ കോണും വ്യത്യസ്ത നിറത്തിൽ നിറയ്ക്കൂ.", l1al2:"നടുവിൽ <b>ഈമാൻ</b> എന്ന് എഴുതൂ.", l1al3:"ഉപ്പയ്ക്കോ ഉമ്മയ്ക്കോ അധ്യാപകനോ കാണിച്ച് ഓരോ കാര്യവും ഉറക്കെ പറഞ്ഞുകൊടുക്കൂ.",
+l1atip:"ഏറ്റവും എളുപ്പത്തിൽ വിശദീകരിക്കാൻ കഴിയുന്നത് നീ ഏറ്റവും നന്നായി മനസ്സിലാക്കിയതാണ്. ഏതായിരുന്നു ഏറ്റവും വിഷമം?",
+l1kw:"<span><b>ഈമാൻ</b> <span class=\"ar\">إيمان</span> — വിശ്വാസം</span><span><b>മലാഇക</b> <span class=\"ar\">ملائكة</span> — മലക്കുകൾ</span><span><b>ഖുർആൻ</b> <span class=\"ar\">قرآن</span> — അല്ലാഹുവിന്റെ അവസാന ഗ്രന്ഥം</span><span><b>ആഖിറ</b> <span class=\"ar\">آخرة</span> — അന്ത്യദിനം</span>",
+l1rem:"ഹൃദയത്തിൽ നാം വിശ്വസിക്കുന്നതാണ് ഈമാൻ. ഈമാൻ കാര്യങ്ങൾ ആറാണ്; അവയോരോന്നും നബി ﷺ നമ്മെ പഠിപ്പിച്ചു.",
+pg1:"പേജ് 1",
+
+l2eye:"രണ്ടാം പാഠം · നാം ചെയ്യുന്നത്", l2h:"ഇസ്‌ലാമിന്റെ പഞ്ചസ്തംഭങ്ങൾ",
+l2p1:"ഒന്നാം പാഠത്തിൽ ഒരു മുസ്‌ലിം <b>ഹൃദയത്തിൽ</b> വിശ്വസിക്കുന്നത് നാം പഠിച്ചു. ഇനി ഒരു മുസ്‌ലിം <b>ശരീരം കൊണ്ട്</b> ചെയ്യുന്നത് പഠിക്കാം. അഞ്ച് ഉറച്ച സ്തംഭങ്ങളിൽ മേൽക്കൂര നിൽക്കുന്നതുപോലെ, അഞ്ച് മഹത്തായ പ്രവൃത്തികളിലാണ് ഇസ്‌ലാം നിലകൊള്ളുന്നത്. ഒരു സ്തംഭം ഇല്ലെങ്കിൽ കെട്ടിടം പൂർണമാകില്ല. ഇവയാണ് <b>ഇസ്‌ലാമിന്റെ പഞ്ചസ്തംഭങ്ങൾ</b>.",
+l2pc1:"ശഹാദ", l2pc2:"സ്വലാത്ത്", l2pc3:"സകാത്ത്", l2pc4:"സൗം", l2pc5:"ഹജ്ജ്",
+l2ps1:"അല്ലാഹു മാത്രമാണ് ദൈവമെന്നും മുഹമ്മദ് ﷺ അവന്റെ ദൂതനാണെന്നും വിശ്വസിക്കുകയും പറയുകയും ചെയ്യുക",
+l2ps2:"ദിവസവും അഞ്ച് നേരം അല്ലാഹുവിനോട് നമസ്കരിക്കുക",
+l2ps3:"നമ്മുടെ സമ്പത്തിൽ നിന്ന് അൽപം ദരിദ്രർക്ക് നൽകുക",
+l2ps4:"പ്രായമായാൽ റമദാനിൽ നോമ്പ് അനുഷ്ഠിക്കുക",
+l2ps5:"കഴിവുള്ളവർ മക്കയിലെ കഅ്ബ ഒരിക്കൽ സന്ദർശിക്കുക",
+l2ground:"🏛️ അഞ്ച് സ്തംഭങ്ങൾ ഒരു മനോഹര ഭവനത്തെ താങ്ങുന്നു — ഇസ്‌ലാം",
+l2sub1:"1 · ശഹാദ — ഒരു മുസ്‌ലിമിന്റെ വാക്കുകൾ",
+l2t1:"ആദ്യ സ്തംഭമാണ് ഏറ്റവും പ്രധാനം. ഈ വാക്കുകൾ പറയുകയും ഹൃദയത്തിൽ വിശ്വസിക്കുകയും ചെയ്യുമ്പോൾ നീ ഒരു മുസ്‌ലിമാണ്:",
+l2shat:"<b>ലാ ഇലാഹ ഇല്ലല്ലാഹ്, മുഹമ്മദുൻ റസൂലുല്ലാഹ്</b><br>'അല്ലാഹു അല്ലാതെ ദൈവമില്ല, മുഹമ്മദ് ﷺ അല്ലാഹുവിന്റെ ദൂതനാണ്.'",
+l2sub2:"2 മുതൽ 5 വരെ · നമസ്കാരം, സകാത്ത്, നോമ്പ്, ഹജ്ജ്",
+l2t2:"<b>സ്വലാത്ത്</b> ദിവസവും അഞ്ച് നേരത്തെ നമസ്കാരമാണ് — അല്ലാഹുവിനോട് സംസാരിക്കാനുള്ള മനോഹര സമയം. <b>സകാത്ത്</b> എന്നാൽ നമ്മുടെ സമ്പത്തിൽ നിന്ന് അൽപം ദരിദ്രർക്ക് നൽകുകയാണ്, ആരും വിശന്നിരിക്കാതിരിക്കാൻ. <b>സൗം</b> റമദാൻ മാസത്തിലെ നോമ്പാണ്; മുതിർന്നവർ പ്രഭാതം മുതൽ സൂര്യാസ്തമയം വരെ ഭക്ഷണവും വെള്ളവും ഒഴിവാക്കുന്നു, ഇത് ക്ഷമയും നന്ദിയും പഠിപ്പിക്കുന്നു. <b>ഹജ്ജ്</b> മക്കയിലെ കഅ്ബയിലേക്കുള്ള മഹത്തായ യാത്രയാണ്, കഴിവുള്ളവർ ജീവിതത്തിൽ ഒരിക്കൽ നിർവഹിക്കുന്നു.",
+l2dykt:"നിനക്കറിയാമോ?",
+l2dykp:"ഒരു മുസ്‌ലിം എവിടെ നിന്ന് നമസ്കരിച്ചാലും — കേരളത്തിലായാലും മക്കയിലായാലും ഒരു മലമുകളിലായാലും — എല്ലാവരും ഒരേ കെട്ടിടത്തിന് അഭിമുഖമായി നിൽക്കുന്നു: <b>കഅ്ബ</b>. ദിവസത്തിലെ ഓരോ നിമിഷത്തിലും ഭൂമിയിൽ എവിടെയോ ആരെങ്കിലും അതിലേക്ക് നമസ്കരിക്കുന്നുണ്ട്.",
+l2at:"അഞ്ച് വിരൽ, അഞ്ച് സ്തംഭം ✋",
+l2ap:"നിന്റെ കൈ തന്നെ ഓർമ്മിക്കാൻ സഹായിക്കും! കടലാസിൽ നിന്റെ കൈ വരച്ച് ഓരോ വിരലിലും ഒരു സ്തംഭം എഴുതൂ.",
+l2al1:"<b>തള്ളവിരൽ</b> — ശഹാദ (ഏറ്റവും ശക്തമായത്, ആദ്യം വരുന്നത്)",
+l2al2:"<b>ചൂണ്ടുവിരൽ</b> — സ്വലാത്ത് &nbsp;•&nbsp; <b>നടുവിരൽ</b> — സകാത്ത്",
+l2al3:"<b>മോതിരവിരൽ</b> — സൗം &nbsp;•&nbsp; <b>ചെറുവിരൽ</b> — ഹജ്ജ്",
+l2atip:"ഇനി പഞ്ചസ്തംഭങ്ങൾ എപ്പോഴും നിന്റെ കൂടെയുണ്ട് — നിന്റെ കൈയിൽ തന്നെ!",
+l2kw:"<span><b>ശഹാദ</b> <span class=\"ar\">شهادة</span> — വിശ്വാസ വചനം</span><span><b>സ്വലാത്ത്</b> <span class=\"ar\">صلاة</span> — നമസ്കാരം</span><span><b>സകാത്ത്</b> <span class=\"ar\">زكاة</span> — ദാനം</span><span><b>സൗം</b> <span class=\"ar\">صوم</span> — നോമ്പ്</span><span><b>ഹജ്ജ്</b> <span class=\"ar\">حجّ</span> — തീർത്ഥാടനം</span>",
+l2rem:"ഒരു മുസ്‌ലിമിന്റെ ജീവിതത്തെ താങ്ങുന്ന പ്രവൃത്തികളാണ് പഞ്ചസ്തംഭങ്ങൾ: ശഹാദ, സ്വലാത്ത്, സകാത്ത്, സൗം, ഹജ്ജ്.",
+pg2:"പേജ് 2"
+};
+</script>
+<script>
+"use strict";
+Object.assign(ML,{
+l3eye:"മൂന്നാം പാഠം · നമ്മുടെ അല്ലാഹു", l3h:"അല്ലാഹുവിനെ അറിയാം",
+l3p1:"നാം അല്ലാഹുവിൽ വിശ്വസിക്കുന്നു — പക്ഷേ അല്ലാഹു എങ്ങനെയുള്ളവനാണ്? നമ്മുടെ മനസ്സിൽ സങ്കൽപ്പിക്കാവുന്നതിനെക്കാളെല്ലാം വലിയവനാണ് അല്ലാഹു. അവനെ അറിയാനും സ്നേഹിക്കാനും വേണ്ടി അല്ലാഹു തന്റെ <b>മനോഹര നാമങ്ങൾ</b> നമ്മോട് പറഞ്ഞുതന്നു. തൊണ്ണൂറ്റിയൊമ്പത് നാമങ്ങളുണ്ട്; ഓരോ നാമവും നമ്മുടെ സ്രഷ്ടാവിനെക്കുറിച്ച് അത്ഭുതകരമായ ഒരു കാര്യം കാണിക്കുന്ന ജാലകം പോലെയാണ്. തുടക്കത്തിന് എട്ടെണ്ണം ഇതാ.",
+l3n1:"പരമകാരുണികൻ — ഏതൊരു ഉമ്മയുടെയും ഉപ്പയുടെയും സ്നേഹത്തെക്കാൾ വലിയ കാരുണ്യമുള്ളവൻ.",
+l3n2:"സ്രഷ്ടാവ് — നക്ഷത്രങ്ങളും കടലുകളും എല്ലാ ജീവികളും നിന്നെയും സൃഷ്ടിച്ചവൻ.",
+l3n3:"എല്ലാം അറിയുന്നവൻ — നിന്റെ ഹൃദയത്തിലെ രഹസ്യ ചിന്തകൾ പോലും അവനറിയാം.",
+l3n4:"എല്ലാം കേൾക്കുന്നവൻ — നിന്റെ ഓരോ മന്ത്രവും ഓരോ പ്രാർത്ഥനയും അവൻ കേൾക്കുന്നു.",
+l3n5:"എല്ലാം കാണുന്നവൻ — വെളിച്ചത്തിലായാലും ഇരുട്ടിലായാലും അവനിൽ നിന്ന് ഒന്നും മറയ്ക്കാനാവില്ല.",
+l3n6:"ഉപജീവനം നൽകുന്നവൻ — ഭക്ഷണവും മഴയും ജീവിക്കാൻ വേണ്ട എല്ലാ നന്മകളും അവൻ നൽകുന്നു.",
+l3n7:"പൊറുക്കുന്നവൻ — നാം ആത്മാർത്ഥമായി ക്ഷമ ചോദിക്കുമ്പോൾ അവൻ സ്നേഹത്തോടെ പൊറുക്കുന്നു.",
+l3n8:"ഏകൻ — അല്ലാഹു ഒരാൾ മാത്രം; അവനെപ്പോലെ ആരും ഒന്നുമില്ല.",
+l3p2:"അല്ലാഹു നമുക്ക് സങ്കൽപ്പിക്കാവുന്ന യാതൊന്നിനെയും പോലെയല്ല. അവൻ ജനിച്ചിട്ടില്ല, അവന് മക്കളില്ല. അവന് ക്ഷീണവുമില്ല ഉറക്കവുമില്ല. ഖുർആനിലെ ഒരു ചെറിയ സൂറത്തിൽ അല്ലാഹു താൻ ആരാണെന്ന് കൃത്യമായി പഠിപ്പിക്കുന്നു:",
+l3ikht:"<b>സൂറത്തുൽ ഇഖ്‌ലാസ്</b> — 'പറയുക, അവൻ അല്ലാഹു, ഏകൻ. അല്ലാഹു, ആശ്രയമറ്റവൻ. അവൻ ജനിപ്പിച്ചിട്ടില്ല, ജനിച്ചിട്ടുമില്ല. അവന് തുല്യനായി ആരുമില്ല.'",
+l3dykt:"നിനക്കറിയാമോ?",
+l3dykp:"നിന്റെ ചുറ്റും എവിടെയും അല്ലാഹുവിന്റെ നാമങ്ങൾ കാണാം. കഴിക്കാൻ ഒരു മധുര മാങ്ങ? അത് <b>അർ-റസ്സാഖ്</b>, ഉപജീവനം നൽകുന്നവൻ. നെൽപ്പാടങ്ങൾ വളരാൻ സഹായിക്കുന്ന മഴ? അത് അവന്റെ കാരുണ്യം, <b>അർ-റഹ്‌മാൻ</b>. ലോകം അല്ലാഹുവിന്റെ ചെറുചെറു അടയാളങ്ങളാൽ നിറഞ്ഞതാണ്.",
+l3at:"അല്ലാഹുവിന്റെ നാമ അന്വേഷണം 🔍",
+l3ap:"ഒരു ദിവസം മുഴുവൻ ഒരു 'നാമ ഡിറ്റക്ടീവ്' ആകൂ!",
+l3al1:"മുകളിൽ നിന്ന് അല്ലാഹുവിന്റെ <b>ഒരു</b> മനോഹര നാമം തിരഞ്ഞെടുക്കൂ.",
+l3al2:"വീട്ടിലും പുറത്തും ചുറ്റും നോക്കൂ. ആ നാമത്തെ ഓർമ്മിപ്പിക്കുന്ന <b>മൂന്ന്</b> കാര്യങ്ങൾ കണ്ടെത്തൂ.",
+l3al3:"അവ വരയ്ക്കൂ, ഓരോന്നിനും താഴെ എഴുതൂ: 'ഇത് അല്ലാഹു ______ ആണെന്ന് കാണിക്കുന്നു.'",
+l3atip:"<b>അൽ-ഖാലിഖ്</b> (സ്രഷ്ടാവ്) എന്നതിന് നീ ഒരു മരം, ഒരു ചിത്രശലഭം, ചന്ദ്രൻ എന്നിവ വരയ്ക്കാം.",
+l3kw:"<span><b>അസ്മാഉൽ ഹുസ്നാ</b> <span class=\"ar\">أسماء الحسنى</span> — മനോഹര നാമങ്ങൾ</span><span><b>അർ-റഹ്‌മാൻ</b> — പരമകാരുണികൻ</span><span><b>അൽ-ഖാലിഖ്</b> — സ്രഷ്ടാവ്</span><span><b>തൗഹീദ്</b> <span class=\"ar\">توحيد</span> — അല്ലാഹു ഏകൻ</span>",
+l3rem:"അല്ലാഹു ഏകനാണ്. അവനെക്കുറിച്ച് പഠിപ്പിക്കുന്ന മനോഹര നാമങ്ങൾ അവനുണ്ട്; അവനെപ്പോലെ യാതൊന്നുമില്ല.",
+pg3:"പേജ് 3",
+
+l4eye:"നാലാം പാഠം · ഒരുങ്ങാം", l4h:"വുദൂ — നമസ്കാരത്തിന് ശുദ്ധിയാകാം",
+l4p1:"നമസ്കാരത്തിന് നിൽക്കുന്നതിന് മുമ്പ് നാം ഒരു പ്രത്യേക രീതിയിൽ ശുദ്ധിയാകുന്നു. ഈ കഴുകലിനെ <b>വുദൂ</b> എന്ന് പറയുന്നു. ഇത് വെറും സാധാരണ കഴുകലല്ല — അല്ലാഹുവിന്റെ മുന്നിൽ നിൽക്കാൻ നമ്മുടെ ശരീരത്തെയും മനസ്സിനെയും ഒരുക്കുന്നു. ഇലയിലെ പൊടി വെള്ളം കഴുകിക്കളയുന്നതുപോലെ, വുദൂ നമ്മുടെ ചെറിയ തെറ്റുകൾ പോലും കഴുകിക്കളയുമെന്ന് നബി ﷺ പറഞ്ഞു. 🌿",
+l4p2:"വുദൂവിന് ഭംഗിയുള്ള ഒരു ക്രമമുണ്ട്. ഘട്ടം ഘട്ടമായി പഠിക്കാം. തുടങ്ങുന്നതിന് മുമ്പ്, അല്ലാഹുവിന് വേണ്ടി വുദൂ ചെയ്യുന്നു എന്ന <b>നിയ്യത്ത്</b> ഹൃദയത്തിൽ കരുതി <b>ബിസ്മി</b> ചൊല്ലുക.",
+l4s1t:"നിയ്യത്തും ബിസ്മിയും",
+l4s1d:"ഹൃദയത്തിൽ കരുതൂ: 'അല്ലാഹുവിന് വേണ്ടി നമസ്കരിക്കാൻ ഞാൻ വുദൂ ചെയ്യുന്നു.' എന്നിട്ട് <b>ബിസ്മില്ലാഹ്</b> — 'അല്ലാഹുവിന്റെ നാമത്തിൽ' എന്ന് ചൊല്ലുക.",
+l4s2t:"കൈകൾ കഴുകുക <span class=\"times\">×3</span>",
+l4s2d:"രണ്ട് കൈകളും മണിബന്ധം വരെ മൂന്ന് പ്രാവശ്യം കഴുകുക, വിരലുകൾക്കിടയിലും വെള്ളമെത്തിക്കുക.",
+l4s3t:"വായ കഴുകുക <span class=\"times\">×3</span>", l4s3d:"അൽപം വെള്ളം വായിലെടുത്ത് കൊപ്ലിക്കുക, മൂന്ന് പ്രാവശ്യം.",
+l4s4t:"മൂക്ക് കഴുകുക <span class=\"times\">×3</span>", l4s4d:"അൽപം വെള്ളം മൂക്കിലേക്ക് പതുക്കെ വലിച്ചെടുത്ത് പുറത്തേക്ക് ഊതുക, മൂന്ന് പ്രാവശ്യം.",
+l4s5t:"മുഖം കഴുകുക <span class=\"times\">×3</span>", l4s5d:"നെറ്റിയുടെ മുകൾഭാഗം മുതൽ താടി വരെ, ചെവി മുതൽ ചെവി വരെ മുഖം മുഴുവൻ മൂന്ന് പ്രാവശ്യം കഴുകുക.",
+l4s6t:"കൈകൾ (കൈമുട്ട് വരെ) കഴുകുക <span class=\"times\">×3</span>", l4s6d:"വലതു കൈ കൈമുട്ട് വരെ മൂന്ന് പ്രാവശ്യം, പിന്നെ ഇടതു കൈ മൂന്ന് പ്രാവശ്യം കഴുകുക.",
+l4s7t:"തല തടവുക <span class=\"times\">×1</span>", l4s7d:"നനഞ്ഞ കൈകൊണ്ട് തലയിൽ ഒരു പ്രാവശ്യം പതുക്കെ തടവുക. ഈ തടവലിനെ <b>മസഹ്</b> എന്ന് പറയുന്നു.",
+l4s8t:"ചെവികൾ തടവുക <span class=\"times\">×1</span>", l4s8d:"നനഞ്ഞ വിരലുകൾകൊണ്ട് രണ്ട് ചെവിയുടെയും ഉള്ളും പുറകും ഒരു പ്രാവശ്യം തടവുക.",
+l4s9t:"കാലുകൾ കഴുകുക <span class=\"times\">×3</span>", l4s9d:"വലതു കാൽ നെരിയാണി വരെ മൂന്ന് പ്രാവശ്യം, പിന്നെ ഇടതു കാൽ മൂന്ന് പ്രാവശ്യം കഴുകുക. വിരലുകൾക്കിടയിൽ മറക്കരുത്!",
+l4duat:"🌟 വുദൂവിന് ശേഷമുള്ള ചെറിയ പ്രാർത്ഥന",
+l4duad:"'അല്ലാഹു അല്ലാതെ ദൈവമില്ലെന്നും മുഹമ്മദ് ﷺ അവന്റെ ദാസനും ദൂതനുമാണെന്നും ഞാൻ സാക്ഷ്യം വഹിക്കുന്നു.'",
+l4dykt:"നിനക്കറിയാമോ?",
+l4dykp:"ചില കാര്യങ്ങൾ നമ്മുടെ വുദൂ മുറിക്കും, അപ്പോൾ വീണ്ടും വുദൂ ചെയ്യണം — ടോയ്‌ലറ്റ് ഉപയോഗിക്കുക, കീഴ്‌വായു പോകുക, ഗാഢനിദ്രയിലാകുക എന്നിവ അങ്ങനെയാണ്. അതിനുശേഷം നമസ്കരിക്കുന്നതിന് മുമ്പ് ഒരിക്കൽ കൂടി വുദൂ ചെയ്യുക. ഓർക്കുക: വെള്ളം പാഴാക്കരുത് — അൽപം മാത്രം ഉപയോഗിക്കാൻ നബി ﷺ പഠിപ്പിച്ചു.",
+l4at:"വുദൂ പരിശീലന ചാർട്ട് 💦", l4ap:"ഒമ്പത് ഘട്ടങ്ങളെ രസകരമായ ഒരു ചാർട്ടാക്കാം!",
+l4al1:"ഒമ്പത് ചെറിയ കള്ളികൾ വരച്ച് 1 മുതൽ 9 വരെ എണ്ണം ഇടൂ.", l4al2:"ഓരോ കള്ളിയിലും ആ ഘട്ടത്തിൽ കഴുകുന്ന ശരീരഭാഗം വരയ്ക്കൂ.", l4al3:"ഒരു മുതിർന്നയാളോടൊപ്പം യഥാർത്ഥ വുദൂ പരിശീലിക്കൂ, ഓരോ കള്ളിയും ടിക് ചെയ്യൂ.",
+l4atip:"ശരിയായ ക്രമത്തിൽ ചെയ്യുന്നത് ഭംഗിയുള്ള വുദൂവിന്റെ ഭാഗമാണ്. ഒമ്പതും ഓർമ്മയിൽ നിന്ന് പറയാമോ?",
+l4kw:"<span><b>വുദൂ</b> <span class=\"ar\">وضوء</span> — നമസ്കാരത്തിന് മുമ്പുള്ള ശുദ്ധി</span><span><b>നിയ്യത്ത്</b> <span class=\"ar\">نيّة</span> — ഉദ്ദേശ്യം</span><span><b>മസഹ്</b> <span class=\"ar\">مسح</span> — പതുക്കെ തടവൽ</span><span><b>ബിസ്മി</b> <span class=\"ar\">بسم الله</span> — 'അല്ലാഹുവിന്റെ നാമത്തിൽ'</span>",
+l4rem:"വുദൂ നമ്മെ ശുദ്ധിയാക്കി നമസ്കാരത്തിന് ഒരുക്കുന്നു. നിയ്യത്തും ബിസ്മിയും കൊണ്ട് തുടങ്ങി, ക്രമത്തിൽ ഒമ്പത് ഘട്ടങ്ങൾ.",
+pg4:"പേജ് 4",
+
+quizh:"★ നീ ഓർക്കുന്നത് നോക്കാം!", quizsub:"ശരിയെന്ന് തോന്നുന്ന ഉത്തരത്തിൽ ടാപ്പ് ചെയ്യൂ. ഒന്ന് തെറ്റിയാലും കുഴപ്പമില്ല — അങ്ങനെയാണ് നാം പഠിക്കുന്നത്!",
+q1:"1. ഈമാൻ കാര്യങ്ങൾ എത്രയാണ്?", q1o1:"മൂന്ന്", q1o2:"ആറ്", q1o3:"പത്ത്",
+q2:"2. ഇസ്‌ലാമിന്റെ <b>ആദ്യ</b> സ്തംഭം ഏതാണ്?", q2o1:"ശഹാദ", q2o2:"ഹജ്ജ്", q2o3:"സൗം",
+q3:"3. <b>അർ-റസ്സാഖ്</b> എന്നാൽ എന്ത്?", q3o1:"എല്ലാം കാണുന്നവൻ", q3o2:"പൊറുക്കുന്നവൻ", q3o3:"ഉപജീവനം നൽകുന്നവൻ",
+q4:"4. വുദൂവിൽ മുഖം എത്ര പ്രാവശ്യം കഴുകുന്നു?", q4o1:"ഒരു പ്രാവശ്യം", q4o2:"മൂന്ന് പ്രാവശ്യം", q4o3:"അഞ്ച് പ്രാവശ്യം",
+q5:"5. അല്ലാഹുവിന്റെ <b>അവസാന</b> പ്രവാചകൻ ആരാണ്?", q5o1:"മൂസാ നബി (അ)", q5o2:"മുഹമ്മദ് നബി ﷺ", q5o3:"ആദം നബി (അ)",
+doneh:"മാഷാ അല്ലാഹ് — നാല് പാഠങ്ങളും പൂർത്തിയാക്കി!",
+donep:"ഓരോ മുസ്‌ലിമും വിലമതിക്കുന്ന അടിസ്ഥാനങ്ങൾ നീ പഠിച്ചു. അവ ഹൃദയത്തിൽ സൂക്ഷിക്കൂ, ഒരു കൂട്ടുകാരനുമായി പങ്കുവയ്ക്കൂ.",
+dl1:"ഈമാൻ കാര്യങ്ങൾ ആറ്", dl2:"ഇസ്‌ലാമിന്റെ പഞ്ചസ്തംഭങ്ങൾ", dl3:"അല്ലാഹുവിന്റെ മനോഹര നാമങ്ങൾ", dl4:"വുദൂ എങ്ങനെ ചെയ്യാം",
+foot:"ഇസ്‌ലാമിക അടിസ്ഥാനങ്ങൾ · പാഠങ്ങൾ 1–4"
+});
+</script>
+<script>
+"use strict";
+Object.assign(ML,{
+j5:"സൗം — റമദാനിലെ നോമ്പ്", j5s:"സന്തോഷത്തിന്റെ മാസം",
+l5eye:"അഞ്ചാം പാഠം · സന്തോഷത്തിന്റെ മാസം", l5h:"സൗം — നോമ്പിന്റെ മനോഹര മാസം",
+l5p1:"വർഷത്തിലൊരിക്കൽ വളരെ പ്രത്യേകപ്പെട്ട ഒരു അതിഥി വരുന്നു — <b>റമദാൻ</b> മാസം. മുസ്‌ലിം വീടുകൾ സന്തോഷത്താൽ നിറയുന്നു: വിളക്കുകൾ തൂങ്ങുന്നു, അടുക്കളയിൽ നിന്ന് നല്ല ഭക്ഷണത്തിന്റെ മണം പരക്കുന്നു, കുടുംബങ്ങൾ സൂര്യൻ ഉദിക്കുന്നതിന് മുമ്പേ ഒരുമിച്ച് എഴുന്നേൽക്കുന്നു. ഈ മാസത്തിൽ മുതിർന്ന മുസ്‌ലിംകൾ ഇസ്‌ലാമിന്റെ നാലാമത്തെ സ്തംഭം അനുഷ്ഠിക്കുന്നു: <b>സൗം</b>, അതായത് നോമ്പ്.",
+l5p2:"നോമ്പ് എന്നാൽ പ്രഭാതത്തിന്റെ ആദ്യ വെളിച്ചം മുതൽ സൂര്യൻ അസ്തമിക്കുന്നത് വരെ നാം ഒന്നും കഴിക്കുകയോ കുടിക്കുകയോ ചെയ്യില്ല — വെള്ളം പോലും. അല്ലാഹുവിനെ അനുസരിക്കാനും അവനോട് കൂടുതൽ അടുക്കാനും, വിശക്കുന്നവരുടെ വിശപ്പ് നമ്മുടെ വയറ്റിൽ തന്നെ അനുഭവിക്കാനും വേണ്ടിയാണ് നാം നോമ്പ് നോൽക്കുന്നത്. ഇത് നമ്മുടെ ഹൃദയത്തെ കൂടുതൽ ദയയുള്ളതും ശക്തവുമാക്കുന്നു. 💛",
+l5sub1:"ഒരു നോമ്പ് ദിവസം, ഘട്ടം ഘട്ടമായി",
+l5d1t:"അത്താഴം — പുലർച്ചെയുള്ള ഭക്ഷണം",
+l5d1d:"പ്രഭാതത്തിന് മുമ്പ് കുടുംബം മുഴുവൻ എഴുന്നേറ്റ് <b>അത്താഴം</b> (സുഹൂർ) എന്ന ലഘുഭക്ഷണം കഴിക്കുന്നു. ഇത് പകലിന് ശക്തി നൽകുന്നു. അല്ലാഹുവിന് വേണ്ടി നോമ്പ് നോൽക്കാനുള്ള <b>നിയ്യത്ത്</b> ഹൃദയത്തിൽ കരുതുന്നതും ഈ സമയത്താണ്.",
+l5d2t:"ഫജ്ർ — നോമ്പ് ആരംഭിക്കുന്നു",
+l5d2d:"പ്രഭാതത്തിൽ ഫജ്ർ ബാങ്ക് വിളിക്കുമ്പോൾ നാം ഭക്ഷണവും വെള്ളവും നിർത്തി സുബ്ഹി നമസ്കരിക്കുന്നു. ഇനി നമ്മുടെ നോമ്പ് തുടങ്ങി!",
+l5d3t:"പകൽ — ശരീരം മുഴുവന്റെയും നോമ്പ്",
+l5d3d:"പകൽ മുഴുവൻ നാം ഭക്ഷണമോ വെള്ളമോ കഴിക്കില്ല. പക്ഷേ നോമ്പ് അതിലും വലുതാണ്: നാം നാവിനെയും കൈകളെയും നല്ലതാക്കി വയ്ക്കുന്നു — കള്ളം പറയില്ല, വഴക്കിടില്ല, മോശം വാക്കുകൾ പറയില്ല. ഖുർആൻ ഓതുകയും മറ്റുള്ളവരെ സഹായിക്കുകയും സന്തോഷത്തോടെ കഴിയുകയും ചെയ്യുന്നു.",
+l5d4t:"ഇഫ്താർ — നോമ്പ് തുറക്കൽ",
+l5d4d:"സൂര്യാസ്തമയത്തിൽ (മഗ്‌രിബ്) <b>ഇഫ്താർ</b> സമയമായി! നബി ﷺ യെ പിന്തുടർന്ന് നാം ഈത്തപ്പഴവും അൽപം വെള്ളവും കൊണ്ട് നോമ്പ് തുറക്കുന്നു, പ്രാർത്ഥന ചൊല്ലുന്നു, പിന്നെ മഗ്‌രിബ് നമസ്കരിക്കുന്നു. നീണ്ട ഒരു ദിവസത്തിന് ശേഷമുള്ള ആദ്യ ഇറക്ക് വെള്ളം എത്ര സന്തോഷമാണ്!",
+l5d5t:"രാത്രി — തറാവീഹും ഒരുമയും",
+l5d5d:"രാത്രിയിൽ പല മുസ്‌ലിംകളും പള്ളിയിൽ <b>തറാവീഹ്</b> എന്ന പ്രത്യേക നമസ്കാരം നിർവഹിക്കുന്നു, കുടുംബങ്ങൾ അടുത്ത ദിവസത്തെ നോമ്പിന് വിശ്രമിക്കുന്നതിന് മുമ്പ് സന്തോഷത്തോടെ സമയം ചെലവഴിക്കുന്നു.",
+l5whot:"👨‍👩‍👧 ആരാണ് നോമ്പ് നോൽക്കേണ്ടത്?",
+l5whop:"ആരോഗ്യമുള്ള എല്ലാ മുതിർന്ന മുസ്‌ലിംകളും റമദാൻ മാസം മുഴുവൻ നോമ്പ് നോൽക്കുന്നു. നിന്നെപ്പോലുള്ള കുട്ടികൾക്ക് ഇപ്പോൾ നിർബന്ധമില്ല — പക്ഷേ പലരും പകലിന്റെ കുറച്ച് ഭാഗം നോമ്പ് നോറ്റ് പരിശീലിക്കുന്നു, ഓരോ വർഷവും കുറച്ചുകൂടി, ഒടുവിൽ ദിവസം മുഴുവൻ നോൽക്കാൻ കഴിയുന്നു. അല്ലാഹു എപ്പോഴും ദയയുള്ളവനാണ്: രോഗികൾ, ദൂരയാത്ര ചെയ്യുന്നവർ, വളരെ പ്രായമായവർ എന്നിവർ അപ്പോൾ നോമ്പ് നോൽക്കണ്ട; അവർ പിന്നീട് നോൽക്കുകയോ ഒരു ദരിദ്രന് ഭക്ഷണം നൽകുകയോ ചെയ്യാം.",
+l5sub2:"നോമ്പ് മുറിക്കുന്നത് — മുറിക്കാത്തതും",
+l5brt:"ഇവ നോമ്പ് മുറിക്കും",
+l5brd:"<b>മനഃപൂർവം</b> ഭക്ഷണം കഴിക്കുകയോ വെള്ളം കുടിക്കുകയോ, അല്ലെങ്കിൽ മനഃപൂർവം ഛർദ്ദിക്കുകയോ ചെയ്താൽ നോമ്പ് മുറിയും. അങ്ങനെ സംഭവിച്ചാൽ ആ ദിവസത്തെ നോമ്പ് പാഴായി, പിന്നീട് നോറ്റുവീട്ടണം.",
+l5okt:"ഇവ നോമ്പ് മുറിക്കില്ല",
+l5okd:"വായ കഴുകൽ, പല്ല് തേക്കൽ, കുളി, നീന്തൽ, നല്ല ഭക്ഷണത്തിന്റെ മണം അറിയൽ — ഇവയെല്ലാം കുഴപ്പമില്ല. നീ <b>മറന്ന്</b> അബദ്ധത്തിൽ കഴിച്ചാൽ പോലും — നിന്റെ നോമ്പ് സാധുവാണ്! അല്ലാഹു നിനക്ക് ഭക്ഷണം നൽകിയതാണ്.",
+l5dykt:"നിനക്കറിയാമോ?",
+l5dykp:"സ്വർഗത്തിൽ (ജന്നത്തിൽ) <b>അർ-റയ്യാൻ</b> എന്ന ഒരു പ്രത്യേക കവാടമുണ്ട്. അന്ത്യദിനത്തിൽ നോമ്പ് നോറ്റിരുന്നവരെ മാത്രമേ അതിലൂടെ പ്രവേശിക്കാൻ ക്ഷണിക്കൂ — അവരെല്ലാം കടന്നുകഴിഞ്ഞാൽ അത് അടയും. നോമ്പിന് സ്വർഗത്തിലേക്ക് അതിന്റേതായ ഒരു വാതിൽ തന്നെയുണ്ട്!",
+l5lovet:"എന്തുകൊണ്ട് നാം റമദാനെ സ്നേഹിക്കുന്നു",
+l5lovep:"നോമ്പുകാരന് രണ്ട് സന്തോഷങ്ങളുണ്ടെന്ന് നബി ﷺ പറഞ്ഞു: ഇഫ്താറിന്റെ സന്തോഷം, പിന്നെ അല്ലാഹുവിനെ കണ്ടുമുട്ടുമ്പോഴുള്ള അതിലും വലിയ സന്തോഷം. റമദാൻ കുടുംബത്തെ പുലർച്ചെയും സന്ധ്യയും ഒരുമിച്ച് കൂട്ടുന്നു, ദരിദ്രരുമായി പങ്കുവയ്ക്കാൻ പഠിപ്പിക്കുന്നു, ഒടുവിൽ <b>ഈദുൽ ഫിത്വർ</b> എന്ന വലിയ ആഘോഷത്തിൽ അവസാനിക്കുന്നു — പുതുവസ്ത്രം, മധുരപലഹാരങ്ങൾ, അല്ലാഹുവിനോട് നന്ദി!",
+l5at:"എന്റെ റമദാൻ നക്ഷത്ര ചാർട്ട് 🌟",
+l5ap:"നന്മകൾ കൊണ്ട് നിറയ്ക്കാൻ നിന്റെ സ്വന്തം റമദാൻ ചാർട്ട് ഉണ്ടാക്കൂ!",
+l5al1:"30 ചെറിയ നക്ഷത്രങ്ങൾ വരികളായി വരയ്ക്കൂ — റമദാനിലെ ഓരോ ദിവസത്തിനും ഒന്ന്.",
+l5al2:"ഓരോ ദിവസവും ഒരു നന്മ ചെയ്യൂ (ഭക്ഷണം പങ്കുവയ്ക്കൽ, വീട്ടിൽ സഹായിക്കൽ, ഖുർആൻ ഓതൽ), ഒരു നക്ഷത്രം നിറയ്ക്കൂ.",
+l5al3:"ഇഫ്താർ മേശ ഒരുക്കാൻ സഹായിക്കൂ — കുടുംബത്തിന് ഈത്തപ്പഴവും വെള്ളവും ഒരുക്കിവയ്ക്കൂ.",
+l5atip:"പകലിന്റെ പകുതി മാത്രം നോമ്പ് നോറ്റാലും നീ പരിശീലിക്കുകയും വളരുകയുമാണ്. ഓരോ വർഷവും നീ കൂടുതൽ ശക്തനാകും!",
+l5kw:"<span><b>സൗം</b> <span class=\"ar\">صوم</span> — നോമ്പ്</span><span><b>റമദാൻ</b> <span class=\"ar\">رمضان</span> — നോമ്പിന്റെ മാസം</span><span><b>അത്താഴം</b> <span class=\"ar\">سحور</span> — പുലർച്ചെയുള്ള ഭക്ഷണം</span><span><b>ഇഫ്താർ</b> <span class=\"ar\">إفطار</span> — നോമ്പ് തുറ</span><span><b>ഈദുൽ ഫിത്വർ</b> <span class=\"ar\">عيد الفطر</span> — റമദാനിന് ശേഷമുള്ള പെരുന്നാൾ</span>",
+l5rem:"സൗം ഇസ്‌ലാമിന്റെ നാലാമത്തെ സ്തംഭമാണ്. റമദാനിൽ നാം പ്രഭാതം മുതൽ സൂര്യാസ്തമയം വരെ നോമ്പ് നോൽക്കുന്നു — അല്ലാഹുവിനോടുള്ള സ്നേഹവും മറ്റുള്ളവരോടുള്ള കരുതലും വളർത്തുന്നു.",
+pg5:"പേജ് 5",
+q6:"6. മുസ്‌ലിംകൾ ഏത് മാസത്തിലാണ് നോമ്പ് നോൽക്കുന്നത്?", q6o1:"റമദാൻ", q6o2:"ശവ്വാൽ", q6o3:"മുഹർറം",
+doneh:"മാഷാ അല്ലാഹ് — അഞ്ച് പാഠങ്ങളും പൂർത്തിയാക്കി!",
+dl5:"റമദാനിൽ എങ്ങനെ നോമ്പ് നോൽക്കാം",
+foot:"ഇസ്‌ലാമിക അടിസ്ഥാനങ്ങൾ · പാഠങ്ങൾ 1–5"
+});
+</script>
+<script>
+"use strict";
+Object.assign(ML,{
+j6:"സ്വലാത്ത് — നമസ്കാരവും ജുമുഅയും", j6s:"അല്ലാഹുവിനോട് സംസാരിക്കാം",
+l6eye:"ആറാം പാഠം · അല്ലാഹുവിനോട് സംസാരിക്കാം", l6h:"സ്വലാത്ത് — ദിനംപ്രതി നമസ്കാരവും വെള്ളിയാഴ്ച നമസ്കാരവും",
+l6p1:"എല്ലാറ്റിന്റെയും രാജാവായ അല്ലാഹുവിനോട് സംസാരിക്കാൻ ഒരു പ്രത്യേക കൂടിക്കാഴ്ച — ദിവസവും അഞ്ച് നേരം — ഉണ്ടെന്ന് സങ്കൽപ്പിക്കൂ. അതാണ് <b>സ്വലാത്ത്</b>, നമ്മുടെ നമസ്കാരം, ഇസ്‌ലാമിന്റെ രണ്ടാമത്തെ സ്തംഭം. നമസ്കാരത്തിൽ നാം അല്ലാഹുവിന്റെ മുന്നിൽ നിന്ന് അവന് നന്ദി പറയുന്നു, അവനോട് ചോദിക്കുന്നു, അവനോട് അടുക്കുന്നു. ഇത് ദിവസം മുഴുവൻ നമ്മുടെ ഹൃദയത്തെ പ്രകാശിപ്പിക്കുന്ന ഒരു സമ്മാനമാണ്.",
+l6p2:"അല്ലാഹു നമുക്ക് അഞ്ച് നമസ്കാരങ്ങൾ നൽകി, പകലിലുടനീളം അഞ്ച് ചെറുവിളക്കുകൾ പോലെ — ഒന്ന് പ്രഭാതത്തിൽ, മറ്റുള്ളവ പകലും രാത്രിയും. നമുക്ക് അവയെ പരിചയപ്പെടാം.",
+l6sub1:"അഞ്ച് നേരത്തെ നമസ്കാരങ്ങൾ",
+l6pf:"സുബ്ഹി (ഫജ്ർ) <span class=\"ar\">الفجر</span>", l6pfd:"പ്രഭാതത്തിൽ, സൂര്യോദയത്തിന് മുമ്പ് · 2 റക്അത്ത്",
+l6pd:"ദ്വുഹ്ർ <span class=\"ar\">الظهر</span>", l6pdd:"ഉച്ചയ്ക്ക് ശേഷം · 4 റക്അത്ത്",
+l6pa:"അസ്ർ <span class=\"ar\">العصر</span>", l6pad:"വൈകുന്നേരം · 4 റക്അത്ത്",
+l6pm:"മഗ്‌രിബ് <span class=\"ar\">المغرب</span>", l6pmd:"സൂര്യാസ്തമയത്തിന് ശേഷം · 3 റക്അത്ത്",
+l6pi:"ഇശാ <span class=\"ar\">العشاء</span>", l6pid:"രാത്രിയിൽ · 4 റക്അത്ത്",
+l6sub2:"എങ്ങനെ നമസ്കരിക്കാം — നാല് നിലകൾ",
+l6posp:"നമസ്കാരത്തിന്റെ ഓരോ ഭാഗത്തെയും <b>റക്അത്ത്</b> എന്ന് പറയുന്നു. ഓരോ റക്അത്തിലും നാം പതുക്കെ നാല് നിലകളിലൂടെ കടന്നുപോകുന്നു, ഓരോന്നിനും അതിന്റേതായ മനോഹര പേരുണ്ട്:",
+l6poslist:"<span>🧍 <b>ഖിയാം</b> <span class=\"ar\">قيام</span> — നിൽക്കൽ</span><span>🙇 <b>റുകൂഅ്</b> <span class=\"ar\">ركوع</span> — കുനിയൽ</span><span>🤲 <b>സുജൂദ്</b> <span class=\"ar\">سجود</span> — സാഷ്ടാംഗം</span><span>🧎 <b>ജുലൂസ്</b> <span class=\"ar\">جلوس</span> — ഇരിക്കൽ</span>",
+l6posp2:"<b>സുജൂദിൽ</b>, നമ്മുടെ നെറ്റി നിലത്ത് സ്പർശിക്കുമ്പോൾ, നാം അല്ലാഹുവിനോട് ഏറ്റവും അടുത്താണ്. 💚",
+l6sub3:"ജുമുഅ — വെള്ളിയാഴ്ചത്തെ പ്രത്യേക നമസ്കാരം",
+l6fp1:"മുസ്‌ലിംകൾക്ക് ആഴ്ചയിലെ ഏറ്റവും ശ്രേഷ്ഠമായ ദിവസമാണ് വെള്ളിയാഴ്ച. വെള്ളിയാഴ്ച ഉച്ചയ്ക്കുള്ള ദ്വുഹ്ർ നമസ്കാരം <b>ജുമുഅ</b> എന്ന പ്രത്യേക നമസ്കാരമായി മാറുന്നു, പള്ളിയിൽ ഒരുമിച്ച് നിർവഹിക്കുന്നു. ആദ്യം ഇമാം ഒരു <b>ഖുത്വ്ബ</b> (പഠിപ്പിക്കാനും ഓർമ്മിപ്പിക്കാനുമുള്ള ചെറിയ പ്രഭാഷണം) നടത്തുന്നു, പിന്നെ എല്ലാവരും ഒരു വലിയ കുടുംബം പോലെ ഒരുമിച്ച് രണ്ട് റക്അത്ത് നമസ്കരിക്കുന്നു.",
+l6fp2:"ജുമുഅയ്ക്ക് ഒരുങ്ങാൻ നബി ﷺ യെ പിന്തുടരുന്നത് മനോഹരമാണ്: കുളിക്കുക (ഗുസ്ൽ), വൃത്തിയുള്ള നല്ല വസ്ത്രം ധരിക്കുക, അൽപം സുഗന്ധം പൂശുക, പള്ളിയിലേക്ക് നേരത്തെ പോകുക, ഖുത്വ്ബ ശ്രദ്ധയോടെ കേൾക്കാൻ നിശ്ശബ്ദമായി ഇരിക്കുക.",
+l6dykt:"നിനക്കറിയാമോ?",
+l6dykp:"നബി ﷺ ചോദിച്ചു: നിന്റെ വീട്ടുവാതിൽക്കൽ ഒരു നദി ഒഴുകുകയും നീ ദിവസവും അഞ്ച് പ്രാവശ്യം അതിൽ കുളിക്കുകയും ചെയ്താൽ, നിന്റെ മേൽ വല്ല അഴുക്കും ബാക്കിയാകുമോ? 'ഇല്ല' എന്ന് സ്വഹാബികൾ പറഞ്ഞു. അഞ്ച് നേരത്തെ നമസ്കാരവും അതുപോലെയാണെന്ന് അവിടുന്ന് പറഞ്ഞു — ഓരോ നമസ്കാരത്തിലും അല്ലാഹു നമ്മുടെ ചെറിയ തെറ്റുകൾ കഴുകിക്കളയുന്നു. ✨",
+l6at:"എന്റെ നമസ്കാര സമയപ്പട്ടിക ⏰", l6ap:"ഒരു നമസ്കാര സമയപ്പട്ടിക ഉണ്ടാക്കി വീട്ടിലെ നമസ്കാര സഹായി ആകൂ!",
+l6al1:"അഞ്ച് നമസ്കാരങ്ങൾ ക്രമത്തിൽ എഴുതൂ: സുബ്ഹി, ദ്വുഹ്ർ, അസ്ർ, മഗ്‌രിബ്, ഇശാ.",
+l6al2:"നിന്റെ നാട്ടിലെ ഓരോ നമസ്കാരത്തിന്റെയും സമയം ഒരു മുതിർന്നയാളോട് ചോദിച്ച് ഓരോ പേരിനും അരികിൽ എഴുതൂ.",
+l6al3:"ഇന്ന് നീ നമസ്കരിക്കുന്ന ഓരോ നമസ്കാരവും ടിക് ചെയ്യൂ — കുടുംബത്തെയും ഓർമ്മിപ്പിക്കാൻ ശ്രമിക്കൂ!",
+l6atip:"നാല് നിലകളുടെ പേരും വജ്ജഹ്‌തു ഓർമ്മയിൽ നിന്നും പറയാമോ?",
+l6kw:"<span><b>സ്വലാത്ത്</b> <span class=\"ar\">صلاة</span> — നമസ്കാരം</span><span><b>റക്അത്ത്</b> <span class=\"ar\">ركعة</span> — നമസ്കാരത്തിന്റെ ഒരു ഭാഗം</span><span><b>സുജൂദ്</b> <span class=\"ar\">سجود</span> — സാഷ്ടാംഗം</span><span><b>ജുമുഅ</b> <span class=\"ar\">جمعة</span> — വെള്ളിയാഴ്ച നമസ്കാരം</span><span><b>ഖുത്വ്ബ</b> <span class=\"ar\">خطبة</span> — വെള്ളിയാഴ്ച പ്രഭാഷണം</span><span><b>വജ്ജഹ്‌തു</b> <span class=\"ar\">وجّهت</span> — തുടക്ക പ്രാർത്ഥന</span>",
+l6rem:"സ്വലാത്ത് രണ്ടാമത്തെ സ്തംഭമാണ്. നാം ദിവസവും അഞ്ച് നേരം നമസ്കരിക്കുന്നു — സുബ്ഹി, ദ്വുഹ്ർ, അസ്ർ, മഗ്‌രിബ്, ഇശാ — വെള്ളിയാഴ്ചകളിൽ പള്ളിയിൽ ഒരുമിച്ച് ജുമുഅ നമസ്കരിക്കുന്നു.",
+pg6:"പേജ് 6",
+q7:"7. മുസ്‌ലിംകൾ ദിവസവും എത്ര നേരം നമസ്കരിക്കുന്നു?", q7o1:"മൂന്ന്", q7o2:"അഞ്ച്", q7o3:"ഏഴ്",
+q8:"8. വെള്ളിയാഴ്ചത്തെ പ്രത്യേക നമസ്കാരം ഏതാണ്?", q8o1:"ജുമുഅ", q8o2:"തറാവീഹ്", q8o3:"ഈദ് നമസ്കാരം",
+doneh:"മാഷാ അല്ലാഹ് — ആറ് പാഠങ്ങളും പൂർത്തിയാക്കി!",
+dl6:"ദിനംപ്രതി നമസ്കാരവും ജുമുഅയും",
+foot:"ഇസ്‌ലാമിക അടിസ്ഥാനങ്ങൾ · പാഠങ്ങൾ 1–6"
+});
+</script>
+<script>
+"use strict";
+Object.assign(ML,{
+rvhint:"കാണാൻ ടാപ്പ് ചെയ്യൂ ▾",
+rv1h:"നീ എന്ത് ഓർക്കുന്നു?", rv1s:"പാഠം 1–3 ഒന്ന് തിരിഞ്ഞുനോക്കാം. ഓരോ കാർഡും ടാപ്പ് ചെയ്ത് സ്വയം പരിശോധിക്കൂ!",
+rv1q1:"ഈമാൻ കാര്യങ്ങൾ എത്രയാണ്?", rv1a1:"ആറ് — അല്ലാഹു, മലക്കുകൾ, ഗ്രന്ഥങ്ങൾ, പ്രവാചകന്മാർ, അന്ത്യദിനം, അല്ലാഹുവിന്റെ വിധി എന്നിവയിലുള്ള വിശ്വാസം.",
+rv1q2:"ഇസ്‌ലാമിന്റെ പഞ്ചസ്തംഭങ്ങൾ പറയൂ.", rv1a2:"ശഹാദ, സ്വലാത്ത്, സകാത്ത്, സൗം, ഹജ്ജ്.",
+rv1q3:"അർ-റഹ്‌മാൻ എന്ന നാമത്തിന്റെ അർത്ഥം എന്ത്?", rv1a3:"പരമകാരുണികൻ — ലോകത്തിലെ ആരെക്കാളും ദയയുള്ളവൻ.",
+rv1q4:"അല്ലാഹുവിന്റെ അവസാന പ്രവാചകൻ ആരാണ്?", rv1a4:"മുഹമ്മദ് നബി ﷺ.",
+rv1q5:"മുസ്‌ലിംകൾ എത്ര ദൈവങ്ങളിൽ വിശ്വസിക്കുന്നു?", rv1a5:"ഒന്ന് — അല്ലാഹു മാത്രം. ഇതിനെ തൗഹീദ് എന്ന് പറയുന്നു.",
+rv2h:"നീ എന്ത് ഓർക്കുന്നു?", rv2s:"പാഠം 4–6 ഒന്ന് തിരിഞ്ഞുനോക്കാം. ഓരോ കാർഡും ടാപ്പ് ചെയ്ത് സ്വയം പരിശോധിക്കൂ!",
+rv2q1:"വുദൂ തുടങ്ങുന്നതിന് മുമ്പ് നാം എന്ത് ചൊല്ലുന്നു?", rv2a1:"ബിസ്മി. വുദൂവിന് ക്രമത്തിൽ ഒമ്പത് ഘട്ടങ്ങളുണ്ട്.",
+rv2q2:"മുസ്‌ലിംകൾ ഏത് മാസത്തിലാണ് നോമ്പ് നോൽക്കുന്നത്?", rv2a2:"റമദാൻ — പ്രഭാതം മുതൽ സൂര്യാസ്തമയം വരെ.",
+rv2q3:"നാം എന്തുകൊണ്ട്, എപ്പോൾ നോമ്പ് തുറക്കുന്നു?", rv2a3:"ഈത്തപ്പഴവും വെള്ളവും കൊണ്ട്, സൂര്യാസ്തമയത്തിൽ (മഗ്‌രിബ്).",
+rv2q4:"നാം ദിവസവും എത്ര നേരം നമസ്കരിക്കുന്നു?", rv2a4:"അഞ്ച് — സുബ്ഹി, ദ്വുഹ്ർ, അസ്ർ, മഗ്‌രിബ്, ഇശാ.",
+rv2q5:"വെള്ളിയാഴ്ചത്തെ പ്രത്യേക നമസ്കാരം എന്താണ്?", rv2a5:"ജുമുഅ — പള്ളിയിൽ ഒരുമിച്ച് നമസ്കരിക്കുന്നു.",
+
+j7:"മക്കയും മദീനയും", j7s:"നബി ﷺ യുടെ രണ്ട് നഗരങ്ങൾ",
+l7eye:"ഏഴാം പാഠം · അനുഗൃഹീത രണ്ട് നഗരങ്ങൾ", l7h:"മക്ക, മദീന & നബി ﷺ",
+l7p1:"ലോകത്തിലെ എല്ലാ നഗരങ്ങളിലും വച്ച് മുസ്‌ലിംകൾക്ക് ഏറ്റവും പ്രിയപ്പെട്ട രണ്ട് നഗരങ്ങളാണ്: <b>മക്ക</b>യും <b>മദീന</b>യും. അല്ലാഹുവിന് ശേഷം മുസ്‌ലിംകൾ ഏറ്റവും സ്നേഹിക്കുന്ന വ്യക്തിയായ നമ്മുടെ <b>മുഹമ്മദ് നബി ﷺ</b> യുടെ കഥയുമായി ഈ നഗരങ്ങളുടെ കഥ ഇഴചേർന്നിരിക്കുന്നു. നമുക്ക് രണ്ട് നഗരങ്ങളിലേക്കും യാത്ര ചെയ്ത് അവിടുത്തെ മനോഹര ജീവിതത്തിലൂടെ പതുക്കെ നടക്കാം.",
+l7sub1:"മക്ക — അനുഗൃഹീത നഗരം",
+l7mk1:"അല്ലാഹുവിനെ ആരാധിക്കാൻ ഭൂമിയിൽ ആദ്യമായി പണിത ഭവനമായ <b>കഅ്ബ</b> സ്ഥിതി ചെയ്യുന്നത് മക്കയിലാണ്. വളരെ പണ്ട്, <b>ഇബ്രാഹീം</b> നബിയും മകൻ <b>ഇസ്മാഈൽ</b> നബിയും (അവർക്ക് സമാധാനം) ചേർന്ന് അതിന്റെ ചുവരുകൾ ഉയർത്തി. ദിവസവും ലോകമെമ്പാടുമുള്ള മുസ്‌ലിംകൾ നമസ്കരിക്കുമ്പോൾ കഅ്ബയ്ക്ക് അഭിമുഖമായി തിരിയുന്നു — വർഷത്തിലൊരിക്കൽ ദശലക്ഷക്കണക്കിന് ആളുകൾ <b>ഹജ്ജിന്</b> അതിന് ചുറ്റും ഒരുമിക്കുന്നു.",
+l7sub2:"മുഹമ്മദ് നബി ﷺ",
+l7pr1:"നമ്മുടെ <b>മുഹമ്മദ് നബി ﷺ</b> ജനിച്ചത് മക്കയിലാണ്. അവിടുത്തെ പിതാവ് നേരത്തെ വിടപറഞ്ഞിരുന്നു, പ്രിയ മാതാവ് അവിടുത്തേക്ക് ആറ് വയസ്സുള്ളപ്പോൾ വിടപറഞ്ഞു. അതിനാൽ ആദ്യം ദയയുള്ള മുത്തച്ഛനും പിന്നെ പിതൃസഹോദരനും അവിടുത്തെ വലിയ സ്നേഹത്തോടെ വളർത്തി. ചെറുപ്പത്തിൽ തന്നെ അവിടുന്ന് വളരെ സത്യസന്ധനും വിശ്വസ്തനുമായിരുന്നതിനാൽ എല്ലാവരും അവിടുത്തെ <b>അൽ-അമീൻ</b> — 'വിശ്വസ്തൻ' എന്ന് വിളിച്ചു.",
+l7pr2:"നാൽപത് വയസ്സുള്ളപ്പോൾ, മക്കയ്ക്ക് പുറത്തുള്ള ഒരു മലയിലെ <b>ഹിറാ ഗുഹയിൽ</b> ഏകാന്തമായി ധ്യാനിക്കുമ്പോൾ, ജിബ്‌രീൽ മലക്ക് ഖുർആനിന്റെ ആദ്യ വാക്കുകളുമായി അവിടുത്തെ അടുത്തെത്തി: <b>'ഇഖ്‌റഅ്' — വായിക്കുക!</b> എല്ലാ മനുഷ്യരെയും സ്നേഹത്തോടെയും ദയയോടെയും ഏകനായ അല്ലാഹുവിനെ ആരാധിക്കാൻ പഠിപ്പിക്കാൻ അല്ലാഹു അവിടുത്തെ തന്റെ അവസാന പ്രവാചകനായി തിരഞ്ഞെടുത്തു.",
+l7sub3:"ഹിജ്‌റ — പ്രതീക്ഷയുടെ യാത്ര",
+l7hj1:"വർഷങ്ങളോളം നബി ﷺ മക്കയിലെ ജനങ്ങളെ അല്ലാഹുവിനെക്കുറിച്ച് പഠിപ്പിച്ചു. പക്ഷേ ചിലർ ദയയില്ലാതെ മുസ്‌ലിംകളുടെ ജീവിതം വളരെ ബുദ്ധിമുട്ടാക്കി. അതിനാൽ ഒരു പുതിയ നഗരത്തിലേക്ക് മാറാൻ അല്ലാഹു അവരോട് കൽപ്പിച്ചു. മക്കയിൽ നിന്ന് <b>മദീന</b>യിലേക്കുള്ള ഈ പ്രത്യേക യാത്രയെ <b>ഹിജ്‌റ</b> എന്ന് പറയുന്നു; അത് വളരെ പ്രധാനമായതിനാൽ മുസ്‌ലിം കലണ്ടർ അതിൽ നിന്നാണ് എണ്ണിത്തുടങ്ങുന്നത്.",
+l7sub4:"മദീന — നബി ﷺ യുടെ നഗരം",
+l7md1:"<b>മദീന</b>യിലെ ജനങ്ങൾ പാട്ടും ശുദ്ധമായ സന്തോഷവുമായി നബി ﷺ യെ സ്വീകരിച്ചു. അവിടെ അവിടുന്ന് ആദ്യത്തെ <b>പള്ളി</b> പണിതു, എല്ലാവരെയും ഒരു സ്നേഹമുള്ള കുടുംബം പോലെ ജീവിക്കാൻ പഠിപ്പിച്ചു — ഭക്ഷണം പങ്കുവയ്ക്കാനും ദരിദ്രരെ സഹായിക്കാനും എല്ലാവരോടും ദയ കാണിക്കാനും. ആ നഗരം <b>മദീനത്തുന്നബി</b>, 'നബിയുടെ നഗരം' എന്നറിയപ്പെട്ടു. അവിടുന്ന് അവിടെ ജീവിക്കുകയും പഠിപ്പിക്കുകയും ചെയ്തു, ഒടുവിൽ പ്രസിദ്ധമായ <b>പച്ച ഖുബ്ബയ്ക്ക്</b> കീഴിൽ അന്ത്യവിശ്രമം കൊള്ളുന്നു.",
+l7dykt:"നിനക്കറിയാമോ?",
+l7dykp:"നമ്മുടെ നബി ﷺ കുട്ടികളെ ഏറെ സ്നേഹിച്ചു. അവിടുന്ന് അവരെ സലാം പറഞ്ഞ് അഭിവാദ്യം ചെയ്യുകയും അവരോടൊപ്പം കളിക്കുകയും അവരെ നോക്കി പുഞ്ചിരിക്കുകയും ചെയ്തു. നമസ്കാരത്തിന് നേതൃത്വം നൽകുമ്പോൾ ഒരു കുഞ്ഞ് കരയുന്നത് കേട്ടാൽ, കുഞ്ഞിന്റെ ഉമ്മയ്ക്ക് അതിനെ പരിചരിക്കാൻ കഴിയാൻ അവിടുന്ന് നമസ്കാരം അൽപം ചുരുക്കുമായിരുന്നു — അത്രയും ദയയുള്ളവനായിരുന്നു അവിടുന്ന്.",
+l7at:"എന്റെ ഹിജ്‌റ യാത്രാ ഭൂപടം 🗺️", l7ap:"ഒരു യാത്രികനായി നബി ﷺ യുടെ മഹത്തായ യാത്ര വരയ്ക്കൂ!",
+l7al1:"ഒരു കടലാസിൽ രണ്ട് നഗരങ്ങൾ വരയ്ക്കൂ — ഒരു വശത്ത് മക്ക, മറുവശത്ത് മദീന.",
+l7al2:"അവയ്ക്കിടയിൽ കുത്തുകളുടെ ഒരു പാത വരച്ച് 'ഹിജ്‌റ' എന്ന് പേരിടൂ.",
+l7al3:"മക്കയ്ക്കരികിൽ കഅ്ബ വരയ്ക്കൂ; മദീനയ്ക്കരികിൽ പച്ച ഖുബ്ബയുള്ള ഒരു പള്ളി വരയ്ക്കൂ.",
+l7atip:"ഇൻശാ അല്ലാഹ്, ഈ രണ്ട് നഗരങ്ങളിൽ ഏതാണ് നീ ഒരിക്കൽ സന്ദർശിക്കാൻ ഏറ്റവും ആഗ്രഹിക്കുന്നത്?",
+l7kw:"<span><b>മക്ക</b> <span class=\"ar\">مكة</span> — കഅ്ബയുടെ നഗരം</span><span><b>മദീന</b> <span class=\"ar\">المدينة</span> — നബിയുടെ നഗരം</span><span><b>കഅ്ബ</b> <span class=\"ar\">كعبة</span> — ആദ്യ ആരാധനാ ഭവനം</span><span><b>ഹിജ്‌റ</b> <span class=\"ar\">هجرة</span> — മഹത്തായ പലായനം</span><span><b>അൽ-അമീൻ</b> <span class=\"ar\">الأمين</span> — വിശ്വസ്തൻ</span><span><b>സീറ</b> <span class=\"ar\">سيرة</span> — നബിയുടെ ജീവചരിത്രം</span>",
+l7rem:"കഅ്ബയുടെ നഗരമാണ് മക്ക, അവിടെയാണ് നബി ﷺ ജനിച്ചത്. ഹിജ്‌റയിലൂടെ അവിടുന്ന് മാറിത്താമസിച്ച നഗരമാണ് മദീന, അവിടെയാണ് അവിടുന്ന് അന്ത്യവിശ്രമം കൊള്ളുന്നത്. അവിടുത്തെ ജീവിതം സത്യസന്ധത, ദയ, അല്ലാഹുവിനോടുള്ള സ്നേഹം എന്നിവ പഠിപ്പിക്കുന്നു.",
+pg7:"പേജ് 7",
+q9:"9. മുഹമ്മദ് നബി ﷺ ജനിച്ചത് ഏത് നഗരത്തിലാണ്?", q9o1:"മക്ക", q9o2:"മദീന", q9o3:"കെയ്‌റോ",
+q10:"10. നബി ﷺ യുടെ മക്കയിൽ നിന്ന് മദീനയിലേക്കുള്ള യാത്രയെ എന്ത് പറയുന്നു?", q10o1:"ഹിജ്‌റ", q10o2:"ഹജ്ജ്", q10o3:"ഉംറ",
+doneh:"മാഷാ അല്ലാഹ് — ഏഴ് പാഠങ്ങളും പൂർത്തിയാക്കി!",
+dl7:"മക്ക, മദീന & നബി ﷺ യുടെ ജീവിതം",
+foot:"ഇസ്‌ലാമിക അടിസ്ഥാനങ്ങൾ · പാഠങ്ങൾ 1–7"
+});
+</script>
+<script>
+"use strict";
+Object.assign(ML,{
+j7s:"രണ്ട് വിശുദ്ധ നഗരങ്ങളും അവയുടെ പള്ളികളും",
+l7eye:"ഏഴാം പാഠം · രണ്ട് വിശുദ്ധ നഗരങ്ങൾ", l7h:"മക്കയും മദീനയും",
+l7p1:"ലോകത്തിലെ എല്ലാ നഗരങ്ങളിലും വച്ച് മുസ്‌ലിംകൾക്ക് ഏറ്റവും പ്രിയപ്പെട്ട രണ്ട് നഗരങ്ങളാണ്: <b>മക്ക</b>യും <b>മദീന</b>യും. ഭൂമിയിലെ ഏറ്റവും വലുതും മനോഹരവുമായ പള്ളികളിൽ ഓരോന്ന് വീതം ഈ നഗരങ്ങളിലുണ്ട്; ഒരിക്കൽ അവ സന്ദർശിക്കാൻ ലോകമെമ്പാടുമുള്ള മുസ്‌ലിംകൾ കൊതിക്കുന്നു. (നമ്മുടെ നബി ﷺ ജനിച്ചത് മക്കയിലാണ്, പിന്നീട് ജീവിച്ചത് മദീനയിലും.) ഇന്ന് നമുക്ക് ഈ രണ്ട് നഗരങ്ങളും അവയുടെ അത്ഭുതകരമായ പള്ളികളും പര്യവേക്ഷണം ചെയ്യാം.",
+l7sub1:"മക്കയും വലിയ പള്ളിയും",
+l7mk1:"മക്കയുടെ ഹൃദയഭാഗത്ത് ലോകത്തിലെ ഏറ്റവും വലിയ പള്ളി നിലകൊള്ളുന്നു — <b>മസ്ജിദുൽ ഹറാം</b>, 'വിശുദ്ധ പള്ളി'. ഒരു ദശലക്ഷത്തിലധികം ആളുകൾക്ക് ഒരുമിച്ച് നമസ്കരിക്കാൻ കഴിയുന്നത്ര വലുതാണ് അത്! ഈ പള്ളിയുടെ നടുവിൽ, തുറന്ന ആകാശത്തിന് കീഴിലുള്ള ഒരു മുറ്റത്ത്, എല്ലാറ്റിലും വച്ച് ഏറ്റവും പ്രത്യേകപ്പെട്ട കെട്ടിടം നിലകൊള്ളുന്നു: <b>കഅ്ബ</b>.",
+l7sub2:"കഅ്ബ — അല്ലാഹുവിന്റെ ഭവനം",
+l7kb1:"<b>കഅ്ബ</b> ക്യൂബ് ആകൃതിയിലുള്ള ഒരു കെട്ടിടമാണ്; അല്ലാഹുവിനെ ആരാധിക്കാൻ ഭൂമിയിൽ പണിത ഏറ്റവും <b>ആദ്യത്തെ ഭവനം</b> ഇതാണ്. അതുകൊണ്ടാണ് ഇതിനെ <b>ബൈത്തുല്ലാഹ്</b> — 'അല്ലാഹുവിന്റെ ഭവനം' എന്ന് വിളിക്കുന്നത്. വളരെ പണ്ട്, ഇബ്രാഹീം നബിയും മകൻ ഇസ്മാഈൽ നബിയും (അവർക്ക് സമാധാനം) ചേർന്ന് അതിന്റെ ചുവരുകൾ ഉയർത്തി.",
+l7kb2:"ഖുർആനിലെ സ്വർണ അക്ഷരങ്ങൾ തുന്നിച്ചേർത്ത <b>കിസ്‌വ</b> എന്ന മനോഹര കറുത്ത വസ്ത്രം കൊണ്ട് കഅ്ബ പുതച്ചിരിക്കുന്നു. അതിന് ഉയരമുള്ള ഒരു <b>സ്വർണ വാതിലുണ്ട്</b>, ഒരു മൂലയിൽ <b>ഹജറുൽ അസ്‌വദ്</b> (കറുത്ത കല്ല്) എന്ന പ്രത്യേക കല്ല് പതിച്ചിരിക്കുന്നു. ലോകത്ത് എവിടെയായിരുന്നാലും മുസ്‌ലിംകൾ നമസ്കരിക്കുമ്പോൾ കഅ്ബയ്ക്ക് അഭിമുഖമായി തിരിയുന്നു — ഈ ദിശയെ <b>ഖിബ്‌ല</b> എന്ന് പറയുന്നു. ഹജ്ജിലും ഉംറയിലും തീർത്ഥാടകർ സ്നേഹത്തോടെ കഅ്ബയ്ക്ക് ചുറ്റും ഏഴ് പ്രാവശ്യം നടക്കുന്നു; ഈ മനോഹര കർമ്മത്തെ <b>ത്വവാഫ്</b> എന്ന് പറയുന്നു.",
+l7dykt:"നിനക്കറിയാമോ?",
+l7dykp:"കഅ്ബയെ പുതയ്ക്കുന്ന കറുത്ത വസ്ത്രം — കിസ്‌വ — എല്ലാ വർഷവും പുതിയത് കൊണ്ട് മാറ്റുന്നു! പഴയ വസ്ത്രം ശ്രദ്ധയോടെ കഷണങ്ങളാക്കുന്നു. കഅ്ബയുടെ വലിയ വാതിൽ ശുദ്ധമായ സ്വർണം കൊണ്ടാണ് നിർമ്മിച്ചിരിക്കുന്നത്.",
+l7sub3:"മദീനയും നബി ﷺ യുടെ പള്ളിയും",
+l7md1:"മക്കയിൽ നിന്ന് ഏതാനും ദിവസത്തെ യാത്രാ ദൂരത്തിൽ ശാന്തവും പച്ചപ്പുള്ളതുമായ <b>മദീന</b> നഗരം സ്ഥിതി ചെയ്യുന്നു. ഇവിടെ ലോകത്തിലെ രണ്ടാമത്തെ പ്രിയപ്പെട്ട പള്ളി നിലകൊള്ളുന്നു: <b>മസ്ജിദുന്നബവി</b>, 'നബിയുടെ പള്ളി'. അതിന്റെ പ്രസിദ്ധമായ <b>പച്ച ഖുബ്ബ</b>യും ഉയരമുള്ള മിനാരങ്ങളും കൊണ്ട് അത് പെട്ടെന്ന് തിരിച്ചറിയാം. വളരെ പണ്ട് പണിത ഇത്, വർഷങ്ങളോളം കൂടുതൽ വലുതും മനോഹരവുമാക്കി; ഇന്ന് ദശലക്ഷക്കണക്കിന് ആളുകൾക്ക് അതിന്റെ ശാന്തമായ ഹാളുകളിൽ നമസ്കരിക്കാം.",
+l7at:"കഅ്ബ വരയ്ക്കൂ 🕋", l7ap:"ഒരു കലാകാരനായി അല്ലാഹുവിന്റെ ഭവനം വരയ്ക്കൂ!",
+l7al1:"സ്വർണ വാതിലുള്ള ഉയരമുള്ള കറുത്ത ക്യൂബായി കഅ്ബ വരയ്ക്കൂ.",
+l7al2:"അതിന് ചുറ്റും സ്വർണ എഴുത്തിന്റെ ബാൻഡ് (കിസ്‌വ) ചേർക്കൂ, കറുത്ത കല്ലിന്റെ മൂല അടയാളപ്പെടുത്തൂ.",
+l7al3:"തീർത്ഥാടകർ ത്വവാഫ് ചെയ്യുന്നത് കാണിക്കാൻ അതിന് ചുറ്റും വൃത്താകൃതിയിൽ ചെറിയ അമ്പടയാളങ്ങൾ വരയ്ക്കൂ.",
+l7atip:"നിന്റെ വീട്ടിൽ നിന്ന് ഖിബ്‌ല ഏത് ദിശയിലാണെന്ന് കാണിക്കാമോ?",
+l7kw:"<span><b>കഅ്ബ</b> <span class=\"ar\">كعبة</span> — അല്ലാഹുവിന്റെ ഭവനം</span><span><b>ബൈത്തുല്ലാഹ്</b> <span class=\"ar\">بيت الله</span> — 'അല്ലാഹുവിന്റെ ഭവനം'</span><span><b>ഖിബ്‌ല</b> <span class=\"ar\">قبلة</span> — നമസ്കാര ദിശ</span><span><b>ത്വവാഫ്</b> <span class=\"ar\">طواف</span> — കഅ്ബയ്ക്ക് ചുറ്റും നടക്കൽ</span><span><b>കിസ്‌വ</b> <span class=\"ar\">كسوة</span> — കഅ്ബയുടെ കറുത്ത വസ്ത്രം</span><span><b>മസ്ജിദുൽ ഹറാം</b> <span class=\"ar\">المسجد الحرام</span> — വിശുദ്ധ പള്ളി</span>",
+l7rem:"മസ്ജിദുൽ ഹറാമും കഅ്ബയും മക്കയിലാണ് — എല്ലാ മുസ്‌ലിംകളും നമസ്കാരത്തിൽ അഭിമുഖീകരിക്കുന്ന അല്ലാഹുവിന്റെ ഭവനം. പച്ച ഖുബ്ബയുള്ള മസ്ജിദുന്നബവി മദീനയിലാണ്. ഇവയാണ് ലോകത്തിലെ ഏറ്റവും പ്രിയപ്പെട്ട രണ്ട് പള്ളികൾ.",
+q10:"10. മക്കയിലെ ക്യൂബ് ആകൃതിയിലുള്ള അല്ലാഹുവിന്റെ ഭവനത്തിന്റെ പേര് എന്ത്?", q10o1:"കഅ്ബ", q10o2:"മിമ്പർ", q10o3:"മിഹ്‌റാബ്",
+dl7:"മക്ക, മദീന & കഅ്ബ"
+});
+</script>
+<script>
+"use strict";
+Object.assign(ML,{
+j8:"വിശുദ്ധ ഖുർആൻ", j8s:"അതിന്റെ വെളിച്ചവും പ്രതിഫലവും",
+l8eye:"എട്ടാം പാഠം · അല്ലാഹുവിന്റെ വചനങ്ങൾ", l8h:"വിശുദ്ധ ഖുർആൻ",
+l8p1:"ഈ പ്രപഞ്ചം മുഴുവൻ സൃഷ്ടിച്ചവൻ നിനക്കായി പ്രത്യേകം എഴുതിയ ഒരു കത്ത് സങ്കൽപ്പിക്കൂ. അതാണ് <b>ഖുർആൻ</b> — ജിബ്‌രീൽ മലക്ക് മുഖേന നമ്മുടെ മുഹമ്മദ് നബി ﷺ ക്ക് അവതരിച്ച <b>അല്ലാഹുവിന്റെ</b> യഥാർത്ഥ വചനങ്ങൾ. ലോകത്തിലെ ഏറ്റവും മഹത്തായതും വിലപ്പെട്ടതുമായ ഗ്രന്ഥമാണിത്; അതിനെ എന്നേക്കും കളങ്കമില്ലാതെ കാത്തുസൂക്ഷിക്കുമെന്ന് അല്ലാഹു വാഗ്ദാനം ചെയ്തിരിക്കുന്നു.",
+l8p2:"ഖുർആനിൽ <b>സൂറത്തുകൾ</b> എന്ന് വിളിക്കുന്ന 114 അധ്യായങ്ങളുണ്ട്, മനോഹരമായ അറബിയിലാണ് അത് എഴുതിയിരിക്കുന്നത്. കുട്ടികളും മുതിർന്നവരുമായ ദശലക്ഷക്കണക്കിന് മുസ്‌ലിംകൾ ഖുർആൻ മുഴുവൻ മനഃപാഠമാക്കിയിട്ടുണ്ട്!",
+l8sub1:"ഖുർആൻ നമ്മുടെ ജീവിതത്തിന്റെ വെളിച്ചമാണ്",
+l8life1:"നാം ചെയ്യുന്ന എല്ലാ കാര്യത്തിലും വഴി കാണിക്കുന്ന ഒരു <b>വെളിച്ചം</b> പോലെയാണ് ഖുർആൻ. എങ്ങനെ നമസ്കരിക്കണം, എങ്ങനെ സത്യസന്ധരും ദയയുള്ളവരും ആകണം, മാതാപിതാക്കളെ എങ്ങനെ സ്നേഹിക്കുകയും അനുസരിക്കുകയും വേണം, ആവശ്യക്കാരെ എങ്ങനെ സഹായിക്കണം, അല്ലാഹുവിനോട് എങ്ങനെ അടുക്കണം — എല്ലാം അത് പഠിപ്പിക്കുന്നു. നമുക്ക് സങ്കടമോ വിഷമമോ തോന്നുമ്പോൾ ഖുർആൻ നമ്മുടെ ഹൃദയത്തിന് ആശ്വാസം നൽകുന്നു — ജീവിതം മുഴുവന്റെയും നമ്മുടെ ഏറ്റവും നല്ല കൂട്ടുകാരനാണത്.",
+l8life2:"അതുകൊണ്ടാണ് നാം <b>ദിവസവും</b> അൽപം ഖുർആൻ വായിക്കാനും സ്നേഹത്തോടെ കേൾക്കാനും അതിന്റെ അർത്ഥം മനസ്സിലാക്കാനും അതനുസരിച്ച് ജീവിക്കാൻ പരമാവധി ശ്രമിക്കാനും ശ്രമിക്കുന്നത്. ഖുർആൻ പാരായണം ചെയ്യുന്ന വീട് വെളിച്ചവും ശാന്തിയും നിറഞ്ഞ വീടാണ്. ✨",
+l8sub2:"ഖുർആനിന്റെ അത്ഭുതകരമായ പ്രതിഫലങ്ങൾ",
+l8rw1:"അല്ലാഹു എത്ര ഉദാരനാണെന്നാൽ, അവന്റെ ഗ്രന്ഥത്തോടൊപ്പം നാം ചെലവഴിക്കുന്ന ഓരോ നിമിഷത്തിനും അവൻ പ്രതിഫലം നൽകുന്നു. നമ്മുടെ നബി ﷺ അത്ഭുതകരമായ ഒരു കാര്യം പറഞ്ഞു: ഖുർആനിലെ വെറും <b>ഒരു അക്ഷരം</b> വായിച്ചാൽ നിനക്ക് <b>പത്ത് നന്മകൾ</b> (ഹസനാത്ത്) ലഭിക്കും! 'അലിഫ്-ലാം-മീം' ഒരു അക്ഷരമല്ലെന്ന് അവിടുന്ന് പറഞ്ഞു — അലിഫ് ഒരു അക്ഷരം, ലാം ഒരു അക്ഷരം, മീം ഒരു അക്ഷരം. അതിനാൽ ഈ മൂന്ന് കൊച്ചക്ഷരങ്ങൾ പോലും നിനക്ക് <b>മുപ്പത്</b> പ്രതിഫലം കൊണ്ടുവരുന്നു.",
+l8rwt:"🌟 കൂടുതൽ മനോഹര പ്രതിഫലങ്ങൾ",
+l8rw2:"നബി ﷺ ഇതും പഠിപ്പിച്ചു:<br>• <b>'നിങ്ങളിൽ ഏറ്റവും ഉത്തമർ ഖുർആൻ പഠിക്കുകയും പഠിപ്പിക്കുകയും ചെയ്യുന്നവരാണ്.'</b><br>• അന്ത്യദിനത്തിൽ, ഖുർആൻ വന്ന് അത് പാരായണം ചെയ്തിരുന്ന കൂട്ടുകാർക്ക് വേണ്ടി <b>ശുപാർശ പറയും</b>.<br>• ഖുർആൻ മനോഹരമായി ഓതുന്നവർ ശ്രേഷ്ഠരായ മലക്കുകളോടൊപ്പമാണ് — പ്രയാസപ്പെട്ട് ശ്രമിച്ചുകൊണ്ടിരിക്കുന്നവർക്ക് ശ്രമത്തിന് <b>ഇരട്ടി</b> പ്രതിഫലം!",
+l8dykt:"നിനക്കറിയാമോ?",
+l8dykp:"ഓരോ അക്ഷരവും പത്ത് പ്രതിഫലം നൽകുന്നതിനാൽ, ഒരു ചെറിയ സൂറത്ത് വായിച്ചാൽ പോലും നിന്റെ നന്മകളുടെ ഏട് നൂറുകണക്കിന് പ്രതിഫലങ്ങളാൽ നിറയും! വെറും <b>ബിസ്മി</b> (19 അക്ഷരങ്ങൾ) ചൊല്ലിയാൽ ഏകദേശം 190 നന്മകൾ, ഇൻശാ അല്ലാഹ്.",
+l8at:"എന്റെ ദിനംപ്രതി ഖുർആൻ നക്ഷത്രങ്ങൾ 📖", l8ap:"ഖുർആനുമായി മനോഹരമായ ഒരു ദിനചര്യ തുടങ്ങൂ!",
+l8al1:"ആഴ്ചയിലെ ഏഴ് ദിവസങ്ങളുള്ള ഒരു ചെറിയ ചാർട്ട് ഉണ്ടാക്കൂ.",
+l8al2:"ഓരോ ദിവസവും അൽപം ഖുർആൻ (ഒരു വരിയെങ്കിലും) വായിച്ച് ഒരു നക്ഷത്രം നിറയ്ക്കൂ.",
+l8al3:"ഒരു ചെറിയ വരിയിലെ അക്ഷരങ്ങൾ എണ്ണി പത്ത് കൊണ്ട് ഗുണിക്കൂ — എത്ര പ്രതിഫലം നേടിയെന്ന് നോക്കൂ!",
+l8atip:"ഒരിക്കൽ ഒരുപാട് ചെയ്യുന്നതിനെക്കാൾ, ദിവസവും അൽപം ചെയ്യുന്നതാണ് അല്ലാഹുവിന് ഏറ്റവും പ്രിയം.",
+l8kw:"<span><b>ഖുർആൻ</b> <span class=\"ar\">قرآن</span> — അല്ലാഹുവിന്റെ വിശുദ്ധ ഗ്രന്ഥം</span><span><b>സൂറത്ത്</b> <span class=\"ar\">سورة</span> — ഖുർആനിലെ ഒരു അധ്യായം</span><span><b>ആയത്ത്</b> <span class=\"ar\">آية</span> — ഒരു വാക്യം (വരി)</span><span><b>വഹ്‌യ്</b> <span class=\"ar\">وحي</span> — അല്ലാഹുവിൽ നിന്നുള്ള സന്ദേശം</span><span><b>ഹസനാത്ത്</b> <span class=\"ar\">حسنات</span> — നന്മകളുടെ പ്രതിഫലം</span><span><b>ഹാഫിസ്</b> <span class=\"ar\">حافظ</span> — ഖുർആൻ മനഃപാഠമാക്കിയവൻ</span>",
+l8rem:"ഖുർആൻ അല്ലാഹുവിന്റെ വചനങ്ങളും നമ്മുടെ ജീവിതത്തിന്റെ വെളിച്ചവുമാണ്. നാം ദിവസവും അൽപം വായിക്കുന്നു — ഓരോ അക്ഷരത്തിനും അല്ലാഹു നമുക്ക് പത്ത് പ്രതിഫലം നൽകുന്നു.",
+pg8:"പേജ് 8",
+q11:"11. ഖുർആനിലെ ഒരു അക്ഷരം വായിച്ചാൽ എത്ര നന്മകൾ ലഭിക്കും?", q11o1:"ഒന്ന്", q11o2:"പത്ത്", q11o3:"നൂറ്",
+q12:"12. വിശുദ്ധ ഖുർആൻ ആരുടെ വചനങ്ങളാണ്?", q12o1:"അല്ലാഹുവിന്റെ വചനങ്ങൾ", q12o2:"ഒരു കവിയുടെ വചനങ്ങൾ", q12o3:"മലക്കുകളുടെ വചനങ്ങൾ",
+doneh:"മാഷാ അല്ലാഹ് — എട്ട് പാഠങ്ങളും പൂർത്തിയാക്കി!",
+dl8:"വിശുദ്ധ ഖുർആൻ — വെളിച്ചവും പ്രതിഫലവും",
+foot:"ഇസ്‌ലാമിക അടിസ്ഥാനങ്ങൾ · പാഠങ്ങൾ 1–8"
+});
+</script>
+<script>
+"use strict";
+Object.assign(ML,{
+rv3h:"നീ എന്ത് ഓർക്കുന്നു?", rv3s:"പാഠം 7–9 ഒന്ന് തിരിഞ്ഞുനോക്കാം. ഓരോ കാർഡും ടാപ്പ് ചെയ്ത് സ്വയം പരിശോധിക്കൂ!",
+rv3q1:"മക്കയിലെ അല്ലാഹുവിന്റെ ഭവനത്തിന്റെ പേര് എന്ത്?", rv3a1:"കഅ്ബ (ബൈത്തുല്ലാഹ്).",
+rv3q2:"മുസ്‌ലിംകൾ നമസ്കാരത്തിൽ ഏത് ദിശയിലേക്ക് തിരിയുന്നു?", rv3a2:"ഖിബ്‌ല — കഅ്ബയ്ക്ക് നേരെ.",
+rv3q3:"ഖുർആനിലെ ഒരു അക്ഷരം വായിച്ചാൽ എത്ര പ്രതിഫലം?", rv3a3:"പത്ത് നന്മകൾ (ഹസനാത്ത്).",
+rv3q4:"ഖുർആനിൽ എത്ര പ്രവാചകന്മാരുടെ പേരുകൾ പറഞ്ഞിട്ടുണ്ട്?", rv3a4:"ഇരുപത്തിയഞ്ച്. ആദ്യത്തേത് ആദം (അ), അവസാനത്തേത് മുഹമ്മദ് ﷺ.",
+rv3q5:"അഞ്ച് ശ്രേഷ്ഠ പ്രവാചകന്മാർ (ഉലുൽ അസ്‌മ്) ആരൊക്കെ?", rv3a5:"നൂഹ്, ഇബ്രാഹീം, മൂസാ, ഈസാ, മുഹമ്മദ് ﷺ.",
+
+j9:"അല്ലാഹുവിന്റെ പ്രവാചകന്മാർ", j9s:"25 അമ്പിയാക്കൾ",
+l9eye:"ഒമ്പതാം പാഠം · അല്ലാഹുവിന്റെ ദൂതന്മാർ", l9h:"അല്ലാഹുവിന്റെ പ്രവാചകന്മാർ",
+l9p1:"അല്ലാഹു എത്ര കരുണയുള്ളവനാണെന്നാൽ, മാർഗദർശനമില്ലാതെ അവൻ ജനങ്ങളെ ഒരിക്കലും വിട്ടില്ല. എല്ലാ കാലത്തും എല്ലാ ജനതയിലേക്കും അവൻ <b>പ്രവാചകന്മാർ</b> എന്ന ദയയും സത്യസന്ധതയുമുള്ള അധ്യാപകരെ അയച്ചു — അറബിയിൽ പ്രവാചകനെ <b>നബി</b> എന്ന് പറയുന്നു. പ്രത്യേക സന്ദേശമോ വിശുദ്ധ ഗ്രന്ഥമോ നൽകപ്പെട്ട പ്രവാചകനെ <b>റസൂൽ</b> (ദൂതൻ) എന്നും പറയുന്നു. ഓരോ പ്രവാചകനും ഒരേ മനോഹര സന്ദേശം പഠിപ്പിച്ചു: <b>അല്ലാഹുവിനെ മാത്രം ആരാധിക്കുക</b>, ജനങ്ങളോട് നന്മ ചെയ്യുക.",
+l9p2:"അല്ലാഹു എണ്ണമറ്റ പ്രവാചകന്മാരെ അയച്ചു — നമുക്ക് എണ്ണാൻ കഴിയുന്നതിലും എത്രയോ അധികം. പക്ഷേ അവരിൽ <b>ഇരുപത്തിയഞ്ച്</b> പേരുടെ പേരുകൾ ഖുർആനിൽ പറഞ്ഞിട്ടുണ്ട്. അവർ ഇതാ:",
+l9list:'<span class="pcard"><i>1</i><span class="ar">آدم</span><b>ആദം</b><em>(അ)</em></span><span class="pcard"><i>2</i><span class="ar">إدريس</span><b>ഇദ്‌രീസ്</b><em>(അ)</em></span><span class="pcard"><i>3</i><span class="ar">نوح</span><b>നൂഹ്</b><em>(അ)</em></span><span class="pcard"><i>4</i><span class="ar">هود</span><b>ഹൂദ്</b><em>(അ)</em></span><span class="pcard"><i>5</i><span class="ar">صالح</span><b>സ്വാലിഹ്</b><em>(അ)</em></span><span class="pcard"><i>6</i><span class="ar">إبراهيم</span><b>ഇബ്രാഹീം</b><em>(അ)</em></span><span class="pcard"><i>7</i><span class="ar">لوط</span><b>ലൂത്വ്</b><em>(അ)</em></span><span class="pcard"><i>8</i><span class="ar">إسماعيل</span><b>ഇസ്മാഈൽ</b><em>(അ)</em></span><span class="pcard"><i>9</i><span class="ar">إسحاق</span><b>ഇസ്ഹാഖ്</b><em>(അ)</em></span><span class="pcard"><i>10</i><span class="ar">يعقوب</span><b>യഅ്ഖൂബ്</b><em>(അ)</em></span><span class="pcard"><i>11</i><span class="ar">يوسف</span><b>യൂസുഫ്</b><em>(അ)</em></span><span class="pcard"><i>12</i><span class="ar">أيوب</span><b>അയ്യൂബ്</b><em>(അ)</em></span><span class="pcard"><i>13</i><span class="ar">شعيب</span><b>ശുഐബ്</b><em>(അ)</em></span><span class="pcard"><i>14</i><span class="ar">موسى</span><b>മൂസാ</b><em>(അ)</em></span><span class="pcard"><i>15</i><span class="ar">هارون</span><b>ഹാറൂൻ</b><em>(അ)</em></span><span class="pcard"><i>16</i><span class="ar">ذو الكفل</span><b>ദുൽകിഫ്ൽ</b><em>(അ)</em></span><span class="pcard"><i>17</i><span class="ar">داود</span><b>ദാവൂദ്</b><em>(അ)</em></span><span class="pcard"><i>18</i><span class="ar">سليمان</span><b>സുലൈമാൻ</b><em>(അ)</em></span><span class="pcard"><i>19</i><span class="ar">إلياس</span><b>ഇല്യാസ്</b><em>(അ)</em></span><span class="pcard"><i>20</i><span class="ar">اليسع</span><b>അൽയസഅ്</b><em>(അ)</em></span><span class="pcard"><i>21</i><span class="ar">يونس</span><b>യൂനുസ്</b><em>(അ)</em></span><span class="pcard"><i>22</i><span class="ar">زكريا</span><b>സകരിയ്യ</b><em>(അ)</em></span><span class="pcard"><i>23</i><span class="ar">يحيى</span><b>യഹ്‌യ</b><em>(അ)</em></span><span class="pcard"><i>24</i><span class="ar">عيسى</span><b>ഈസാ</b><em>(അ)</em></span><span class="pcard" style="border-color:var(--gold)"><i>25</i><span class="ar">محمد</span><b>മുഹമ്മദ്</b><em>ﷺ</em></span>',
+l9note:"<b>ആദ്യത്തെ</b> പ്രവാചകൻ ആദം (അ), <b>അവസാനത്തെ</b> പ്രവാചകൻ നമ്മുടെ പ്രിയ മുഹമ്മദ് നബി ﷺ — അവിടുത്തേക്ക് ശേഷം പ്രവാചകനില്ല. അഞ്ച് പ്രവാചകന്മാരെ <b>ഉലുൽ അസ്‌മ്</b> എന്ന് വിളിക്കുന്നു — ഏറ്റവും ശ്രേഷ്ഠരും ക്ഷമയുള്ളവരുമായ ദൂതന്മാർ: <b>നൂഹ്, ഇബ്രാഹീം, മൂസാ, ഈസാ,</b> പിന്നെ <b>മുഹമ്മദ് ﷺ</b>.",
+l9dykt:"നിനക്കറിയാമോ?",
+l9dykp:"ഓരോ പ്രവാചകനും അത്ഭുതകരമായ ഒരു യഥാർത്ഥ കഥയുണ്ട്. നൂഹ് നബി (അ) വിശ്വാസികളെ വലിയ പ്രളയത്തിൽ നിന്ന് രക്ഷിക്കാൻ ഒരു വലിയ കപ്പൽ പണിതു. യൂനുസ് നബി (അ) ഒരു വലിയ മത്സ്യത്തിനുള്ളിൽ സുരക്ഷിതനായി കഴിഞ്ഞു. സുലൈമാൻ നബി (അ) ക്ക് പക്ഷികളോടും ഉറുമ്പുകളോടും വരെ സംസാരിക്കാൻ കഴിയുമായിരുന്നു! ഓരോ കഥയും അല്ലാഹുവിൽ പൂർണമായി ഭരമേൽപ്പിക്കാൻ പഠിപ്പിക്കുന്നു.",
+l9at:"പ്രവാചക കഥാ സമയം 📖", l9ap:"പ്രവാചകന്മാരുടെ ഒരു കഥാകാരനാകൂ!",
+l9al1:"മുകളിലെ പട്ടികയിൽ നിന്ന് <b>ഒരു</b> പ്രവാചകനെ തിരഞ്ഞെടുക്കൂ.",
+l9al2:"ഉപ്പയോടോ ഉമ്മയോടോ അധ്യാപകനോടോ ഒപ്പം ആ പ്രവാചകനെക്കുറിച്ചുള്ള ഒരു കഥ പഠിക്കൂ.",
+l9al3:"ഇഷ്ടപ്പെട്ട ഭാഗം വരച്ച്, കഥ കുടുംബത്തോട് പറഞ്ഞുകൊടുക്കൂ.",
+l9atip:"ഒരു പ്രവാചകന്റെ പേര് പറയുമ്പോൾ നാം 'അലൈഹിസ്സലാം' (അ) — 'അവിടുത്തേക്ക് സമാധാനം' എന്ന് ചൊല്ലുന്നു. നമ്മുടെ മുഹമ്മദ് നബിക്ക് ﷺ എന്ന് ചൊല്ലുന്നു.",
+l9kw:"<span><b>നബി</b> <span class=\"ar\">نبي</span> — പ്രവാചകൻ</span><span><b>റസൂൽ</b> <span class=\"ar\">رسول</span> — ദൂതൻ</span><span><b>അമ്പിയാക്കൾ</b> <span class=\"ar\">أنبياء</span> — പ്രവാചകന്മാർ</span><span><b>ഉലുൽ അസ്‌മ്</b> <span class=\"ar\">أولو العزم</span> — അഞ്ച് ശ്രേഷ്ഠ പ്രവാചകന്മാർ</span><span><b>ആദം (അ)</b> — ആദ്യ പ്രവാചകൻ</span><span><b>മുഹമ്മദ് ﷺ</b> — അവസാന പ്രവാചകൻ</span>",
+l9rem:"ജനങ്ങളെ നേർവഴിക്ക് നയിക്കാൻ അല്ലാഹു നിരവധി പ്രവാചകന്മാരെ അയച്ചു, അവരിൽ 25 പേരുടെ പേരുകൾ ഖുർആനിൽ പറഞ്ഞിട്ടുണ്ട്. ആദ്യത്തേത് ആദം (അ), അവസാനത്തേത് മുഹമ്മദ് ﷺ. അവരെല്ലാം അല്ലാഹുവിനെ മാത്രം ആരാധിക്കാൻ പഠിപ്പിച്ചു.",
+pg9:"പേജ് 9",
+
+j10:"മലക്കുകൾ", j10s:"പ്രകാശത്താൽ സൃഷ്ടിക്കപ്പെട്ടവർ",
+l10eye:"പത്താം പാഠം · പ്രകാശത്താൽ സൃഷ്ടിക്കപ്പെട്ടവർ", l10h:"മലക്കുകൾ",
+l10p1:"ഒന്നാം പാഠത്തിൽ, <b>മലക്കുകളിൽ</b> വിശ്വസിക്കുന്നത് ഈമാൻ കാര്യങ്ങളിൽ ഒന്നാണെന്ന് ഓർക്കുന്നുണ്ടോ? മലക്കുകൾ — അറബിയിൽ <b>മലാഇക</b> — അല്ലാഹു ശുദ്ധമായ <b>പ്രകാശത്തിൽ</b> (നൂർ) നിന്ന് സൃഷ്ടിച്ച അത്ഭുത സൃഷ്ടികളാണ്. നമുക്ക് അവരെ കണ്ണുകൊണ്ട് കാണാനാവില്ല, പക്ഷേ അവർ എപ്പോഴും അടുത്തുണ്ട്. അവർ ഭക്ഷിക്കില്ല, ഉറങ്ങില്ല, ക്ഷീണിക്കില്ല — <b>എപ്പോഴും</b> അല്ലാഹുവിനെ അനുസരിക്കുന്നു, ഒരിക്കൽ പോലും ധിക്കരിക്കില്ല.",
+l10p2:"അല്ലാഹു എണ്ണമറ്റ മലക്കുകളെ സൃഷ്ടിച്ചു. പക്ഷേ ചിലരുടെ പേരുകൾ നമുക്ക് പറഞ്ഞുതന്നിട്ടുണ്ട്, ഓരോരുത്തർക്കും ഒരു പ്രത്യേക ചുമതലയുണ്ട്. അവരിൽ പത്ത് പേർ ഇതാ:",
+l10list:'<div class="bcard"><span class="n">1</span><div class="ic">📜</div><div><h3>ജിബ്‌രീൽ <span class="ar">جبريل</span></h3><p>അല്ലാഹുവിന്റെ വചനങ്ങൾ (വഹ്‌യ്) പ്രവാചകന്മാർക്ക് എത്തിക്കുന്നു. ഏറ്റവും ശ്രേഷ്ഠനായ മലക്ക്.</p></div></div><div class="bcard"><span class="n">2</span><div class="ic">🌧️</div><div><h3>മീകാഈൽ <span class="ar">ميكائيل</span></h3><p>മഴയുടെയും എല്ലാ ജീവികളുടെയും ഉപജീവനത്തിന്റെയും (രിസ്ഖ്) ചുമതല.</p></div></div><div class="bcard"><span class="n">3</span><div class="ic">🎺</div><div><h3>ഇസ്റാഫീൽ <span class="ar">إسرافيل</span></h3><p>അന്ത്യദിനത്തിൽ വലിയ കാഹളം (സ്വൂർ) ഊതും.</p></div></div><div class="bcard"><span class="n">4</span><div class="ic">🕊️</div><div><h3>മലക്കുൽ മൗത്ത് <span class="ar">ملك الموت</span></h3><p>ആത്മാവിനെ പതുക്കെ എടുക്കുന്ന മരണത്തിന്റെ മലക്ക് (ഇസ്റാഈൽ).</p></div></div><div class="bcard"><span class="n">5</span><div class="ic">❓</div><div><h3>മുൻകർ <span class="ar">منكر</span></h3><p>ഖബ്‌റിൽ വിശ്വാസത്തെക്കുറിച്ച് ചോദ്യം ചെയ്യുന്നു.</p></div></div><div class="bcard"><span class="n">6</span><div class="ic">❓</div><div><h3>നകീർ <span class="ar">نكير</span></h3><p>മുൻകറിന്റെ കൂട്ടാളി, ഖബ്‌റിൽ ചോദ്യം ചെയ്യുന്നു.</p></div></div><div class="bcard"><span class="n">7</span><div class="ic">✅</div><div><h3>റഖീബ് <span class="ar">رقيب</span></h3><p>നാം ചെയ്യുന്ന എല്ലാ നന്മകളും എഴുതുന്നു.</p></div></div><div class="bcard"><span class="n">8</span><div class="ic">📝</div><div><h3>അതീദ് <span class="ar">عتيد</span></h3><p>നമ്മുടെ തെറ്റുകൾ എഴുതുന്നു, നാം അല്ലാഹുവിലേക്ക് മടങ്ങാൻ.</p></div></div><div class="bcard"><span class="n">9</span><div class="ic">🔥</div><div><h3>മാലിക് <span class="ar">مالك</span></h3><p>നരകത്തിന്റെ (ജഹന്നം) കാവൽക്കാരൻ.</p></div></div><div class="bcard"><span class="n">10</span><div class="ic">🌷</div><div><h3>രിദ്‌വാൻ <span class="ar">رضوان</span></h3><p>സ്വർഗത്തിന്റെ (ജന്നത്ത്) കാവൽക്കാരൻ.</p></div></div>',
+l10note:"ഈ മലക്കുകളിൽ രണ്ട് പേർ <b>നിന്നോട്</b> പ്രത്യേകം അടുത്താണ്: <b>റഖീബും അതീദും</b>, ഒരുമിച്ച് <b>കിറാമൻ കാതിബീൻ</b> — 'ആദരണീയരായ എഴുത്തുകാർ' എന്ന് വിളിക്കുന്നു. നീ ചെയ്യുന്നതെല്ലാം — നല്ലതും അത്ര നല്ലതല്ലാത്തതും — അവർ എഴുതുന്നു. അതിനാൽ അവരുടെ ഏടുകൾ മനോഹര നന്മകൾ കൊണ്ട് നിറയ്ക്കാം! 💚",
+l10dykt:"നിനക്കറിയാമോ?",
+l10dykp:"മലക്കുകൾക്ക് നല്ല സദസ്സുകൾ ഇഷ്ടമാണ്! ആളുകൾ അല്ലാഹുവിനെക്കുറിച്ച് പഠിക്കാനോ ഖുർആൻ ഓതാനോ ഒരുമിച്ചു കൂടുമ്പോൾ, മലക്കുകൾ അവർക്ക് ചുറ്റും ഒരുമിക്കുന്നു, അല്ലാഹു ആ ആളുകളെ സ്നേഹത്തോടെ മലക്കുകളോട് പറയുന്നു. അതിനാൽ നിന്റെ ക്ലാസ്സിനെ ഇപ്പോൾ മലക്കുകൾ സന്ദർശിക്കുന്നുണ്ടാകാം!",
+l10at:"മലക്കുകളുടെ ചുമതലാ ചാർട്ട് ✨", l10ap:"മലക്കുകളുടെയും അവരുടെ പ്രത്യേക ജോലികളുടെയും ഒരു ചാർട്ട് ഉണ്ടാക്കൂ!",
+l10al1:"ഒരു കടലാസിന്റെ ഒരു വശത്ത് പത്ത് മലക്കുകളുടെ പേരുകൾ എഴുതൂ.",
+l10al2:"ഓരോ പേരിനും അരികിൽ അതിന്റെ ചുമതലയ്ക്ക് ഒരു ചെറിയ ചിഹ്നം വരയ്ക്കൂ (മഴമേഘം, കാഹളം, പേന...).",
+l10al3:"റഖീബിനെയും അതീദിനെയും വട്ടമിട്ട്, അവർക്ക് നന്മകൾ നിറഞ്ഞ ഒരു ഏട് വാഗ്ദാനം ചെയ്യൂ!",
+l10atip:"ഓർക്കുക: മലക്കുകൾ പ്രകാശത്താൽ സൃഷ്ടിക്കപ്പെട്ടവരാണ്, അവർ എങ്ങനെയിരിക്കുമെന്ന് നമുക്ക് വരയ്ക്കാനാവില്ല — അതിനാൽ അവരുടെ ചുമതലകൾ വരയ്ക്കുന്നു.",
+l10kw:"<span><b>മലാഇക</b> <span class=\"ar\">ملائكة</span> — മലക്കുകൾ</span><span><b>ജിബ്‌രീൽ</b> <span class=\"ar\">جبريل</span> — വഹ്‌യ് എത്തിക്കുന്നു</span><span><b>മീകാഈൽ</b> <span class=\"ar\">ميكائيل</span> — മഴയും ഉപജീവനവും</span><span><b>ഇസ്റാഫീൽ</b> <span class=\"ar\">إسرافيل</span> — കാഹളം</span><span><b>മലക്കുൽ മൗത്ത്</b> <span class=\"ar\">ملك الموت</span> — മരണത്തിന്റെ മലക്ക്</span><span><b>കിറാമൻ കാതിബീൻ</b> <span class=\"ar\">كرام كاتبين</span> — എഴുതുന്ന രണ്ട് മലക്കുകൾ</span>",
+l10rem:"മലക്കുകൾ പ്രകാശത്താൽ സൃഷ്ടിക്കപ്പെട്ടവരും എപ്പോഴും അല്ലാഹുവിനെ അനുസരിക്കുന്നവരുമാണ്. നമുക്ക് അവരെ കാണാനാവില്ല, പക്ഷേ പത്ത് പേരെ പേരുകൊണ്ട് അറിയാം — ജിബ്‌രീൽ, പിന്നെ നമ്മുടെ പ്രവൃത്തികൾ എഴുതുന്ന റഖീബും അതീദും ഉൾപ്പെടെ.",
+pg10:"പേജ് 10",
+
+q13:"13. ആദ്യത്തെ പ്രവാചകൻ ആരായിരുന്നു?", q13o1:"ആദം (അ)", q13o2:"നൂഹ് (അ)", q13o3:"മൂസാ (അ)",
+q14:"14. ഖുർആനിൽ എത്ര പ്രവാചകന്മാരുടെ പേരുകൾ പറഞ്ഞിട്ടുണ്ട്?", q14o1:"10", q14o2:"25", q14o3:"100",
+q15:"15. അല്ലാഹുവിന്റെ വചനങ്ങൾ പ്രവാചകന്മാർക്ക് എത്തിക്കുന്ന മലക്ക് ആരാണ്?", q15o1:"ജിബ്‌രീൽ", q15o2:"മാലിക്", q15o3:"ഇസ്റാഫീൽ",
+q16:"16. അല്ലാഹു മലക്കുകളെ എന്തിൽ നിന്നാണ് സൃഷ്ടിച്ചത്?", q16o1:"പ്രകാശം", q16o2:"കളിമണ്ണ്", q16o3:"വെള്ളം",
+doneh:"മാഷാ അല്ലാഹ് — പത്ത് പാഠങ്ങളും പൂർത്തിയാക്കി!",
+dl9:"അല്ലാഹുവിന്റെ പ്രവാചകന്മാർ (25)", dl10:"മലക്കുകൾ (10)",
+foot:"ഇസ്‌ലാമിക അടിസ്ഥാനങ്ങൾ · പാഠങ്ങൾ 1–10"
+});
+</script>
+<script>
+"use strict";
+/* UI strings for JS-generated content */
+const UI={
+  pill:{en:(n,t)=>`Page ${n} / ${t}`, ml:(n,t)=>`പേജ് ${n} / ${t}`},
+  phCap:{en:"Image placeholder — an AI-generated picture will go here", ml:"ചിത്രം വരാനിരിക്കുന്നു — ഇവിടെ AI ചിത്രം വയ്ക്കും"},
+  phShow:{en:"Show AI image prompt ▾", ml:"AI ചിത്ര പ്രോംപ്റ്റ് കാണിക്കൂ ▾"},
+  phHide:{en:"Hide AI image prompt ▴", ml:"പ്രോംപ്റ്റ് മറയ്ക്കൂ ▴"},
+  praise:{en:["Mashallah, that's right! 🌟","Correct — well done! 🎉","Yes! You've got it! ✅","Brilliant! 💚"],
+          ml:["മാഷാ അല്ലാഹ്, അത് ശരി! 🌟","ശരി — കൊള്ളാം! 🎉","അതെ! നീ കണ്ടെത്തി! ✅","മിടുക്കൻ! 💚"]},
+  wrong:{en:"Good try! The green one is the right answer. 💡", ml:"നല്ല ശ്രമം! പച്ച നിറത്തിലുള്ളതാണ് ശരിയുത്തരം. 💡"},
+  score:{en:(c,t)=>`You scored ${c} out of ${t}! `+(c===t?"Perfect — Mashallah! 🏆":c>=t/2?"Well done, keep it up! 🌙":"Great effort — read again and try once more! 📖"),
+         ml:(c,t)=>`നീ ${t}-ൽ ${c} നേടി! `+(c===t?"പൂർണം — മാഷാ അല്ലാഹ്! 🏆":c>=t/2?"കൊള്ളാം, തുടരൂ! 🌙":"നല്ല ശ്രമം — വീണ്ടും വായിച്ച് ഒരിക്കൽ കൂടി ശ്രമിക്കൂ! 📖")}
+};
+
+/* central asset registry */
+const ASSETS={
+  "IMG-FOUND-001-HERO":{status:"placeholder",file:"assets/img/found-001-hero.png",alt:"A warm welcome banner for the lesson",altMl:"പാഠത്തിന്റെ സ്വാഗത ബാനർ",caption:"Lesson banner",captionMl:"പാഠ ബാനർ",
+    prompt:["Wide storybook banner for a children's Islamic lesson","A cheerful mosque with a green dome and slim minaret at golden sunset","Soft hills, a crescent moon and a few stars in a warm sky","Flat vector, rounded shapes, emerald green + warm gold","Bright, friendly, calm for 10-year-olds","No people or faces; do NOT depict Allah, prophets or angels"]},
+  "IMG-FOUND-001-A":{status:"placeholder",file:"assets/img/found-001-star.png",alt:"Six-pointed star of the Articles of Faith",altMl:"ഈമാൻ കാര്യങ്ങളുടെ ആറ് കോണുള്ള നക്ഷത്രം",caption:"The six Articles of Faith as a star",captionMl:"ആറ് കോണുള്ള ഈമാൻ നക്ഷത്രം",
+    prompt:["Six-pointed star, each point a rounded petal","Six labels: Allah, Angels, Holy Books, Prophets, Last Day, Allah's Plan","A small simple icon beside each label","Word 'IMAN' in the centre","Flat vector, emerald + gold, kid-friendly","Symbolic only — no angels, prophets or faces"]},
+  "IMG-FOUND-001-B":{status:"placeholder",file:"assets/img/found-001-pillars.png",alt:"A mosque resting on five labelled pillars",altMl:"അഞ്ച് സ്തംഭങ്ങളിൽ നിൽക്കുന്ന പള്ളി",caption:"The Five Pillars holding up Islam",captionMl:"ഇസ്‌ലാമിനെ താങ്ങുന്ന അഞ്ച് സ്തംഭങ്ങൾ",
+    prompt:["A friendly mosque resting on five tall columns","Each pillar labelled: Shahada, Salah, Zakat, Sawm, Hajj","Green dome, gold crescent, simple blue sky","Flat vector storybook, rounded, emerald + gold","No people; the Kaaba may appear small as a black cube with gold band"]},
+  "IMG-FOUND-001-C":{status:"placeholder",file:"assets/img/found-001-creation.png",alt:"Nature showing Allah the Creator and Provider",altMl:"സ്രഷ്ടാവായ അല്ലാഹുവിനെ കാണിക്കുന്ന പ്രകൃതി",caption:"Signs of Allah's names around us",captionMl:"ചുറ്റുമുള്ള അല്ലാഹുവിന്റെ നാമങ്ങൾ",
+    prompt:["A joyful nature scene: leafy tree, colourful fruit, butterfly, mountains, sun and rain cloud","Shows Allah as Al-Khaliq (Creator) and Ar-Razzaq (Provider)","Flat vector, rounded, rich greens, gold sun, soft blue sky","Bright and calm for children","No people or faces; do NOT depict Allah in any form"]},
+  "IMG-FOUND-009-HERO":{status:"placeholder",file:"assets/img/found-009-prophets.png",alt:"The chain of prophets, shown as lights",altMl:"പ്രവാചക പരമ്പര — വെളിച്ചങ്ങളായി",caption:"Many prophets, ending with the final Prophet ﷺ",captionMl:"നിരവധി പ്രവാചകന്മാർ, അവസാന നബി ﷺ യിൽ അവസാനിക്കുന്നു",
+    prompt:["A symbolic storybook illustration of the chain of prophets shown as a gentle arc of glowing golden lanterns or stars across a night sky","The row leads towards a mosque with a green dome (symbolising the final Prophet)","Each lantern the same, growing a little brighter towards the end","Flat vector, rounded, deep blue sky, warm gold light, emerald green mosque","IMPORTANT: purely symbolic — do NOT draw any prophet or person, no faces or figures at all"]},
+  "IMG-FOUND-010-HERO":{status:"placeholder",file:"assets/img/found-010-angels.png",alt:"Angels are made of light (symbolic)",altMl:"മലക്കുകൾ പ്രകാശത്താൽ (പ്രതീകാത്മകം)",caption:"Angels are created from light",captionMl:"മലക്കുകൾ പ്രകാശത്താൽ സൃഷ്ടിക്കപ്പെട്ടവരാണ്",
+    prompt:["A symbolic illustration showing soft golden beams of light (noor) streaming gently down from a starry night sky onto a calm earth with a small mosque","A feeling of peace, wonder and heavenly light","Flat vector, rounded shapes, deep indigo-blue sky, glowing gold rays, emerald accents","IMPORTANT: do NOT draw angels, wings, or any figures or faces — only light, stars and sky. Do not depict Allah or prophets either"]},
+  "IMG-FOUND-008-HERO":{status:"placeholder",file:"assets/img/found-008-hero.png",alt:"An open Qur'an on a stand with light",altMl:"റഹ്‌ലിൽ വച്ച തുറന്ന ഖുർആൻ",caption:"The Holy Qur'an — Allah's words",captionMl:"വിശുദ്ധ ഖുർആൻ — അല്ലാഹുവിന്റെ വചനങ്ങൾ",
+    prompt:["Wide storybook illustration of an open Qur'an (mushaf) resting on a wooden X-shaped stand (rehal)","Soft golden rays of light (noor) rising behind it, a crescent moon and a star above","Green book cover, cream pages with gentle gold text lines","Flat vector, rounded, emerald green and warm gold on a light background","No people or faces; do NOT depict Allah, prophets or angels"]},
+  "IMG-FOUND-008-LIGHT":{status:"placeholder",file:"assets/img/found-008-light.png",alt:"The Qur'an as a guiding light",altMl:"വഴികാട്ടുന്ന വെളിച്ചമായ ഖുർആൻ",caption:"The Qur'an is a light that guides our life",captionMl:"ഖുർആൻ നമ്മുടെ ജീവിതത്തെ വഴികാട്ടുന്ന വെളിച്ചമാണ്",
+    prompt:["A closed Qur'an glowing brightly like a lamp, sending out soft golden rays","Below it, a gentle winding path of stepping-stone dots, showing the Qur'an guiding us through life","Flat vector, rounded, emerald green book with a gold star, warm gold light","Calm and hopeful mood for children; no people or faces"]},
+  "IMG-FOUND-008-REWARD":{status:"placeholder",file:"assets/img/found-008-reward.png",alt:"Every letter you read brings ten rewards",altMl:"ഓരോ അക്ഷരത്തിനും പത്ത് പ്രതിഫലം",caption:"Every letter you read brings ten rewards!",captionMl:"നീ വായിക്കുന്ന ഓരോ അക്ഷരവും പത്ത് പ്രതിഫലം കൊണ്ടുവരുന്നു!",
+    prompt:["A cheerful reward chart showing the Arabic letters Alif, Lam, Mim (from 'Alif-Lam-Mim')","Each letter followed by '× 10' with little gold stars, and a total '= 30 rewards!'","Flat vector, emerald green letter circles, gold stars and numbers, light background","Fun and encouraging for children; no people or faces"]},
+  "IMG-FOUND-007-HERO":{status:"placeholder",file:"assets/img/found-007-cities.png",alt:"The two great mosques",altMl:"രണ്ട് വലിയ പള്ളികൾ",caption:"Makkah and Madinah — their two great mosques",captionMl:"മക്കയും മദീനയും — രണ്ട് വലിയ പള്ളികൾ",
+    prompt:["Wide storybook banner showing the two great mosques side by side","On the left: Masjid al-Haram with the Kaaba (a small black cube with a gold band) in its courtyard and tall minarets","On the right: Masjid an-Nabawi with its famous green dome and minarets","Warm golden-hour sky with a crescent moon","Flat vector, rounded shapes, emerald green, gold and sandy tones","No people or faces; do NOT depict Allah, prophets or angels"]},
+  "IMG-FOUND-007-HARAM":{status:"placeholder",file:"assets/img/found-007-haram.png",alt:"Masjid al-Haram with labelled parts",altMl:"ഭാഗങ്ങൾ അടയാളപ്പെടുത്തിയ മസ്ജിദുൽ ഹറാം",caption:"Masjid al-Haram — the Sacred Mosque",captionMl:"മസ്ജിദുൽ ഹറാം — വിശുദ്ധ പള്ളി",
+    prompt:["A labelled infographic illustration of Masjid al-Haram in Makkah, gentle bird's-eye view","Show the large mosque building ringed with many tall minarets and a big open central courtyard","Place the Kaaba (a small black cube with a gold band) in the very centre","Add small callout labels with thin pointer lines to: 'Kaaba', 'courtyard (mataf)', 'minarets', 'prayer halls'","Flat vector, emerald green and gold, clean and clear for children","No people or faces; do NOT depict Allah, prophets or angels"]},
+  "IMG-FOUND-007-KAABA":{status:"placeholder",file:"assets/img/found-007-kaaba.png",alt:"The Kaaba with its parts labelled",altMl:"ഭാഗങ്ങൾ അടയാളപ്പെടുത്തിയ കഅ്ബ",caption:"The Kaaba, up close",captionMl:"കഅ്ബ — അടുത്ത് നിന്ന്",
+    prompt:["A clear labelled diagram of the Kaaba: a tall black cube draped in black cloth (Kiswah) with a gold embroidered band near the top","Add small callout labels with thin pointer lines to: 'Kiswah (black cloth)', 'golden door', 'Black Stone corner (Hajar al-Aswad)', 'gold band with Qur'an writing'","Show small arrows in a circle around the base to represent Tawaf (walking around)","Flat vector storybook, dignified; black, gold and emerald accents on a light background","No people or faces; keep it simple and reverent"]},
+  "IMG-FOUND-007-NABAWI":{status:"placeholder",file:"assets/img/found-007-nabawi.png",alt:"Masjid an-Nabawi with labelled parts",altMl:"ഭാഗങ്ങൾ അടയാളപ്പെടുത്തിയ മസ്ജിദുന്നബവി",caption:"Masjid an-Nabawi — the Prophet's Mosque",captionMl:"മസ്ജിദുന്നബവി — നബിയുടെ പള്ളി",
+    prompt:["A labelled illustration of Masjid an-Nabawi in Madinah","Show the mosque with its famous green dome, tall minarets, and the large umbrella-like canopies in the courtyard","Add small callout labels with thin pointer lines to: 'green dome', 'minarets', 'courtyard', 'prayer hall'","Date palms nearby, a calm blue-and-gold sky","Flat vector storybook, emerald green and gold","No people or faces; do NOT depict Allah, prophets or angels"]},
+  "IMG-FOUND-006-HERO":{status:"placeholder",file:"assets/img/found-006-salah.png",alt:"A child praying on a prayer mat",altMl:"നമസ്കാര പായയിൽ പ്രാർത്ഥിക്കുന്ന കുട്ടി",caption:"Salah — our daily prayer",captionMl:"സ്വലാത്ത് — നമ്മുടെ ദിനംപ്രതി നമസ്കാരം",
+    prompt:["A calm illustration of a child standing in prayer on a prayer mat, seen from behind or the side, facing a simple mihrab arch","Soft light from an arched window, a small hanging masjid lamp","Flat vector storybook, rounded, emerald green, gold and soft blue","Modest and gentle; keep faces minimal or turned away","No detailed faces; do NOT depict Allah, prophets or angels"]},
+  "IMG-FOUND-006-TIMES":{status:"placeholder",file:"assets/img/found-006-times.png",alt:"A day arc showing the five prayer times",altMl:"അഞ്ച് നമസ്കാര സമയങ്ങൾ കാണിക്കുന്ന ദിന ചാപം",caption:"The five prayer times through the day",captionMl:"പകലിലുടനീളമുള്ള അഞ്ച് നമസ്കാര സമയങ്ങൾ",
+    prompt:["A clear infographic: an arc showing the sun's path across the day from dawn to night","Five labelled points on the arc: Fajr (dawn), Dhuhr (midday), Asr (afternoon), Maghrib (sunset), Isha (night)","A small sun and a moon, a gentle sky gradient from sunrise colours to night","Flat vector, emerald and gold labels, easy to read for children","No people or faces"]},
+  "IMG-FOUND-006-POSITIONS":{status:"placeholder",file:"assets/img/found-006-positions.png",alt:"The four prayer positions, labelled",altMl:"പേരെഴുതിയ നാല് നമസ്കാര നിലകൾ",caption:"The positions of Salah",captionMl:"നമസ്കാരത്തിന്റെ നിലകൾ",
+    prompt:["A simple labelled chart of the four Salah positions in order: Qiyam (standing), Ruku (bowing), Sujood (prostration), Julus (sitting)","Use very simple, modest silhouette figures with no facial features","Label each position clearly with its name","Flat vector, rounded, emerald green and gold on a light background","Child-friendly; no detailed faces; do NOT depict any prophet"]},
+  "IMG-FOUND-006-JUMUAH":{status:"placeholder",file:"assets/img/found-006-jumuah.png",alt:"Friday prayer at the masjid",altMl:"പള്ളിയിലെ വെള്ളിയാഴ്ച നമസ്കാരം",caption:"Jumu'ah — the Friday prayer",captionMl:"ജുമുഅ — വെള്ളിയാഴ്ച നമസ്കാരം",
+    prompt:["A warm illustration of a masjid interior with a minbar (pulpit) and a mihrab arch","Neat rows of worshippers seen from behind, standing for the Friday prayer","Green carpet, arched windows, a hanging lamp","Flat vector storybook, emerald green and gold, calm and welcoming","People shown only from behind, no faces; do NOT depict Allah, prophets or angels"]},
+  "IMG-FOUND-005-HERO":{status:"placeholder",file:"assets/img/found-005-ramadan.png",alt:"A warm Ramadan night banner",altMl:"റമദാൻ രാത്രിയുടെ സ്വാഗത ബാനർ",caption:"Ramadan — the month of fasting",captionMl:"റമദാൻ — നോമ്പിന്റെ മാസം",
+    prompt:["Wide storybook banner of a peaceful Ramadan night","A big glowing crescent moon and stars in a deep blue sky","A softly lit lantern (fanoos) and a mosque silhouette with dome and minaret","On one side a small table with dates and a glass of water for Iftar","Flat vector, rounded shapes, deep blue, emerald green and warm gold, cosy and inviting","No people or faces; do NOT depict Allah, prophets or angels"]},
+  "IMG-FOUND-004-STEPS":{status:"placeholder",file:"assets/img/found-004-wudu-steps.png",alt:"A numbered chart of the nine Wudu steps",altMl:"ഒമ്പത് വുദൂ ഘട്ടങ്ങളുടെ എണ്ണമിട്ട ചാർട്ട്",caption:"The nine steps of Wudu, in order",captionMl:"ക്രമത്തിലുള്ള ഒമ്പത് വുദൂ ഘട്ടങ്ങൾ",
+    prompt:["A clean numbered chart (1 to 9) of the Wudu steps in order","Each step shows the body part being washed: hands, mouth, nose, face, arms to elbow, wiping head, ears, feet — with little water droplets","Simple, modest illustration — show hands and body parts, or a very simple friendly child; keep faces minimal and modest","Flat vector storybook style, rounded, emerald green, gold and soft blue","Clear numbers so children can follow the order; no detailed faces"]}
+};
+
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+
+function renderAssets(){
+  const ml=L()==="ml";
+  $$(".asset-img").forEach(box=>{
+    const id=box.dataset.asset, a=ASSETS[id]; if(!a)return;
+    const cap=(ml&&a.captionMl)||a.caption||a.alt;
+    const promptBlock = a.prompt ? `<button class="pbtn">${UI.phShow[L()]}</button><div class="pprompt"><b>AI image prompt \u00b7 ${id}</b><ul>${a.prompt.map(p=>`<li>${p}</li>`).join("")}</ul></div>` : "";
+    if(a.svg){
+      box.classList.add("ready");
+      box.innerHTML=`<div class="asset-svg">${a.svg}</div><div class="fig">${cap}</div>`+(a.prompt?`<div class="svg-prompt">${promptBlock}</div>`:"");
+    } else if(a.status==="ready"&&a.file){
+      box.classList.add("ready");
+      box.innerHTML=`<img src="${a.file}" alt="${(ml&&a.altMl)||a.alt}" loading="lazy"><div class="fig">${cap}</div>`;
+    } else {
+      box.innerHTML=`<div class="ph"><div class="picon">\ud83d\uddbc\ufe0f</div><div class="pid">${id}</div><div class="palt">${(ml&&a.altMl)||a.alt}</div><div class="pcap">${UI.phCap[L()]}</div>${promptBlock}</div>`;
+    }
+    const btn=box.querySelector(".pbtn"), pr=box.querySelector(".pprompt");
+    if(btn&&pr) btn.onclick=()=>{const o=pr.classList.toggle("show");btn.textContent=o?UI.phHide[L()]:UI.phShow[L()];};
+  });
+}
+
+
+/* ---- Wajjahtu memorisation widget ---- */
+const WAJ=[
+ {ar:"وَجَّهْتُ وَجْهِيَ لِلَّذِي فَطَرَ السَّمَاوَاتِ وَالْأَرْضَ", tr:"Wajjahtu wajhiya lilladhee fataras-samawati wal-ard",
+  en:"I have turned my face to the One who created the heavens and the earth,", ml:"ആകാശങ്ങളും ഭൂമിയും സൃഷ്ടിച്ചവനിലേക്ക് ഞാൻ എന്റെ മുഖം തിരിച്ചിരിക്കുന്നു,"},
+ {ar:"حَنِيفًا مُسْلِمًا وَمَا أَنَا مِنَ الْمُشْرِكِينَ", tr:"haneefam-musliman wa maa ana minal-mushrikeen",
+  en:"purely as a Muslim, and I am not of those who worship others besides Allah.", ml:"നിഷ്കളങ്കനായ മുസ്‌ലിമായി; ഞാൻ ബഹുദൈവാരാധകരിൽ പെട്ടവനല്ല."},
+ {ar:"إِنَّ صَلَاتِي وَنُسُكِي", tr:"Inna salaatee wa nusukee",
+  en:"Surely my prayer and my worship,", ml:"തീർച്ചയായും എന്റെ നമസ്കാരവും എന്റെ ആരാധനയും,"},
+ {ar:"وَمَحْيَايَ وَمَمَاتِي لِلَّهِ رَبِّ الْعَالَمِينَ", tr:"wa mahyaaya wa mamaatee lillahi rabbil-'aalameen",
+  en:"and my life and my death are for Allah, the Lord of all the worlds.", ml:"എന്റെ ജീവിതവും മരണവും സർവലോക രക്ഷിതാവായ അല്ലാഹുവിന്നാകുന്നു."},
+ {ar:"لَا شَرِيكَ لَهُ وَبِذَٰلِكَ أُمِرْتُ", tr:"Laa shareeka lahu wa bidhaalika umirtu",
+  en:"He has no partner. With this I have been commanded,", ml:"അവന് പങ്കാളിയില്ല. അപ്രകാരമാണ് ഞാൻ കൽപ്പിക്കപ്പെട്ടത്,"},
+ {ar:"وَأَنَا مِنَ الْمُسْلِمِينَ", tr:"wa ana minal-muslimeen",
+  en:"and I am among those who submit to Allah.", ml:"ഞാൻ (അല്ലാഹുവിന്) കീഴ്‌പെട്ട മുസ്‌ലിംകളിൽ പെട്ടവനാകുന്നു."}
+];
+const WAJUI={
+ title:{en:'🧠 Memorise the opening du\u2019a — "Wajjahtu"', ml:'🧠 തുടക്ക പ്രാർത്ഥന മനഃപാഠമാക്കാം — "വജ്ജഹ്‌തു"'},
+ intro:{en:"We say this beautiful du\u2019a quietly at the very start of Salah, standing, right after the first Takbir. Learn it one piece at a time — reveal a part, say it aloud a few times, then tap the star once you can say it by heart.",
+        ml:"നമസ്കാരത്തിന്റെ തുടക്കത്തിൽ, ആദ്യ തക്ബീറിന് ശേഷം നിന്നുകൊണ്ട് നാം ഈ മനോഹര പ്രാർത്ഥന പതുക്കെ ചൊല്ലുന്നു. ഓരോ ഭാഗമായി പഠിക്കൂ — ഒരു ഭാഗം തുറന്ന്, കുറച്ച് തവണ ഉറക്കെ ചൊല്ലി, മനഃപാഠമായാൽ നക്ഷത്രം അമർത്തൂ."},
+ next:{en:"Show next part →", ml:"അടുത്ത ഭാഗം കാണിക്കൂ →"},
+ allshown:{en:"All parts shown ✓", ml:"എല്ലാ ഭാഗങ്ങളും കാണിച്ചു ✓"},
+ test:{en:"Test me (hide meaning)", ml:"പരീക്ഷിക്കൂ (അർത്ഥം മറയ്ക്കൂ)"},
+ show:{en:"Show meaning", ml:"അർത്ഥം കാണിക്കൂ"},
+ reset:{en:"Reset", ml:"വീണ്ടും തുടങ്ങൂ"},
+ star:{en:"I memorised this ⭐", ml:"ഇത് മനഃപാഠമായി ⭐"},
+ starred:{en:"Memorised ✓", ml:"മനഃപാഠമായി ✓"},
+ lab:{en:(m,t)=>`${m} / ${t} parts memorised`, ml:(m,t)=>`${m} / ${t} ഭാഗങ്ങൾ മനഃപാഠമായി`},
+ done:{en:"🏆 Mashallah! You memorised the whole du\u2019a — say it in your next prayer!", ml:"🏆 മാഷാ അല്ലാഹ്! മുഴുവൻ പ്രാർത്ഥനയും മനഃപാഠമായി — അടുത്ത നമസ്കാരത്തിൽ ചൊല്ലൂ!"}
+};
+let wajShown=1, wajMem=new Set(), wajTest=false;
+function renderWaj(){
+  const wrap=document.getElementById("wajParts"); if(!wrap)return;
+  let h="";
+  for(let i=0;i<wajShown;i++){
+    const p=WAJ[i], done=wajMem.has(i);
+    h+=`<div class="mempart${done?" done":""}"><div class="mpnum">${i+1}</div>
+      <div class="mpbody"><div class="mpar">${p.ar}</div>${wajTest?"":`<div class="mptr">${p.tr}</div><div class="mpmean">${p[LANG.current]}</div>`}</div>
+      <button class="mpstar" data-i="${i}">${done?WAJUI.starred[LANG.current]:WAJUI.star[LANG.current]}</button></div>`;
+  }
+  wrap.innerHTML=h;
+  wrap.querySelectorAll(".mpstar").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;wajMem.has(i)?wajMem.delete(i):wajMem.add(i);renderWaj();});
+  const total=WAJ.length, L=LANG.current;
+  document.getElementById("wajBar").style.width=(wajMem.size/total*100)+"%";
+  document.getElementById("wajLab").textContent=WAJUI.lab[L](wajMem.size,total);
+  const nb=document.getElementById("wajReveal");
+  nb.textContent=wajShown>=total?WAJUI.allshown[L]:WAJUI.next[L]; nb.disabled=wajShown>=total;
+  document.getElementById("wajTest").textContent=wajTest?WAJUI.show[L]:WAJUI.test[L];
+  document.getElementById("wajReset").textContent=WAJUI.reset[L];
+  document.getElementById("wajTitle").textContent=WAJUI.title[L];
+  document.getElementById("wajIntro").textContent=WAJUI.intro[L];
+  const dn=document.getElementById("wajDone");
+  dn.textContent=wajMem.size===total?WAJUI.done[L]:""; dn.style.display=wajMem.size===total?"block":"none";
+}
+(function(){
+  const rv=document.getElementById("wajReveal");
+  if(!rv)return;
+  rv.onclick=()=>{if(wajShown<WAJ.length){wajShown++;renderWaj();}};
+  document.getElementById("wajTest").onclick=()=>{wajTest=!wajTest;renderWaj();};
+  document.getElementById("wajReset").onclick=()=>{wajShown=1;wajMem=new Set();wajTest=false;renderWaj();};
+})();
+
+
+/* ---- language ---- */
+$$("[data-i18n],[data-i18n-html]").forEach(el=>{el._en=el.innerHTML;});
+$$(".activity[data-labelml]").forEach(el=>{el._enLabel=el.getAttribute("data-label");});
+function applyLang(lang){
+  LANG.current=lang;
+  document.body.classList.toggle("lang-ml",lang==="ml");
+  document.documentElement.lang=lang==="ml"?"ml":"en";
+  $$("[data-i18n],[data-i18n-html]").forEach(el=>{
+    const k=el.dataset.i18n||el.dataset.i18nHtml;
+    el.innerHTML=(lang==="ml"&&ML[k]!=null)?ML[k]:el._en;
+  });
+  $$(".activity[data-labelml]").forEach(el=>{
+    el.setAttribute("data-label", lang==="ml"?el.getAttribute("data-labelml"):el._enLabel);
+  });
+  $("#enBtn").classList.toggle("on",lang==="en");
+  $("#mlBtn").classList.toggle("on",lang==="ml");
+  renderAssets(); if(document.getElementById("wajParts"))renderWaj(); onScroll();
+  try{localStorage.setItem("sm_lang",lang);}catch(e){}
+}
+$("#enBtn").onclick=()=>applyLang("en");
+$("#mlBtn").onclick=()=>applyLang("ml");
+
+/* ---- drawer (anchor links only) ---- */
+const drawer=$("#drawer"), scrim=$("#scrim");
+function openMenu(){drawer.classList.add("open");scrim.classList.add("open");}
+function closeMenu(){drawer.classList.remove("open");scrim.classList.remove("open");}
+$("#menuBtn").onclick=openMenu; $("#drawerClose").onclick=closeMenu; scrim.onclick=closeMenu;
+$$(".drawer .jump").forEach(a=>a.addEventListener("click",closeMenu));
+
+/* ---- progress + page indicator ---- */
+const lessons=[...$$(".lesson")], jumps=[...$$(".drawer .jump")];
+function onScroll(){
+  const st=window.scrollY, docH=document.body.scrollHeight-window.innerHeight;
+  $("#progBar").style.width=(docH>0?Math.min(100,st/docH*100):0)+"%";
+  let idx=0;
+  lessons.forEach((s,i)=>{if(s.getBoundingClientRect().top<200)idx=i;});
+  const page=idx+1;
+  $("#pagePill").textContent=UI.pill[L()](page, lessons.length);
+  jumps.forEach((j,i)=>j.classList.toggle("here",i===idx));
+}
+window.addEventListener("scroll",onScroll,{passive:true});
+window.addEventListener("resize",onScroll);
+
+/* ---- quiz ---- */
+let answered=0, correct=0;
+$$(".q").forEach(q=>{
+  const right=+q.dataset.correct, opts=[...q.querySelectorAll(".opt")], fb=q.querySelector(".qfb");
+  opts.forEach((opt,i)=>opt.onclick=()=>{
+    if(q.dataset.done)return; q.dataset.done="1"; answered++;
+    if(i===right){opt.classList.add("correct");correct++;const p=UI.praise[L()];fb.textContent=p[Math.floor(Math.random()*p.length)];}
+    else{opt.classList.add("wrong");opts[right].classList.add("correct");fb.textContent=UI.wrong[L()];}
+    if(answered===$$(".q").length)$("#quizScore").textContent=UI.score[L()](correct,answered);
+  });
+});
+
+document.querySelectorAll(".revcard").forEach(c=>c.onclick=()=>c.classList.toggle("open"));
+/* ---- boot ---- */
+let saved="en"; try{saved=localStorage.getItem("sm_lang")||"en";}catch(e){}
+applyLang(saved); renderAssets(); onScroll();
+</script>
+</body>
+</html>
