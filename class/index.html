@@ -949,11 +949,6 @@ function renderStudyMaterial(raw){
     if(open) open.addEventListener('click', function(e){ e.stopPropagation(); });
   });
 
-  /* with a single course, open it straight away \u2014 nothing to choose between */
-  if(blocks.length === 1){
-    const only = $('smArea').querySelector('.sm-block');
-    if(only) only.classList.add('open');
-  }
 }
 
 function render(d){
