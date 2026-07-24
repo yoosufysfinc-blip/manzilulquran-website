@@ -1,1 +1,92 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Study Material · ManzilulQuran</title>
+<link rel="icon" href="/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Amiri:wght@400;700&family=Baloo+Chettan+2:wght@400;500;600;700&family=Anek+Malayalam:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FBF6EA;--card:#FFFDF7;--ink:#12362A;--ink2:#2C5647;--soft:#6E8A7C;--em:#0B4D3B;--em2:#1B7A5A;--em3:#2FA98C;--gold:#C9A96E;--gold2:#B4934E;--goldSoft:#EFE0BC;--line:#E7DCC2;--shadow:rgba(11,77,59,.10);--disp:'Fredoka',sans-serif;--body:'Nunito',sans-serif;--ar:'Amiri',serif;--ml-disp:'Baloo Chettan 2','Noto Sans Malayalam',sans-serif;--ml-body:'Anek Malayalam','Noto Sans Malayalam',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--body);color:var(--ink);background:var(--paper);line-height:1.6;min-height:100vh;background-image:radial-gradient(1200px 500px at 100% -5%,rgba(201,169,110,.14),transparent 60%),radial-gradient(900px 500px at -10% 100%,rgba(47,169,140,.10),transparent 55%);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cpath d='M45 8 L54 27 L74 18 L65 38 L83 45 L65 52 L74 72 L54 63 L45 82 L36 63 L16 72 L25 52 L7 45 L25 38 L16 18 L36 27 Z' fill='none' stroke='%230B4D3B' stroke-width='1'/%3E%3C/svg%3E");background-size:90px 90px}
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 22px 70px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.back{color:var(--em2);text-decoration:none;font-weight:700;font-size:14px;padding:8px 12px;border-radius:10px;transition:.2s}
+.back:hover{background:rgba(11,77,59,.06)}
+.langtoggle{display:flex;background:var(--em);border:1.5px solid var(--gold);border-radius:99px;padding:4px}
+.langtoggle button{border:0;background:transparent;color:#dfeee7;font-family:var(--body);font-weight:700;font-size:13px;padding:7px 15px;border-radius:99px;cursor:pointer;transition:.22s}
+.langtoggle button.on{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#0B3227}
+.langtoggle #mlBtn{font-family:'Baloo Chettan 2','Noto Sans Malayalam',sans-serif;font-size:15px}
+.hero{text-align:center;padding:26px 10px 30px}
+.crest{width:80px;height:80px;border-radius:50%;border:3px solid var(--gold);margin:0 auto 18px;overflow:hidden;background:#fff;display:grid;place-items:center;color:var(--gold);font-size:32px;position:relative;box-shadow:0 10px 30px var(--shadow)}
+.crest img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.eyebrow{font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2)}
+.hero h1{font-family:var(--disp);font-weight:700;font-size:clamp(30px,6vw,44px);color:var(--em);margin:8px 0 10px}
+.hero p{color:var(--ink2);max-width:52ch;margin:0 auto;font-size:17px}
+.section-label{font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);margin:14px 4px 14px;display:flex;align-items:center;gap:10px}
+.section-label::before{content:"";width:24px;height:2px;background:var(--gold)}
+.courses{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.course{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;text-decoration:none;color:var(--ink);transition:.25s;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.course:hover{transform:translateY(-4px);box-shadow:0 16px 34px var(--shadow);border-color:var(--gold)}
+.course .cicon{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--em2),var(--em));color:#fff;display:grid;place-items:center;font-size:28px;box-shadow:0 6px 16px var(--shadow)}
+.course h2{font-family:var(--disp);font-weight:600;font-size:20px;color:var(--em);line-height:1.15}
+.course p{font-size:14px;color:var(--ink2)}
+.course .meta{margin-top:auto;display:flex;flex-wrap:wrap;gap:8px}
+.course .tag{font-size:11.5px;font-weight:700;color:var(--gold2);background:var(--goldSoft);padding:4px 10px;border-radius:99px}
+.course .go{font-family:var(--disp);font-weight:600;color:var(--em2);font-size:14px;margin-top:4px}
+.course.soon{opacity:.72;pointer-events:none}
+.course.soon .cicon{background:linear-gradient(135deg,#c9c1ac,#a99f86)}
+.badge-soon{position:absolute;top:16px;right:16px;font-family:var(--disp);font-weight:600;font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--gold);color:#3a2c12;padding:3px 10px;border-radius:99px}
+.footer{text-align:center;color:var(--soft);font-size:12.5px;margin-top:40px}
+.footer b{color:var(--gold2)}
+body.lang-ml{font-family:var(--ml-body);line-height:1.8}
+body.lang-ml .hero h1,body.lang-ml .course h2,body.lang-ml .eyebrow,body.lang-ml .course .go{font-family:var(--ml-disp)}
+@media(max-width:640px){.courses{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="/portal/" data-i18n="back">← Portal</a>
+    <div class="langtoggle" id="langToggle"><button id="enBtn" class="on">EN</button><button id="mlBtn">മലയാളം</button></div>
+  </div>
+  <div class="hero">
+    <div class="crest">☪<img src="/og-image.jpg" alt="" onerror="this.remove()"></div>
+    <div class="eyebrow" data-i18n="eye">ManzilulQuran E-learning Academy</div>
+    <h1 data-i18n="title">Study Material</h1>
+    <p data-i18n="sub">A growing library of gentle, colourful lessons for our students — in English and Malayalam. Choose a course to begin.</p>
+  </div>
+  <div class="section-label" data-i18n="courseslabel">Courses</div>
+  <div class="courses">
+    <a class="course" href="foundation-of-islamic-studies/">
+      <div class="cicon">📖</div>
+      <h2 data-i18n="c1t">Foundation of Islamic Studies</h2>
+      <p data-i18n="c1d">The beautiful basics every young Muslim should know — faith, worship, the Qur'an, the prophets and more.</p>
+      <div class="meta"><span class="tag" data-i18n="c1m1">10 lessons</span><span class="tag" data-i18n="c1m2">Ages 8–12</span><span class="tag">EN · മലയാളം</span></div>
+      <div class="go" data-i18n="open">Open course →</div>
+    </a>
+    <div class="course soon">
+      <span class="badge-soon" data-i18n="soon">Soon</span>
+      <div class="cicon">🕌</div>
+      <h2 data-i18n="c2t">More courses coming</h2>
+      <p data-i18n="c2d">Tajweed, short surahs, du'as and stories of the prophets are on their way, in shaa Allah.</p>
+      <div class="meta"><span class="tag" data-i18n="c2m">Preparing</span></div>
+    </div>
+  </div>
+  <div class="footer">Manzilul<b>Quran</b> E-learning Academy · <span data-i18n="foot">Study Material</span></div>
+</div>
+<script>
+"use strict";
+const LANG={current:"en"};
+const ML={back:"← പോർട്ടൽ",eye:"മൻസിലുൽ ഖുർആൻ ഇ-ലേണിംഗ് അക്കാദമി",title:"പഠന സാമഗ്രി",sub:"നമ്മുടെ വിദ്യാർത്ഥികൾക്കായി ലളിതവും വർണ്ണാഭവുമായ പാഠങ്ങളുടെ വളരുന്ന ഒരു ലൈബ്രറി — ഇംഗ്ലീഷിലും മലയാളത്തിലും. തുടങ്ങാൻ ഒരു കോഴ്‌സ് തിരഞ്ഞെടുക്കൂ.",courseslabel:"കോഴ്‌സുകൾ",c1t:"ഇസ്‌ലാമിക പഠനത്തിന്റെ അടിസ്ഥാനം",c1d:"ഓരോ കുട്ടിയും അറിഞ്ഞിരിക്കേണ്ട മനോഹര അടിസ്ഥാനങ്ങൾ — വിശ്വാസം, ആരാധന, ഖുർആൻ, പ്രവാചകന്മാർ എന്നിവയും അതിലേറെയും.",c1m1:"10 പാഠങ്ങൾ",c1m2:"8–12 വയസ്സ്",open:"കോഴ്‌സ് തുറക്കൂ →",soon:"ഉടൻ",c2t:"കൂടുതൽ കോഴ്‌സുകൾ വരുന്നു",c2d:"തജ്‌വീദ്, ചെറിയ സൂറത്തുകൾ, ദുആകൾ, പ്രവാചക കഥകൾ എന്നിവ വഴിയിലാണ്, ഇൻശാ അല്ലാഹ്.",c2m:"തയ്യാറാകുന്നു",foot:"പഠന സാമഗ്രി"};
+document.querySelectorAll("[data-i18n]").forEach(el=>el._en=el.innerHTML);
+function applyLang(l){LANG.current=l;document.body.classList.toggle("lang-ml",l==="ml");document.documentElement.lang=l==="ml"?"ml":"en";document.querySelectorAll("[data-i18n]").forEach(el=>{const k=el.dataset.i18n;el.innerHTML=(l==="ml"&&ML[k]!=null)?ML[k]:el._en;});enBtn.classList.toggle("on",l==="en");mlBtn.classList.toggle("on",l==="ml");try{localStorage.setItem("sm_lang",l);}catch(e){}}
+enBtn.onclick=()=>applyLang("en");mlBtn.onclick=()=>applyLang("ml");
+let saved="en";try{saved=localStorage.getItem("sm_lang")||"en";}catch(e){}applyLang(saved);
+</script>
+</body>
+</html>
