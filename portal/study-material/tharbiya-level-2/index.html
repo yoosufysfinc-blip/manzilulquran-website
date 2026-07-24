@@ -1,1 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Tharbiya Level 2 · ManzilulQuran</title>
+<link rel="icon" href="/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Amiri:wght@400;700&family=Baloo+Chettan+2:wght@400;500;600;700&family=Anek+Malayalam:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sage:#7BA05B; --sage-dark:#5A7D3E; --sage-light:#B8D4A0;
+  --sky:#A7D8E8; --sky-light:#D9EDF4; --sky-dark:#6FB5CC;
+  --beige:#F5E9D3; --brown:#C9A57B; --brown-dark:#8B6B47;
+  --cream:#FDFBF3; --forest:#3F5F3F; --coral:#E8A87C; --sun:#F4D06F;
+  --ink:#2D3E2D; --soft-ink:#5A6B5A;
+  --disp:'Poppins',sans-serif; --body:'Poppins',sans-serif; --serif:'Lora',serif;
+  --ml-disp:'Baloo Chettan 2','Noto Sans Malayalam',sans-serif;
+  --ml-body:'Anek Malayalam','Noto Sans Malayalam',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--body);color:var(--ink);background:var(--cream);line-height:1.6;min-height:100vh;
+  background-image:radial-gradient(1100px 480px at 100% -5%,rgba(244,208,111,.22),transparent 60%),
+                   radial-gradient(900px 460px at -10% 100%,rgba(123,160,91,.18),transparent 55%);
+  background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 84 84'%3E%3Cpath d='M42 8 L50 26 L69 17 L60 36 L78 42 L60 48 L69 67 L50 58 L42 76 L34 58 L15 67 L24 48 L6 42 L24 36 L15 17 L34 26 Z' fill='none' stroke='%233F5F3F' stroke-width='1'/%3E%3C/svg%3E");
+  background-size:84px 84px}
+.wrap{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:24px 22px 70px}
 
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.back{color:var(--sage-dark);text-decoration:none;font-weight:700;font-size:14px;padding:8px 12px;border-radius:10px;transition:.2s}
+.back:hover{background:rgba(123,160,91,.12)}
+.langtoggle{display:flex;background:var(--forest);border:2px solid var(--sun);border-radius:99px;padding:4px}
+.langtoggle button{border:0;background:transparent;color:#e8f0e4;font-family:var(--body);font-weight:700;font-size:13px;padding:6px 15px;border-radius:99px;cursor:pointer;transition:.22s}
+.langtoggle button.on{background:var(--sun);color:#3a2c12}
+.langtoggle #mlBtn{font-family:'Baloo Chettan 2','Noto Sans Malayalam',sans-serif;font-size:15px}
+
+.hero{text-align:center;padding:24px 10px 26px}
+.crest{width:84px;height:84px;border-radius:50%;border:3px solid #1a1a1a;margin:0 auto 16px;overflow:hidden;
+  background:#fff;display:grid;place-items:center;color:var(--sage);font-size:32px;position:relative;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.crest img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.eyebrow{font-family:var(--disp);font-weight:600;font-size:11.5px;letter-spacing:2.4px;text-transform:uppercase;color:var(--brown-dark)}
+.hero h1{font-family:var(--disp);font-weight:700;font-size:clamp(28px,5.5vw,40px);color:var(--forest);margin:8px 0 6px;letter-spacing:-.6px}
+.hero .ar{font-family:'Amiri',serif;font-size:24px;color:var(--sage-dark);margin-bottom:8px}
+.hero p{color:var(--soft-ink);max-width:50ch;margin:0 auto;font-size:16px}
+
+.section-label{font-family:var(--disp);font-weight:600;font-size:11.5px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--brown-dark);margin:16px 4px 14px;display:flex;align-items:center;gap:10px}
+.section-label::before{content:"";width:24px;height:2.5px;background:var(--sun);border-radius:2px}
+
+.subject{background:#fff;border:2.5px solid var(--sage-light);border-radius:20px;padding:22px;margin-bottom:16px;
+  text-decoration:none;color:var(--ink);display:block;transition:.25s;position:relative;overflow:hidden}
+.subject:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(63,95,63,.16);border-color:var(--sage)}
+.subject-main{display:block;text-decoration:none;color:inherit}
+.subject-top{display:flex;gap:16px;align-items:flex-start}
+.sicon{width:56px;height:56px;flex:0 0 auto;border-radius:16px;background:linear-gradient(135deg,var(--sage),var(--sage-dark));
+  color:#fff;display:grid;place-items:center;font-size:26px;box-shadow:0 4px 12px rgba(63,95,63,.25)}
+.subject h2{font-family:var(--disp);font-weight:700;font-size:20px;color:var(--forest);line-height:1.15}
+.subject .sar{font-family:'Amiri',serif;font-size:17px;color:var(--sage-dark);margin-top:2px}
+.subject p{font-size:14px;color:var(--soft-ink);margin-top:8px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.tag{font-size:11.5px;font-weight:700;color:var(--brown-dark);background:var(--beige);padding:4px 11px;border-radius:99px}
+.go{font-family:var(--disp);font-weight:700;color:var(--sage-dark);font-size:14px;margin-top:14px}
+
+.lessons{margin-top:16px;padding-top:14px;border-top:2px dashed var(--sage-light);display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.lrow{display:flex;align-items:center;gap:9px;background:var(--cream);border:1.5px solid var(--sage-light);
+  border-radius:11px;padding:8px 11px;text-decoration:none;color:var(--ink);transition:.2s}
+.lrow:hover{border-color:var(--sun);background:#fff}
+.lrow .ln{width:24px;height:24px;flex:0 0 auto;border-radius:8px;background:var(--sun);color:#3a2c12;
+  display:grid;place-items:center;font-size:11.5px;font-weight:700}
+.lrow .lar{font-family:'Amiri',serif;font-size:17px;color:var(--forest);letter-spacing:2px}
+
+.subject.soon{opacity:.75;pointer-events:none;border-style:dashed}
+.subject.soon .sicon{background:linear-gradient(135deg,#c9c1ac,#a99f86)}
+.badge-soon{position:absolute;top:16px;right:16px;font-family:var(--disp);font-weight:700;font-size:10px;
+  letter-spacing:1px;text-transform:uppercase;background:var(--sun);color:#3a2c12;padding:3px 11px;border-radius:99px}
+
+.note{background:var(--sky-light);border-left:5px solid var(--sky-dark);border-radius:10px;padding:14px 16px;
+  font-size:13.5px;color:var(--forest);margin-top:6px}
+.footer{text-align:center;color:var(--soft-ink);font-size:12.5px;margin-top:36px}
+.footer b{color:var(--brown-dark)}
+
+body.lang-ml{font-family:var(--ml-body);line-height:1.85}
+body.lang-ml .hero h1,body.lang-ml .subject h2,body.lang-ml .eyebrow,body.lang-ml .go,
+body.lang-ml .section-label,body.lang-ml .lrow{font-family:var(--ml-disp)}
+@media(max-width:560px){.subject-top{flex-direction:column}.lessons{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="../" data-i18n="back">← Study Material</a>
+    <div class="langtoggle"><button id="enBtn" class="on">EN</button><button id="mlBtn">മലയാളം</button></div>
+  </div>
+
+  <div class="hero">
+    <div class="crest">☪<img src="/og-image.jpg" alt="" onerror="this.remove()"></div>
+    <div class="eyebrow" data-i18n="eye">Course · ManzilulQuran</div>
+    <h1 data-i18n="title">Tharbiya · Level 2</h1>
+    <div class="ar">تَرْبِيَة</div>
+    <p data-i18n="sub">Choose a subject to open its book. Each one is a complete illustrated workbook your child can read on screen or print at home.</p>
+  </div>
+
+  <div class="section-label" data-i18n="subjlabel">Subjects</div>
+
+  <div class="subject">
+    <a class="subject-main" href="basic-arabic.html">
+    <div class="subject-top">
+      <div class="sicon">✎</div>
+      <div>
+        <h2 data-i18n="s1t">Basic Arabic for Kids</h2>
+        <div class="sar">العَرَبِيَّة لِلْأَطْفَال</div>
+        <p data-i18n="s1d">All 28 letters across nine gentle lessons — a word and picture for every letter, tracing practice, three checkpoints, themed vocabulary, seven activity scenes and a certificate.</p>
+      </div>
+    </div>
+    <div class="meta">
+      <span class="tag" data-i18n="s1m1">9 lessons</span>
+      <span class="tag" data-i18n="s1m2">74 pages</span>
+      <span class="tag" data-i18n="s1m3">Ages 8–10</span>
+      <span class="tag" data-i18n="s1m4">Printable</span>
+    </div>
+    <div class="go" data-i18n="open">Open the book →</div>
+
+    </a>
+
+    <div class="lessons">
+      <a class="lrow" href="basic-arabic.html#lesson1"><span class="ln">1</span><span class="lar">ا ب ت</span></a>
+      <a class="lrow" href="basic-arabic.html#lesson2"><span class="ln">2</span><span class="lar">ث ج ح</span></a>
+      <a class="lrow" href="basic-arabic.html#lesson3"><span class="ln">3</span><span class="lar">خ د ذ</span></a>
+      <a class="lrow" href="basic-arabic.html#lesson4"><span class="ln">4</span><span class="lar">ر ز س</span></a>
+      <a class="lrow" href="basic-arabic.html#lesson5"><span class="ln">5</span><span class="lar">ش ص ض</span></a>
+      <a class="lrow" href="basic-arabic.html#lesson6"><span class="ln">6</span><span class="lar">ط ظ ع</span></a>
+      <a class="lrow" href="basic-arabic.html#lesson7"><span class="ln">7</span><span class="lar">غ ف ق</span></a>
+      <a class="lrow" href="basic-arabic.html#lesson8"><span class="ln">8</span><span class="lar">ك ل م</span></a>
+      <a class="lrow" href="basic-arabic.html#lesson9"><span class="ln">9</span><span class="lar">ن ه و ي</span></a>
+    </div>
+  </div>
+
+  <div class="subject soon">
+    <span class="badge-soon" data-i18n="soon">Soon</span>
+    <div class="subject-top">
+      <div class="sicon">📗</div>
+      <div>
+        <h2 data-i18n="s2t">Next subject</h2>
+        <p data-i18n="s2d">Another subject book for Tharbiya Level 2 will appear here once it is ready, in shaa Allah.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="note" data-i18n="note">💡 Every subject book has a ☰ menu inside it, so a child can jump straight to any lesson — and a print button for a paper copy.</div>
+
+  <div class="footer">Manzilul<b>Quran</b> E-learning Academy · <span data-i18n="foot">Tharbiya · Level 2</span></div>
+</div>
+
+<script>
+"use strict";
+const ML={
+  back:"← പഠന സാമഗ്രി",
+  eye:"കോഴ്‌സ് · മൻസിലുൽ ഖുർആൻ",
+  title:"തർബിയ · ലെവൽ 2",
+  sub:"പുസ്തകം തുറക്കാൻ ഒരു വിഷയം തിരഞ്ഞെടുക്കൂ. ഓരോന്നും കുട്ടിക്ക് സ്ക്രീനിൽ വായിക്കാനോ വീട്ടിൽ പ്രിന്റ് ചെയ്യാനോ കഴിയുന്ന പൂർണമായ ചിത്രസഹിത പാഠപുസ്തകമാണ്.",
+  subjlabel:"വിഷയങ്ങൾ",
+  s1t:"കുട്ടികൾക്കുള്ള അടിസ്ഥാന അറബി",
+  s1d:"ഒമ്പത് ലളിത പാഠങ്ങളിലായി 28 അക്ഷരങ്ങളും — ഓരോ അക്ഷരത്തിനും ഒരു വാക്കും ചിത്രവും, എഴുത്തു പരിശീലനം, മൂന്ന് ചെക്ക്‌പോയിന്റുകൾ, വിഷയാധിഷ്ഠിത പദാവലി, ഏഴ് പ്രവർത്തന ചിത്രങ്ങൾ, സർട്ടിഫിക്കറ്റ്.",
+  s1m1:"9 പാഠങ്ങൾ", s1m2:"74 പേജുകൾ", s1m3:"8–10 വയസ്സ്", s1m4:"പ്രിന്റ് ചെയ്യാം",
+  open:"പുസ്തകം തുറക്കൂ →",
+  soon:"ഉടൻ", s2t:"അടുത്ത വിഷയം",
+  s2d:"തർബിയ ലെവൽ 2-ന്റെ മറ്റൊരു വിഷയ പുസ്തകം തയ്യാറാകുമ്പോൾ ഇവിടെ വരും, ഇൻശാ അല്ലാഹ്.",
+  note:"💡 ഓരോ വിഷയ പുസ്തകത്തിനുള്ളിലും ☰ മെനു ഉണ്ട്, അതിനാൽ കുട്ടിക്ക് ഏത് പാഠത്തിലേക്കും നേരിട്ട് പോകാം — പേപ്പർ കോപ്പിക്ക് ഒരു പ്രിന്റ് ബട്ടണും.",
+  foot:"തർബിയ · ലെവൽ 2"
+};
+document.querySelectorAll("[data-i18n]").forEach(el=>el._en=el.innerHTML);
+function applyLang(l){
+  document.body.classList.toggle("lang-ml",l==="ml");
+  document.documentElement.lang = l==="ml" ? "ml" : "en";
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const k=el.dataset.i18n;
+    el.innerHTML=(l==="ml"&&ML[k]!=null)?ML[k]:el._en;
+  });
+  enBtn.classList.toggle("on",l==="en");
+  mlBtn.classList.toggle("on",l==="ml");
+  try{localStorage.setItem("sm_lang",l);}catch(e){}
+}
+enBtn.onclick=()=>applyLang("en");
+mlBtn.onclick=()=>applyLang("ml");
+let saved="en"; try{saved=localStorage.getItem("sm_lang")||"en";}catch(e){}
+applyLang(saved);
+</script>
+</body>
+</html>
