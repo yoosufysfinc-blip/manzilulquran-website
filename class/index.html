@@ -465,7 +465,12 @@
   }
   .sm-t{flex:1;min-width:0;font-size:14px;font-weight:600;color:var(--frost)}
   .sm-go{color:var(--frost-faint);font-size:17px;font-weight:700}
-  .sm-note{font-size:12px;color:var(--frost-faint);margin-top:16px;line-height:1.6;text-align:center}
+  .sm-note{font-size:12px;color:var(--frost-faint);margin-top:20px;line-height:1.6;text-align:center}
+  .sm-block{margin-bottom:26px}
+  .sm-block:last-of-type{margin-bottom:0}
+  .sm-index{font-size:10.5px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--azure-light);
+    opacity:.75;margin-bottom:9px;display:flex;align-items:center;gap:9px}
+  .sm-index::after{content:"";flex:1;height:1px;background:rgba(91,157,255,0.22)}
 
   /* ---------- Error ---------- */
   .err-card{
@@ -870,46 +875,56 @@ const SM_CATALOG = {
 };
 
 function smParse(raw){
-  if(!raw) return null;
+  if(!raw) return [];
   try{
     const o = (typeof raw === "string") ? JSON.parse(raw) : raw;
-    if(!o || !o.course || !SM_CATALOG[o.course]) return null;
-    return { course:o.course, lessons: Array.isArray(o.lessons) ? o.lessons.map(Number).filter(n=>n>0) : [] };
-  }catch(e){ return null; }
+    const arr = Array.isArray(o) ? o : (o && o.course ? [o] : []);   // older single-course value still works
+    return arr.filter(x => x && x.course && SM_CATALOG[x.course])
+              .map(x => ({ course:x.course,
+                           lessons: Array.isArray(x.lessons) ? x.lessons.map(Number).filter(n => n > 0) : [] }));
+  }catch(e){ return []; }
+}
+
+function smBlock(entry, n, many){
+  const cat  = SM_CATALOG[entry.course];
+  const all  = entry.lessons.length === 0;
+  const nums = all ? cat.lessons.map((_,i) => i+1)
+                   : entry.lessons.filter(v => v <= cat.lessons.length);
+  if(!nums.length) return "";
+
+  const rows = nums.map(v =>
+    `<a class="sm-item" href="${cat.path}#lesson${v}" target="_blank" rel="noopener">
+       <span class="sm-n">${v}</span>
+       <span class="sm-t">${escapeHtml(cat.lessons[v-1])}</span>
+       <span class="sm-go">\u203a</span>
+     </a>`).join("");
+
+  return `<div class="sm-block">
+    ${many ? `<div class="sm-index">Course ${n}</div>` : ""}
+    <div class="sm-course">
+      <div class="sm-kicker">${many ? "Course" : "Your course"}</div>
+      <h3>${escapeHtml(cat.title)}</h3>
+      <p>${cat.blurb}</p>
+      <a class="sm-open" href="${cat.path}${all ? "" : "#lesson"+nums[0]}" target="_blank" rel="noopener">Open the book \u2192</a>
+    </div>
+    <div class="sm-label">${all ? "All " + nums.length + " lessons"
+                                : nums.length + " lesson" + (nums.length>1?"s":"") + " for you"}</div>
+    <div class="sm-list">${rows}</div>
+  </div>`;
 }
 
 function renderStudyMaterial(raw){
   const tab = $('tabMaterial');
-  const sm  = smParse(raw);
-  if(!sm){ tab.hidden = true; return; }   // nothing assigned -> no tab at all
+  const list = smParse(raw);
+  if(!list.length){ tab.hidden = true; return; }
 
-  const cat  = SM_CATALOG[sm.course];
-  const all  = sm.lessons.length === 0;
-  const nums = all ? cat.lessons.map((_,i)=>i+1) : sm.lessons.filter(n => n <= cat.lessons.length);
-  if(!nums.length){ tab.hidden = true; return; }
+  const many = list.length > 1;
+  const blocks = list.map((e,i) => smBlock(e, i+1, many)).filter(Boolean);
+  if(!blocks.length){ tab.hidden = true; return; }
 
   tab.hidden = false;
-
-  const firstHash = all ? "" : ("#lesson" + nums[0]);
-  const rows = nums.map(n =>
-    `<a class="sm-item" href="${cat.path}#lesson${n}" target="_blank" rel="noopener">
-       <span class="sm-n">${n}</span>
-       <span class="sm-t">${escapeHtml(cat.lessons[n-1])}</span>
-       <span class="sm-go">\u203a</span>
-     </a>`).join("");
-
-  $('smArea').innerHTML = `
-    <div class="sm-course">
-      <div class="sm-kicker">Your course</div>
-      <h3>${escapeHtml(cat.title)}</h3>
-      <p>${cat.blurb}</p>
-      <a class="sm-open" href="${cat.path}${firstHash}" target="_blank" rel="noopener">
-        Open the book \u2192
-      </a>
-    </div>
-    <div class="sm-label">${all ? "All " + nums.length + " lessons" : nums.length + " lesson" + (nums.length>1?"s":"") + " for you"}</div>
-    <div class="sm-list">${rows}</div>
-    <div class="sm-note">Tap any lesson to open it. You can switch between English and \u0d2e\u0d32\u0d2f\u0d3e\u0d33\u0d02 inside the book.</div>`;
+  $('smArea').innerHTML = blocks.join("") +
+    `<div class="sm-note">Tap any lesson to open it. You can switch between English and \u0d2e\u0d32\u0d2f\u0d3e\u0d33\u0d02 inside the book.</div>`;
 }
 
 function render(d){
