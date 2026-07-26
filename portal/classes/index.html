@@ -606,6 +606,10 @@
             <div class="sm-wrap" id="fSmList"></div>
           </div>
           <div class="field full">
+            <label>Hifz Report Link <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— paste from the Hifz Command Center (share ▸). Shows a button on the class sheet.</span></label>
+            <input type="url" id="fHifzLink" placeholder="https://manzilulquran.in/portal/study-report/?s=...&t=..." />
+          </div>
+          <div class="field full">
             <label>Contact Number <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— admin only, never shown on the share link</span></label>
             <input type="tel" id="fPhone" placeholder="+91 98765 43210" />
             <span class="err-msg">Please enter a valid number (or leave empty).</span>
@@ -1212,6 +1216,7 @@ function openForm(c){
   $("fStatus").value    = c ? (c["Status"] || "Active") : "Active";
 
   smBuild(smParse(c ? c["Study Material"] : ""));
+  $("fHifzLink").value = c ? (c["Hifz Link"] || "") : "";
 
   document.querySelectorAll("#formModal .field").forEach(f => f.classList.remove("invalid"));
   openModal("formModal");
@@ -1240,7 +1245,8 @@ $("formSaveBtn").onclick = async () => {
       whatsapp:    $("fWhatsapp").value.trim(),
       phone:       $("fPhone").value.trim(),
       status:      $("fStatus").value,
-      studyMaterial: smStringify(smCollect())
+      studyMaterial: smStringify(smCollect()),
+      hifzLink:      $("fHifzLink").value.trim()
     };
     const res = await fetch(SCRIPT_URL, {
       method: "POST",
