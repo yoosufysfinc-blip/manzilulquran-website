@@ -139,7 +139,42 @@ svg text{font-family:var(--ui)}
 .heat .cell.h3{background:rgba(47,174,127,.75); box-shadow:0 0 10px rgba(47,174,127,.4)}
 .heat .cell.h4{background:linear-gradient(135deg,#2fae7f,#C9A96E); color:#06150f; font-weight:600; box-shadow:0 0 14px rgba(201,169,110,.45)}
 .heat .cell.abs{background:rgba(224,122,106,.22)}
-      .ayahnum{width:58px;background:var(--bg2);border:1px solid var(--line2);color:var(--ink);border-radius:8px;
+      /* reports + memorised */
+  .rep-head{margin-bottom:14px}
+  .rep-h2{font-family:var(--disp,'Marcellus'),serif;font-size:22px;color:var(--gold2);font-weight:400;letter-spacing:.02em}
+  .rep-sub{color:var(--mut);font-size:13px;margin-top:4px;max-width:70ch}
+  .rep-tabbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .rep-tab{background:var(--panel);border:1px solid var(--line2);color:var(--dim);font-family:var(--ui);
+    font-weight:600;font-size:13px;padding:9px 16px;border-radius:10px;cursor:pointer;transition:.18s}
+  .rep-tab:hover{border-color:var(--gold);color:var(--gold2)}
+  .rep-tab.active{background:linear-gradient(135deg,var(--gold),#b4934e);color:#241a08;border-color:var(--gold)}
+  .rep-table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .rep-table th{text-align:left;padding:12px 16px;font-family:var(--ui);font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--mut);border-bottom:1px solid var(--line2);position:sticky;top:0;background:var(--bg2)}
+  .rep-table td{padding:11px 16px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:middle}
+  .rep-table tr:hover td{background:rgba(201,169,110,.04)}
+  .rep-sur{font-weight:600;color:var(--gold2)}
+  .rep-ar{font-family:'Amiri',serif;font-size:17px;color:var(--em2);margin-left:6px}
+  .rep-rounds{display:inline-flex;align-items:center;gap:2px}
+  .rep-dot{width:7px;height:7px;border-radius:50%;background:var(--em2);opacity:.85}
+  .rep-num{display:inline-block;min-width:30px;text-align:center;font-variant-numeric:tabular-nums;font-weight:700;
+    color:#dff5e8;background:rgba(27,122,90,.4);border-radius:20px;padding:3px 10px;font-size:13px}
+  .rep-bar{height:8px;border-radius:5px;background:linear-gradient(90deg,var(--em),var(--em2));min-width:8px}
+  .rep-barwrap{background:rgba(255,255,255,.05);border-radius:5px;overflow:hidden;width:120px}
+  .rep-juzrow td{background:rgba(201,169,110,.06)}
+  .rep-juzbadge{display:inline-block;background:var(--gold);color:#241a08;font-weight:700;font-size:12px;
+    border-radius:7px;padding:3px 10px;font-family:var(--ui)}
+  .rep-empty{padding:40px 20px;text-align:center;color:var(--mut);font-size:14px}
+  .memsum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+  .memsum .mcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .memsum .mval{font-family:var(--disp,'Marcellus'),serif;font-size:30px;color:var(--gold2)}
+  .memsum .mlab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-top:3px}
+  .juzchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+  .juzchip{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:12px;font-weight:700;
+    font-family:var(--ui);background:rgba(255,255,255,.05);color:var(--dim);border:1px solid var(--line)}
+  .juzchip.done{background:rgba(47,174,127,.3);color:#dff5e8;border-color:var(--em2)}
+  .juzchip.part{background:rgba(201,169,110,.2);color:var(--gold2);border-color:var(--gold)}
+  .ayahnum{width:58px;background:var(--bg2);border:1px solid var(--line2);color:var(--ink);border-radius:8px;
     padding:7px 8px;font-family:var(--ui);font-size:13px;text-align:center;margin-left:6px}
   .ayahnum::-webkit-outer-spin-button,.ayahnum::-webkit-inner-spin-button{opacity:.4}
   .pm-range{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line2)}
@@ -156,6 +191,18 @@ svg text{font-family:var(--ui)}
   #dailyTable .portion{font-size:calc(var(--pz,1) * 1em)}
   #dailyTable .pchip{font-size:calc(var(--pz,1) * 13px)}
   #dailyTable .pchip .arname{font-size:calc(var(--pz,1) * 15px)}
+  .jt-result{display:flex;gap:10px;flex:1}
+  .jt-opt{flex:1;padding:13px;border-radius:11px;font-family:var(--ui);font-weight:700;font-size:13.5px;cursor:pointer;
+    border:1.5px solid var(--line2);background:var(--bg2);color:var(--dim);transition:.18s}
+  .jt-opt.pass:hover,.jt-opt.pass.sel{background:rgba(47,174,127,.25);border-color:var(--em2);color:#dff5e8}
+  .jt-opt.retry:hover,.jt-opt.retry.sel{background:rgba(224,122,106,.22);border-color:#e07a6a;color:#ffd9d2}
+  .jtchip{display:block;margin-top:5px;font-family:var(--ui);font-size:10.5px;font-weight:700;letter-spacing:.02em;
+    border-radius:7px;padding:3px 8px;cursor:pointer;border:1px solid transparent;transition:.18s;white-space:nowrap}
+  .jtchip.add{background:transparent;border-color:var(--line2);color:var(--mut);opacity:.6}
+  .jtchip.add:hover{opacity:1;border-color:var(--gold);color:var(--gold2)}
+  .jtchip.pass{background:rgba(47,174,127,.28);border-color:var(--em2);color:#dff5e8}
+  .jtchip.retry{background:rgba(224,122,106,.24);border-color:#e07a6a;color:#ffd9d2}
+  .jtchip:hover{filter:brightness(1.12)}
   .offtag{display:inline-block;margin-left:6px;font-size:9px;font-weight:700;letter-spacing:.08em;color:#c98;
     background:rgba(224,122,106,.14);border:1px solid rgba(224,122,106,.3);border-radius:5px;padding:1px 5px;vertical-align:middle}
   tr.holiday{background:rgba(224,122,106,.05)}
@@ -347,6 +394,8 @@ body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .ede
     <button data-v="daily">☑ Daily Log</button>
     <button data-v="tasks">✎ Tasks</button>
     <button data-v="exams">🎓 Exams</button>
+    <button data-v="reports">📊 Reports</button>
+    <button data-v="memorised">🌙 Memorised</button>
   </nav>
 
 
@@ -492,6 +541,37 @@ body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .ede
     </div>
   </section>
 
+  <!-- ================= REPORTS ================= -->
+  <section class="view" id="v-reports">
+    <div class="rep-head">
+      <h2 class="rep-h2">📊 Repetition Reports</h2>
+      <p class="rep-sub">How many class-days each surah has been repeated. Counted automatically from your daily log — one appearance in a column = one round.</p>
+    </div>
+    <div class="rep-tabbar">
+      <button class="rep-tab active" data-rep="page">Page-wise · Old Lessons</button>
+      <button class="rep-tab" data-rep="juz">Juz-wise · Old + New</button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div id="repArea"></div>
+    </div>
+  </section>
+
+  <!-- ================= MEMORISED ================= -->
+  <section class="view" id="v-memorised">
+    <div class="rep-head">
+      <h2 class="rep-h2">🌙 Memorised Portion</h2>
+      <p class="rep-sub">Everything that has appeared as a New Lesson — the portion committed to memory, in shā’ Allāh.</p>
+    </div>
+    <div class="rep-tabbar">
+      <button class="rep-tab active" data-mem="surah">Surah-wise</button>
+      <button class="rep-tab" data-mem="juz">Juz-wise</button>
+    </div>
+    <div class="memsum" id="memSummary"></div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div id="memArea"></div>
+    </div>
+  </section>
+
   <!-- ================= SETTINGS ================= -->
   <section class="view" id="v-settings">
     <div class="grid set-grid">
@@ -584,6 +664,28 @@ body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .ede
 </div>
 
 <!-- portion picker modal (multi-surah) -->
+<div class="modal-bg" id="juzTestModal">
+  <div class="modal">
+    <h3 id="jtTitle">Juz examiner test</h3>
+    <p style="color:var(--mut);font-size:13px;margin:-4px 0 14px">Record the result of a full-juz recitation from memory in front of an examiner.</p>
+    <div class="row"><label>Juz completed</label>
+      <select id="jtJuz"></select></div>
+    <div class="row"><label>Examiner</label>
+      <select id="jtExaminer"></select></div>
+    <div class="row"><label>Result</label>
+      <div class="jt-result">
+        <button type="button" class="jt-opt pass" id="jtPass">✓ Completed successfully</button>
+        <button type="button" class="jt-opt retry" id="jtRetry">↻ Try again</button>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn danger sm" id="jtRemove" style="display:none">Remove</button>
+      <span style="flex:1"></span>
+      <button class="btn ghost" data-close>Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="portionModal">
   <div class="modal">
     <h3 id="pmTitle">Select portions</h3>
@@ -723,6 +825,11 @@ function countUp(el,val,dec=0,suffix=""){
 }
 
 /* ================= SURAH PICKER WIDGETS ================= */
+const SURAH_JUZ=[[1],[1,2,3],[3,4],[4,5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11],[11,12],[12,13],[13],[13],[14],[14],[15],[15,16],[16],[16],[17],[17],[18],[18],[18,19],[19],[19,20],[20],[20,21],[21],[21],[21],[21,22],[22],[22],[22,23],[23],[23],[23,24],[24],[24,25],[25],[25],[25],[25],[26],[26],[26],[26],[26],[26,27],[27],[27],[27],[27],[27],[27],[28],[28],[28],[28],[28],[28],[28],[28],[28],[29],[29],[29],[29],[29],[29],[29],[29],[29],[29],[29],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30]];
+/* which juz(s) each surah touches — juz_of a surah = SURAH_JUZ[surahIndex] */
+function juzList(si){return SURAH_JUZ[si]||[];}
+function primaryJuz(si){const l=juzList(si);return l.length?l[0]:null;}
+
 function fillSurahSelect(sel,withNone){
   sel.innerHTML=(withNone?'<option value="">— Surah —</option>':"")+SURAHS.map((s,i)=>`<option value="${i}">${i+1}. ${s[0]} · ${s[1]}</option>`).join("");
 }
@@ -1040,6 +1147,15 @@ function portionCell(k,day,field){
   const chips=list.map(p=>`<span class="pchip" data-d="${day}" data-f="${field}"><span class="arname">${SURAHS[p.s][1]}</span>${esc(portionText(p))}</span>`).join(" ");
   return `<span class="portion">${chips}<span class="pchip empty" data-d="${day}" data-f="${field}">＋</span></span>`;
 }
+function juzTestChip(r,d){
+  const jt=r.jt;  // {juz, examiner, result:"pass"|"retry", date}
+  if(jt && jt.result){
+    const ok=jt.result==="pass";
+    return `<button class="jtchip ${ok?'pass':'retry'}" data-jt="${d}" title="Juz ${jt.juz} test — ${ok?'Completed successfully':'Try again'}${jt.examiner?' · '+esc(jt.examiner):''}">
+      ${ok?'✓':'↻'} Juz ${jt.juz}</button>`;
+  }
+  return `<button class="jtchip add" data-jt="${d}" title="Record a juz examiner test on this day">+ juz test</button>`;
+}
 function renderDaily(){
   renderMTabs();
   const tb=$("#dailyTable tbody");
@@ -1056,7 +1172,7 @@ function renderDaily(){
     const pState=r.p===1?"on":r.p===0?"abs":"";
     const pMark=r.p===1?"✓":r.p===0?"✗":"·";
     h+=`<tr class="${cls?"":"holiday"} ${dt===today?"today-row":""}">
-      <td class="datecell"><b>${d}</b><span>${dow}</span></td>
+      <td class="datecell"><b>${d}</b><span>${dow}</span>${juzTestChip(r,d)}</td>
       <td>${`<button class="pv ${pState}" data-d="${d}" title="present / absent / clear">${pMark}</button>`}${cls?"":'<span class="offtag" title="This is a holiday / off day">OFF</span>'}</td>
       <td>${portionCell(k,d,"nl")}</td>
       <td>${portionCell(k,d,"sq")}</td>
@@ -1079,6 +1195,7 @@ function renderDaily(){
     setDay(k,+inp.dataset.d,{ln:v});renderMonthDash();
   });
   tb.querySelectorAll(".pchip").forEach(c=>c.onclick=()=>{if(!canEdit())return;warnHoliday(+c.dataset.d);openPortionModal(k,+c.dataset.d,c.dataset.f);});
+  tb.querySelectorAll(".jtchip").forEach(c=>c.onclick=()=>{if(!canEdit())return;openJuzTest(k,+c.dataset.jt);});
   renderMonthDash();
   if(window.__applyPZ)window.__applyPZ();
   // (auto-scroll to today removed by request — the log opens at the top of the month)
@@ -1338,12 +1455,217 @@ function renderChip(){
   $("#chipStudent").textContent=S.config.student;
   $("#chipDate").textContent=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
 }
+
+/* ================= JUZ EXAMINER TEST ================= */
+let jtCtx=null;  // {k, day}
+function openJuzTest(k,day){
+  jtCtx={k,day};
+  const r=dayRec(k,day), jt=r.jt||null;
+  $("#jtTitle").textContent="Juz examiner test · "+monthLabel(k).split(" ")[0]+" "+day;
+  // fill juz 1..30
+  $("#jtJuz").innerHTML=Array.from({length:30},(_,i)=>`<option value="${i+1}"${jt&&jt.juz===i+1?" selected":""}>Juz ${i+1}</option>`).join("");
+  // examiners from settings
+  const exs=S.config.examiners&&S.config.examiners.length?S.config.examiners:["Ustadh"];
+  $("#jtExaminer").innerHTML=exs.map(x=>`<option${jt&&jt.examiner===x?" selected":""}>${esc(x)}</option>`).join("");
+  $("#jtRemove").style.display=jt?"inline-flex":"none";
+  $("#juzTestModal").classList.add("on");
+}
+function saveJuzTest(result){
+  if(!jtCtx)return;
+  const {k,day}=jtCtx;
+  setDay(k,day,{jt:{juz:+$("#jtJuz").value, examiner:$("#jtExaminer").value||"", result, date:todayStr()}});
+  $("#juzTestModal").classList.remove("on");
+  renderDaily();
+  toast(result==="pass"?"✓ Juz test recorded — Completed successfully":"↻ Juz test recorded — Try again");
+}
+$("#jtPass").onclick=()=>saveJuzTest("pass");
+$("#jtRetry").onclick=()=>saveJuzTest("retry");
+$("#jtRemove").onclick=()=>{
+  if(!jtCtx)return;
+  const {k,day}=jtCtx, m=S.months[k]; if(m&&m.days[pad(day)]){delete m.days[pad(day)].jt;save();}
+  $("#juzTestModal").classList.remove("on");renderDaily();toast("Juz test removed");
+};
+
+/* ================= REPORTS + MEMORISED ENGINE ================= */
+let repMode="page", memMode="surah";
+
+/* Walk every class-day and collect portion appearances per field.
+   Returns { ol:Map(surahIdx->count), nl:Map, sq:Map } where count = number of
+   class-days that surah appears in that column (= repetition rounds). */
+function collectRounds(){
+  const ol=new Map(), nl=new Map(), sq=new Map();
+  const bump=(map,si)=>map.set(si,(map.get(si)||0)+1);
+  Object.keys(S.months).forEach(k=>{
+    const days=S.months[k].days||{};
+    Object.keys(days).forEach(dd=>{
+      const rec=days[dd]||{};
+      ["ol","nl","sq"].forEach(field=>{
+        const seen=new Set();                       // one round per surah per day, even if multiple portions
+        normPortions(rec[field]).forEach(p=>{ if(p&&p.s!=null)seen.add(p.s); });
+        seen.forEach(si=>bump(field==="ol"?ol:field==="nl"?nl:sq, si));
+      });
+    });
+  });
+  return {ol,nl,sq};
+}
+
+function renderReports(){
+  $$("#v-reports .rep-tab").forEach(b=>b.classList.toggle("active",b.dataset.rep===repMode));
+  const R=collectRounds();
+  const area=$("#repArea");
+
+  if(repMode==="page"){
+    // Old-lesson rounds, surah by surah, most-repeated first
+    const rows=[...R.ol.entries()].sort((a,b)=>b[1]-a[1]);
+    if(!rows.length){area.innerHTML='<div class="rep-empty">No old-lesson data yet. Add some Old Lesson portions in the daily log and they’ll appear here.</div>';return;}
+    const max=rows[0][1]||1;
+    area.innerHTML=`<table class="rep-table">
+      <thead><tr><th>Surah</th><th>Rounds (days revised)</th><th>Repetition</th></tr></thead>
+      <tbody>${rows.map(([si,c])=>`
+        <tr><td><span class="rep-sur">${si+1}. ${esc(SURAHS[si][0])}</span><span class="rep-ar">${SURAHS[si][1]}</span></td>
+        <td><span class="rep-num">${c}×</span></td>
+        <td><div class="rep-barwrap"><div class="rep-bar" style="width:${Math.round(c/max*100)}%"></div></div></td></tr>`).join("")}</tbody></table>`;
+  } else {
+    // Juz-wise, combining old + new lesson rounds, grouped by juz
+    const combined=new Map();
+    [R.ol,R.nl].forEach(m=>m.forEach((c,si)=>combined.set(si,(combined.get(si)||0)+c)));
+    // bucket surahs into juz (a surah spanning juz counts in each juz it touches)
+    const byJuz=new Map();  // juz -> [{si,c}]
+    combined.forEach((c,si)=>{
+      juzList(si).forEach(j=>{
+        if(!byJuz.has(j))byJuz.set(j,[]);
+        byJuz.get(j).push({si,c});
+      });
+    });
+    const juzKeys=[...byJuz.keys()].sort((a,b)=>a-b);
+    if(!juzKeys.length){area.innerHTML='<div class="rep-empty">No lesson data yet.</div>';return;}
+    let html=`<table class="rep-table"><thead><tr><th>Surah</th><th>Rounds (old + new)</th><th>Repetition</th></tr></thead><tbody>`;
+    const gmax=Math.max(...[...combined.values()],1);
+    juzKeys.forEach(j=>{
+      const list=byJuz.get(j).sort((a,b)=>b.c-a.c);
+      const juzTotal=list.reduce((s,x)=>s+x.c,0);
+      html+=`<tr class="rep-juzrow"><td><span class="rep-juzbadge">Juz ${j}</span></td>
+        <td colspan="2" style="color:var(--mut)">${list.length} surah${list.length>1?"s":""} · ${juzTotal} total rounds</td></tr>`;
+      list.forEach(({si,c})=>{
+        html+=`<tr><td style="padding-left:32px"><span class="rep-sur">${si+1}. ${esc(SURAHS[si][0])}</span><span class="rep-ar">${SURAHS[si][1]}</span></td>
+          <td><span class="rep-num">${c}×</span></td>
+          <td><div class="rep-barwrap"><div class="rep-bar" style="width:${Math.round(c/gmax*100)}%"></div></div></td></tr>`;
+      });
+    });
+    area.innerHTML=html+"</tbody></table>";
+  }
+}
+
+/* MEMORISED = anything that ever appeared as a New Lesson.
+   Merge overlapping ayah ranges per surah so we show clean spans. */
+function collectMemorised(){
+  const bySurah=new Map();  // si -> [{a1,a2}]
+  Object.keys(S.months).forEach(k=>{
+    const days=S.months[k].days||{};
+    Object.keys(days).forEach(dd=>{
+      normPortions((days[dd]||{}).nl).forEach(p=>{
+        if(p&&p.s!=null){
+          if(!bySurah.has(p.s))bySurah.set(p.s,[]);
+          bySurah.get(p.s).push({a1:p.a1||1,a2:p.a2||p.a1||SURAHS[p.s][2]});
+        }
+      });
+    });
+  });
+  // merge ranges
+  const merged=new Map();
+  bySurah.forEach((ranges,si)=>{
+    ranges.sort((a,b)=>a.a1-b.a1);
+    const out=[];
+    ranges.forEach(r=>{
+      const last=out[out.length-1];
+      if(last && r.a1<=last.a2+1){last.a2=Math.max(last.a2,r.a2);}
+      else out.push({...r});
+    });
+    merged.set(si,out);
+  });
+  return merged;
+}
+
+function ayahsCovered(ranges){return ranges.reduce((s,r)=>s+(r.a2-r.a1+1),0);}
+
+function renderMemorised(){
+  $$("#v-memorised .rep-tab").forEach(b=>b.classList.toggle("active",b.dataset.mem===memMode));
+  const mem=collectMemorised();
+  const area=$("#memArea"), sum=$("#memSummary");
+
+  // summary cards
+  let totalAyahs=0, surahsTouched=mem.size, surahsComplete=0;
+  mem.forEach((ranges,si)=>{
+    const cov=ayahsCovered(ranges); totalAyahs+=cov;
+    if(cov>=SURAHS[si][2])surahsComplete++;
+  });
+  // juz coverage: a juz is "done" if all its surahs are fully memorised, "part" if some
+  const juzState=new Map();
+  for(let j=1;j<=30;j++)juzState.set(j,{have:0,full:0,total:0});
+  SURAHS.forEach((_,si)=>juzList(si).forEach(j=>{juzState.get(j).total++;}));
+  mem.forEach((ranges,si)=>{
+    const full=ayahsCovered(ranges)>=SURAHS[si][2];
+    juzList(si).forEach(j=>{const st=juzState.get(j);st.have++;if(full)st.full++;});
+  });
+  let juzDone=0; juzState.forEach(st=>{if(st.total&&st.full>=st.total)juzDone++;});
+
+  sum.innerHTML=`
+    <div class="mcard"><div class="mval">${surahsTouched}</div><div class="mlab">Surahs started</div></div>
+    <div class="mcard"><div class="mval">${surahsComplete}</div><div class="mlab">Surahs complete</div></div>
+    <div class="mcard"><div class="mval">${totalAyahs}</div><div class="mlab">Ayahs memorised</div></div>
+    <div class="mcard"><div class="mval">${juzDone}<span style="font-size:16px;color:var(--mut)">/30</span></div><div class="mlab">Juz complete</div></div>`;
+
+  if(!mem.size){area.innerHTML='<div class="rep-empty">No New Lesson portions yet. As you log new memorisation, it appears here.</div>';return;}
+
+  if(memMode==="surah"){
+    const rows=[...mem.entries()].sort((a,b)=>a[0]-b[0]);
+    area.innerHTML=`<table class="rep-table"><thead><tr><th>Surah</th><th>Ayahs memorised</th><th>Coverage</th></tr></thead>
+      <tbody>${rows.map(([si,ranges])=>{
+        const cov=ayahsCovered(ranges), tot=SURAHS[si][2], pct=Math.round(cov/tot*100);
+        const spans=ranges.map(r=>r.a1===r.a2?`${r.a1}`:`${r.a1}–${r.a2}`).join(", ");
+        const full=cov>=tot;
+        return `<tr><td><span class="rep-sur">${si+1}. ${esc(SURAHS[si][0])}</span><span class="rep-ar">${SURAHS[si][1]}</span></td>
+          <td style="font-variant-numeric:tabular-nums">${spans} <span style="color:var(--mut)">(${cov}/${tot})</span></td>
+          <td><div style="display:flex;align-items:center;gap:8px"><div class="rep-barwrap" style="width:90px"><div class="rep-bar" style="width:${pct}%;${full?'background:linear-gradient(90deg,var(--gold),var(--em2))':''}"></div></div><span style="color:${full?'var(--em2)':'var(--mut)'};font-size:12px;font-weight:600">${full?'✓ Complete':pct+'%'}</span></div></td></tr>`;
+      }).join("")}</tbody></table>`;
+  } else {
+    // juz-wise grid
+    let chips="";
+    for(let j=1;j<=30;j++){
+      const st=juzState.get(j);
+      const cls=st.total&&st.full>=st.total?"done":st.have>0?"part":"";
+      chips+=`<div class="juzchip ${cls}" title="Juz ${j}: ${st.full}/${st.total} surahs complete">${j}</div>`;
+    }
+    let rows="";
+    for(let j=1;j<=30;j++){
+      const st=juzState.get(j);
+      if(st.have===0)continue;
+      const cls=st.full>=st.total?"done":"part";
+      rows+=`<tr><td><span class="rep-juzbadge">Juz ${j}</span></td>
+        <td>${st.full} of ${st.total} surahs complete${st.have>st.full?` · ${st.have-st.full} in progress`:""}</td>
+        <td><span style="color:${cls==='done'?'var(--em2)':'var(--gold2)'};font-weight:600">${cls==='done'?'✓ Complete':'In progress'}</span></td></tr>`;
+    }
+    area.innerHTML=`<div style="padding:18px"><div class="juzchips">${chips}</div></div>
+      <table class="rep-table"><thead><tr><th>Juz</th><th>Progress</th><th>Status</th></tr></thead><tbody>${rows||'<tr><td colspan="3" class="rep-empty">No juz started yet.</td></tr>'}</tbody></table>`;
+  }
+}
+
+/* tab clicks */
+document.addEventListener("click",e=>{
+  const rt=e.target.closest("#v-reports .rep-tab");
+  if(rt){repMode=rt.dataset.rep;renderReports();return;}
+  const mt=e.target.closest("#v-memorised .rep-tab");
+  if(mt){memMode=mt.dataset.mem;renderMemorised();return;}
+});
+
 function renderAll(){
   const on=$(".view.on").id;
   if(on==="v-dash")renderDash();
   if(on==="v-daily")renderDaily();
   if(on==="v-tasks")renderTasks();
   if(on==="v-exams")renderExams();
+  if(on==="v-reports")renderReports();
+  if(on==="v-memorised")renderMemorised();
   if(on==="v-settings")renderSettings();
 }
 renderChip();
