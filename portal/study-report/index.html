@@ -18,6 +18,17 @@
   --r:18px; --r2:12px;
   --disp:'Marcellus',serif; --ui:'Outfit',system-ui,sans-serif; --ar:'Amiri',serif;
 }
+/* ---- Light-green theme (moon toggle). Dark is default; this only lightens. ---- */
+body.lighttheme{
+  --bg:#0f2119; --bg2:#153026; --panel:rgba(230,244,236,.90); --panel2:rgba(214,236,224,.85);
+  --line:rgba(27,122,90,.20); --line2:rgba(27,122,90,.38);
+  --em:#1B7A5A; --em2:#178a63; --emGlow:rgba(23,138,99,.22);
+  --gold:#a6822f; --gold2:#7c5f18; --goldGlow:rgba(166,130,47,.22);
+  --ink:#123024; --mut:#3f6455; --dim:#5a7d6e;
+}
+body.lighttheme{background:linear-gradient(160deg,#cfe6d8,#b6d4c2)}
+body.lighttheme .card,body.lighttheme .kpi,body.lighttheme table{backdrop-filter:none}
+body.lighttheme .motiv{background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.6),rgba(255,255,255,0))}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
@@ -48,21 +59,37 @@ header{display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:10px 
 .htitle h1 em{font-style:normal; color:var(--gold2)}
 .htitle p{color:var(--mut); font-size:13px; letter-spacing:.14em; text-transform:uppercase; margin-top:2px}
 .hspacer{flex:1}
-  .motiv{position:relative;max-width:760px;margin:0 auto 18px;text-align:center;overflow:hidden;
-    border-radius:14px;padding:11px 22px;
-    background:linear-gradient(90deg,rgba(20,52,40,.0),rgba(20,52,40,.55),rgba(20,52,40,.0));
-    border:1px solid var(--line)}
-  .motiv-text{display:inline-block;position:relative;font-family:var(--disp,'Marcellus'),serif;
-    font-size:15.5px;letter-spacing:.02em;color:var(--gold2);
-    opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s}
+  .vobanner{max-width:720px;margin:0 auto 14px;text-align:center;font-family:var(--ui);font-size:13px;font-weight:600;
+  color:var(--warn);background:rgba(224,183,106,.12);border:1px solid rgba(224,183,106,.35);
+  border-radius:12px;padding:10px 18px;letter-spacing:.01em}
+  .vobanner[hidden]{display:none}
+  .moonbtn{background:var(--panel);border:1px solid var(--line2);color:var(--gold2);width:42px;height:42px;
+  border-radius:12px;font-size:19px;cursor:pointer;transition:.2s;display:grid;place-items:center;flex:0 0 auto;margin-left:8px}
+  .moonbtn:hover{border-color:var(--gold);transform:scale(1.06)}
+  .moonbtn:active{transform:scale(.94)}
+  body.lighttheme .moonbtn{color:var(--em2)}
+  .motiv{position:relative;max-width:720px;margin:0 auto 20px;text-align:center;overflow:hidden;
+    border-radius:18px;padding:16px 30px;
+    background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.03));
+    backdrop-filter:blur(14px) saturate(1.1);-webkit-backdrop-filter:blur(14px) saturate(1.1);
+    border:1px solid rgba(255,255,255,.18);
+    box-shadow:0 8px 32px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.22)}
+  .motiv::before{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;
+    background:linear-gradient(120deg,rgba(255,255,255,.14),transparent 40%)}
+  body.lighttheme .motiv{background:linear-gradient(135deg,rgba(255,255,255,.65),rgba(255,255,255,.35));
+    border-color:rgba(255,255,255,.6);box-shadow:0 8px 28px rgba(27,122,90,.14),inset 0 1px 0 rgba(255,255,255,.7)}
+  .motiv-text{display:inline-block;position:relative;font-family:'Amiri',serif;
+    font-size:18px;line-height:1.5;letter-spacing:.01em;color:var(--gold2);
+    opacity:0;transform:translateY(7px);transition:opacity .9s ease,transform .9s ease}
+  body.lighttheme .motiv-text{color:#6b5214}
   .motiv-text.in{opacity:1;transform:none}
-  .motiv-text b{color:var(--em2);font-style:normal}
-  /* white light sweep passing across the note */
-  .motiv-text::after{content:"";position:absolute;top:0;left:-140%;width:60%;height:100%;
-    background:linear-gradient(105deg,transparent,rgba(255,255,255,.0) 30%,rgba(255,255,255,.75) 50%,rgba(255,255,255,.0) 70%,transparent);
-    transform:skewX(-18deg);pointer-events:none}
-  .motiv-text.sweep::after{animation:motivSweep 1.15s ease-out}
-  @keyframes motivSweep{from{left:-140%}to{left:160%}}
+  .motiv-text b{color:var(--em2);font-style:normal;font-weight:700}
+  body.lighttheme .motiv-text b{color:#12795a}
+  .motiv-text::after{content:"";position:absolute;top:0;left:-150%;width:55%;height:100%;
+    background:linear-gradient(105deg,transparent,rgba(255,255,255,0) 30%,rgba(255,255,255,.7) 50%,rgba(255,255,255,0) 70%,transparent);
+    transform:skewX(-16deg);pointer-events:none}
+  .motiv-text.sweep::after{animation:motivSweep 2.6s ease-in-out}
+  @keyframes motivSweep{from{left:-150%}to{left:170%}}
   @media(max-width:640px){.motiv{margin:0 12px 14px;padding:10px 16px}.motiv-text{font-size:13.5px}}
   .student-chip{
   display:flex;align-items:center;gap:10px; padding:9px 16px; border-radius:999px;
@@ -187,10 +214,23 @@ svg text{font-family:var(--ui)}
   .zbtn:hover{border-color:var(--gold);background:var(--panel2)}
   .zbtn.zreset{font-size:11px;color:var(--mut)}
   .zval{font-size:12px;color:var(--dim);min-width:44px;text-align:center;font-variant-numeric:tabular-nums}
-  /* the portion columns scale with --pz */
-  #dailyTable .portion{font-size:calc(var(--pz,1) * 1em)}
-  #dailyTable .pchip{font-size:calc(var(--pz,1) * 13px)}
-  #dailyTable .pchip .arname{font-size:calc(var(--pz,1) * 15px)}
+  /* daily-log page zoom (scales the whole section like browser zoom) */
+  #dailyZoom{transform:scale(var(--dz,1));transform-origin:top left;transition:transform .15s ease}
+  /* contained portion cells — never stretch the column */
+  #dailyTable td:nth-child(3),#dailyTable td:nth-child(4),#dailyTable td:nth-child(5){max-width:190px}
+    /* exam long-press: the 3 portion cells collapse into one merged bar */
+  tr.exam-merging td.pcol{background:linear-gradient(135deg,rgba(201,169,110,.28),rgba(201,169,110,.16));
+    transition:background .2s}
+  tr.exam-merging td.pcol .portion{visibility:hidden}
+  tr.exam-merging td.pcol.pcol-mid::after{content:"◷ Arranging exam…";position:absolute;left:0;right:0;text-align:center;
+    font-family:var(--ui);font-weight:700;font-size:12.5px;color:var(--gold2);letter-spacing:.04em}
+  #dailyTable td.pcol{position:relative}
+  .pcell{display:flex;align-items:center;gap:7px;width:100%;text-align:left;background:rgba(27,122,90,.14);
+    border:1px solid var(--line);border-radius:9px;padding:6px 9px;cursor:pointer;color:var(--ink);
+    font-family:var(--ui);font-size:12.5px;transition:.16s;overflow:hidden}
+  .pcell:hover{border-color:var(--em2);background:rgba(27,122,90,.24)}
+  .pcell .arname{font-family:'Amiri',serif;font-size:15px;color:var(--em2);flex:0 0 auto}
+  .pcell-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .jt-result{display:flex;gap:10px;flex:1}
   .jt-opt{flex:1;padding:13px;border-radius:11px;font-family:var(--ui);font-weight:700;font-size:13.5px;cursor:pointer;
     border:1.5px solid var(--line2);background:var(--bg2);color:var(--dim);transition:.18s}
@@ -344,7 +384,9 @@ footer b{color:var(--gold)}
 
 /* ---------- view / edit mode ---------- */
 body.viewonly .pv,body.viewonly .lnin,body.viewonly .pchip,body.viewonly .tdone,
-body.viewonly #addTaskBtn,body.viewonly #addExamBtn,body.viewonly .mtab.add,
+#addTaskBtn{display:none}                 /* hidden until unlocked via moon long-press */
+  body.tasks-unlocked #addTaskBtn{display:inline-flex}
+  body.viewonly #addTaskBtn,body.viewonly #addExamBtn,body.viewonly .mtab.add,
 body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .edel{
   pointer-events:none}  /* view-only: block edits but keep full clarity (no fade) */
 .crest{cursor:pointer; user-select:none; transition:.25s}
@@ -378,6 +420,7 @@ body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .ede
 <div class="app">
   <header>
     <div class="crest" id="crest" title="ManzilulQuran">☪<img src="/og-image.jpg" alt="" onerror="this.remove()"></div>
+    <button class="moonbtn" id="moonBtn" title="Switch light / dark — hold for more" aria-label="Theme">🌙</button>
     <div class="htitle">
       <h1>Manzilul<em>Quran</em> · Hifz Command Center</h1>
       <p>Daily Hifz Data Report System</p>
@@ -387,6 +430,7 @@ body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .ede
     <div class="student-chip" id="chipBox" style="display:none"><span class="dot" id="syncDot" title="sync status"></span><div><b id="chipStudent">Student</b><br><span id="chipDate"></span></div></div>
   </header>
 
+  <div class="vobanner" id="voBanner" hidden>🔒 View-only — double-tap the logo to edit.</div>
   <div class="motiv" id="motiv" aria-live="polite"><span class="motiv-text" id="motivText"></span></div>
 
   <nav id="nav" style="display:none">
@@ -487,13 +531,13 @@ body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .ede
   <section class="view" id="v-daily">
     <div class="mtabs" id="mtabs"></div>
     <div class="zoombar" id="zoombar">
-      <span class="zlabel">Portion text</span>
-      <button class="zbtn" id="zoomOut" title="Smaller">A−</button>
+      <span class="zlabel">Zoom</span>
+      <button class="zbtn" id="zoomOut" title="Zoom out">−</button>
       <span class="zval" id="zoomVal">100%</span>
-      <button class="zbtn" id="zoomIn" title="Larger">A+</button>
+      <button class="zbtn" id="zoomIn" title="Zoom in">＋</button>
       <button class="zbtn zreset" id="zoomReset" title="Reset">Reset</button>
     </div>
-    <div class="grid daily-grid">
+    <div class="grid daily-grid" id="dailyZoom">
       <div class="card" style="padding:0">
         <div class="tblwrap" style="border:0; max-height:640px; overflow:auto">
           <table id="dailyTable">
@@ -770,12 +814,15 @@ function portionText(p,withAr){
 function monthStats(k){
   const dim=daysInMonth(k),m=S.months[k];
   let classDays=0,present=0,absent=0,lines=0;
+  const hasData=r=>r&&(r.p!=null||Number(r.ln||0)>0||
+      normPortions(r.nl).length||normPortions(r.sq).length||normPortions(r.ol).length);
   for(let d=1;d<=dim;d++){
-    if(!isClassDay(k,d))continue;
-    classDays++;
     const r=m?m.days[pad(d)]||{}:{};
+    const counted=isClassDay(k,d)||hasData(r);   // holidays with data now count too
+    if(!counted)continue;
+    if(isClassDay(k,d))classDays++;              // attendance % still measured against real class days
     if(r.p===1)present++; else if(r.p===0)absent++;
-    lines+=Number(r.ln||0);
+    lines+=Number(r.ln||0);                      // ALL entered lines count, holiday or not
   }
   const exams=S.exams.filter(e=>e.date&&e.date.startsWith(k)).length;
   return{classDays,present,absent,lines,pages:lines/S.config.lpp,att:classDays?present/classDays*100:0,avg:present?lines/present:0,exams};
@@ -859,6 +906,30 @@ function bindSurahAyah(surahSel,a1Sel,a2Sel,a1Num,a2Num){
 </script>
 <script>
 "use strict";
+/* ================= THEME MOON + TASK UNLOCK ================= */
+(function(){
+  const KEY="mq_hifz_theme";
+  function applyTheme(){ document.body.classList.toggle("lighttheme", localStorage.getItem(KEY)==="light"); }
+  try{applyTheme();}catch(e){}
+  function bind(){
+    const btn=document.getElementById("moonBtn"); if(!btn)return;
+    let held=false,timer=null;
+    const START=e=>{ held=false; timer=setTimeout(()=>{ held=true;
+        document.body.classList.toggle("tasks-unlocked");
+        if(window.toast)toast(document.body.classList.contains("tasks-unlocked")?"Task assign unlocked":"Task assign hidden");
+      },2300); };
+    const END=()=>{ clearTimeout(timer);
+      if(!held){ // short tap = theme toggle
+        const light=document.body.classList.toggle("lighttheme");
+        try{localStorage.setItem(KEY,light?"light":"dark");}catch(e){}
+      } };
+    btn.addEventListener("mousedown",START); btn.addEventListener("touchstart",START,{passive:true});
+    btn.addEventListener("mouseup",END); btn.addEventListener("mouseleave",()=>clearTimeout(timer));
+    btn.addEventListener("touchend",END);
+  }
+  document.addEventListener("DOMContentLoaded",bind);
+})();
+
 /* ================= MOTIVATION TICKER ================= */
 (function(){
   const NOTES=[
@@ -903,7 +974,7 @@ function bindSurahAyah(surahSel,a1Sel,a2Sel,a1Num,a2Num){
       t.innerHTML=raw;
       void t.offsetWidth;                 // reflow so animation restarts
       t.classList.add("in");
-      setTimeout(()=>t.classList.add("sweep"),260);
+      setTimeout(()=>t.classList.add("sweep"),480);
     },160);
   }
   function start(){
@@ -918,27 +989,28 @@ function bindSurahAyah(surahSel,a1Sel,a2Sel,a1Num,a2Num){
 
 /* ================= PORTION ZOOM ================= */
 (function(){
-  const KEY="mq_hifz_pz";
-  let pz=1; try{pz=parseFloat(localStorage.getItem(KEY))||1;}catch(e){}
-  pz=Math.min(1.8,Math.max(0.7,pz));
+  const KEY="mq_hifz_dz";
+  let dz=1; try{dz=parseFloat(localStorage.getItem(KEY))||1;}catch(e){}
+  dz=Math.min(1.6,Math.max(0.6,dz));
   function apply(){
-    const t=document.getElementById("dailyTable");
-    if(t)t.style.setProperty("--pz",pz.toFixed(2));
+    const box=document.getElementById("dailyZoom");
+    if(box){ box.style.setProperty("--dz",dz.toFixed(2));
+      // counter the width so the scaled section still fits its container
+      box.style.width=(100/dz).toFixed(2)+"%"; }
     const v=document.getElementById("zoomVal");
-    if(v)v.textContent=Math.round(pz*100)+"%";
-    try{localStorage.setItem(KEY,pz.toFixed(2));}catch(e){}
+    if(v)v.textContent=Math.round(dz*100)+"%";
+    try{localStorage.setItem(KEY,dz.toFixed(2));}catch(e){}
   }
   function bind(){
     const oi=document.getElementById("zoomIn"),oo=document.getElementById("zoomOut"),
           or=document.getElementById("zoomReset");
     if(!oi)return;
-    oi.onclick=()=>{pz=Math.min(1.8,pz+0.1);apply();};
-    oo.onclick=()=>{pz=Math.max(0.7,pz-0.1);apply();};
-    or.onclick=()=>{pz=1;apply();};
+    oi.onclick=()=>{dz=Math.min(1.6,dz+0.1);apply();};
+    oo.onclick=()=>{dz=Math.max(0.6,dz-0.1);apply();};
+    or.onclick=()=>{dz=1;apply();};
     apply();
   }
   document.addEventListener("DOMContentLoaded",bind);
-  // also apply after each daily render (table innerHTML is rebuilt)
   window.__applyPZ=apply;
 })();
 
@@ -1144,8 +1216,17 @@ $("#nmCreate").onclick=()=>{addMonth(+$("#nmYear").value,+$("#nmMonth").value);$
 
 function portionCell(k,day,field){
   const list=normPortions(dayRec(k,day)[field]);
-  const chips=list.map(p=>`<span class="pchip" data-d="${day}" data-f="${field}"><span class="arname">${SURAHS[p.s][1]}</span>${esc(portionText(p))}</span>`).join(" ");
-  return `<span class="portion">${chips}<span class="pchip empty" data-d="${day}" data-f="${field}">＋</span></span>`;
+  if(!list.length){
+    return `<span class="portion"><span class="pchip empty" data-d="${day}" data-f="${field}" title="Add portion">＋</span></span>`;
+  }
+  // Contained summary — never widens the column. Click opens the modal to see/edit all.
+  const first=list[0];
+  const label = list.length===1
+    ? esc(portionText(first))
+    : `${esc(SURAHS[first.s][0])} +${list.length-1} more`;
+  return `<span class="portion"><button class="pcell" data-d="${day}" data-f="${field}" title="${esc(list.map(p=>portionText(p)).join(" · "))}">
+      <span class="arname">${SURAHS[first.s][1]}</span><span class="pcell-t">${label}</span>
+    </button></span>`;
 }
 function juzTestChip(r,d){
   const jt=r.jt;  // {juz, examiner, result:"pass"|"retry", date}
@@ -1174,9 +1255,9 @@ function renderDaily(){
     h+=`<tr class="${cls?"":"holiday"} ${dt===today?"today-row":""}">
       <td class="datecell"><b>${d}</b><span>${dow}</span>${juzTestChip(r,d)}</td>
       <td>${`<button class="pv ${pState}" data-d="${d}" title="present / absent / clear">${pMark}</button>`}${cls?"":'<span class="offtag" title="This is a holiday / off day">OFF</span>'}</td>
-      <td>${portionCell(k,d,"nl")}</td>
-      <td>${portionCell(k,d,"sq")}</td>
-      <td>${portionCell(k,d,"ol")}</td>
+      <td class="pcol" data-day="${d}">${portionCell(k,d,"nl")}</td>
+      <td class="pcol" data-day="${d}">${portionCell(k,d,"sq")}</td>
+      <td class="pcol" data-day="${d}">${portionCell(k,d,"ol")}</td>
       <td>${`<input type="number" min="0" value="${r.ln??""}" placeholder="0" data-d="${d}" class="lnin" style="width:64px">`}</td>
     </tr>`;
   }
@@ -1194,7 +1275,28 @@ function renderDaily(){
     const v=inp.value===""?null:Math.max(0,+inp.value);
     setDay(k,+inp.dataset.d,{ln:v});renderMonthDash();
   });
-  tb.querySelectorAll(".pchip").forEach(c=>c.onclick=()=>{if(!canEdit())return;warnHoliday(+c.dataset.d);openPortionModal(k,+c.dataset.d,c.dataset.f);});
+  tb.querySelectorAll(".pcell,.pchip.empty").forEach(c=>c.onclick=()=>{if(!canEdit())return;warnHoliday(+c.dataset.d);openPortionModal(k,+c.dataset.d,c.dataset.f);});
+  // long-press (2.3s) anywhere on a day's 3 portion cells => arrange an exam for that day
+  tb.querySelectorAll("td.pcol").forEach(td=>{
+    let timer=null, fired=false;
+    const cells=()=>[...tb.querySelectorAll('td.pcol[data-day="'+td.dataset.day+'"]')];
+    const start=(e)=>{
+      if(!canEdit())return;
+      fired=false;
+      const row=td.closest("tr"); const cs=cells(); if(cs[1])cs[1].classList.add("pcol-mid");
+      row.classList.add("exam-merging");
+      timer=setTimeout(()=>{ fired=true; row.classList.remove("exam-merging"); cs.forEach(c=>c.classList.remove("pcol-mid"));
+        openExamForDay(k,+td.dataset.day);
+      },2300);
+    };
+    const cancel=()=>{ clearTimeout(timer);
+      const row=td.closest("tr"); row.classList.remove("exam-merging"); cells().forEach(c=>c.classList.remove("pcol-mid")); };
+    td.addEventListener("mousedown",start); td.addEventListener("touchstart",start,{passive:true});
+    td.addEventListener("mouseup",cancel); td.addEventListener("mouseleave",cancel);
+    td.addEventListener("touchend",cancel); td.addEventListener("touchmove",cancel,{passive:true});
+    // suppress the click that would open the portion modal right after a long-press
+    td.addEventListener("click",e=>{ if(fired){e.stopPropagation();e.preventDefault();fired=false;} },true);
+  });
   tb.querySelectorAll(".jtchip").forEach(c=>c.onclick=()=>{if(!canEdit())return;openJuzTest(k,+c.dataset.jt);});
   renderMonthDash();
   if(window.__applyPZ)window.__applyPZ();
@@ -1372,6 +1474,12 @@ function renderExams(){
   const totalMist=list.reduce((a,e)=>a+(+e.mist||0),0);
   const cards=[["Exams Taken",list.length,""],["Average Score",avg.toFixed(1)+"%","gold"],["Best Score",best.toFixed(1)+"%","green"],["Total Mistakes",totalMist,""]];
   $("#examSummary").innerHTML=cards.map(c=>`<div class="card kpi ${c[2]}"><div class="lab">${c[0]}</div><div class="val">${c[1]}</div></div>`).join("");
+}
+function openExamForDay(k,day){
+  const dateStr=k+"-"+pad(day);
+  openExamModal(null);
+  const el=document.getElementById("emDate"); if(el)el.value=dateStr;
+  if(window.toast)toast("Arrange the juz / portion exam for "+dateStr);
 }
 function openExamModal(id){
   if(!canEdit())return;
@@ -1778,6 +1886,7 @@ function toggleEditMode(){
   if(!LINK)return;                       // admin is always editable
   CAN_EDIT=!CAN_EDIT;
   document.body.classList.toggle("viewonly",!CAN_EDIT);
+  {const vb=document.getElementById("voBanner");if(vb)vb.hidden=CAN_EDIT;}
   $("#crest").classList.toggle("editing",CAN_EDIT);
   unlockBurst();renderModeBadge();renderAll();
   toast(CAN_EDIT?"✎ Edit mode unlocked":"🔒 View mode");
