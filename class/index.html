@@ -238,6 +238,38 @@
     box-shadow:0 6px 20px -8px var(--azure-glow);
   }
 
+    /* Hifz Report tab — a slightly different, warmer identity than the azure tabs */
+  .tab.tab-hifz{border-color:rgba(94,234,212,0.35)}
+  .tab.tab-hifz.active{background:linear-gradient(135deg,#5eead4,#1B7A5A);color:#04241a;
+    box-shadow:0 6px 20px -8px rgba(94,234,212,0.5)}
+  #panel-hifz{padding-top:14px}
+  .hifz-hero{position:relative;text-align:center;padding:44px 30px 40px;border-radius:20px;overflow:hidden;
+    background:
+      radial-gradient(600px 260px at 50% -20%,rgba(94,234,212,0.14),transparent 60%),
+      linear-gradient(165deg,rgba(20,52,40,0.55),rgba(8,13,31,0.5));
+    border:1px solid rgba(94,234,212,0.28);
+    box-shadow:0 20px 60px -30px rgba(94,234,212,0.4),inset 0 1px 0 rgba(255,255,255,0.06)}
+  .hifz-hero::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,#5eead4,transparent);opacity:.7}
+  .hifz-crest{width:74px;height:74px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;
+    font-size:34px;background:rgba(94,234,212,0.12);border:1.5px solid rgba(94,234,212,0.4);
+    box-shadow:0 0 34px -8px rgba(94,234,212,0.5)}
+  .hifz-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--frost);letter-spacing:.3px}
+  .hifz-sub{font-size:13.5px;color:var(--frost-dim);max-width:42ch;margin:10px auto 0;line-height:1.65}
+  .hifz-open{display:inline-flex;align-items:center;gap:11px;margin-top:24px;text-decoration:none;
+    background:linear-gradient(135deg,#5eead4,#1B7A5A);color:#04241a;
+    font-family:'Manrope',sans-serif;font-size:14.5px;font-weight:800;letter-spacing:.6px;
+    padding:15px 28px;border-radius:14px;box-shadow:0 12px 30px -10px rgba(94,234,212,0.6);
+    transition:transform .18s,box-shadow .2s}
+  .hifz-open:hover{transform:translateY(-2px);box-shadow:0 18px 40px -10px rgba(94,234,212,0.8)}
+  .hifz-open svg{width:19px;height:19px}
+  .hifz-note{font-size:11.5px;color:var(--frost-faint);margin-top:14px;letter-spacing:.3px}
+    .complaint-link{display:inline-flex;align-items:center;gap:8px;margin-top:18px;text-decoration:none;
+    font-family:'Manrope',sans-serif;font-size:12.5px;font-weight:600;letter-spacing:.2px;
+    color:var(--rose);background:rgba(255,154,166,0.08);border:1px solid rgba(255,154,166,0.28);
+    border-radius:100px;padding:9px 16px;transition:all .2s}
+  .complaint-link:hover{background:rgba(255,154,166,0.16);border-color:rgba(255,154,166,0.5);transform:translateY(-1px)}
+  .complaint-link svg{width:15px;height:15px;flex:0 0 auto}
   .btn-hifz{display:flex;align-items:center;justify-content:center;gap:11px;margin-top:12px;text-decoration:none;
     background:linear-gradient(135deg,#1B7A5A 0%,#0f5540 100%);color:#eafff6;border:1px solid rgba(47,174,127,.5);
     font-family:'Manrope',sans-serif;font-size:15px;font-weight:700;letter-spacing:.2px;padding:15px 20px;border-radius:14px;
@@ -609,6 +641,7 @@
           <button class="tab active" data-tab="overview">Overview</button>
           <button class="tab" data-tab="calendar">Calendar Sheets</button>
           <button class="tab" data-tab="material" id="tabMaterial" hidden>Study Material</button>
+          <button class="tab tab-hifz" data-tab="hifz" id="tabHifz" hidden>🕮 Hifz Report</button>
         </div>
 
         <!-- Overview -->
@@ -645,9 +678,9 @@
             <span id="waLabel">WhatsApp Group</span>
           </a>
 
-          <a class="btn-hifz" id="hifzBtn" target="_blank" rel="noopener" hidden>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-            <span>Open my Hifz Report</span>
+          <a class="complaint-link" href="https://manzilulquran.in/portal/forms/complaint-form.html" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Have a concern? Register a complaint</span>
           </a>
         </div>
 
@@ -678,6 +711,20 @@
               <h4>No study material yet</h4>
               <p>Your lesson material will appear here once the academy assigns it, in sh\u0101\u2019 All\u0101h.</p>
             </div>
+          </div>
+        </div>
+
+        <!-- Hifz Report -->
+        <div class="tab-panel" id="panel-hifz">
+          <div class="hifz-hero">
+            <div class="hifz-crest">🕮</div>
+            <h3 class="hifz-title">Daily Hifz Report</h3>
+            <p class="hifz-sub">Your live memorisation record — daily lessons, revision, portions memorised and juz progress, updated by the academy.</p>
+            <a class="hifz-open" id="hifzBtn" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              Open my Hifz Report
+            </a>
+            <p class="hifz-note">Opens in a new tab · your personal report</p>
           </div>
         </div>
 
@@ -952,12 +999,11 @@ function smBlock(entry, n, many){
 }
 
 function renderHifzLink(url){
-  const btn = $('hifzBtn');
+  const btn = $('hifzBtn'), tab = $('tabHifz');
   const u = (url || '').trim();
-  // only accept a real http(s) link to the study-report system
   const ok = /^https?:\/\/[^\s]+study-report[^\s]*[?&]s=[^\s]+&t=[^\s]+/i.test(u);
-  if(ok){ btn.href = u; btn.hidden = false; }
-  else  { btn.removeAttribute('href'); btn.hidden = true; }
+  if(ok){ btn.href = u; tab.hidden = false; }
+  else  { btn.removeAttribute('href'); tab.hidden = true; }
 }
 
 function renderStudyMaterial(raw){
