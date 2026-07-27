@@ -20,15 +20,42 @@
 }
 /* ---- Light-green theme (moon toggle). Dark is default; this only lightens. ---- */
 body.lighttheme{
-  --bg:#eaf3ee; --bg2:#dceae2; --panel:rgba(255,255,255,.94); --panel2:rgba(240,248,243,.92);
-  --line:rgba(15,60,44,.20); --line2:rgba(15,60,44,.34);
-  --em:#0f5c43; --em2:#0c6e4f; --emGlow:rgba(12,110,79,.18);
-  --gold:#8a6a1e; --gold2:#5f4810; --goldGlow:rgba(138,106,30,.18);
-  --ink:#0b241a; --mut:#2f5245; --dim:#456355;   /* much darker text for clarity */
+  /* Warm parchment / sand — like an old manuscript. Deep green ink, gold accents. */
+  --bg:#efe6d0; --bg2:#e7dcc0; --panel:#f6efdd; --panel2:#f1e8d1;
+  --line:rgba(74,58,30,.18); --line2:rgba(74,58,30,.32);
+  --em:#0f5a41; --em2:#12704f; --emGlow:rgba(18,112,79,.16);
+  --gold:#9a7526; --gold2:#6f5214; --goldGlow:rgba(154,117,38,.20);
+  --ink:#241d10; --mut:#5b4d33; --dim:#75664a;
+  --bad:#b4552f; --warn:#a9781f; --ok:#2f7d55;
 }
-body.lighttheme{background:linear-gradient(160deg,#eef6f1,#dcebe2)}
+body.lighttheme{
+  background:
+    radial-gradient(1200px 600px at 100% -10%,rgba(154,117,38,.10),transparent 60%),
+    radial-gradient(900px 500px at -10% 110%,rgba(18,112,79,.08),transparent 55%),
+    linear-gradient(165deg,#f0e7d2 0%,#e6dabc 100%);
+}
+/* faint paper grain so it reads as parchment, not flat colour */
+body.lighttheme::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E")}
 body.lighttheme .card,body.lighttheme .kpi,body.lighttheme table{backdrop-filter:none}
-body.lighttheme .motiv{background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.6),rgba(255,255,255,0))}
+body.lighttheme .card{box-shadow:0 2px 10px rgba(74,58,30,.08),0 1px 0 rgba(255,255,255,.5) inset}
+body.lighttheme .panel,body.lighttheme .kpi{box-shadow:0 1px 6px rgba(74,58,30,.06)}
+body.lighttheme .motiv{
+  background:linear-gradient(135deg,rgba(255,251,240,.85),rgba(246,239,221,.6));
+  border-color:rgba(154,117,38,.35);
+  box-shadow:0 6px 22px rgba(74,58,30,.12),inset 0 1px 0 rgba(255,255,255,.7)}
+body.lighttheme .motiv-text{color:#6f5214}
+body.lighttheme .motiv-text b{color:#0f5a41}
+/* header + chip warmth */
+body.lighttheme header{border-bottom-color:rgba(74,58,30,.14)}
+body.lighttheme .modebadge.view{background:rgba(154,117,38,.16);color:#6f5214}
+/* inputs on parchment */
+body.lighttheme input,body.lighttheme select,body.lighttheme textarea{
+  background:#fbf6e9;border-color:rgba(74,58,30,.28);color:#241d10}
+body.lighttheme .pcell{background:rgba(18,112,79,.10);border-color:rgba(74,58,30,.18);color:#241d10}
+body.lighttheme .pcell:hover{background:rgba(18,112,79,.18);border-color:var(--em2)}
+body.lighttheme table th{background:#e7dcc0;color:#5b4d33}
+body.lighttheme .menu-fab,body.lighttheme .moonbtn{background:#f6efdd;color:#6f5214;border-color:rgba(74,58,30,.28)}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
@@ -281,7 +308,33 @@ svg text{font-family:var(--ui)}
     font-family:var(--ui);font-size:12.5px;transition:.16s;overflow:hidden}
   .pcell:hover{border-color:var(--em2);background:rgba(27,122,90,.24)}
   .pcell .arname{font-family:'Amiri',serif;font-size:15px;color:var(--em2);flex:0 0 auto}
-  .pcell-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pcell-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pcell-badge{display:inline-block;background:var(--em2);color:#fff;font-size:10px;font-weight:700;
+    border-radius:20px;padding:1px 7px;margin-left:2px}
+  .pcell.multi{border-style:solid}
+  /* surah popup board */
+  .surahpop{position:fixed;z-index:210;min-width:250px;max-width:320px;background:var(--bg2);
+    border:1px solid var(--line2);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.5);
+    padding:14px;display:none}
+  body.lighttheme .surahpop{box-shadow:0 20px 50px rgba(74,58,30,.28)}
+  .surahpop.on{display:block;animation:rmIn .16s ease-out}
+  .surahpop-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;
+    font-family:var(--disp,'Marcellus'),serif;font-size:16px;color:var(--gold2)}
+  .surahpop-head button{background:transparent;border:0;color:var(--mut);font-size:16px;cursor:pointer;padding:2px 6px;border-radius:6px}
+  .surahpop-head button:hover{background:rgba(201,169,110,.14);color:var(--ink)}
+  .surahpop-list{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow:auto}
+  .surahpop-item{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:11px;
+    background:rgba(27,122,90,.10);border:1px solid var(--line)}
+  .surahpop-num{width:26px;height:26px;flex:0 0 auto;border-radius:8px;background:rgba(47,174,127,.24);
+    color:var(--em2);display:grid;place-items:center;font-size:12px;font-weight:700;font-family:var(--ui)}
+  .surahpop-ar{font-family:'Amiri',serif;font-size:19px;color:var(--em2);flex:0 0 auto}
+  .surahpop-meta{display:flex;flex-direction:column;min-width:0}
+  .surahpop-name{font-family:var(--ui);font-weight:600;font-size:13.5px;color:var(--ink)}
+  .surahpop-ayah{font-size:11.5px;color:var(--mut)}
+  .surahpop-edit{width:100%;margin-top:12px;background:linear-gradient(135deg,var(--gold),#b4934e);color:#241a08;
+    border:0;font-family:var(--ui);font-weight:700;font-size:13px;padding:11px;border-radius:11px;cursor:pointer}
+  .surahpop-scrim{position:fixed;inset:0;z-index:205;display:none}
+  .surahpop-scrim.on{display:block}
   .jt-result{display:flex;gap:10px;flex:1}
   .jt-opt{flex:1;padding:13px;border-radius:11px;font-family:var(--ui);font-weight:700;font-size:13.5px;cursor:pointer;
     border:1.5px solid var(--line2);background:var(--bg2);color:var(--dim);transition:.18s}
@@ -488,7 +541,7 @@ footer b{color:var(--gold)}
     <div class="student-chip" id="chipBox" style="display:none"><span class="dot" id="syncDot" title="sync status"></span><div><b id="chipStudent">Student</b><br><span id="chipDate"></span></div></div>
   </header>
 
-  <div class="vobanner" id="voBanner" hidden>🔒 View-only — double-tap the logo to edit.</div>
+  <div class="vobanner" id="voBanner" hidden>🔒 View-only</div>
   <div class="motiv" id="motiv" aria-live="polite"><span class="motiv-text" id="motivText"></span></div>
 
   <button class="menu-fab" id="menuFab" style="display:none" aria-label="Menu">☰</button>
@@ -756,8 +809,8 @@ footer b{color:var(--gold)}
   <div class="modal">
     <h3 id="examModalTitle">New exam result</h3>
     <div class="row"><label>Date</label><input id="emDate" type="date"></div>
-    <div class="row"><label>Surah tested</label><select id="emSurah"></select></div>
-    <div class="row"><label>Ayah range</label><select id="emA1" class="ayah"></select><span class="dash">→</span><select id="emA2" class="ayah"></select></div>
+    <div class="row"><label>Surah — from</label><select id="emSurahFrom"></select></div>
+    <div class="row"><label>Surah — to</label><select id="emSurahTo"></select></div>
     <div class="row"><label>Lines</label><input id="emLines" type="number" min="0"></div>
     <div class="row"><label>Examiner</label><select id="emExaminer"></select></div>
     <div class="row"><label>Max marks</label><input id="emMax" type="number" min="1" value="100"></div>
@@ -769,6 +822,13 @@ footer b{color:var(--gold)}
 </div>
 
 <!-- portion picker modal (multi-surah) -->
+<div class="surahpop-scrim" id="surahPopScrim"></div>
+<div class="surahpop" id="surahPop">
+  <div class="surahpop-head"><span id="surahPopTitle">Portions</span><button id="surahPopClose" aria-label="Close">✕</button></div>
+  <div class="surahpop-list" id="surahPopList"></div>
+  <button class="surahpop-edit" id="surahPopEdit" style="display:none">✎ Edit these portions</button>
+</div>
+
 <div class="rowmenu" id="rowMenu">
   <div class="rowmenu-h" id="rowMenuTitle">Day</div>
   <button id="rmExam"><span class="rmi">🎓</span> Arrange an exam</button>
@@ -1313,12 +1373,13 @@ function portionCell(k,day,field){
   if(!list.length){
     return `<span class="portion"><span class="pchip empty" data-d="${day}" data-f="${field}" title="Add portion">＋</span></span>`;
   }
-  // Contained summary — never widens the column. Click opens the modal to see/edit all.
-  const first=list[0];
-  const label = list.length===1
-    ? esc(portionText(first))
-    : `${esc(SURAHS[first.s][0])} +${list.length-1} more`;
-  return `<span class="portion"><button class="pcell" data-d="${day}" data-f="${field}" title="${esc(list.map(p=>portionText(p)).join(" · "))}">
+  const first=list[0], multi=list.length>1;
+  const label = !multi ? esc(portionText(first))
+                       : `${esc(SURAHS[first.s][0])} <span class="pcell-badge">+${list.length-1}</span>`;
+  // multi-surah cells open a read-only popup board on click (works in view mode);
+  // single cells open the editor when editing, or the popup when view-only.
+  return `<span class="portion"><button class="pcell${multi?' multi':''}" data-d="${day}" data-f="${field}" data-multi="${multi?1:0}"
+      title="${esc(list.map(p=>portionText(p)).join(" · "))}">
       <span class="arname">${SURAHS[first.s][1]}</span><span class="pcell-t">${label}</span>
     </button></span>`;
 }
@@ -1393,7 +1454,14 @@ function renderDaily(){
     const v=inp.value===""?null:Math.max(0,+inp.value);
     setDay(k,+inp.dataset.d,{ln:v});renderMonthDash();
   });
-  tb.querySelectorAll(".pcell,.pchip.empty").forEach(c=>c.onclick=()=>{if(!canEdit())return;warnHoliday(+c.dataset.d);openPortionModal(k,+c.dataset.d,c.dataset.f);});
+  tb.querySelectorAll(".pcell,.pchip.empty").forEach(c=>c.onclick=(ev)=>{
+    const day=+c.dataset.d, field=c.dataset.f, multi=c.dataset.multi==="1";
+    // multi-surah cell => always open the popup board (works in view-only too)
+    if(multi){ openSurahPop(k,day,field, ev.clientX, ev.clientY); return; }
+    // single: edit mode opens editor; view-only opens the popup board
+    if(canEdit()){ warnHoliday(day); openPortionModal(k,day,field); }
+    else if(c.classList.contains("pcell")){ openSurahPop(k,day,field, ev.clientX, ev.clientY); }
+  });
   // long-press (0.6s) a day row => menu: Exam / Juz submission (edit mode only)
   tb.querySelectorAll("tr[data-day]").forEach(row=>{
     let timer=null, fired=false;
@@ -1568,11 +1636,19 @@ function renderExams(){
   $("#examEmpty").style.display=list.length?"none":"block";
   tb.innerHTML=list.map((e,i)=>{
     const pct=e.max?e.obt/e.max:0, [g,gc]=gradeOf(pct);
-    const p=e.portion?portionText(e.portion):null;
+    let portionCellHTML='—';
+    if(e.range){
+      const a=SURAHS[e.range.from], b=SURAHS[e.range.to];
+      portionCellHTML = e.range.from===e.range.to
+        ? `<span class="pchip"><span class="arname">${a[1]}</span>${e.range.from+1}. ${esc(a[0])}</span>`
+        : `<span class="pchip"><span class="arname">${a[1]}</span>${e.range.from+1}. ${esc(a[0])} → ${e.range.to+1}. ${esc(b[0])}</span>`;
+    } else if(e.portion){
+      portionCellHTML = `<span class="pchip"><span class="arname">${SURAHS[e.portion.s][1]}</span>${esc(portionText(e.portion))}</span>`;
+    }
     return `<tr>
       <td style="color:var(--dim)">${i+1}</td>
       <td>${e.date||"—"}</td>
-      <td>${p?`<span class="pchip"><span class="arname">${SURAHS[e.portion.s][1]}</span>${esc(p)}</span>`:'—'}</td>
+      <td>${portionCellHTML}</td>
       <td>${e.lines||"—"}</td>
       <td>${esc(e.examiner||"—")}</td>
       <td>${e.obt} / ${e.max}</td>
@@ -1604,18 +1680,19 @@ function openExamModal(id){
   if(!canEdit())return;
   editExamId=id||null;
   $("#examModalTitle").textContent=id?"Edit exam result":"New exam result";
-  const sSel=$("#emSurah"),a1=$("#emA1"),a2=$("#emA2");
-  fillSurahSelect(sSel,true);
-  if(!sSel._bound){bindSurahAyah(sSel,a1,a2);sSel._bound=true;}
+  const sFrom=$("#emSurahFrom"),sTo=$("#emSurahTo");
+  fillSurahSelect(sFrom,true);fillSurahSelect(sTo,true);
   $("#emExaminer").innerHTML='<option value="">— Examiner —</option>'+S.config.examiners.map(x=>`<option>${esc(x)}</option>`).join("");
   if(id){const e=S.exams.find(x=>x.id===id);
     $("#emDate").value=e.date||"";$("#emLines").value=e.lines||"";$("#emMax").value=e.max;$("#emObt").value=e.obt;
     $("#emMist").value=e.mist||0;$("#emRem").value=e.rem||"";$("#emExaminer").value=e.examiner||"";
-    if(e.portion){sSel.value=e.portion.s;sSel.dispatchEvent(new Event("change"));a1.value=e.portion.a1;a2.value=e.portion.a2;}
-    else{sSel.value="";sSel.dispatchEvent(new Event("change"));}
+    // support both new range {sFrom,sTo} and old single portion {s}
+    const from=(e.range?e.range.from:(e.portion?e.portion.s:""));
+    const to=(e.range?e.range.to:(e.portion?e.portion.s:""));
+    sFrom.value=from===""||from==null?"":from; sTo.value=to===""||to==null?"":to;
   }else{
     $("#emDate").value=todayStr();$("#emLines").value="";$("#emMax").value=100;$("#emObt").value="";
-    $("#emMist").value=0;$("#emRem").value="";sSel.value="";sSel.dispatchEvent(new Event("change"));
+    $("#emMist").value=0;$("#emRem").value="";sFrom.value="";sTo.value="";
   }
   $("#examModal").classList.add("on");
 }
@@ -1623,8 +1700,11 @@ $("#addExamBtn").onclick=()=>openExamModal(null);
 $("#emSave").onclick=()=>{
   const max=Math.max(1,+$("#emMax").value||1), obt=Math.max(0,+$("#emObt").value||0);
   if(obt>max){toast("Obtained marks can't exceed max");return;}
-  const sv=$("#emSurah").value;
-  const rec={date:$("#emDate").value||todayStr(),portion:sv===""?null:{s:+sv,a1:+$("#emA1").value,a2:+$("#emA2").value},
+  const fv=$("#emSurahFrom").value, tv=$("#emSurahTo").value;
+  let range=null;
+  if(fv!=="" && tv!==""){ let a=+fv,b=+tv; if(a>b){const t=a;a=b;b=t;} range={from:a,to:b}; }
+  else if(fv!==""){ range={from:+fv,to:+fv}; }
+  const rec={date:$("#emDate").value||todayStr(),range,portion:null,
     lines:+$("#emLines").value||null,examiner:$("#emExaminer").value||"",max,obt,mist:+$("#emMist").value||0,rem:$("#emRem").value.trim()};
   if(editExamId){Object.assign(S.exams.find(x=>x.id===editExamId),rec);}
   else{rec.id="e"+Date.now();S.exams.push(rec);}
@@ -1682,6 +1762,38 @@ function renderChip(){
   $("#chipStudent").textContent=S.config.student;
   $("#chipDate").textContent=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
 }
+
+/* ================= SURAH POPUP BOARD ================= */
+let surahPopCtx=null;
+function openSurahPop(k,day,field,x,y){
+  const list=normPortions(dayRec(k,day)[field]);
+  if(!list.length)return;
+  surahPopCtx={k,day,field};
+  const names={nl:"New Lesson",sq:"Sabq (Revision)",ol:"Old Lesson"};
+  $("#surahPopTitle").textContent=(names[field]||"Portions")+" · "+list.length+" surah"+(list.length>1?"s":"");
+  $("#surahPopList").innerHTML=list.map(p=>{
+    const su=SURAHS[p.s];
+    const ay=p.a1!=null?("Ayah "+p.a1+(p.a2&&p.a2!==p.a1?"–"+p.a2:"")):"Full surah";
+    return `<div class="surahpop-item">
+      <span class="surahpop-num">${p.s+1}</span>
+      <span class="surahpop-ar">${su[1]}</span>
+      <span class="surahpop-meta"><span class="surahpop-name">${esc(su[0])}</span><span class="surahpop-ayah">${ay}</span></span>
+    </div>`;
+  }).join("");
+  const editBtn=$("#surahPopEdit");
+  editBtn.style.display=canEdit()?"block":"none";
+  const pop=$("#surahPop"), sc=$("#surahPopScrim");
+  pop.classList.add("on"); if(sc)sc.classList.add("on");
+  const pw=300,ph=Math.min(360,120+list.length*46), vw=innerWidth,vh=innerHeight;
+  pop.style.left=Math.max(12,Math.min(x,vw-pw-12))+"px";
+  pop.style.top=Math.max(12,Math.min(y,vh-ph-12))+"px";
+}
+function closeSurahPop(){$("#surahPop").classList.remove("on");const sc=$("#surahPopScrim");if(sc)sc.classList.remove("on");}
+$("#surahPopClose").onclick=closeSurahPop;
+$("#surahPopEdit").onclick=()=>{ if(!surahPopCtx)return; const{k,day,field}=surahPopCtx; closeSurahPop();
+  if(canEdit())openPortionModal(k,day,field); };
+document.addEventListener("click",e=>{ if($("#surahPop").classList.contains("on") &&
+  !e.target.closest("#surahPop") && !e.target.closest(".pcell")) closeSurahPop(); });
 
 /* ================= DAY ROW MENU (exam / juz submission) ================= */
 let rowMenuCtx=null;
