@@ -20,13 +20,13 @@
 }
 /* ---- Light-green theme (moon toggle). Dark is default; this only lightens. ---- */
 body.lighttheme{
-  --bg:#0f2119; --bg2:#153026; --panel:rgba(230,244,236,.90); --panel2:rgba(214,236,224,.85);
-  --line:rgba(27,122,90,.20); --line2:rgba(27,122,90,.38);
-  --em:#1B7A5A; --em2:#178a63; --emGlow:rgba(23,138,99,.22);
-  --gold:#a6822f; --gold2:#7c5f18; --goldGlow:rgba(166,130,47,.22);
-  --ink:#123024; --mut:#3f6455; --dim:#5a7d6e;
+  --bg:#eaf3ee; --bg2:#dceae2; --panel:rgba(255,255,255,.94); --panel2:rgba(240,248,243,.92);
+  --line:rgba(15,60,44,.20); --line2:rgba(15,60,44,.34);
+  --em:#0f5c43; --em2:#0c6e4f; --emGlow:rgba(12,110,79,.18);
+  --gold:#8a6a1e; --gold2:#5f4810; --goldGlow:rgba(138,106,30,.18);
+  --ink:#0b241a; --mut:#2f5245; --dim:#456355;   /* much darker text for clarity */
 }
-body.lighttheme{background:linear-gradient(160deg,#cfe6d8,#b6d4c2)}
+body.lighttheme{background:linear-gradient(160deg,#eef6f1,#dcebe2)}
 body.lighttheme .card,body.lighttheme .kpi,body.lighttheme table{backdrop-filter:none}
 body.lighttheme .motiv{background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.6),rgba(255,255,255,0))}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -63,7 +63,26 @@ header{display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:10px 
   color:var(--warn);background:rgba(224,183,106,.12);border:1px solid rgba(224,183,106,.35);
   border-radius:12px;padding:10px 18px;letter-spacing:.01em}
   .vobanner[hidden]{display:none}
-  .moonbtn{background:var(--panel);border:1px solid var(--line2);color:var(--gold2);width:42px;height:42px;
+  .menu-fab{position:fixed;top:16px;left:16px;z-index:60;width:46px;height:46px;border-radius:12px;
+    background:var(--panel);border:1px solid var(--line2);color:var(--gold2);font-size:20px;cursor:pointer;
+    place-items:center;transition:.2s;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  .menu-fab:hover{border-color:var(--gold);transform:scale(1.05)}
+  .side-scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:70;opacity:0;pointer-events:none;transition:.25s}
+  .side-scrim.open{opacity:1;pointer-events:auto}
+  nav.sidebar{position:fixed;top:0;left:0;bottom:0;width:250px;z-index:80;flex-direction:column;gap:6px;
+    background:linear-gradient(180deg,var(--bg2),var(--bg));border-right:1px solid var(--line2);
+    padding:20px 14px;transform:translateX(-105%);transition:transform .28s cubic-bezier(.3,.8,.3,1);box-shadow:8px 0 40px rgba(0,0,0,.4)}
+  nav.sidebar.open{transform:none}
+  nav.sidebar .side-head{font-family:var(--disp,'Marcellus'),serif;font-size:18px;color:var(--gold2);
+    padding:6px 12px 14px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  nav.sidebar button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;
+    border:1px solid transparent;color:var(--ink);font-family:var(--ui);font-size:14.5px;font-weight:500;
+    padding:12px 14px;border-radius:11px;cursor:pointer;transition:.16s}
+  nav.sidebar button:hover{background:rgba(201,169,110,.1)}
+  nav.sidebar button.active{background:linear-gradient(135deg,rgba(201,169,110,.22),rgba(201,169,110,.08));
+    border-color:var(--line2);color:var(--gold2);font-weight:600}
+  body.lighttheme nav.sidebar{background:linear-gradient(180deg,#dfeee6,#cfe6d8)}
+  .moonbtn{background:var(--panel);border:1px solid var(--line2);color:var(--gold2);width:42px;height:42px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
   border-radius:12px;font-size:19px;cursor:pointer;transition:.2s;display:grid;place-items:center;flex:0 0 auto;margin-left:8px}
   .moonbtn:hover{border-color:var(--gold);transform:scale(1.06)}
   .moonbtn:active{transform:scale(.94)}
@@ -201,7 +220,8 @@ svg text{font-family:var(--ui)}
     font-family:var(--ui);background:rgba(255,255,255,.05);color:var(--dim);border:1px solid var(--line)}
   .juzchip.done{background:rgba(47,174,127,.3);color:#dff5e8;border-color:var(--em2)}
   .juzchip.part{background:rgba(201,169,110,.2);color:var(--gold2);border-color:var(--gold)}
-  .ayahnum{width:58px;background:var(--bg2);border:1px solid var(--line2);color:var(--ink);border-radius:8px;
+  .ayahnum{width:58px;}
+  .ayahnum.wide{width:76px;background:var(--bg2);border:1px solid var(--line2);color:var(--ink);border-radius:8px;
     padding:7px 8px;font-family:var(--ui);font-size:13px;text-align:center;margin-left:6px}
   .ayahnum::-webkit-outer-spin-button,.ayahnum::-webkit-inner-spin-button{opacity:.4}
   .pm-range{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line2)}
@@ -218,7 +238,38 @@ svg text{font-family:var(--ui)}
   #dailyZoom{transform:scale(var(--dz,1));transform-origin:top left;transition:transform .15s ease}
   /* contained portion cells — never stretch the column */
   #dailyTable td:nth-child(3),#dailyTable td:nth-child(4),#dailyTable td:nth-child(5){max-width:190px}
-    /* exam long-press: the 3 portion cells collapse into one merged bar */
+    /* merged event cell (exam / juz submission) */
+  .pcol-merged{text-align:center}
+  .evcell{display:flex;align-items:center;justify-content:center;gap:10px;border-radius:11px;padding:11px 14px;
+    font-family:var(--ui);font-weight:700;font-size:14px;letter-spacing:.02em}
+  .evcell .evi{font-size:18px}
+  .evcell.exam{background:linear-gradient(135deg,rgba(201,169,110,.30),rgba(201,169,110,.14));color:var(--gold2);
+    border:1px solid var(--gold)}
+  .evcell.juz.pass{background:linear-gradient(135deg,rgba(47,174,127,.34),rgba(47,174,127,.16));color:#dff5e8;
+    border:1px solid var(--em2)}
+  .evcell.juz.retry{background:linear-gradient(135deg,rgba(224,122,106,.30),rgba(224,122,106,.14));color:#ffd9d2;
+    border:1px solid var(--bad)}
+  tr.ev-glow td{position:relative}
+  tr.ev-glow .evcell.pass{animation:evGlow 2.4s ease-in-out infinite}
+  @keyframes evGlow{0%,100%{box-shadow:0 0 0 rgba(47,174,127,0)}50%{box-shadow:0 0 22px rgba(47,174,127,.6)}}
+  /* small day markers (checkmarks) — visible in view mode too */
+  .dmarks{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+  .dmark{font-size:10px;font-weight:700;font-family:var(--ui);border-radius:6px;padding:2px 6px;letter-spacing:.02em}
+  .dmark.ok{background:rgba(47,174,127,.28);color:#dff5e8}
+  .dmark.retry{background:rgba(224,122,106,.26);color:#ffd9d2}
+  .dmark.exam{background:rgba(201,169,110,.24);color:var(--gold2)}
+  /* day-row long-press menu */
+  .rowmenu{position:fixed;z-index:200;background:var(--bg2);border:1px solid var(--line2);border-radius:14px;
+    padding:8px;min-width:200px;box-shadow:0 16px 44px rgba(0,0,0,.5);display:none}
+  .rowmenu.on{display:block;animation:rmIn .16s ease-out}
+  @keyframes rmIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+  .rowmenu-h{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);padding:6px 10px 8px}
+  .rowmenu button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:transparent;border:0;
+    color:var(--ink);font-family:var(--ui);font-size:14px;font-weight:600;padding:12px;border-radius:10px;cursor:pointer;transition:.15s}
+  .rowmenu button:hover{background:rgba(201,169,110,.12)}
+  .rowmenu button .rmi{font-size:18px}
+  tr.row-pressing td{background:rgba(201,169,110,.10)!important;transition:background .2s}
+  /* exam long-press: the 3 portion cells collapse into one merged bar */
   tr.exam-merging td.pcol{background:linear-gradient(135deg,rgba(201,169,110,.28),rgba(201,169,110,.16));
     transition:background .2s}
   tr.exam-merging td.pcol .portion{visibility:hidden}
@@ -245,8 +296,11 @@ svg text{font-family:var(--ui)}
   .jtchip:hover{filter:brightness(1.12)}
   .offtag{display:inline-block;margin-left:6px;font-size:9px;font-weight:700;letter-spacing:.08em;color:#c98;
     background:rgba(224,122,106,.14);border:1px solid rgba(224,122,106,.3);border-radius:5px;padding:1px 5px;vertical-align:middle}
-  tr.holiday{background:rgba(224,122,106,.05)}
-  tr.holiday .datecell b{color:#c98}
+  tr.holiday{background:rgba(224,183,106,.10)}
+  tr.holiday.has-data{background:transparent}                 /* edited holiday returns to normal theme */
+  tr.holiday.has-data .datecell b{color:var(--ink)}
+  tr.holiday.has-data td:first-child{color:inherit}
+  tr.holiday .datecell b{color:var(--warn)}
 /* tables */
 .tblwrap{overflow-x:auto; border-radius:var(--r2); border:1px solid var(--line)}
 table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:760px}
@@ -258,8 +312,8 @@ thead th{
 tbody td{padding:9px 12px; border-bottom:1px solid rgba(255,255,255,.05); vertical-align:middle}
 tbody tr{transition:background .2s}
 tbody tr:hover{background:rgba(201,169,110,.05)}
-tbody tr.holiday{opacity:.42}
-tbody tr.holiday td:first-child{color:var(--bad)}
+tbody 
+tbody tr.holiday td:first-child{color:var(--warn)}
 tbody tr.today-row{background:rgba(201,169,110,.09); box-shadow:inset 3px 0 0 var(--gold)}
 .datecell b{font-weight:600}
 .datecell span{color:var(--dim); font-size:11px; margin-left:6px}
@@ -383,12 +437,16 @@ footer b{color:var(--gold)}
 
 
 /* ---------- view / edit mode ---------- */
-body.viewonly .pv,body.viewonly .lnin,body.viewonly .pchip,body.viewonly .tdone,
-#addTaskBtn{display:none}                 /* hidden until unlocked via moon long-press */
-  body.tasks-unlocked #addTaskBtn{display:inline-flex}
+/* view-only: block edits but keep full clarity (no fade) */
+  body.viewonly .pv,body.viewonly .lnin,body.viewonly .pchip,body.viewonly .tdone,
   body.viewonly #addTaskBtn,body.viewonly #addExamBtn,body.viewonly .mtab.add,
-body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .edel{
-  pointer-events:none}  /* view-only: block edits but keep full clarity (no fade) */
+  body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .edel,
+  body.viewonly .pcell,body.viewonly .pcol{pointer-events:none}
+  /* task/exam MANAGEMENT gated behind the moon long-press (admin arrangement) */
+  #addTaskBtn,#addExamBtn,.tedit,.tdel,.eedit,.edel{display:none}
+  body.tasks-unlocked #addTaskBtn,body.tasks-unlocked #addExamBtn,
+  body.tasks-unlocked .tedit,body.tasks-unlocked .tdel,
+  body.tasks-unlocked .eedit,body.tasks-unlocked .edel{display:inline-flex}
 .crest{cursor:pointer; user-select:none; transition:.25s}
 .crest.editing{border-color:var(--gold); box-shadow:0 0 26px var(--goldGlow),0 0 50px var(--emGlow); animation:crestPulse 1.8s infinite}
 @keyframes crestPulse{0%,100%{box-shadow:0 0 22px var(--goldGlow),0 0 44px var(--emGlow)}50%{box-shadow:0 0 40px var(--goldGlow),0 0 80px var(--emGlow)}}
@@ -433,9 +491,12 @@ body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .ede
   <div class="vobanner" id="voBanner" hidden>🔒 View-only — double-tap the logo to edit.</div>
   <div class="motiv" id="motiv" aria-live="polite"><span class="motiv-text" id="motivText"></span></div>
 
-  <nav id="nav" style="display:none">
-    <button data-v="dash" class="active">◈ Dashboard</button>
-    <button data-v="daily">☑ Daily Log</button>
+  <button class="menu-fab" id="menuFab" style="display:none" aria-label="Menu">☰</button>
+  <div class="side-scrim" id="sideScrim"></div>
+  <nav id="nav" class="sidebar" style="display:none">
+    <div class="side-head">Menu</div>
+    <button data-v="daily" class="active">☑ Daily Log</button>
+    <button data-v="dash">◈ Dashboard</button>
     <button data-v="tasks">✎ Tasks</button>
     <button data-v="exams">🎓 Exams</button>
     <button data-v="reports">📊 Reports</button>
@@ -708,6 +769,13 @@ body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .ede
 </div>
 
 <!-- portion picker modal (multi-surah) -->
+<div class="rowmenu" id="rowMenu">
+  <div class="rowmenu-h" id="rowMenuTitle">Day</div>
+  <button id="rmExam"><span class="rmi">🎓</span> Arrange an exam</button>
+  <button id="rmJuz"><span class="rmi">📖</span> Juz submission</button>
+  <button id="rmClear" style="display:none"><span class="rmi">✕</span> Clear this day's event</button>
+</div>
+
 <div class="modal-bg" id="juzTestModal">
   <div class="modal">
     <h3 id="jtTitle">Juz examiner test</h3>
@@ -736,11 +804,11 @@ body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .ede
     <div class="pm-list" id="pmList"></div>
     <div class="row"><label>Surah</label><select id="pmSurah"></select></div>
     <div class="row"><label>From ayah</label>
-      <select id="pmA1" class="ayah"></select>
-      <input id="pmA1n" class="ayahnum" type="number" min="1" title="Type ayah number" placeholder="#">
+      <select id="pmA1" class="ayah" hidden></select>
+      <input id="pmA1n" class="ayahnum wide" type="number" min="1" title="From ayah" placeholder="from">
       <span class="dash">→</span><label style="width:auto">to</label>
-      <select id="pmA2" class="ayah"></select>
-      <input id="pmA2n" class="ayahnum" type="number" min="1" title="Type ayah number" placeholder="#">
+      <select id="pmA2" class="ayah" hidden></select>
+      <input id="pmA2n" class="ayahnum wide" type="number" min="1" title="To ayah" placeholder="to">
     </div>
     <div class="row"><span></span><button class="btn ghost sm" id="pmAdd" style="margin-left:auto">＋ Add this portion</button></div>
 
@@ -916,19 +984,36 @@ function bindSurahAyah(surahSel,a1Sel,a2Sel,a1Num,a2Num){
     let held=false,timer=null;
     const START=e=>{ held=false; timer=setTimeout(()=>{ held=true;
         document.body.classList.toggle("tasks-unlocked");
-        if(window.toast)toast(document.body.classList.contains("tasks-unlocked")?"Task assign unlocked":"Task assign hidden");
+        const on=document.body.classList.contains("tasks-unlocked");
+        if(window.toast)toast(on?"🔓 Task & exam management unlocked":"🔒 Task & exam management hidden");
       },2300); };
     const END=()=>{ clearTimeout(timer);
       if(!held){ // short tap = theme toggle
         const light=document.body.classList.toggle("lighttheme");
         try{localStorage.setItem(KEY,light?"light":"dark");}catch(e){}
       } };
+    btn.addEventListener("contextmenu",e=>e.preventDefault());
     btn.addEventListener("mousedown",START); btn.addEventListener("touchstart",START,{passive:true});
     btn.addEventListener("mouseup",END); btn.addEventListener("mouseleave",()=>clearTimeout(timer));
     btn.addEventListener("touchend",END);
   }
   document.addEventListener("DOMContentLoaded",bind);
 })();
+
+/* ================= JUZ CONGRATS (2-day occasional note) ================= */
+const CONGRATS_KEY="mq_hifz_congrats";
+function markCongrats(juz){
+  try{
+    localStorage.setItem(CONGRATS_KEY, JSON.stringify({juz, until: Date.now()+2*24*3600*1000}));
+  }catch(e){}
+}
+function activeCongrats(){
+  try{
+    const c=JSON.parse(localStorage.getItem(CONGRATS_KEY)||"null");
+    if(c && c.until>Date.now())return c;
+  }catch(e){}
+  return null;
+}
 
 /* ================= MOTIVATION TICKER ================= */
 (function(){
@@ -962,6 +1047,11 @@ function bindSurahAyah(surahSel,a1Sel,a2Sel,a1Num,a2Num){
   }
   function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
   function nextNote(){
+    // occasionally surface a juz-completion congrats for 2 days after a pass
+    const c=(typeof activeCongrats==="function")?activeCongrats():null;
+    if(c && Math.random()<0.35){
+      return "🎉 Mabrook, {name}! You completed Juz "+c.juz+" — may Allah bless your hifz.";
+    }
     if(!order.length||ptr>=order.length){order=shuffle([...Array(NOTES.length).keys()]);ptr=0;}
     return NOTES[order[ptr++]];
   }
@@ -1015,11 +1105,15 @@ function bindSurahAyah(surahSel,a1Sel,a2Sel,a1Num,a2Num){
 })();
 
 /* ================= NAV ================= */
+function openSide(v){$("#nav").classList.toggle("open",v);$("#sideScrim").classList.toggle("open",v);}
+$("#menuFab").addEventListener("click",()=>openSide(!$("#nav").classList.contains("open")));
+$("#sideScrim").addEventListener("click",()=>openSide(false));
 $("#nav").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
   $$("#nav button").forEach(x=>x.classList.toggle("active",x===b));
   $$(".view").forEach(v=>v.classList.remove("on"));
   $("#v-"+b.dataset.v).classList.add("on");
+  openSide(false);
   renderAll();
 });
 $$(".modal-bg").forEach(m=>{
@@ -1228,6 +1322,20 @@ function portionCell(k,day,field){
       <span class="arname">${SURAHS[first.s][1]}</span><span class="pcell-t">${label}</span>
     </button></span>`;
 }
+function dayMarker(r,d){
+  // small status marks visible even in view-only mode (checkmarks etc.)
+  let m="";
+  if(r.ev&&r.ev.type==="juz")m+=r.ev.result==="pass"?'<span class="dmark ok" title="Juz '+r.ev.juz+' — passed">✓ J'+r.ev.juz+'</span>':'<span class="dmark retry" title="Juz '+r.ev.juz+' — try again">↻ J'+r.ev.juz+'</span>';
+  if(r.ev&&r.ev.type==="exam")m+='<span class="dmark exam" title="Exam day">🎓</span>';
+  return m?('<div class="dmarks">'+m+'</div>'):"";
+}
+function eventCellHTML(ev){
+  if(ev.type==="exam"){
+    return '<div class="evcell exam"><span class="evi">🎓</span><span class="evt">Exam'+(ev.juz?' · Juz '+ev.juz:'')+'</span></div>';
+  }
+  const ok=ev.result==="pass";
+  return '<div class="evcell juz '+(ok?"pass":"retry")+'"><span class="evi">'+(ok?"✓":"↻")+'</span><span class="evt">Juz '+ev.juz+' — '+(ok?"Completed":"Try again")+'</span></div>';
+}
 function juzTestChip(r,d){
   const jt=r.jt;  // {juz, examiner, result:"pass"|"retry", date}
   if(jt && jt.result){
@@ -1252,12 +1360,22 @@ function renderDaily(){
     const dow=DOWS[(new Date(y,m-1,d).getDay()+6)%7].slice(0,3);
     const pState=r.p===1?"on":r.p===0?"abs":"";
     const pMark=r.p===1?"✓":r.p===0?"✗":"·";
-    h+=`<tr class="${cls?"":"holiday"} ${dt===today?"today-row":""}">
-      <td class="datecell"><b>${d}</b><span>${dow}</span>${juzTestChip(r,d)}</td>
-      <td>${`<button class="pv ${pState}" data-d="${d}" title="present / absent / clear">${pMark}</button>`}${cls?"":'<span class="offtag" title="This is a holiday / off day">OFF</span>'}</td>
-      <td class="pcol" data-day="${d}">${portionCell(k,d,"nl")}</td>
+    const ev=r.ev;                                 // {type:"exam"|"juz", juz, result, ...}
+    const hasData = (r.p!=null)||Number(r.ln||0)>0||normPortions(r.nl).length||normPortions(r.sq).length||normPortions(r.ol).length||ev;
+    const rowCls=[cls?"":"holiday", (!cls&&hasData)?"has-data":"", dt===today?"today-row":"", ev?("ev-"+ev.type):"", (ev&&ev.type==="juz"&&ev.result==="pass")?"ev-glow":""].filter(Boolean).join(" ");
+    let portionArea;
+    if(ev){
+      // the three portion columns become ONE merged cell describing the event
+      portionArea=`<td class="pcol pcol-merged" data-day="${d}" colspan="3">${eventCellHTML(ev)}</td>`;
+    } else {
+      portionArea=`<td class="pcol" data-day="${d}">${portionCell(k,d,"nl")}</td>
       <td class="pcol" data-day="${d}">${portionCell(k,d,"sq")}</td>
-      <td class="pcol" data-day="${d}">${portionCell(k,d,"ol")}</td>
+      <td class="pcol" data-day="${d}">${portionCell(k,d,"ol")}</td>`;
+    }
+    h+=`<tr class="${rowCls}" data-day="${d}">
+      <td class="datecell"><b>${d}</b><span>${dow}</span>${dayMarker(r,d)}</td>
+      <td>${`<button class="pv ${pState}" data-d="${d}" title="present / absent / clear">${pMark}</button>`}${cls?"":'<span class="offtag" title="Holiday / off day">OFF</span>'}</td>
+      ${portionArea}
       <td>${`<input type="number" min="0" value="${r.ln??""}" placeholder="0" data-d="${d}" class="lnin" style="width:64px">`}</td>
     </tr>`;
   }
@@ -1276,26 +1394,24 @@ function renderDaily(){
     setDay(k,+inp.dataset.d,{ln:v});renderMonthDash();
   });
   tb.querySelectorAll(".pcell,.pchip.empty").forEach(c=>c.onclick=()=>{if(!canEdit())return;warnHoliday(+c.dataset.d);openPortionModal(k,+c.dataset.d,c.dataset.f);});
-  // long-press (2.3s) anywhere on a day's 3 portion cells => arrange an exam for that day
-  tb.querySelectorAll("td.pcol").forEach(td=>{
+  // long-press (0.6s) a day row => menu: Exam / Juz submission (edit mode only)
+  tb.querySelectorAll("tr[data-day]").forEach(row=>{
     let timer=null, fired=false;
-    const cells=()=>[...tb.querySelectorAll('td.pcol[data-day="'+td.dataset.day+'"]')];
     const start=(e)=>{
+      if(!adminUnlocked()&&!LINK){}          // allow in edit mode
       if(!canEdit())return;
-      fired=false;
-      const row=td.closest("tr"); const cs=cells(); if(cs[1])cs[1].classList.add("pcol-mid");
-      row.classList.add("exam-merging");
-      timer=setTimeout(()=>{ fired=true; row.classList.remove("exam-merging"); cs.forEach(c=>c.classList.remove("pcol-mid"));
-        openExamForDay(k,+td.dataset.day);
-      },2300);
+      fired=false; row.classList.add("row-pressing");
+      const pt=(e.touches&&e.touches[0])||e;
+      timer=setTimeout(()=>{ fired=true; row.classList.remove("row-pressing");
+        openRowMenu(k,+row.dataset.day, pt.clientX, pt.clientY);
+      },600);
     };
-    const cancel=()=>{ clearTimeout(timer);
-      const row=td.closest("tr"); row.classList.remove("exam-merging"); cells().forEach(c=>c.classList.remove("pcol-mid")); };
-    td.addEventListener("mousedown",start); td.addEventListener("touchstart",start,{passive:true});
-    td.addEventListener("mouseup",cancel); td.addEventListener("mouseleave",cancel);
-    td.addEventListener("touchend",cancel); td.addEventListener("touchmove",cancel,{passive:true});
-    // suppress the click that would open the portion modal right after a long-press
-    td.addEventListener("click",e=>{ if(fired){e.stopPropagation();e.preventDefault();fired=false;} },true);
+    const cancel=()=>{ clearTimeout(timer); row.classList.remove("row-pressing"); };
+    row.addEventListener("mousedown",start); row.addEventListener("touchstart",start,{passive:true});
+    row.addEventListener("mouseup",cancel); row.addEventListener("mouseleave",cancel);
+    row.addEventListener("touchend",cancel); row.addEventListener("touchmove",cancel,{passive:true});
+    row.addEventListener("click",e=>{ if(fired){e.stopPropagation();e.preventDefault();fired=false;} },true);
+    row.addEventListener("contextmenu",e=>{ if(canEdit())e.preventDefault(); });
   });
   tb.querySelectorAll(".jtchip").forEach(c=>c.onclick=()=>{if(!canEdit())return;openJuzTest(k,+c.dataset.jt);});
   renderMonthDash();
@@ -1477,9 +1593,12 @@ function renderExams(){
 }
 function openExamForDay(k,day){
   const dateStr=k+"-"+pad(day);
+  // stamp a lightweight exam event on the day so the 3 cells merge & recolour
+  setDay(k,day,{ev:{type:"exam", date:dateStr}});
+  renderDaily();
   openExamModal(null);
   const el=document.getElementById("emDate"); if(el)el.value=dateStr;
-  if(window.toast)toast("Arrange the juz / portion exam for "+dateStr);
+  if(window.toast)toast("Exam set for "+dateStr+" — fill the marks below");
 }
 function openExamModal(id){
   if(!canEdit())return;
@@ -1564,12 +1683,33 @@ function renderChip(){
   $("#chipDate").textContent=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
 }
 
+/* ================= DAY ROW MENU (exam / juz submission) ================= */
+let rowMenuCtx=null;
+function openRowMenu(k,day,x,y){
+  rowMenuCtx={k,day};
+  const r=dayRec(k,day);
+  $("#rowMenuTitle").textContent=monthLabel(k).split(" ")[0]+" "+day;
+  $("#rmClear").style.display=r.ev?"flex":"none";
+  const menu=$("#rowMenu");
+  menu.classList.add("on");
+  // position within viewport
+  const mw=210,mh=160, vw=innerWidth,vh=innerHeight;
+  menu.style.left=Math.min(x,vw-mw-12)+"px";
+  menu.style.top=Math.min(y,vh-mh-12)+"px";
+}
+function closeRowMenu(){$("#rowMenu").classList.remove("on");}
+document.addEventListener("click",e=>{ if(!e.target.closest("#rowMenu")&&!e.target.closest("tr[data-day]"))closeRowMenu(); });
+$("#rmExam").onclick=()=>{ if(!rowMenuCtx)return; const{k,day}=rowMenuCtx; closeRowMenu(); openExamForDay(k,day); };
+$("#rmJuz").onclick=()=>{ if(!rowMenuCtx)return; const{k,day}=rowMenuCtx; closeRowMenu(); openJuzTest(k,day); };
+$("#rmClear").onclick=()=>{ if(!rowMenuCtx)return; const{k,day}=rowMenuCtx; const m=S.months[k];
+  if(m&&m.days[pad(day)]){delete m.days[pad(day)].ev; save();} closeRowMenu(); renderDaily(); toast("Day event cleared"); };
+
 /* ================= JUZ EXAMINER TEST ================= */
 let jtCtx=null;  // {k, day}
 function openJuzTest(k,day){
   jtCtx={k,day};
-  const r=dayRec(k,day), jt=r.jt||null;
-  $("#jtTitle").textContent="Juz examiner test · "+monthLabel(k).split(" ")[0]+" "+day;
+  const r=dayRec(k,day), jt=(r.ev&&r.ev.type==="juz")?r.ev:null;
+  $("#jtTitle").textContent="Juz submission · "+monthLabel(k).split(" ")[0]+" "+day;
   // fill juz 1..30
   $("#jtJuz").innerHTML=Array.from({length:30},(_,i)=>`<option value="${i+1}"${jt&&jt.juz===i+1?" selected":""}>Juz ${i+1}</option>`).join("");
   // examiners from settings
@@ -1581,7 +1721,9 @@ function openJuzTest(k,day){
 function saveJuzTest(result){
   if(!jtCtx)return;
   const {k,day}=jtCtx;
-  setDay(k,day,{jt:{juz:+$("#jtJuz").value, examiner:$("#jtExaminer").value||"", result, date:todayStr()}});
+  const juz=+$("#jtJuz").value;
+  setDay(k,day,{ev:{type:"juz", juz, examiner:$("#jtExaminer").value||"", result, date:todayStr()}});
+  if(result==="pass")markCongrats(juz);      // trigger occasional congrats for 2 days
   $("#juzTestModal").classList.remove("on");
   renderDaily();
   toast(result==="pass"?"✓ Juz test recorded — Completed successfully":"↻ Juz test recorded — Try again");
@@ -1590,8 +1732,8 @@ $("#jtPass").onclick=()=>saveJuzTest("pass");
 $("#jtRetry").onclick=()=>saveJuzTest("retry");
 $("#jtRemove").onclick=()=>{
   if(!jtCtx)return;
-  const {k,day}=jtCtx, m=S.months[k]; if(m&&m.days[pad(day)]){delete m.days[pad(day)].jt;save();}
-  $("#juzTestModal").classList.remove("on");renderDaily();toast("Juz test removed");
+  const {k,day}=jtCtx, m=S.months[k]; if(m&&m.days[pad(day)]){delete m.days[pad(day)].ev;save();}
+  $("#juzTestModal").classList.remove("on");renderDaily();toast("Juz submission removed");
 };
 
 /* ================= REPORTS + MEMORISED ENGINE ================= */
@@ -1800,8 +1942,9 @@ function showOnly(id){
   if(LINK&&id==="v-settings")id="v-dash";   // settings is admin-only
   $$(".view").forEach(v=>v.classList.remove("on"));
   $("#"+id).classList.add("on");
-  const inSystem=["v-dash","v-daily","v-tasks","v-exams","v-settings"].includes(id);
+  const inSystem=["v-dash","v-daily","v-tasks","v-exams","v-settings","v-reports","v-memorised"].includes(id);
   $("#nav").style.display=inSystem?"flex":"none";
+  const mf=$("#menuFab"); if(mf)mf.style.display=inSystem?"grid":"none";
   $("#backRoster").style.display=inSystem?"inline-flex":"none";
   $("#chipBox").style.display=inSystem?"flex":"none";
 }
@@ -1852,9 +1995,9 @@ async function linkBoot(sid,tok){
   CAN_EDIT=false;document.body.classList.add("viewonly");
   renderModeBadge();
   renderChip();setSync("ok");
-  showOnly("v-dash");
+  showOnly("v-daily");
   $("#backRoster").style.display="none";
-  $$("#nav button").forEach(x=>x.classList.toggle("active",x.dataset.v==="dash"));
+  $$("#nav button").forEach(x=>x.classList.toggle("active",x.dataset.v==="daily"));
   renderAll();
   toast("Viewing "+row.name+" — double-tap the ☪ logo to edit");
 }
