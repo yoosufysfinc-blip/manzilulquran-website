@@ -74,9 +74,9 @@ body::before{
 }
 .app{position:relative; z-index:1; max-width:1280px; margin:0 auto; padding:22px 22px 90px}
 /* ---------- header ---------- */
-header{display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:10px 4px 22px}
+header{display:flex; align-items:center; gap:14px; flex-wrap:nowrap; padding:10px 4px 22px 66px}
 .crest{
-  width:54px;height:54px;border-radius:50%; display:grid;place-items:center; flex:0 0 auto;
+  width:50px;height:50px;border-radius:50%; display:grid;place-items:center; flex:0 0 auto; margin-left:2px;
   background:linear-gradient(140deg,#0B4D3B,#1B7A5A); border:2px solid var(--gold);
   box-shadow:0 0 24px var(--emGlow), inset 0 0 18px rgba(0,0,0,.35);
   font-size:24px; color:var(--gold2); position:relative; overflow:hidden;
@@ -109,11 +109,37 @@ header{display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:10px 
   nav.sidebar button.active{background:linear-gradient(135deg,rgba(201,169,110,.22),rgba(201,169,110,.08));
     border-color:var(--line2);color:var(--gold2);font-weight:600}
   body.lighttheme nav.sidebar{background:linear-gradient(180deg,#dfeee6,#cfe6d8)}
-  .moonbtn{background:var(--panel);border:1px solid var(--line2);color:var(--gold2);width:42px;height:42px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
-  border-radius:12px;font-size:19px;cursor:pointer;transition:.2s;display:grid;place-items:center;flex:0 0 auto;margin-left:8px}
-  .moonbtn:hover{border-color:var(--gold);transform:scale(1.06)}
-  .moonbtn:active{transform:scale(.94)}
-  body.lighttheme .moonbtn{color:var(--em2)}
+  .moonbtn{background:transparent;border:0;width:44px;height:44px;padding:0;cursor:pointer;flex:0 0 auto;
+    -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+    display:grid;place-items:center;position:relative}
+  .moonsvg{width:26px;height:26px;overflow:visible;
+    fill:none;stroke:var(--gold2);stroke-width:1.8;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  body.lighttheme .moonsvg{stroke:var(--em2)}
+  /* DARK theme default => show MOON (rays hidden, mask carves the crescent) */
+  .sun-core{fill:none;stroke:var(--gold2);transition:.4s}
+  body.lighttheme .sun-core{stroke:var(--em2)}
+  .sun-rays{opacity:0;transform-origin:12px 12px;transition:opacity .4s,transform .5s}
+  .moon-mask{fill:var(--bg);stroke:none;opacity:1;transition:opacity .4s}
+  body.lighttheme .moon-mask{fill:var(--bg)}
+  /* LIGHT theme => morph to SUN (rays appear, crescent mask fades) */
+  body.lighttheme .moonsvg{transform:rotate(40deg)}
+  body.lighttheme .sun-rays{opacity:1}
+  body.lighttheme .moon-mask{opacity:0}
+  body.lighttheme .sun-core{fill:rgba(18,112,79,.14)}
+  .moonbtn:hover .moonsvg{transform:scale(1.12) rotate(8deg)}
+  body.lighttheme .moonbtn:hover .moonsvg{transform:scale(1.12) rotate(48deg)}
+  /* creative press-and-hold: glowing ring fills up like a charge */
+  .moonbtn::before{content:"";position:absolute;inset:2px;border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle,var(--goldGlow),transparent 70%);opacity:0;transform:scale(.5);transition:.2s}
+  .moonbtn.charging::before{animation:moonCharge 2.3s ease-in forwards}
+  @keyframes moonCharge{
+    0%{opacity:.2;transform:scale(.5);box-shadow:0 0 0 0 var(--goldGlow)}
+    60%{opacity:.8;transform:scale(1.15)}
+    100%{opacity:1;transform:scale(1.35);box-shadow:0 0 22px 4px var(--goldGlow)}}
+  .moonbtn.charging .moonsvg{animation:moonSpin 2.3s ease-in forwards}
+  @keyframes moonSpin{to{transform:rotate(360deg) scale(1.15)}}
+  .moonbtn.pop .moonsvg{animation:moonPop .5s ease-out}
+  @keyframes moonPop{0%{transform:scale(1)}40%{transform:scale(1.4)}100%{transform:scale(1)}}
   .motiv{position:relative;max-width:720px;margin:0 auto 20px;text-align:center;overflow:hidden;
     border-radius:18px;padding:16px 30px;
     background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.03));
@@ -491,10 +517,11 @@ footer b{color:var(--gold)}
 
 /* ---------- view / edit mode ---------- */
 /* view-only: block edits but keep full clarity (no fade) */
-  body.viewonly .pv,body.viewonly .lnin,body.viewonly .pchip,body.viewonly .tdone,
+  body.viewonly .pv,body.viewonly .lnin,body.viewonly .pchip.empty,body.viewonly .tdone,
   body.viewonly #addTaskBtn,body.viewonly #addExamBtn,body.viewonly .mtab.add,
-  body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .edel,
-  body.viewonly .pcell,body.viewonly .pcol{pointer-events:none}
+  body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .edel{pointer-events:none}
+  /* .pcell stays tappable in view-only so the surah popup can open */
+  body.viewonly .pcell{pointer-events:auto;cursor:pointer}
   /* task/exam MANAGEMENT gated behind the moon long-press (admin arrangement) */
   #addTaskBtn,#addExamBtn,.tedit,.tdel,.eedit,.edel{display:none}
   body.tasks-unlocked #addTaskBtn,body.tasks-unlocked #addExamBtn,
@@ -530,15 +557,25 @@ footer b{color:var(--gold)}
 <body>
 <div class="app">
   <header>
-    <div class="crest" id="crest" title="ManzilulQuran">☪<img src="/og-image.jpg" alt="" onerror="this.remove()"></div>
-    <button class="moonbtn" id="moonBtn" title="Switch light / dark — hold for more" aria-label="Theme">🌙</button>
     <div class="htitle">
       <h1>Manzilul<em>Quran</em> · Hifz Command Center</h1>
-      <p>Daily Hifz Data Report System</p>
     </div>
     <div class="hspacer"></div>
     <button class="btn ghost sm" id="backRoster" style="display:none">← All students</button>
     <div class="student-chip" id="chipBox" style="display:none"><span class="dot" id="syncDot" title="sync status"></span><div><b id="chipStudent">Student</b><br><span id="chipDate"></span></div></div>
+    <button class="moonbtn" id="moonBtn" title="Switch light / dark — hold for admin tools" aria-label="Theme">
+      <svg viewBox="0 0 24 24" class="moonsvg" aria-hidden="true">
+        <circle class="sun-core" cx="12" cy="12" r="5"></circle>
+        <g class="sun-rays" stroke-linecap="round">
+          <line x1="12" y1="1.5" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22.5"></line>
+          <line x1="1.5" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22.5" y2="12"></line>
+          <line x1="4.2" y1="4.2" x2="6" y2="6"></line><line x1="18" y1="18" x2="19.8" y2="19.8"></line>
+          <line x1="19.8" y1="4.2" x2="18" y2="6"></line><line x1="6" y1="18" x2="4.2" y2="19.8"></line>
+        </g>
+        <path class="moon-mask" d="M20 14.5A7 7 0 0 1 11 5.5a0.1 0.1 0 0 0 0-0.2A7.5 7.5 0 1 0 20.2 14.5a0.1 0.1 0 0 0-0.2 0Z"></path>
+      </svg>
+    </button>
+    <div class="crest" id="crest" title="ManzilulQuran">☪<img src="/og-image.jpg" alt="" onerror="this.remove()"></div>
   </header>
 
   <div class="vobanner" id="voBanner" hidden>🔒 View-only</div>
@@ -1042,19 +1079,22 @@ function bindSurahAyah(surahSel,a1Sel,a2Sel,a1Num,a2Num){
   function bind(){
     const btn=document.getElementById("moonBtn"); if(!btn)return;
     let held=false,timer=null;
-    const START=e=>{ held=false; timer=setTimeout(()=>{ held=true;
+    const START=e=>{ held=false; btn.classList.add("charging"); timer=setTimeout(()=>{ held=true;
+        btn.classList.remove("charging");
         document.body.classList.toggle("tasks-unlocked");
         const on=document.body.classList.contains("tasks-unlocked");
+        if(navigator.vibrate)try{navigator.vibrate(30);}catch(_){}
         if(window.toast)toast(on?"🔓 Task & exam management unlocked":"🔒 Task & exam management hidden");
       },2300); };
-    const END=()=>{ clearTimeout(timer);
+    const END=()=>{ clearTimeout(timer); btn.classList.remove("charging");
+      if(!held){ btn.classList.remove("pop"); void btn.offsetWidth; btn.classList.add("pop"); }
       if(!held){ // short tap = theme toggle
         const light=document.body.classList.toggle("lighttheme");
         try{localStorage.setItem(KEY,light?"light":"dark");}catch(e){}
       } };
     btn.addEventListener("contextmenu",e=>e.preventDefault());
     btn.addEventListener("mousedown",START); btn.addEventListener("touchstart",START,{passive:true});
-    btn.addEventListener("mouseup",END); btn.addEventListener("mouseleave",()=>clearTimeout(timer));
+    btn.addEventListener("mouseup",END); btn.addEventListener("mouseleave",()=>{clearTimeout(timer);btn.classList.remove("charging");});
     btn.addEventListener("touchend",END);
   }
   document.addEventListener("DOMContentLoaded",bind);
@@ -1785,8 +1825,10 @@ function openSurahPop(k,day,field,x,y){
   const pop=$("#surahPop"), sc=$("#surahPopScrim");
   pop.classList.add("on"); if(sc)sc.classList.add("on");
   const pw=300,ph=Math.min(360,120+list.length*46), vw=innerWidth,vh=innerHeight;
-  pop.style.left=Math.max(12,Math.min(x,vw-pw-12))+"px";
-  pop.style.top=Math.max(12,Math.min(y,vh-ph-12))+"px";
+  // touch taps can report x/y as 0 — fall back to centering the board
+  const cx=(x&&x>0)?x:(vw/2-pw/2), cy=(y&&y>0)?y:(vh/2-ph/2);
+  pop.style.left=Math.max(12,Math.min(cx,vw-pw-12))+"px";
+  pop.style.top=Math.max(12,Math.min(cy,vh-ph-12))+"px";
 }
 function closeSurahPop(){$("#surahPop").classList.remove("on");const sc=$("#surahPopScrim");if(sc)sc.classList.remove("on");}
 $("#surahPopClose").onclick=closeSurahPop;
