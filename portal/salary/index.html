@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Salary · ManzilulQuran Staff Portal</title>
+<link rel="icon" href="/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Marcellus&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050f0c; --bg2:#08170f; --panel:rgba(14,38,29,.72); --panel2:rgba(20,52,40,.55);
+  --line:rgba(201,169,110,.16); --line2:rgba(201,169,110,.32);
+  --em:#1B7A5A; --em2:#2fae7f; --emGlow:rgba(47,174,127,.3);
+  --gold:#C9A96E; --gold2:#e8cf9a; --goldGlow:rgba(201,169,110,.28);
+  --ink:#eef7f0; --mut:#8fb3a2; --dim:#5d7d6e; --bad:#e07a6a; --ok:#57c98f; --warn:#e0b76a;
+  --ui:'Outfit',system-ui,sans-serif; --disp:'Marcellus',serif; --r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--ui);color:var(--ink);line-height:1.6;min-height:100vh;
+  background:radial-gradient(900px 500px at 100% -10%,rgba(201,169,110,.08),transparent 55%),
+    radial-gradient(700px 460px at -10% 110%,rgba(47,174,127,.07),transparent 55%),
+    linear-gradient(170deg,var(--bg),var(--bg2));}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 70px}
+header{display:flex;align-items:center;gap:14px;padding:8px 4px 18px}
+.crest{width:48px;height:48px;border-radius:50%;overflow:hidden;flex:0 0 auto;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line2);font-size:22px}
+.crest img{width:100%;height:100%;object-fit:cover}
+.htitle h1{font-family:var(--disp);font-size:23px;font-weight:400}
+.htitle h1 em{color:var(--gold2);font-style:normal}
+.htitle p{font-size:12px;color:var(--mut)}
+.hspace{flex:1}
+.syncbadge{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--mut);border:1px solid var(--line2);border-radius:100px;padding:6px 12px;white-space:nowrap}
+.syncdot{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+.syncdot.ok{background:var(--ok)} .syncdot.sync{background:var(--warn);animation:pulse 1s infinite} .syncdot.err{background:var(--bad)}
+@keyframes pulse{50%{opacity:.4}}
+.back{color:var(--mut);text-decoration:none;font-size:13px;font-weight:600;border:1px solid var(--line2);padding:8px 14px;border-radius:10px;transition:.18s;white-space:nowrap}
+.back:hover{border-color:var(--gold);color:var(--gold2)}
+.lock{max-width:380px;margin:8vh auto;background:var(--panel);border:1px solid var(--line2);border-radius:20px;padding:34px 28px;text-align:center}
+.lock .crest{margin:0 auto 16px;width:60px;height:60px;font-size:26px}
+.lock h2{font-family:var(--disp);font-size:22px;margin-bottom:6px}
+.lock p{font-size:13px;color:var(--mut);margin-bottom:18px}
+.lock input{width:100%;background:var(--bg2);border:1px solid var(--line2);color:var(--ink);border-radius:11px;padding:13px 15px;font-family:var(--ui);font-size:15px;text-align:center;letter-spacing:2px;margin-bottom:12px}
+.lock button{width:100%;background:linear-gradient(135deg,var(--gold),#b4934e);color:#241a08;border:0;font-family:var(--ui);font-weight:700;font-size:15px;padding:13px;border-radius:11px;cursor:pointer}
+.lock .err{color:var(--bad);font-size:12px;height:16px;margin-bottom:6px}
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tab{background:var(--panel);border:1px solid var(--line2);color:var(--mut);font-family:var(--ui);font-weight:600;font-size:14px;padding:11px 18px;border-radius:12px;cursor:pointer;transition:.18s;display:flex;align-items:center;gap:7px}
+.tab:hover{border-color:var(--gold);color:var(--gold2)}
+.tab.active{background:linear-gradient(135deg,var(--em),var(--em2));color:#04241a;border-color:var(--em2);font-weight:700}
+.view{display:none} .view.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-bottom:18px}
+.card h3{font-family:var(--disp);font-size:18px;font-weight:400;color:var(--gold2);margin-bottom:4px}
+.card .sub{font-size:12.5px;color:var(--mut);margin-bottom:16px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.field{flex:1;min-width:140px}
+.field label{display:block;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:6px;font-weight:600}
+input,select{width:100%;background:var(--bg2);border:1px solid var(--line2);color:var(--ink);border-radius:10px;padding:11px 13px;font-family:var(--ui);font-size:14px;transition:.16s}
+input:focus,select:focus{outline:none;border-color:var(--em2);box-shadow:0 0 0 3px var(--emGlow)}
+.btn{background:linear-gradient(135deg,var(--em),var(--em2));color:#04241a;border:0;font-family:var(--ui);font-weight:700;font-size:14px;padding:12px 20px;border-radius:11px;cursor:pointer;transition:.18s;white-space:nowrap}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn.gold{background:linear-gradient(135deg,var(--gold),#b4934e);color:#241a08}
+.btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--gold2)}
+.btn.sm{padding:8px 14px;font-size:13px}
+.btn.danger{background:transparent;border:1px solid rgba(224,122,106,.4);color:var(--bad)}
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px}
+th{text-align:left;padding:12px 14px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);background:var(--bg2);border-bottom:1px solid var(--line2);white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tr:hover td{background:rgba(201,169,110,.04)}
+.chip{display:inline-block;background:var(--panel2);border:1px solid var(--line2);border-radius:100px;padding:3px 10px;font-size:12px;color:var(--gold2);margin:2px}
+.money{font-weight:700;color:var(--em2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tdel{background:transparent;border:0;color:var(--bad);cursor:pointer;font-size:16px;padding:4px 8px;border-radius:7px}
+.tdel:hover{background:rgba(224,122,106,.14)}
+.empty{text-align:center;color:var(--mut);padding:34px 16px;font-size:14px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:100px;padding:3px 10px}
+.pill.paid{background:rgba(47,174,127,.2);color:var(--em2);border:1px solid rgba(47,174,127,.4)}
+.pill.pending{background:rgba(224,183,106,.16);color:var(--warn);border:1px solid rgba(224,183,106,.4)}
+.tc-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.tc-item{display:flex;gap:8px;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;flex-wrap:wrap}
+.tc-item select,.tc-item input{flex:1;min-width:90px}
+.tc-item .tc-rm{background:transparent;border:0;color:var(--bad);cursor:pointer;font-size:15px;padding:2px 6px}
+.ccards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:8px}
+.ccard{background:var(--bg2);border:1px solid var(--line2);border-radius:13px;padding:15px 16px;position:relative}
+.ccard h4{font-size:15px;color:var(--gold2);margin-bottom:8px;padding-right:24px}
+.ccard .cc-row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mut);margin-top:3px}
+.ccard .cc-row b{color:var(--ink);font-weight:600}
+.ccard .tdel{position:absolute;top:10px;right:8px}
+.rep-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px}
+.rep-kpi{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px 18px}
+.rep-kpi .v{font-family:var(--disp);font-size:24px;color:var(--gold2)}
+.rep-kpi .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-top:2px}
+.grand{color:var(--em2)} .pendclr{color:var(--warn)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg2);border:1px solid var(--line2);color:var(--ink);padding:12px 20px;border-radius:12px;font-size:13.5px;font-weight:600;box-shadow:0 14px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.3s;z-index:200;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.month-pick{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.month-pick label{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+.hint{font-size:12px;color:var(--dim);margin-top:6px;font-style:italic}
+.tname{font-weight:700;color:var(--gold2);cursor:pointer;text-decoration:underline;text-decoration-color:var(--line2);text-underline-offset:3px}
+.tname:hover{text-decoration-color:var(--gold)}
+.teacher-hd{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.teacher-hd .av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--em),var(--em2));display:grid;place-items:center;color:#04241a;font-weight:800;font-size:18px;flex:0 0 auto}
+.sync-note{font-size:12px;color:var(--mut);margin-top:10px}
+.sync-note b{color:var(--gold2)}
+.modal-bg{position:fixed;inset:0;background:rgba(3,10,8,.7);z-index:150;display:none;align-items:flex-start;justify-content:center;padding:30px 14px;overflow-y:auto}
+.modal-bg.on{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--line2);border-radius:18px;padding:24px;max-width:640px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal .close{float:right;background:transparent;border:0;color:var(--mut);font-size:20px;cursor:pointer}
+@media(max-width:560px){.htitle p{display:none}.tab{flex:1;justify-content:center;padding:11px 8px;font-size:13px}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="lockWrap">
+  <div class="lock">
+    <div class="crest">💰<img src="/logo.png" alt="" onerror="this.style.display='none'"></div>
+    <h2>Salary System</h2><p>Enter the staff portal password to continue.</p>
+    <div class="err" id="lockErr"></div>
+    <input type="password" id="lockPw" placeholder="Password" autocomplete="off">
+    <button id="lockBtn">Unlock</button>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+  <header>
+    <div class="crest">💰<img src="/logo.png" alt="" onerror="this.style.display='none'"></div>
+    <div class="htitle"><h1>Manzilul<em>Quran</em> · Salary</h1><p>Teachers · salary history · monthly reports</p></div>
+    <div class="hspace"></div>
+    <div class="syncbadge"><span class="syncdot" id="syncDot"></span><span id="syncTxt">Local</span></div>
+    <a class="back" href="/portal/">← Portal</a>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-v="teachers">👥 Teachers</button>
+    <button class="tab" data-v="main">📋 Monthly Entry</button>
+    <button class="tab" data-v="report">📊 Report</button>
+    <button class="tab" data-v="config">⚙️ Configuration</button>
+  </div>
+
+  <!-- TEACHERS -->
+  <section class="view on" id="v-teachers">
+    <div class="card">
+      <h3>Teachers</h3>
+      <div class="sub">Your permanent teacher list. Tap a name to see their full salary history, pending amount, courses and students. Data loads from and saves to the Google Sheet.</div>
+      <div class="row">
+        <div class="field"><label>Add a teacher</label><input id="newTeacher" placeholder="e.g. Ustadh Ahmad"></div>
+        <button class="btn" id="addTeacherBtn">＋ Add teacher</button>
+        <button class="btn ghost" id="reloadBtn">⟳ Load from Sheet</button>
+      </div>
+      <div id="teacherList" style="margin-top:16px"></div>
+    </div>
+  </section>
+
+  <!-- MONTHLY ENTRY -->
+  <section class="view" id="v-main">
+    <div class="month-pick"><label>Month</label><input type="month" id="monthSel" style="max-width:180px"></div>
+    <div class="card">
+      <h3>Record a teacher's month</h3>
+      <div class="sub">Choose the teacher, the courses taught this month (rate comes from Configuration), class days and leave. Salary = rate × class days − leave × top rate. Re-saving a teacher for the same month updates it.</div>
+      <div class="row">
+        <div class="field"><label>Teacher</label><select id="tSelect"></select></div>
+        <div class="field" style="max-width:150px"><label>Teacher leave (days)</label><input id="tLeave" type="number" min="0" value="0"></div>
+      </div>
+      <div style="margin-top:14px">
+        <label style="font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600">Courses taught</label>
+        <div class="tc-list" id="tcList"></div>
+        <button class="btn ghost sm" id="addTc" style="margin-top:10px">＋ Add a course</button>
+      </div>
+      <div class="row" style="margin-top:16px">
+        <div class="field"><label>Student total attendance (optional)</label><input id="tStudAtt" type="number" min="0" placeholder="e.g. 12 students"></div>
+        <div class="field" style="max-width:160px"><label>Student leave (optional)</label><input id="tStudLeave" type="number" min="0" placeholder="days"></div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="saveTeacher">Save month</button>
+        <span class="money" id="livePreview" style="font-size:15px"></span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Teachers this month</h3><div class="sub" id="mListSub">—</div>
+      <div class="tbl-wrap"><table id="mTable"><thead><tr><th>Teacher</th><th>Courses</th><th>Class days</th><th>Leave</th><th>Salary</th><th></th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- REPORT -->
+  <section class="view" id="v-report">
+    <div class="month-pick"><label>Month</label><input type="month" id="repMonth" style="max-width:180px"></div>
+    <div class="rep-summary" id="repSummary"></div>
+    <div class="card">
+      <h3>Monthly salary report</h3><div class="sub" id="repSub">—</div>
+      <div class="tbl-wrap"><table id="repTable"><thead><tr><th>#</th><th>Teacher</th><th>Courses & sections</th><th>Class days</th><th>Leave</th><th>Payable</th><th>Salary</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn gold" id="pushSheet">☁️ Save all to Google Sheet</button>
+        <button class="btn" id="markMonthPaid">✓ Mark whole month paid</button>
+        <button class="btn ghost" id="printRep">🖨️ Print</button>
+      </div>
+      <div class="sync-note" id="syncNote"></div>
+    </div>
+  </section>
+
+  <!-- CONFIG -->
+  <section class="view" id="v-config">
+    <div class="card">
+      <h3>Add a course</h3>
+      <div class="sub">Set each course once — daily class length and amount per class day. Used automatically in monthly entry.</div>
+      <div class="row">
+        <div class="field"><label>Course name</label><input id="cName" placeholder="e.g. Hifz"></div>
+        <div class="field" style="max-width:160px"><label>Duration (per class)</label><input id="cDur" placeholder="e.g. 45 min"></div>
+        <div class="field" style="max-width:170px"><label>Amount per day (₹)</label><input id="cAmt" type="number" min="0" placeholder="e.g. 200"></div>
+        <button class="btn" id="addCourse">Add</button>
+      </div>
+    </div>
+    <div class="card"><h3>Courses</h3><div class="sub">Your configured courses and daily rates.</div><div class="ccards" id="courseCards"></div></div>
+    <div class="card">
+      <h3>Google Sheet connection</h3>
+      <div class="sub">Connected to your salary sheet's Apps Script. Change it here if you redeploy.</div>
+      <div class="row"><div class="field"><label>Apps Script /exec URL</label><input id="cfgUrl" placeholder="https://script.google.com/macros/s/…/exec"></div><button class="btn gold" id="saveUrl">Save URL</button></div>
+      <div class="sync-note" id="urlNote"></div>
+    </div>
+  </section>
+</div>
+
+<!-- teacher modal -->
+<div class="modal-bg" id="teacherModal"><div class="modal"><button class="close">✕</button><div id="tmBody"></div></div></div>
+
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const PW="manzil2026";
+const LS_KEY="mq_salary_v2";
+const WEBAPP="https://script.google.com/macros/s/AKfycbzPmBrzSGhZjDUtFIeN-kCirICiA4g-kh32-jlSvN6Nbu3kLap38GJX6aPohNzO7O9W/exec";
+let S={courses:[],teachers:[],records:[],sheetUrl:WEBAPP};
+// records: [{month,teacher,courses(str),classDays,leave,payableDays,salary,studentAttendance,studentLeave,paid,paidDate, _courses:[{course,section,days,rate}]}]
+// teachers: [{name,courses,students,notes}]
+
+function load(){try{const r=localStorage.getItem(LS_KEY);if(r)S=Object.assign(S,JSON.parse(r));}catch(e){} if(!S.sheetUrl)S.sheetUrl=WEBAPP;}
+function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S));}catch(e){}}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2600);}
+function money(n){return "₹"+(Math.round((+n||0)*100)/100).toLocaleString("en-IN");}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function pad(n){return n<10?"0"+n:""+n;}
+function curMonth(){const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1);}
+function monthLabel(m){if(!m)return "";const[y,mo]=m.split("-").map(Number);return ["January","February","March","April","May","June","July","August","September","October","November","December"][mo-1]+" "+y;}
+function setSync(state,msg){const d=$("#syncDot");d.className="syncdot"+(state?" "+state:"");if(msg)$("#syncTxt").textContent=msg;}
+
+/* ---- lock ---- */
+function unlock(){$("#lockWrap").style.display="none";$("#app").style.display="block";}
+$("#lockBtn").onclick=()=>{if($("#lockPw").value===PW){try{sessionStorage.setItem("mq_salary_ok","1");}catch(e){}unlock();init();}else $("#lockErr").textContent="Incorrect password.";};
+$("#lockPw").addEventListener("keydown",e=>{if(e.key==="Enter")$("#lockBtn").click();});
+
+/* ---- tabs ---- */
+$$(".tab").forEach(t=>t.onclick=()=>{
+  $$(".tab").forEach(x=>x.classList.toggle("active",x===t));
+  $$(".view").forEach(v=>v.classList.remove("on"));
+  $("#v-"+t.dataset.v).classList.add("on");
+  if(t.dataset.v==="teachers")renderTeachers();
+  if(t.dataset.v==="report")renderReport();
+  if(t.dataset.v==="config")renderCourses();
+  if(t.dataset.v==="main")renderMain();
+});
+
+/* ================= SALARY MATH ================= */
+function recSalary(rec){
+  // rec has _courses [{course,section,days,rate}] and leave
+  let gross=0,topRate=0,totalDays=0;
+  (rec._courses||[]).forEach(tc=>{const rate=+tc.rate||0;gross+=rate*(+tc.days||0);totalDays+=(+tc.days||0);if(rate>topRate)topRate=rate;});
+  const leave=+rec.leave||0;
+  const net=Math.max(0,gross-leave*topRate);
+  return {gross,net,totalDays,payableDays:Math.max(0,totalDays-leave),topRate,leave};
+}
+function coursesStr(cs){return (cs||[]).map(c=>c.course+"|"+(c.section||"")+"|"+c.days+"|"+c.rate).join(" ; ");}
+function parseCourses(str){ if(!str)return []; return String(str).split(";").map(s=>s.trim()).filter(Boolean).map(p=>{const[course,section,days,rate]=p.split("|");return{course:course||"",section:section||"",days:+days||0,rate:+rate||0};}); }
+
+/* ================= CONFIG ================= */
+$("#addCourse").onclick=()=>{
+  const name=$("#cName").value.trim(),dur=$("#cDur").value.trim(),amt=+$("#cAmt").value||0;
+  if(!name){toast("Enter a course name");return;}
+  if(amt<=0){toast("Enter the amount per day");return;}
+  if(S.courses.some(c=>c.name.toLowerCase()===name.toLowerCase())){toast("That course already exists");return;}
+  S.courses.push({name,dur,amt});save();$("#cName").value="";$("#cDur").value="";$("#cAmt").value="";renderCourses();toast("Course added");
+};
+function renderCourses(){
+  const box=$("#courseCards");
+  if(!S.courses.length){box.innerHTML='<div class="empty">No courses yet. Add your first course above.</div>';return;}
+  box.innerHTML=S.courses.map((c,i)=>`<div class="ccard"><h4>${esc(c.name)}</h4>
+    <div class="cc-row"><span>Duration</span><b>${esc(c.dur||"—")}</b></div>
+    <div class="cc-row"><span>Per day</span><b>${money(c.amt)}</b></div>
+    <button class="tdel" data-i="${i}" title="Remove">✕</button></div>`).join("");
+  $$("#courseCards .tdel").forEach(b=>b.onclick=()=>{if(!confirm("Remove this course? Saved records keep their amounts."))return;S.courses.splice(+b.dataset.i,1);save();renderCourses();});
+}
+$("#saveUrl").onclick=()=>{const u=$("#cfgUrl").value.trim();if(u&&!/^https:\/\/script\.google\.com\/macros\/s\/[^\s]+\/exec/.test(u)){toast("That doesn't look like an Apps Script /exec URL");return;}S.sheetUrl=u;save();renderUrlNote();toast("Sheet URL saved");};
+function renderUrlNote(){$("#cfgUrl").value=S.sheetUrl||"";$("#urlNote").innerHTML=S.sheetUrl?'✓ Connected to the salary Google Sheet.':'Not connected — add the URL to sync.';}
+
+/* ================= CLOUD SYNC ================= */
+async function cloudLoad(){
+  if(!S.sheetUrl)return;
+  setSync("sync","Loading…");
+  try{
+    const res=await fetch(S.sheetUrl+"?action=load&t="+Date.now());
+    const data=await res.json();
+    if(data&&data.ok){
+      if(Array.isArray(data.teachers))S.teachers=data.teachers;
+      if(Array.isArray(data.records))S.records=data.records.map(r=>{r._courses=parseCourses(r.courses);return r;});
+      save();setSync("ok","Synced");renderAllViews();toast("Loaded from Google Sheet");
+    }else{setSync("err","Load failed");}
+  }catch(e){setSync("err","Offline");}
+}
+async function cloudSaveAll(){
+  if(!S.sheetUrl){toast("Add the Sheet URL in Configuration first");return false;}
+  setSync("sync","Saving…");
+  const payload={type:"save_all",teachers:S.teachers,
+    records:S.records.map(r=>({month:r.month,teacher:r.teacher,courses:r.courses||coursesStr(r._courses),
+      classDays:r.classDays,leave:r.leave,payableDays:r.payableDays,salary:r.salary,
+      studentAttendance:r.studentAttendance,studentLeave:r.studentLeave,paid:!!r.paid,paidDate:r.paidDate||""}))};
+  try{
+    await fetch(S.sheetUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+    setSync("ok","Saved");toast("Saved to Google Sheet");return true;
+  }catch(e){setSync("err","Save failed");toast("Sheet save failed");return false;}
+}
+$("#reloadBtn").onclick=cloudLoad;
+
+/* ================= TEACHERS ================= */
+$("#addTeacherBtn").onclick=()=>{
+  const name=$("#newTeacher").value.trim();
+  if(!name){toast("Enter a teacher name");return;}
+  if(S.teachers.some(t=>t.name.toLowerCase()===name.toLowerCase())){toast("That teacher already exists");return;}
+  S.teachers.push({name,courses:"",students:"",notes:""});save();$("#newTeacher").value="";renderTeachers();toast("Teacher added");
+};
+function teacherRecords(name){return S.records.filter(r=>r.teacher===name);}
+function teacherPending(name){return teacherRecords(name).filter(r=>!r.paid).reduce((s,r)=>s+(+r.salary||0),0);}
+function teacherPaidTotal(name){return teacherRecords(name).filter(r=>r.paid).reduce((s,r)=>s+(+r.salary||0),0);}
+function renderTeachers(){
+  const box=$("#teacherList");
+  if(!S.teachers.length){box.innerHTML='<div class="empty">No teachers yet. Add teachers above, or load them from the Google Sheet.</div>';return;}
+  box.innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>Teacher</th><th>Current courses</th><th>Students</th><th>Months</th><th>Pending</th><th></th></tr></thead><tbody>${
+    S.teachers.map((t,i)=>{
+      const recs=teacherRecords(t.name),pend=teacherPending(t.name);
+      return `<tr>
+        <td><span class="tname" data-t="${esc(t.name)}">${esc(t.name)}</span></td>
+        <td style="font-size:12.5px;color:var(--mut)">${esc(t.courses||"—")}</td>
+        <td style="font-size:12.5px;color:var(--mut)">${esc(t.students||"—")}</td>
+        <td>${recs.length}</td>
+        <td>${pend>0?'<span class="pill pending">'+money(pend)+'</span>':'<span class="pill paid">Clear</span>'}</td>
+        <td><button class="tdel" data-i="${i}" title="Remove teacher">🗑</button></td>
+      </tr>`;}).join("")
+  }</tbody></table></div>`;
+  $$("#teacherList .tname").forEach(el=>el.onclick=()=>openTeacher(el.dataset.t));
+  $$("#teacherList .tdel").forEach(b=>b.onclick=()=>{if(!confirm("Remove this teacher? Their saved salary records stay in history."))return;S.teachers.splice(+b.dataset.i,1);save();renderTeachers();});
+}
+
+/* individual teacher report modal */
+function openTeacher(name){
+  const t=S.teachers.find(x=>x.name===name);const recs=teacherRecords(name).slice().sort((a,b)=>(b.month||"").localeCompare(a.month||""));
+  const pend=teacherPending(name),paid=teacherPaidTotal(name);
+  $("#tmBody").innerHTML=`
+    <div class="teacher-hd"><div class="av">${esc((name[0]||"?").toUpperCase())}</div>
+      <div><div style="font-family:var(--disp);font-size:20px;color:var(--gold2)">${esc(name)}</div>
+      <div style="font-size:12px;color:var(--mut)">${recs.length} month${recs.length!==1?"s":""} on record</div></div></div>
+    <div class="rep-summary" style="margin:14px 0">
+      <div class="rep-kpi"><div class="v">${money(paid+pend)}</div><div class="l">Total earned</div></div>
+      <div class="rep-kpi"><div class="v grand">${money(paid)}</div><div class="l">Paid</div></div>
+      <div class="rep-kpi"><div class="v pendclr">${money(pend)}</div><div class="l">Pending</div></div>
+    </div>
+    <div class="row" style="margin-bottom:12px">
+      <div class="field"><label>Current courses</label><input id="tmCourses" value="${esc(t?t.courses:"")}" placeholder="e.g. Hifz, Tajweed"></div>
+      <div class="field"><label>Current students</label><input id="tmStudents" value="${esc(t?t.students:"")}" placeholder="e.g. 12"></div>
+      <button class="btn sm" id="tmSaveInfo">Save</button>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th>Month</th><th>Courses</th><th>Days</th><th>Leave</th><th>Salary</th><th>Status</th><th></th></tr></thead><tbody>${
+      recs.length?recs.map(r=>`<tr>
+        <td><b>${monthLabel(r.month)}</b></td>
+        <td style="font-size:12px;color:var(--mut)">${esc((r._courses||[]).map(c=>c.course+(c.section?" ("+c.section+")":"")).join(", ")||r.courses||"—")}</td>
+        <td>${r.classDays||0}</td><td>${r.leave||0}</td>
+        <td class="money">${money(r.salary)}</td>
+        <td>${r.paid?'<span class="pill paid">✓ Paid</span>':'<span class="pill pending">Pending</span>'}</td>
+        <td><button class="btn sm ${r.paid?'ghost':'gold'}" data-m="${r.month}" data-pay="${r.paid?0:1}">${r.paid?'Unmark':'Mark paid'}</button></td>
+      </tr>`).join(""):'<tr><td colspan="7" class="empty">No salary records yet.</td></tr>'
+    }</tbody></table></div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost sm" id="tmPrint">🖨️ Print this report</button>
+      <button class="btn gold sm" id="tmExport">☁️ Save history to Sheet</button>
+    </div>`;
+  $("#teacherModal").classList.add("on");
+  $("#tmSaveInfo").onclick=()=>{if(t){t.courses=$("#tmCourses").value.trim();t.students=$("#tmStudents").value.trim();save();renderTeachers();toast("Updated");}};
+  $$("#tmBody [data-pay]").forEach(b=>b.onclick=()=>{markPaid(r=>r.teacher===name&&r.month===b.dataset.m,b.dataset.pay==="1");openTeacher(name);});
+  $("#tmPrint").onclick=()=>window.print();
+  $("#tmExport").onclick=cloudSaveAll;
+}
+function markPaid(pred,paid){
+  const today=new Date().toISOString().slice(0,10);
+  S.records.forEach(r=>{if(pred(r)){r.paid=paid;r.paidDate=paid?today:"";}});
+  save();
+  if(S.sheetUrl){/* also push status */ (S.records.filter(pred)).forEach(async r=>{
+    try{await fetch(S.sheetUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"set_paid",month:r.month,teacher:r.teacher,paid,paidDate:r.paidDate})});}catch(e){}
+  });}
+  renderTeachers();
+}
+$("#teacherModal .close").onclick=()=>$("#teacherModal").classList.remove("on");
+$("#teacherModal").addEventListener("click",e=>{if(e.target.id==="teacherModal")$("#teacherModal").classList.remove("on");});
+
+/* ================= MAIN / MONTHLY ENTRY ================= */
+function tcRow(row={course:"",section:"",days:""}){
+  const opts='<option value="">— course —</option>'+S.courses.map(c=>`<option ${c.name===row.course?"selected":""}>${esc(c.name)}</option>`).join("");
+  const el=document.createElement("div");el.className="tc-item";
+  el.innerHTML=`<select class="tc-course">${opts}</select>
+    <input class="tc-section" placeholder="section" value="${esc(row.section)}" style="max-width:110px">
+    <input class="tc-days" type="number" min="0" placeholder="class days" value="${row.days}" style="max-width:110px">
+    <span class="tc-rate" style="font-size:12px;color:var(--mut);min-width:70px"></span>
+    <button class="tc-rm" title="Remove">✕</button>`;
+  const upd=()=>{const c=S.courses.find(x=>x.name===el.querySelector(".tc-course").value);el.querySelector(".tc-rate").textContent=c?money(c.amt)+"/day":"";livePreview();};
+  el.querySelector(".tc-course").onchange=upd;el.querySelector(".tc-days").oninput=livePreview;
+  el.querySelector(".tc-rm").onclick=()=>{el.remove();livePreview();};
+  $("#tcList").appendChild(el);upd();
+}
+$("#addTc").onclick=()=>tcRow();
+$("#tLeave").addEventListener("input",livePreview);
+function collectDraft(){return $$("#tcList .tc-item").map(el=>{const course=el.querySelector(".tc-course").value;const c=S.courses.find(x=>x.name===course);return{course,section:el.querySelector(".tc-section").value.trim(),days:+el.querySelector(".tc-days").value||0,rate:c?c.amt:0};}).filter(x=>x.course);}
+function livePreview(){const cs=collectDraft();if(!cs.length){$("#livePreview").textContent="";return;}const r=recSalary({_courses:cs,leave:+$("#tLeave").value||0});$("#livePreview").textContent="Salary preview: "+money(r.net)+"  ("+r.totalDays+" days − "+r.leave+" leave)";}
+function fillTeacherSelect(){const sel=$("#tSelect");sel.innerHTML='<option value="">— choose teacher —</option>'+S.teachers.map(t=>`<option>${esc(t.name)}</option>`).join("")+'<option value="__new__">＋ New teacher…</option>';}
+$("#tSelect")&&($("#tSelect").onchange=()=>{if($("#tSelect").value==="__new__"){const n=prompt("New teacher name:");if(n&&n.trim()){if(!S.teachers.some(t=>t.name.toLowerCase()===n.trim().toLowerCase())){S.teachers.push({name:n.trim(),courses:"",students:"",notes:""});save();}fillTeacherSelect();$("#tSelect").value=n.trim();}else fillTeacherSelect();}});
+$("#saveTeacher").onclick=()=>{
+  const name=$("#tSelect").value;
+  if(!name||name==="__new__"){toast("Choose a teacher");return;}
+  const cs=collectDraft();if(!cs.length){toast("Add at least one course");return;}
+  const m=$("#monthSel").value||curMonth();
+  const r=recSalary({_courses:cs,leave:+$("#tLeave").value||0});
+  // replace any existing record for this teacher+month
+  S.records=S.records.filter(x=>!(x.teacher===name&&x.month===m));
+  const rec={month:m,teacher:name,_courses:cs,courses:coursesStr(cs),
+    classDays:r.totalDays,leave:+$("#tLeave").value||0,payableDays:r.payableDays,salary:r.net,
+    studentAttendance:$("#tStudAtt").value===""?null:+$("#tStudAtt").value,
+    studentLeave:$("#tStudLeave").value===""?null:+$("#tStudLeave").value,paid:false,paidDate:""};
+  S.records.push(rec);
+  // update teacher's current courses/students snapshot
+  const t=S.teachers.find(x=>x.name===name);
+  if(t){t.courses=cs.map(c=>c.course).join(", ");if($("#tStudAtt").value!=="")t.students=$("#tStudAtt").value;}
+  save();
+  $("#tLeave").value="0";$("#tStudAtt").value="";$("#tStudLeave").value="";$("#tcList").innerHTML="";tcRow();livePreview();
+  renderMain();toast("Saved "+name+" · "+monthLabel(m));
+};
+function renderMain(){
+  fillTeacherSelect();
+  const m=$("#monthSel").value||curMonth();
+  const list=S.records.filter(r=>r.month===m);
+  $("#mListSub").textContent=list.length?(list.length+" teacher"+(list.length>1?"s":"")+" · "+monthLabel(m)):"No entries yet for "+monthLabel(m);
+  const tb=$("#mTable tbody");
+  if(!list.length){tb.innerHTML='<tr><td colspan="6" class="empty">No teachers added for this month yet.</td></tr>';return;}
+  tb.innerHTML=list.map((e,i)=>{
+    const courses=(e._courses||[]).map(c=>`<span class="chip">${esc(c.course)}${c.section?" · "+esc(c.section):""} (${c.days}d)</span>`).join("");
+    return `<tr><td><span class="tname" data-t="${esc(e.teacher)}">${esc(e.teacher)}</span></td>
+      <td>${courses}</td><td>${e.classDays||0}</td><td>${e.leave||0}</td>
+      <td class="money">${money(e.salary)}</td>
+      <td><button class="tdel" data-m="${e.month}" data-t="${esc(e.teacher)}" title="Remove">🗑</button></td></tr>`;
+  }).join("");
+  $$("#mTable .tname").forEach(el=>el.onclick=()=>openTeacher(el.dataset.t));
+  $$("#mTable .tdel").forEach(b=>b.onclick=()=>{if(!confirm("Remove this entry?"))return;S.records=S.records.filter(x=>!(x.teacher===b.dataset.t&&x.month===b.dataset.m));save();renderMain();});
+}
+$("#monthSel").addEventListener("change",renderMain);
+
+/* ================= REPORT ================= */
+$("#repMonth").addEventListener("change",renderReport);
+function renderReport(){
+  const m=$("#repMonth").value||$("#monthSel").value||curMonth();$("#repMonth").value=m;
+  const list=S.records.filter(r=>r.month===m);
+  const grand=list.reduce((s,x)=>s+(+x.salary||0),0);
+  const pend=list.filter(x=>!x.paid).reduce((s,x)=>s+(+x.salary||0),0);
+  const paidT=grand-pend;
+  const totalDays=list.reduce((s,x)=>s+(+x.classDays||0),0);
+  $("#repSummary").innerHTML=`
+    <div class="rep-kpi"><div class="v">${list.length}</div><div class="l">Teachers</div></div>
+    <div class="rep-kpi"><div class="v">${totalDays}</div><div class="l">Class days</div></div>
+    <div class="rep-kpi"><div class="v grand">${money(paidT)}</div><div class="l">Paid</div></div>
+    <div class="rep-kpi"><div class="v pendclr">${money(pend)}</div><div class="l">Pending</div></div>
+    <div class="rep-kpi"><div class="v">${money(grand)}</div><div class="l">Total</div></div>`;
+  $("#repSub").textContent=list.length?monthLabel(m):"No entries for "+monthLabel(m);
+  const tb=$("#repTable tbody");
+  if(!list.length){tb.innerHTML='<tr><td colspan="8" class="empty">Nothing to report for this month.</td></tr>';return;}
+  tb.innerHTML=list.map((e,i)=>{
+    const courses=(e._courses||[]).map(c=>`${esc(c.course)}${c.section?" ("+esc(c.section)+")":""}`).join(", ");
+    return `<tr><td style="color:var(--dim)">${i+1}</td>
+      <td><span class="tname" data-t="${esc(e.teacher)}">${esc(e.teacher)}</span></td>
+      <td style="font-size:12.5px">${courses}</td><td>${e.classDays||0}</td><td>${e.leave||0}</td><td>${e.payableDays||0}</td>
+      <td class="money">${money(e.salary)}</td>
+      <td>${e.paid?'<span class="pill paid">✓ Paid</span>':'<span class="pill pending">Pending</span>'}</td></tr>`;
+  }).join("")+`<tr><td colspan="6" style="text-align:right;font-weight:700">Grand total</td><td class="money grand">${money(grand)}</td><td></td></tr>`;
+  $$("#repTable .tname").forEach(el=>el.onclick=()=>openTeacher(el.dataset.t));
+}
+$("#pushSheet").onclick=async()=>{const ok=await cloudSaveAll();if(ok)$("#syncNote").innerHTML="✓ Saved all salary data to the Google Sheet.";};
+$("#markMonthPaid").onclick=()=>{const m=$("#repMonth").value||curMonth();if(!confirm("Mark ALL teachers' salary for "+monthLabel(m)+" as paid?"))return;markPaid(r=>r.month===m,true);renderReport();toast("Month marked paid");};
+$("#printRep").onclick=()=>window.print();
+
+/* ================= INIT ================= */
+function renderAllViews(){renderCourses();renderTeachers();renderMain();renderReport();renderUrlNote();}
+function init(){
+  load();
+  $("#monthSel").value=curMonth();$("#repMonth").value=curMonth();
+  $("#tcList").innerHTML="";tcRow();
+  renderAllViews();
+  if(S.sheetUrl)cloudLoad();   // pull latest from the sheet on open
+}
+try{if(sessionStorage.getItem("mq_salary_ok")==="1"){unlock();init();}}catch(e){}
+</script>
+</body>
+</html>
