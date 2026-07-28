@@ -553,7 +553,9 @@ footer b{color:var(--gold)}
 
   /* ===== Mobile redesign: fit, white borders, visible graphics, swipe dots ===== */
   .tabdots{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:center;gap:10px;
-    padding:8px 10px;margin:0 auto 6px;background:linear-gradient(180deg,var(--bg),transparent)}
+    padding:11px 10px 12px;margin:0 auto 6px;background:linear-gradient(180deg,var(--bg),transparent);
+    touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
+  .tabdots:active{cursor:grabbing}
   .tdots-inner{display:flex;align-items:center;gap:8px}
   .tabdots .tdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.28);cursor:pointer;
     transition:.2s;border:1px solid rgba(255,255,255,.35)}
@@ -737,7 +739,7 @@ footer b{color:var(--gold)}
       <div class="card" style="padding:0">
         <div class="tblwrap" style="border:0; max-height:640px; overflow:auto">
           <table id="dailyTable">
-            <thead><tr><th style="width:110px">Date</th><th style="width:46px">✓</th><th>New Lesson</th><th>Sabq (Revision)</th><th>Old Lesson</th><th style="width:84px">Lines</th></tr></thead>
+            <thead><tr><th style="width:110px">Date</th><th style="width:46px">✓</th><th>New Lesson</th><th style="width:84px">Lines</th><th>Sabq (Revision)</th><th>Old Lesson</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
@@ -1263,25 +1265,21 @@ $("#nav").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
   gotoView(b.dataset.v); openSide(false);
 });
-/* ---- swipe left/right anywhere to change tab ---- */
+/* ---- swipe on the DOTS BAR only to change tab ---- */
 (function(){
   let x0=null,y0=null,t0=0;
-  const MAIN=document.querySelector("main")||document.body;
   function curTab(){const on=$(".view.on");if(!on)return "daily";return (on.id||"").replace("v-","");}
-  function activeTab(){ // only swipe when a main tab is showing (not connect/setup views)
-    return TAB_ORDER.includes(curTab());
-  }
-  document.addEventListener("touchstart",e=>{
+  function activeTab(){ return TAB_ORDER.includes(curTab()); }
+  const bar=$("#tabDots"); if(!bar)return;
+  bar.addEventListener("touchstart",e=>{
     if(e.touches.length!==1)return; x0=e.touches[0].clientX; y0=e.touches[0].clientY; t0=Date.now();
   },{passive:true});
-  document.addEventListener("touchend",e=>{
+  bar.addEventListener("touchend",e=>{
     if(x0==null)return;
     const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0, dt=Date.now()-t0;
     x0=null;
     if(!activeTab())return;
-    if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.6||dt>600)return; // must be a clear horizontal swipe
-    // ignore swipes that start on the scrollable daily table (let it scroll)
-    if(e.target.closest(".tbl-scroll,.tablewrap,table")&&Math.abs(dx)<90)return;
+    if(Math.abs(dx)<40||Math.abs(dx)<Math.abs(dy)*1.4||dt>600)return; // clear horizontal swipe on the bar
     const i=TAB_ORDER.indexOf(curTab()); if(i<0)return;
     const ni = dx<0 ? Math.min(TAB_ORDER.length-1,i+1) : Math.max(0,i-1);
     if(ni!==i)gotoView(TAB_ORDER[ni]);
@@ -1555,7 +1553,8 @@ function renderDaily(){
       // the three portion columns become ONE merged cell describing the event
       portionArea=`<td class="pcol pcol-merged" data-day="${d}" colspan="3">${eventCellHTML(ev)}</td>`;
     } else {
-      portionArea=`<td class="pcol" data-day="${d}">${portionCell(k,d,"nl")}</td>
+portionArea=`<td class="pcol" data-day="${d}">${portionCell(k,d,"nl")}</td>
+      <td>${`<input type="number" min="0" value="${r.ln??""}" placeholder="0" data-d="${d}" class="lnin" style="width:64px">`}</td>
       <td class="pcol" data-day="${d}">${portionCell(k,d,"sq")}</td>
       <td class="pcol" data-day="${d}">${portionCell(k,d,"ol")}</td>`;
     }
@@ -1563,7 +1562,7 @@ function renderDaily(){
       <td class="datecell"><b>${d}</b><span>${dow}</span>${dayMarker(r,d)}</td>
       <td>${`<button class="pv ${pState}" data-d="${d}" title="present / absent / clear">${pMark}</button>`}${cls?"":'<span class="offtag" title="Holiday / off day">OFF</span>'}</td>
       ${portionArea}
-      <td>${`<input type="number" min="0" value="${r.ln??""}" placeholder="0" data-d="${d}" class="lnin" style="width:64px">`}</td>
+      ${ev?`<td><input type="number" min="0" value="${r.ln??""}" placeholder="0" data-d="${d}" class="lnin" style="width:64px"></td>`:""}
     </tr>`;
   }
   tb.innerHTML=h;
