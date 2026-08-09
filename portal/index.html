@@ -234,6 +234,65 @@
     .lock-screen{padding:36px 24px}
     .portal-card{padding:18px 16px}
   }
+
+  /* ============ Academic Service — distinct suite card ============ */
+  .acad-section{max-width:960px;width:100%;margin:0 auto 30px}
+  .acad-label,.portal-section-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+    color:var(--gold-soft);margin:0 2px 12px;opacity:.9}
+  .portal-section-label{max-width:960px;margin:6px auto 16px;width:100%}
+  .acad-card{position:relative;display:flex;align-items:center;gap:22px;overflow:hidden;text-decoration:none;
+    border-radius:22px;padding:28px 26px;
+    background:linear-gradient(120deg,#12674e 0%,#0c4d3a 55%,#0a3f30 100%);
+    border:1px solid rgba(201,169,110,.55);
+    box-shadow:0 24px 60px -20px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06);
+    transition:transform .22s,box-shadow .22s,border-color .22s;color:#fff}
+  .acad-card:hover{transform:translateY(-3px);border-color:var(--gold);
+    box-shadow:0 34px 80px -22px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.1)}
+  .acad-glow{position:absolute;top:-40%;right:-10%;width:340px;height:340px;pointer-events:none;
+    background:radial-gradient(circle,rgba(201,169,110,.28),transparent 66%);filter:blur(4px)}
+  .acad-icon{flex:0 0 auto;width:74px;height:74px;border-radius:20px;display:grid;place-items:center;
+    background:linear-gradient(135deg,rgba(201,169,110,.32),rgba(201,169,110,.12));
+    border:1px solid rgba(201,169,110,.5);color:var(--gold-soft);position:relative;z-index:1}
+  .acad-icon svg{width:38px;height:38px}
+  .acad-body{flex:1;min-width:0;position:relative;z-index:1}
+  .acad-title{font-size:23px;font-weight:800;letter-spacing:-.3px;margin-bottom:5px;
+    display:flex;align-items:center;gap:10px}
+  .acad-title::after{content:"SUITE";font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#0c4d3a;
+    background:var(--gold-soft);padding:3px 8px;border-radius:6px}
+  .acad-desc{font-size:13.5px;line-height:1.55;color:rgba(255,255,255,.78);font-weight:500;max-width:560px}
+  .acad-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+  .acad-tags span{font-size:11px;font-weight:600;color:var(--gold-soft);
+    background:rgba(201,169,110,.14);border:1px solid rgba(201,169,110,.3);
+    padding:4px 11px;border-radius:100px}
+  .acad-arrow{flex:0 0 auto;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+    background:rgba(255,255,255,.08);border:1px solid rgba(201,169,110,.4);color:var(--gold-soft);
+    position:relative;z-index:1;transition:.22s}
+  .acad-card:hover .acad-arrow{background:var(--gold);color:#0c4d3a;transform:translateX(3px)}
+  @media(max-width:560px){
+    .acad-card{flex-wrap:wrap;gap:16px;padding:22px 18px}
+    .acad-icon{width:60px;height:60px}.acad-icon svg{width:30px;height:30px}
+    .acad-title{font-size:20px}.acad-arrow{display:none}
+  }
+
+  /* mini password gate modal for Academic Service */
+  .acad-gate{position:fixed;inset:0;background:rgba(3,15,11,.72);z-index:300;display:none;
+    align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+  .acad-gate.on{display:flex}
+  .acad-gate-box{background:#fff;color:var(--ink);border-radius:20px;padding:34px 28px;max-width:380px;width:100%;
+    text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:rise .3s ease}
+  .acad-gate-box h3{font-size:20px;font-weight:800;color:var(--green);margin-bottom:6px}
+  .acad-gate-box p{font-size:13px;color:var(--muted);margin-bottom:18px}
+  .acad-gate-box input{width:100%;font-size:16px;font-weight:600;color:var(--ink);background:#fff;
+    border:2px solid var(--green-mid);border-radius:12px;padding:13px 15px;text-align:center;letter-spacing:3px}
+  .acad-gate-box input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(27,122,90,.15)}
+  .acad-gate-box input.wrong{border-color:#c0392b;animation:shake .4s}
+  .acad-gate-box .g-btns{display:flex;gap:10px;margin-top:16px}
+  .acad-gate-box button{flex:1;font-size:15px;font-weight:800;border:none;border-radius:12px;padding:13px;cursor:pointer;font-family:inherit}
+  .acad-gate-box .g-go{background:var(--green);color:#fff}
+  .acad-gate-box .g-go:hover{background:var(--green-mid)}
+  .acad-gate-box .g-cancel{background:var(--green-soft);color:var(--green)}
+  .acad-gate-box .g-err{color:#c0392b;font-size:12px;font-weight:600;min-height:15px;margin-top:10px}
+
 </style>
 </head>
 <body>
@@ -268,6 +327,29 @@
       <div class="portal-title">Portal</div>
       <div class="portal-sub">Forms, tools, and internal resources</div>
     </div>
+
+    <!-- ============ Academic Service — distinct suite ============ -->
+    <div class="acad-section">
+      <div class="acad-label">Academy Suite</div>
+      <a href="#" class="acad-card" id="acadCard">
+        <div class="acad-glow"></div>
+        <div class="acad-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div class="acad-body">
+          <div class="acad-title">Academic Service</div>
+          <div class="acad-desc">The full Academy Manager — batches, attendance, students, class outcomes, teacher links, fees &amp; reports. A complete management suite.</div>
+          <div class="acad-tags"><span>Attendance</span><span>Batches</span><span>Students</span><span>Fees</span><span>Reports</span></div>
+        </div>
+        <div class="acad-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </a>
+    </div>
+
+    <div class="portal-section-label">Portal tools</div>
 
     <div class="portal-grid">
 
@@ -351,18 +433,6 @@
         <div class="portal-card-arrow">Open tool →</div>
       </a>
 
-      <!-- Salary -->
-      <a href="/portal/salary/" class="portal-card">
-        <div class="portal-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="1" x2="12" y2="23"/>
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-          </svg>
-        </div>
-        <div class="portal-card-title">Salary</div>
-        <div class="portal-card-desc">Teacher salary calculation — courses, daily rates, attendance &amp; monthly reports.</div>
-        <div class="portal-card-arrow">Open salary →</div>
-      </a>
 
     </div>
 
@@ -385,7 +455,7 @@
    ================================================================= */
 
 // CONFIG — change this to your chosen portal password
-const PORTAL_PASSWORD = "manzil2026";
+const PORTAL_PASSWORD = "marhaba786manzil";
 
 // Session key — password is remembered for 24 hours
 const SESSION_KEY = "mq_portal_unlocked_at";
@@ -440,6 +510,47 @@ if(isUnlocked()){
   $("lockScreen").style.display = "none";
   $("portalView").classList.add("show");
 }
+</script>
+
+<!-- Academic Service password gate -->
+<div class="acad-gate" id="acadGate">
+  <div class="acad-gate-box">
+    <h3>Academic Service</h3>
+    <p>This suite is protected. Enter its password to continue.</p>
+    <input type="password" id="acadPw" placeholder="Password" autocomplete="off">
+    <div class="g-err" id="acadErr"></div>
+    <div class="g-btns">
+      <button class="g-cancel" id="acadCancel">Cancel</button>
+      <button class="g-go" id="acadGo">Enter</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const ACAD_PW="manzil786";
+  const ACAD_URL="/portal/academic-service/";
+  const ACAD_SESSION="mq_acad_unlocked_at";
+  const EIGHT_H=8*60*60*1000;
+  const gate=document.getElementById("acadGate");
+  const pw=document.getElementById("acadPw");
+  const err=document.getElementById("acadErr");
+  function acadUnlocked(){try{const at=parseInt(sessionStorage.getItem(ACAD_SESSION)||"0",10);return at&&(Date.now()-at<EIGHT_H);}catch(e){return false;}}
+  function openGate(){gate.classList.add("on");err.textContent="";pw.value="";setTimeout(()=>pw.focus(),80);}
+  function go(){
+    if(pw.value===ACAD_PW){try{sessionStorage.setItem(ACAD_SESSION,String(Date.now()));}catch(e){}window.location.href=ACAD_URL;}
+    else{pw.classList.add("wrong");err.textContent="Wrong password.";setTimeout(()=>pw.classList.remove("wrong"),400);pw.select();}
+  }
+  document.getElementById("acadCard").addEventListener("click",function(e){
+    e.preventDefault();
+    if(acadUnlocked()){window.location.href=ACAD_URL;return;}
+    openGate();
+  });
+  document.getElementById("acadGo").onclick=go;
+  document.getElementById("acadCancel").onclick=()=>gate.classList.remove("on");
+  pw.addEventListener("keydown",e=>{if(e.key==="Enter")go();});
+  gate.addEventListener("click",e=>{if(e.target===gate)gate.classList.remove("on");});
+})();
 </script>
 </body>
 </html>
