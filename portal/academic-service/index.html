@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portal · ManzilulQuran E-learning Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="/logo.png" />
+
+<style>
+  :root{
+    --green:#0B4D3B;
+    --green-mid:#1B7A5A;
+    --green-soft:#E8F3EE;
+    --gold:#c9a961;
+    --gold-soft:#e8d29a;
+    --ink:#13241D;
+    --muted:#5B6B63;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    background:radial-gradient(ellipse at top,#0d5c47 0%,#062f22 60%,#031b13 100%);
+    color:#fff;
+    min-height:100vh;
+    padding:40px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* ============================================================
+     Lock Screen
+     ============================================================ */
+  .lock-screen{
+    max-width:420px;
+    width:100%;
+    background:#fff;
+    color:var(--ink);
+    border-radius:22px;
+    padding:44px 32px 36px;
+    box-shadow:0 30px 80px rgba(0,0,0,0.4);
+    text-align:center;
+    animation:rise .35s ease;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+  .lock-logo{
+    width:80px;height:80px;border-radius:50%;
+    border:3px solid var(--green-mid);
+    margin:0 auto 22px;
+    overflow:hidden;
+    background:#fff;
+  }
+  .lock-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+
+  .lock-title{
+    font-size:22px;font-weight:800;color:var(--green);
+    letter-spacing:-.3px;margin-bottom:6px;
+  }
+  .lock-sub{
+    font-size:13.5px;color:var(--muted);font-weight:500;margin-bottom:24px;
+  }
+
+  .lock-input{
+    width:100%;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:16px;font-weight:600;color:var(--ink);
+    background:#fff;
+    border:2px solid var(--green-mid);
+    border-radius:12px;
+    padding:14px 16px;
+    text-align:center;letter-spacing:4px;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .lock-input:focus{
+    outline:none;border-color:var(--green);
+    box-shadow:0 0 0 3px rgba(27,122,90,.15);
+  }
+  .lock-input.wrong{
+    border-color:#c0392b;
+    animation:shake .4s;
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-8px)}
+    75%{transform:translateX(8px)}
+  }
+
+  .lock-btn{
+    width:100%;
+    margin-top:16px;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:15px;font-weight:800;color:#fff;
+    background:var(--green);
+    border:none;
+    border-radius:12px;
+    padding:14px;cursor:pointer;
+    transition:background .2s, transform .1s;
+  }
+  .lock-btn:hover{background:var(--green-mid);transform:translateY(-1px)}
+  .lock-btn:active{transform:translateY(0)}
+
+  .lock-error{
+    color:#c0392b;font-size:12.5px;font-weight:600;
+    margin-top:12px;min-height:16px;
+  }
+
+  .lock-hint{
+    margin-top:22px;padding-top:20px;
+    border-top:1px solid var(--green-soft);
+    font-size:11.5px;color:var(--muted);
+  }
+  .lock-hint a{color:var(--green-mid);text-decoration:none;font-weight:600}
+  .lock-hint a:hover{text-decoration:underline}
+
+  /* ============================================================
+     Portal Dashboard (after unlock)
+     ============================================================ */
+  .portal{
+    display:none;
+    max-width:960px;
+    width:100%;
+  }
+  .portal.show{display:block;animation:rise .35s ease}
+
+  .portal-head{
+    text-align:center;margin-bottom:36px;
+  }
+  .portal-logo{
+    width:70px;height:70px;border-radius:50%;
+    border:2px solid rgba(201,169,110,0.5);
+    margin:0 auto 16px;overflow:hidden;background:#fff;
+  }
+  .portal-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+  .portal-eyebrow{
+    font-size:11.5px;font-weight:700;letter-spacing:2.5px;
+    text-transform:uppercase;color:var(--gold-soft);margin-bottom:8px;
+  }
+  .portal-title{
+    font-size:32px;font-weight:800;color:#fff;letter-spacing:-.5px;
+  }
+  .portal-sub{
+    font-size:14px;color:rgba(255,255,255,0.65);
+    font-weight:500;margin-top:8px;
+  }
+
+  .portal-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:18px;
+    margin-bottom:32px;
+  }
+
+  .portal-card{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(201,169,110,0.2);
+    border-radius:16px;
+    padding:22px 20px;
+    text-decoration:none;
+    color:#fff;
+    transition:transform .2s, border-color .2s, background .2s;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .portal-card:hover{
+    transform:translateY(-3px);
+    border-color:rgba(201,169,110,0.6);
+    background:rgba(255,255,255,0.08);
+  }
+  .portal-card::before{
+    content:'';
+    position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--gold-soft),var(--gold));
+    opacity:0;transition:opacity .2s;
+  }
+  .portal-card:hover::before{opacity:1}
+
+  .portal-card-icon{
+    width:44px;height:44px;
+    border-radius:12px;
+    background:rgba(201,169,110,0.15);
+    display:grid;place-items:center;
+    margin-bottom:14px;
+    color:var(--gold-soft);
+  }
+  .portal-card-icon svg{width:22px;height:22px}
+  .portal-card-title{
+    font-size:16px;font-weight:700;color:#fff;
+    margin-bottom:6px;letter-spacing:-.2px;
+  }
+  .portal-card-desc{
+    font-size:12.5px;color:rgba(255,255,255,0.6);
+    font-weight:500;line-height:1.5;flex:1;
+  }
+  .portal-card-arrow{
+    margin-top:14px;
+    font-size:12px;font-weight:600;
+    color:var(--gold-soft);
+    display:flex;align-items:center;gap:6px;
+  }
+
+  .portal-footer{
+    text-align:center;
+    padding:24px 0;
+    border-top:1px solid rgba(255,255,255,0.08);
+    color:rgba(255,255,255,0.5);
+    font-size:12px;font-weight:500;
+  }
+  .portal-footer a{color:var(--gold-soft);text-decoration:none}
+  .portal-footer a:hover{text-decoration:underline}
+  .portal-lock-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:transparent;border:1px solid rgba(255,255,255,0.2);
+    color:rgba(255,255,255,0.75);
+    padding:8px 16px;border-radius:100px;
+    font-family:inherit;font-size:12px;font-weight:600;
+    cursor:pointer;margin-top:12px;
+    transition:background .2s;
+  }
+  .portal-lock-btn:hover{background:rgba(255,255,255,0.08)}
+  .portal-lock-btn svg{width:12px;height:12px}
+
+  @media (max-width:520px){
+    .portal-title{font-size:26px}
+    .lock-screen{padding:36px 24px}
+    .portal-card{padding:18px 16px}
+  }
+
+  /* ============ Academic Service — distinct suite card ============ */
+  .acad-section{max-width:960px;width:100%;margin:0 auto 30px}
+  .acad-label,.portal-section-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+    color:var(--gold-soft);margin:0 2px 12px;opacity:.9}
+  .portal-section-label{max-width:960px;margin:6px auto 16px;width:100%}
+  .acad-card{position:relative;display:flex;align-items:center;gap:22px;overflow:hidden;text-decoration:none;
+    border-radius:22px;padding:28px 26px;
+    background:linear-gradient(120deg,#12674e 0%,#0c4d3a 55%,#0a3f30 100%);
+    border:1px solid rgba(201,169,110,.55);
+    box-shadow:0 24px 60px -20px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06);
+    transition:transform .22s,box-shadow .22s,border-color .22s;color:#fff}
+  .acad-card:hover{transform:translateY(-3px);border-color:var(--gold);
+    box-shadow:0 34px 80px -22px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.1)}
+  .acad-glow{position:absolute;top:-40%;right:-10%;width:340px;height:340px;pointer-events:none;
+    background:radial-gradient(circle,rgba(201,169,110,.28),transparent 66%);filter:blur(4px)}
+  .acad-icon{flex:0 0 auto;width:74px;height:74px;border-radius:20px;display:grid;place-items:center;
+    background:linear-gradient(135deg,rgba(201,169,110,.32),rgba(201,169,110,.12));
+    border:1px solid rgba(201,169,110,.5);color:var(--gold-soft);position:relative;z-index:1}
+  .acad-icon svg{width:38px;height:38px}
+  .acad-body{flex:1;min-width:0;position:relative;z-index:1}
+  .acad-title{font-size:23px;font-weight:800;letter-spacing:-.3px;margin-bottom:5px;
+    display:flex;align-items:center;gap:10px}
+  .acad-title::after{content:"SUITE";font-size:9.5px;font-weight:800;letter-spacing:1.5px;color:#0c4d3a;
+    background:var(--gold-soft);padding:3px 8px;border-radius:6px}
+  .acad-desc{font-size:13.5px;line-height:1.55;color:rgba(255,255,255,.78);font-weight:500;max-width:560px}
+  .acad-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+  .acad-tags span{font-size:11px;font-weight:600;color:var(--gold-soft);
+    background:rgba(201,169,110,.14);border:1px solid rgba(201,169,110,.3);
+    padding:4px 11px;border-radius:100px}
+  .acad-arrow{flex:0 0 auto;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+    background:rgba(255,255,255,.08);border:1px solid rgba(201,169,110,.4);color:var(--gold-soft);
+    position:relative;z-index:1;transition:.22s}
+  .acad-card:hover .acad-arrow{background:var(--gold);color:#0c4d3a;transform:translateX(3px)}
+  @media(max-width:560px){
+    .acad-card{flex-wrap:wrap;gap:16px;padding:22px 18px}
+    .acad-icon{width:60px;height:60px}.acad-icon svg{width:30px;height:30px}
+    .acad-title{font-size:20px}.acad-arrow{display:none}
+  }
+
+  /* mini password gate modal for Academic Service */
+  .acad-gate{position:fixed;inset:0;background:rgba(3,15,11,.72);z-index:300;display:none;
+    align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+  .acad-gate.on{display:flex}
+  .acad-gate-box{background:#fff;color:var(--ink);border-radius:20px;padding:34px 28px;max-width:380px;width:100%;
+    text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:rise .3s ease}
+  .acad-gate-box h3{font-size:20px;font-weight:800;color:var(--green);margin-bottom:6px}
+  .acad-gate-box p{font-size:13px;color:var(--muted);margin-bottom:18px}
+  .acad-gate-box input{width:100%;font-size:16px;font-weight:600;color:var(--ink);background:#fff;
+    border:2px solid var(--green-mid);border-radius:12px;padding:13px 15px;text-align:center;letter-spacing:3px}
+  .acad-gate-box input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(27,122,90,.15)}
+  .acad-gate-box input.wrong{border-color:#c0392b;animation:shake .4s}
+  .acad-gate-box .g-btns{display:flex;gap:10px;margin-top:16px}
+  .acad-gate-box button{flex:1;font-size:15px;font-weight:800;border:none;border-radius:12px;padding:13px;cursor:pointer;font-family:inherit}
+  .acad-gate-box .g-go{background:var(--green);color:#fff}
+  .acad-gate-box .g-go:hover{background:var(--green-mid)}
+  .acad-gate-box .g-cancel{background:var(--green-soft);color:var(--green)}
+  .acad-gate-box .g-err{color:#c0392b;font-size:12px;font-weight:600;min-height:15px;margin-top:10px}
+
+</style>
+</head>
+<body>
+
+  <!-- LOCK SCREEN -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-logo">
+      <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+    </div>
+    <div class="lock-title">Staff Portal</div>
+    <div class="lock-sub">Enter the portal password to continue.</div>
+
+    <input type="password" class="lock-input" id="lockInput"
+           placeholder="Password" autocomplete="off" autofocus />
+    <button class="lock-btn" id="lockBtn">Unlock</button>
+    <div class="lock-error" id="lockError">&nbsp;</div>
+
+    <div class="lock-hint">
+      Staff only. If you're a parent, please use the direct form link shared with you.
+      <br>
+      <a href="/">← Back to main site</a>
+    </div>
+  </div>
+
+  <!-- PORTAL DASHBOARD -->
+  <div class="portal" id="portalView">
+    <div class="portal-head">
+      <div class="portal-logo">
+        <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+      </div>
+      <div class="portal-eyebrow">ManzilulQuran · Staff Portal</div>
+      <div class="portal-title">Portal</div>
+      <div class="portal-sub">Forms, tools, and internal resources</div>
+    </div>
+
+    <!-- ============ Academic Service — distinct suite ============ -->
+    <div class="acad-section">
+      <div class="acad-label">Academy Suite</div>
+      <a href="#" class="acad-card" id="acadCard">
+        <div class="acad-glow"></div>
+        <div class="acad-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div class="acad-body">
+          <div class="acad-title">Academic Service</div>
+          <div class="acad-desc">The full Academy Manager — batches, attendance, students, class outcomes, teacher links, fees &amp; reports. A complete management suite.</div>
+          <div class="acad-tags"><span>Attendance</span><span>Batches</span><span>Students</span><span>Fees</span><span>Reports</span></div>
+        </div>
+        <div class="acad-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </a>
+    </div>
+
+    <div class="portal-section-label">Portal tools</div>
+
+    <div class="portal-grid">
+
+      <!-- Classes -->
+      <a href="/portal/classes/" class="portal-card">
+        <div class="portal-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+          </svg>
+        </div>
+        <div class="portal-card-title">Classes</div>
+        <div class="portal-card-desc">Student class sheets, calendars, share links &amp; WhatsApp groups.</div>
+        <div class="portal-card-arrow">Open classes →</div>
+      </a>
+
+      <!-- Forms -->
+      <a href="/portal/forms/" class="portal-card">
+        <div class="portal-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <div class="portal-card-title">Forms</div>
+        <div class="portal-card-desc">Registration, batch, staff, complaints &amp; evaluation — open, copy or send.</div>
+        <div class="portal-card-arrow">Open forms →</div>
+      </a>
+
+      <!-- Records -->
+      <a href="/portal/records/" class="portal-card">
+        <div class="portal-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+          </svg>
+        </div>
+        <div class="portal-card-title">Records</div>
+        <div class="portal-card-desc">Every submission, in colour-coded tabs. View and download as PDF.</div>
+        <div class="portal-card-arrow">Open records →</div>
+      </a>
+
+      <!-- Study Report -->
+      <a href="/portal/study-report/" class="portal-card">
+        <div class="portal-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+        </div>
+        <div class="portal-card-title">Study Report</div>
+        <div class="portal-card-desc">Daily Hifz tracking — student systems, dashboards, attendance &amp; teacher share links.</div>
+        <div class="portal-card-arrow">Open study report →</div>
+      </a>
+
+      <!-- Study Material -->
+      <a href="/portal/study-material/" class="portal-card">
+        <div class="portal-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <div class="portal-card-title">Study Material</div>
+        <div class="portal-card-desc">Bilingual lesson books for students — Islamic studies courses in English &amp; Malayalam.</div>
+        <div class="portal-card-arrow">Open study material →</div>
+      </a>
+
+      <!-- Quran Ayah Media Generator -->
+      <a href="/tools/quran-generator.html" class="portal-card">
+        <div class="portal-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 7l-7 5 7 5V7z"/>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+          </svg>
+        </div>
+        <div class="portal-card-title">Ayah Media Generator</div>
+        <div class="portal-card-desc">Create branded Quran audio &amp; video clips for social media.</div>
+        <div class="portal-card-arrow">Open tool →</div>
+      </a>
+
+
+    </div>
+
+    <div class="portal-footer">
+      <div>ManzilulQuran E-learning Academy · <a href="https://manzilulquran.in" target="_blank">manzilulquran.in</a></div>
+      <button class="portal-lock-btn" id="lockAgainBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Lock portal
+      </button>
+    </div>
+  </div>
+
+<script>
+/* =================================================================
+   ░░  PORTAL ACCESS  ░░
+   Simple client-side lock. NOT true security — anyone technical can
+   view source. Purpose: keep the portal off casual visitors' radar.
+   The lock only guards the portal LISTING. Direct form URLs
+   (e.g. /portal/complaint-form.html shared by staff) bypass the lock.
+   ================================================================= */
+
+// CONFIG — change this to your chosen portal password
+const PORTAL_PASSWORD = "marhaba786manzil";
+
+// Session key — password is remembered for 24 hours
+const SESSION_KEY = "mq_portal_unlocked_at";
+const SESSION_MAX_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+const $ = (id) => document.getElementById(id);
+
+function isUnlocked(){
+  try{
+    const at = parseInt(sessionStorage.getItem(SESSION_KEY) || "0", 10);
+    return at && (Date.now() - at) < SESSION_MAX_MS;
+  }catch(e){ return false; }
+}
+
+function unlock(){
+  try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
+  $("lockScreen").style.display = "none";
+  $("portalView").classList.add("show");
+}
+
+function lock(){
+  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  $("portalView").classList.remove("show");
+  $("lockScreen").style.display = "block";
+  $("lockInput").value = "";
+  $("lockError").textContent = "";
+  setTimeout(()=>$("lockInput").focus(), 100);
+}
+
+function tryPassword(){
+  const val = ($("lockInput").value || "").trim();
+  if(val === PORTAL_PASSWORD){
+    unlock();
+  } else {
+    const input = $("lockInput");
+    input.classList.add("wrong");
+    $("lockError").textContent = "Wrong password. Try again.";
+    setTimeout(()=>input.classList.remove("wrong"), 400);
+    input.select();
+  }
+}
+
+// Wire up UI
+$("lockBtn").onclick = tryPassword;
+$("lockInput").addEventListener("keydown", (e)=>{
+  if(e.key === "Enter") tryPassword();
+});
+$("lockAgainBtn").onclick = lock;
+
+// Check on page load
+if(isUnlocked()){
+  $("lockScreen").style.display = "none";
+  $("portalView").classList.add("show");
+}
+</script>
+
+<!-- Academic Service password gate -->
+<div class="acad-gate" id="acadGate">
+  <div class="acad-gate-box">
+    <h3>Academic Service</h3>
+    <p>This suite is protected. Enter its password to continue.</p>
+    <input type="password" id="acadPw" placeholder="Password" autocomplete="off">
+    <div class="g-err" id="acadErr"></div>
+    <div class="g-btns">
+      <button class="g-cancel" id="acadCancel">Cancel</button>
+      <button class="g-go" id="acadGo">Enter</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const ACAD_PW="manzil786";
+  const ACAD_URL="/portal/academic-service/";
+  const ACAD_SESSION="mq_acad_unlocked_at";
+  const EIGHT_H=8*60*60*1000;
+  const gate=document.getElementById("acadGate");
+  const pw=document.getElementById("acadPw");
+  const err=document.getElementById("acadErr");
+  function acadUnlocked(){try{const at=parseInt(sessionStorage.getItem(ACAD_SESSION)||"0",10);return at&&(Date.now()-at<EIGHT_H);}catch(e){return false;}}
+  function openGate(){gate.classList.add("on");err.textContent="";pw.value="";setTimeout(()=>pw.focus(),80);}
+  function go(){
+    if(pw.value===ACAD_PW){try{sessionStorage.setItem(ACAD_SESSION,String(Date.now()));}catch(e){}window.location.href=ACAD_URL;}
+    else{pw.classList.add("wrong");err.textContent="Wrong password.";setTimeout(()=>pw.classList.remove("wrong"),400);pw.select();}
+  }
+  document.getElementById("acadCard").addEventListener("click",function(e){
+    e.preventDefault();
+    if(acadUnlocked()){window.location.href=ACAD_URL;return;}
+    openGate();
+  });
+  document.getElementById("acadGo").onclick=go;
+  document.getElementById("acadCancel").onclick=()=>gate.classList.remove("on");
+  pw.addEventListener("keydown",e=>{if(e.key==="Enter")go();});
+  gate.addEventListener("click",e=>{if(e.target===gate)gate.classList.remove("on");});
+})();
+</script>
+</body>
+</html>
