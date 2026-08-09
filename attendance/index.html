@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Attendance · ManzilulQuran</title>
+<meta name="theme-color" content="#0A1F16">
+<style>
+/* Deliberately tiny and dependency-free: it must open instantly on a phone
+   with one bar of signal, so there are no web fonts, no libraries, no images. */
+:root{
+  --shell:#0A1F16; --shell-2:#0E2A1D; --line:#1E4432;
+  --on:#E7F0E9; --on-2:#9FBBA9; --on-3:#6E8C7B;
+  --card:#FFFFFF; --card-2:#F2F8F4; --cline:#DCE7E0; --text:#14201B; --muted:#5D6B62;
+  --gold:#1E7A52; --mint:#8FD3AE; --ok:#2F7D4F; --bad:#B2402F; --warn:#C07C1E; --info:#35638C;
+  --grad:linear-gradient(140deg,#2A8F60,#166B45 78%);
+  --f:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  --fm:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:var(--f);background:var(--shell);color:var(--on);font-size:16px;line-height:1.45;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.045'%3E%3Crect x='34' y='34' width='60' height='60'/%3E%3Crect x='34' y='34' width='60' height='60' transform='rotate(45 64 64)'/%3E%3Ccircle cx='64' cy='64' r='30'/%3E%3C/g%3E%3C/svg%3E"),radial-gradient(900px 420px at 80% -10%,rgba(47,143,96,.32),transparent 60%);
+  -webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
+.wrap{max-width:620px;margin:0 auto;padding:16px 14px 120px}
+.top{display:flex;gap:11px;align-items:center;margin-bottom:14px}
+.mark{width:44px;height:44px;flex:none;background:var(--grad);color:#fff;display:grid;place-items:center;
+  font-weight:700;font-size:14px;
+  clip-path:polygon(50% 0%,67% 12%,88% 12%,88% 33%,100% 50%,88% 67%,88% 88%,67% 88%,50% 100%,33% 88%,12% 88%,12% 67%,0% 50%,12% 33%,12% 12%,33% 12%)}
+.top h1{margin:0;font-size:17px;line-height:1.2}
+.top .s{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--on-2);margin-top:2px}
+.card{background:var(--card);color:var(--text);border-radius:16px;border:1px solid var(--cline);overflow:hidden;
+  box-shadow:0 10px 30px rgba(3,14,9,.35);margin-bottom:13px}
+.card-hd{padding:14px 16px;border-bottom:1px solid #EDEBDF;background:linear-gradient(180deg,#F6F4E8,var(--card))}
+.card-hd h2{margin:0;font-size:16px}
+.card-hd .sub{font-size:12.4px;color:var(--muted);margin-top:3px}
+.card-bd{padding:14px 16px}
+.pad0{padding:0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:13px}
+.chip{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--on-2);border-radius:999px;
+  padding:8px 15px;font-size:13.5px;font-weight:700;cursor:pointer}
+.chip.on{background:var(--grad);border-color:transparent;color:#fff}
+.chip:disabled{opacity:.4;cursor:not-allowed}
+.bar{height:8px;border-radius:999px;background:#E6E4D6;overflow:hidden;margin:10px 0 4px}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:999px;transition:width .18s}
+.srow{border-bottom:1px solid #EDEBDF;padding:11px 14px}
+.srow:last-child{border-bottom:0}
+.snm{font-weight:600;font-size:15px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.snm em{font-style:normal;font-family:var(--fm);font-size:11px;color:#8B9990}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}
+.seg button{border:1px solid var(--cline);background:#fff;color:var(--muted);border-radius:10px;padding:10px 4px;
+  font-size:13px;font-weight:700;cursor:pointer}
+.seg button.P{background:var(--ok);border-color:var(--ok);color:#fff}
+.seg button.A{background:var(--bad);border-color:var(--bad);color:#fff}
+.seg button.L{background:var(--warn);border-color:var(--warn);color:#fff}
+.seg button.E{background:var(--info);border-color:var(--info);color:#fff}
+.note-in{width:100%;margin-top:8px;border:1px solid var(--cline);border-radius:9px;padding:7px 10px;font:inherit;
+  font-size:13.4px;background:#fff;color:var(--text)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);
+  background:rgba(255,255,255,.06);color:var(--on);border-radius:12px;padding:12px 16px;font-size:14.5px;
+  font-weight:700;cursor:pointer;font-family:inherit}
+.btn:hover{background:rgba(255,255,255,.1)}
+.btn-gold{background:var(--grad);border-color:rgba(143,211,174,.45);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+.btn-wa{background:#128C7E;border-color:#128C7E;color:#fff}
+.btn-light{background:#fff;border-color:var(--cline);color:var(--text)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:9px;flex-wrap:wrap}
+.sticky{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(10,31,22,.4),rgba(10,31,22,.96) 40%);backdrop-filter:blur(8px)}
+.sticky .in{max-width:620px;margin:0 auto;display:flex;gap:9px;align-items:center}
+.sticky .btn{flex:1}
+.count{font-size:12.6px;color:var(--on-2);white-space:nowrap}
+.note{background:rgba(255,255,255,.05);border:1px solid var(--line);border-left:3px solid var(--mint);
+  border-radius:12px;padding:11px 13px;font-size:13px;margin-bottom:13px}
+.card .note{background:#EAF5EE;border-color:#CFE6D9;color:var(--text)}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 8px;border-radius:6px;background:#E7F3EC;color:#14603F}
+.err{text-align:center;padding:50px 20px}
+.err h2{font-size:20px;margin:0 0 8px}
+.err p{color:var(--on-2);font-size:14px;max-width:380px;margin:0 auto}
+/* ---- report card (made to be screenshotted and sent to parents) ---- */
+.rep{background:linear-gradient(165deg,#FFFFFF,#EDF6F1);color:var(--text);border-radius:18px;padding:20px 18px;
+  border:1px solid var(--cline)}
+.rep .rh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:2px solid #173B28;
+  padding-bottom:12px;margin-bottom:14px}
+.rep .rh h3{margin:0;font-size:19px}
+.rep .rh .d{font-size:12.4px;color:var(--muted);margin-top:3px}
+.rep .pct{text-align:center}
+.rep .pct b{display:block;font-size:30px;line-height:1;color:var(--ok)}
+.rep .pct span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.donut{display:block;margin:0 auto}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 4px}
+.st{border-radius:12px;padding:10px 6px;text-align:center;border:1px solid var(--cline);background:#fff}
+.st b{display:block;font-size:21px;line-height:1.1}
+.st span{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.st.p b{color:var(--ok)} .st.a b{color:var(--bad)} .st.l b{color:var(--warn)} .st.e b{color:var(--info)}
+.names{margin-top:14px}
+.names h4{margin:0 0 6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pill{display:inline-block;border-radius:999px;padding:4px 11px;font-size:12.8px;font-weight:600;margin:0 6px 6px 0}
+.pill.a{background:#F9E7E2;color:var(--bad)} .pill.l{background:#FBF0DE;color:var(--warn)}
+.pill.e{background:#E6EEF6;color:var(--info)} .pill.p{background:#E3F0E4;color:var(--ok)}
+.code{font-family:var(--fm);font-size:11.5px;word-break:break-all;background:#fff;border:1px dashed var(--cline);
+  border-radius:10px;padding:10px;color:var(--muted);max-height:120px;overflow:auto}
+.foot{text-align:center;font-size:11.5px;color:var(--on-3);margin-top:18px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div id="stickyRoot"></div>
+
+<script>
+"use strict";
+/* ==========================================================================
+   ManzilulQuran — Teacher attendance link
+   The whole class list travels inside the link, so this page needs no
+   database and no login. A teacher opens it, marks the roster, and gets a
+   report to send to parents plus a return code for the office.
+   Only today and yesterday can ever be marked.
+   ========================================================================== */
+const $ = s => document.querySelector(s);
+const esc = v => String(v === null || v === undefined ? "" : v)
+  .replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const pad2 = n => String(n).padStart(2, "0");
+const ymd = d => d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+const today = () => ymd(new Date());
+function shiftDay(ds, n){ const p = ds.split("-"); const d = new Date(+p[0], +p[1] - 1, +p[2] + n); return ymd(d); }
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOWS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+function fmtDate(ds){ const p = ds.split("-"); const d = new Date(+p[0], +p[1] - 1, +p[2]);
+  return pad2(d.getDate()) + " " + MONTHS[d.getMonth()].slice(0, 3) + " " + d.getFullYear(); }
+function dowOf(ds){ const p = ds.split("-"); return DOWS[new Date(+p[0], +p[1] - 1, +p[2]).getDay()]; }
+
+/* url-safe base64 that survives WhatsApp, email and copy-paste */
+function b64e(str){
+  return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function b64d(str){
+  str = String(str).trim().replace(/-/g, "+").replace(/_/g, "/");
+  while (str.length % 4) str += "=";
+  return decodeURIComponent(escape(atob(str)));
+}
+
+/* ---------------- read the link ---------------- */
+let LINK = null, ERR = "";
+(function readLink(){
+  try {
+    const h = location.hash || "";
+    const q = new URLSearchParams(location.search);
+    let token = q.get("c") || "";
+    if (!token && h.indexOf("#c=") === 0) token = h.slice(3);
+    if (!token && h.indexOf("#") === 0 && h.length > 1) token = h.slice(1);
+    if (!token) { ERR = "no-token"; return; }
+    LINK = JSON.parse(b64d(token));
+    if (!LINK || !LINK.r || !LINK.r.length) ERR = "empty";
+    LINK.api = q.get("api") || LINK.api || "";
+  } catch (e) { ERR = "bad-token"; }
+})();
+
+const STORE = LINK ? "mq_teach_" + (LINK.b || "") + "_" + (LINK.s || "") : "mq_teach";
+const State = { date: today(), marks: {}, sent: null };
+
+function allowedDates(){ return [today(), shiftDay(today(), -1)]; }
+
+function loadDraft(){
+  try {
+    const raw = localStorage.getItem(STORE + "_" + State.date);
+    State.marks = raw ? JSON.parse(raw) : {};
+  } catch (e) { State.marks = {}; }
+}
+function saveDraft(){
+  try { localStorage.setItem(STORE + "_" + State.date, JSON.stringify(State.marks)); } catch (e) {}
+}
+function markedCount(){ return Object.keys(State.marks).filter(k => State.marks[k] && State.marks[k].s).length; }
+
+function tally(){
+  const t = { P: 0, A: 0, L: 0, E: 0, total: LINK.r.length, names: { P: [], A: [], L: [], E: [] } };
+  LINK.r.forEach(function(st){
+    const m = State.marks[st[0]];
+    if (!m || !m.s) return;
+    t[m.s]++; t.names[m.s].push({ name: st[1], note: (m.n || "") });
+  });
+  t.marked = t.P + t.A + t.L + t.E;
+  t.pct = t.marked ? Math.round((t.P / t.marked) * 100) : 0;
+  return t;
+}
+
+/* ---------------- screens ---------------- */
+function render(){
+  if (ERR || !LINK) { renderError(); return; }
+  if (State.sent) { renderReport(); return; }
+  renderMark();
+}
+
+function renderError(){
+  $("#stickyRoot").innerHTML = "";
+  $("#app").innerHTML = '<div class="err"><div class="mark" style="margin:0 auto 14px">MQ</div>' +
+    '<h2>' + (ERR === "bad-token" ? "This link could not be read" : "Attendance link needed") + '</h2>' +
+    '<p>Open the exact link the academy sent you on WhatsApp. Links are made for one class — ' +
+    'please do not edit the address bar.</p></div>';
+}
+
+function renderMark(){
+  const dates = allowedDates();
+  const t = tally();
+  const head = '<div class="top"><div class="mark">' + esc((LINK.a || "MQ").slice(0, 2).toUpperCase()) + '</div>' +
+    '<div><h1>' + esc(LINK.a || "ManzilulQuran") + '</h1>' +
+    '<div class="s">Class attendance</div></div></div>';
+
+  const chips = '<div class="chips">' + dates.map(function(d){
+      return '<button class="chip ' + (State.date === d ? "on" : "") + '" data-d="' + d + '">' +
+        (d === today() ? "Today" : "Yesterday") + ' · ' + fmtDate(d).slice(0, 6) + '</button>';
+    }).join("") + '</div>';
+
+  const rows = LINK.r.map(function(st){
+    const id = st[0], nm = st[1], m = State.marks[id] || {};
+    return '<div class="srow"><div class="snm"><span>' + esc(nm) + '</span><em>' + esc(id) + '</em></div>' +
+      '<div class="seg">' +
+        ["P|Present","A|Absent","L|Leave","E|Excused"].map(function(x){
+          const k = x.split("|")[0];
+          return '<button data-s="' + k + '" data-id="' + esc(id) + '" class="' + (m.s === k ? k : "") + '">' +
+            x.split("|")[1] + '</button>';
+        }).join("") +
+      '</div>' +
+      (m.s === "L" || m.s === "A" || m.s === "E"
+        ? '<input class="note-in" data-note="' + esc(id) + '" placeholder="Reason (optional) — e.g. fever, travel, family function" value="' + esc(m.n || "") + '">'
+        : "") +
+    '</div>';
+  }).join("");
+
+  $("#app").innerHTML = head +
+    '<div class="note">You can mark <b>today</b> and <b>yesterday</b> only. Your marks are kept on this phone ' +
+    'until you press Submit, so you can close and come back.</div>' +
+    chips +
+    '<div class="card"><div class="card-hd"><h2>' + esc(LINK.bn || "Class") +
+      (LINK.sn ? ' · ' + esc(LINK.sn) : "") + '</h2>' +
+      '<div class="sub">' + esc(LINK.t ? LINK.t + " · " : "") + dowOf(State.date) + ", " + fmtDate(State.date) +
+      ' · ' + LINK.r.length + ' students</div>' +
+      '<div class="bar"><i style="width:' + (t.marked / Math.max(LINK.r.length, 1) * 100) + '%"></i></div>' +
+      '<div class="sub">' + t.marked + ' of ' + LINK.r.length + ' marked</div></div>' +
+      '<div class="card-bd pad0">' + rows + '</div></div>' +
+    '<div class="row"><button class="btn btn-light" id="allP" style="flex:1">Mark everyone present</button>' +
+      '<button class="btn btn-light" id="clr">Clear</button></div>' +
+    '<div class="foot">' + esc(LINK.a || "ManzilulQuran") + (LINK.w ? ' · ' + esc(LINK.w) : "") + '</div>';
+
+  $("#stickyRoot").innerHTML = '<div class="sticky"><div class="in">' +
+    '<span class="count">' + t.marked + '/' + LINK.r.length + '</span>' +
+    '<button class="btn btn-gold" id="submit"' + (t.marked ? "" : " disabled") + '>Submit attendance</button>' +
+    '</div></div>';
+}
+
+function donut(t){
+  const parts = [["P", t.P, "#2F7D4F"], ["A", t.A, "#B2402F"], ["L", t.L, "#C07C1E"], ["E", t.E, "#35638C"]];
+  const total = Math.max(t.marked, 1);
+  const R = 54, r = 34, cx = 70, cy = 70;
+  let a0 = -Math.PI / 2, out = "";
+  parts.forEach(function(p){
+    if (p[1] <= 0) return;
+    const a1 = a0 + (p[1] / total) * Math.PI * 2, big = (a1 - a0) > Math.PI ? 1 : 0;
+    const x0 = cx + R * Math.cos(a0), y0 = cy + R * Math.sin(a0);
+    const x1 = cx + R * Math.cos(a1), y1 = cy + R * Math.sin(a1);
+    const x2 = cx + r * Math.cos(a1), y2 = cy + r * Math.sin(a1);
+    const x3 = cx + r * Math.cos(a0), y3 = cy + r * Math.sin(a0);
+    out += '<path d="M' + x0 + ' ' + y0 + ' A' + R + ' ' + R + ' 0 ' + big + ' 1 ' + x1 + ' ' + y1 +
+      ' L' + x2 + ' ' + y2 + ' A' + r + ' ' + r + ' 0 ' + big + ' 0 ' + x3 + ' ' + y3 + ' Z" fill="' + p[2] + '"/>';
+    a0 = a1;
+  });
+  return '<svg class="donut" viewBox="0 0 140 140" width="140" height="140">' + out +
+    '<text x="70" y="72" text-anchor="middle" style="font:700 25px sans-serif;fill:#14201B">' + t.pct + '%</text>' +
+    '<text x="70" y="90" text-anchor="middle" style="font:600 10px sans-serif;fill:#5D6B62;letter-spacing:1.4px">PRESENT</text></svg>';
+}
+
+function reportText(t){
+  const L = [];
+  L.push("*" + (LINK.a || "ManzilulQuran") + "*");
+  L.push((LINK.bn || "Class") + (LINK.sn ? " · " + LINK.sn : ""));
+  L.push(dowOf(State.date) + ", " + fmtDate(State.date));
+  if (LINK.t) L.push("Teacher: " + LINK.t);
+  L.push("");
+  L.push("*Attendance " + t.pct + "%*  (" + t.P + "/" + t.marked + " present)");
+  L.push("✅ Present " + t.P + "   ❌ Absent " + t.A + "   🟡 Leave " + t.L + "   🔵 Excused " + t.E);
+  if (t.names.A.length) {
+    L.push("");
+    L.push("*Absent:* " + t.names.A.map(x => x.name + (x.note ? " (" + x.note + ")" : "")).join(", "));
+  }
+  if (t.names.L.length) {
+    L.push("*On leave:* " + t.names.L.map(x => x.name + (x.note ? " (" + x.note + ")" : "")).join(", "));
+  }
+  if (t.names.E.length) {
+    L.push("*Excused:* " + t.names.E.map(x => x.name + (x.note ? " (" + x.note + ")" : "")).join(", "));
+  }
+  L.push("");
+  L.push(t.A ? "Parents of absent students: please inform the office the reason for absence."
+             : "Alhamdulillah — nobody missed today's class.");
+  L.push("");
+  L.push((LINK.a || "ManzilulQuran") + (LINK.w ? " · " + LINK.w : ""));
+  return L.join("\n");
+}
+
+function returnCode(){
+  const m = [];
+  LINK.r.forEach(function(st){
+    const x = State.marks[st[0]];
+    if (x && x.s) m.push(x.n ? [st[0], x.s, x.n] : [st[0], x.s]);
+  });
+  return b64e(JSON.stringify({ v: 1, b: LINK.b, s: LINK.s || "", d: State.date, t: LINK.t || "", m: m }));
+}
+
+function renderReport(){
+  const t = State.sent;
+  const code = returnCode();
+  const text = reportText(t);
+  $("#stickyRoot").innerHTML = "";
+  $("#app").innerHTML =
+    '<div class="top"><div class="mark">' + esc((LINK.a || "MQ").slice(0, 2).toUpperCase()) + '</div>' +
+    '<div><h1>Attendance submitted</h1><div class="s">' + esc(fmtDate(State.date)) + '</div></div></div>' +
+
+    '<div class="card"><div class="card-bd"><div class="rep" id="repCard">' +
+      '<div class="rh"><div><h3>' + esc(LINK.bn || "Class") + (LINK.sn ? ' · ' + esc(LINK.sn) : "") + '</h3>' +
+        '<div class="d">' + dowOf(State.date) + ", " + fmtDate(State.date) + (LINK.t ? " · " + esc(LINK.t) : "") + '</div></div>' +
+        '<div class="pct"><b>' + t.pct + '%</b><span>Attendance</span></div></div>' +
+      donut(t) +
+      '<div class="grid4">' +
+        '<div class="st p"><b>' + t.P + '</b><span>Present</span></div>' +
+        '<div class="st a"><b>' + t.A + '</b><span>Absent</span></div>' +
+        '<div class="st l"><b>' + t.L + '</b><span>Leave</span></div>' +
+        '<div class="st e"><b>' + t.E + '</b><span>Excused</span></div>' +
+      '</div>' +
+      (t.names.A.length ? '<div class="names"><h4>Absent</h4>' +
+        t.names.A.map(x => '<span class="pill a">' + esc(x.name) + (x.note ? ' · ' + esc(x.note) : "") + '</span>').join("") + '</div>' : "") +
+      (t.names.L.length ? '<div class="names"><h4>On leave</h4>' +
+        t.names.L.map(x => '<span class="pill l">' + esc(x.name) + (x.note ? ' · ' + esc(x.note) : "") + '</span>').join("") + '</div>' : "") +
+      (t.names.E.length ? '<div class="names"><h4>Excused</h4>' +
+        t.names.E.map(x => '<span class="pill e">' + esc(x.name) + (x.note ? ' · ' + esc(x.note) : "") + '</span>').join("") + '</div>' : "") +
+      (!t.A && !t.L && !t.E ? '<div class="names"><h4>Full attendance</h4>' +
+        '<span class="pill p">Everyone attended today</span></div>' : "") +
+      '<div style="margin-top:16px;font-size:11.5px;color:#5D6B62;text-align:center">' +
+        esc(LINK.a || "ManzilulQuran") + (LINK.w ? ' · ' + esc(LINK.w) : "") + '</div>' +
+    '</div></div></div>' +
+
+    '<div class="row" style="margin-bottom:13px">' +
+      '<button class="btn btn-wa" id="waParents" style="flex:1 1 220px">Send report to parents group</button>' +
+      '<button class="btn" id="copyText">Copy report text</button>' +
+    '</div>' +
+
+    '<div class="card"><div class="card-hd"><h2>Send to the office</h2>' +
+      '<div class="sub">' + (LINK.api ? "Saved to the academy sheet automatically. The code below is a backup."
+        : "Send this code to the office once — it puts your marks straight into the academy system.") + '</div></div>' +
+      '<div class="card-bd">' +
+        '<div class="code" id="codeBox">' + esc(code) + '</div>' +
+        '<div class="row" style="margin-top:11px">' +
+          '<button class="btn btn-light" id="copyCode">Copy code</button>' +
+          '<button class="btn btn-wa" id="waOffice">Send code on WhatsApp</button>' +
+        '</div>' +
+      '</div></div>' +
+
+    '<div class="row"><button class="btn" id="back" style="flex:1">Back to the list</button></div>' +
+    '<div class="foot">Take a screenshot of the card above to share it as a picture.<br>' +
+      esc(LINK.a || "ManzilulQuran") + '</div>';
+
+  const wa = (num, msg) => "https://wa.me/" + String(num || "").replace(/\D/g, "") + "?text=" + encodeURIComponent(msg);
+  $("#waParents").onclick = () => window.open(wa("", text), "_blank");
+  $("#waOffice").onclick = () => window.open(wa(LINK.w || "", "Attendance " + fmtDate(State.date) + " — " +
+    (LINK.bn || "") + (LINK.sn ? " " + LINK.sn : "") + "\n\nCODE:\n" + code), "_blank");
+  $("#copyText").onclick = () => copy(text, "Report copied");
+  $("#copyCode").onclick = () => copy(code, "Code copied");
+  $("#back").onclick = () => { State.sent = null; render(); };
+}
+
+function copy(v, msg){
+  if (navigator.clipboard) navigator.clipboard.writeText(v).then(() => alert(msg)).catch(() => prompt("Copy this:", v));
+  else prompt("Copy this:", v);
+}
+
+/* ---------------- events ---------------- */
+document.addEventListener("click", function(e){
+  const d = e.target.closest("[data-d]");
+  if (d) { State.date = d.dataset.d; loadDraft(); render(); return; }
+  const b = e.target.closest("[data-s]");
+  if (b) {
+    const id = b.dataset.id, s = b.dataset.s;
+    const cur = State.marks[id] || {};
+    State.marks[id] = (cur.s === s) ? { s: "", n: cur.n || "" } : { s: s, n: cur.n || "" };
+    saveDraft(); render(); return;
+  }
+  if (e.target.id === "allP") {
+    LINK.r.forEach(st => { const c = State.marks[st[0]] || {}; if (!c.s) State.marks[st[0]] = { s: "P", n: "" }; });
+    saveDraft(); render(); return;
+  }
+  if (e.target.id === "clr") {
+    if (confirm("Clear all marks for " + fmtDate(State.date) + "?")) { State.marks = {}; saveDraft(); render(); }
+    return;
+  }
+  if (e.target.id === "submit") { submit(); return; }
+});
+document.addEventListener("input", function(e){
+  const n = e.target.closest("[data-note]");
+  if (!n) return;
+  const id = n.dataset.note;
+  State.marks[id] = State.marks[id] || { s: "" };
+  State.marks[id].n = n.value;
+  saveDraft();
+});
+
+function submit(){
+  const t = tally();
+  const missing = LINK.r.length - t.marked;
+  if (missing > 0 && !confirm(missing + " student(s) are not marked yet. Submit anyway?")) return;
+  State.sent = t;
+  if (LINK.api) {
+    /* fire-and-forget: the report must not wait for the network */
+    try {
+      fetch(LINK.api, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ type: "attendance", code: returnCode(), batchId: LINK.b, subClassId: LINK.s || "",
+          date: State.date, teacher: LINK.t || "" }) }).catch(function(){});
+    } catch (e) {}
+  }
+  render();
+}
+
+/* ---------------- go ---------------- */
+if (LINK && !ERR) { loadDraft(); }
+render();
+</script>
+</body>
+</html>
