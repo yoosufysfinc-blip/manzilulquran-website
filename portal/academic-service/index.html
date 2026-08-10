@@ -63,12 +63,12 @@ button,input,select,textarea{ font:inherit; color:inherit; }
 .app{ min-height:100vh; display:flex; flex-direction:column; }
 .topnav{ position:sticky; top:0; z-index:40; padding:12px 20px 0;
   background:linear-gradient(180deg,rgba(10,31,22,.97),rgba(10,31,22,.88)); backdrop-filter:blur(10px); }
-.tn-row{ display:flex; align-items:center; gap:14px; max-width:1560px; margin:0 auto; }
+.tn-row{ display:flex; align-items:center; gap:14px; max-width:1560px; margin:0 auto; flex-wrap:wrap; }
 .brand{ display:flex; gap:11px; align-items:center; flex:none; }
-.brand-mark{ width:44px; height:44px; flex:none; background:var(--grad) center/cover no-repeat; color:transparent; display:grid; place-items:center; background-image:url("/logo.png");
-  font-family:var(--f-d); font-weight:700; font-size:15px; background-size:cover; background-position:center;
-  clip-path:polygon(50% 0%,67% 12%,88% 12%,88% 33%,100% 50%,88% 67%,88% 88%,67% 88%,50% 100%,33% 88%,12% 88%,12% 67%,0% 50%,12% 33%,12% 12%,33% 12%);
-  box-shadow:0 0 0 1px rgba(143,211,174,.35); }
+.brand-mark{ width:44px; height:44px; flex:none; background:#fff center/cover no-repeat; color:transparent;
+  display:grid; place-items:center; background-image:url("/logo.png"); background-size:cover; background-position:center;
+  border-radius:13px; border:1.5px solid rgba(143,211,174,.5);
+  box-shadow:0 2px 8px rgba(0,0,0,.28), inset 0 0 0 2px rgba(255,255,255,.35); }
 .brand-name{ font-family:var(--f-d); font-weight:600; font-size:18px; color:#fff; line-height:1.1; }
 .brand-sub{ font-size:9.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--on-dark-2); margin-top:2px; }
 .navpill{ display:flex; gap:2px; background:rgba(255,255,255,.045); border:1px solid var(--shell-line);
@@ -453,7 +453,7 @@ svg.chart .lbl{ font-family:var(--f-b); font-size:10.5px; fill:var(--muted); }
   .hero{ grid-template-columns:1fr; }
 }
 @media (max-width:980px){
-  .navpill{ order:5; width:100%; margin:9px 0 0; justify-content:flex-start; }
+  .navpill{ order:5; width:100%; margin:9px 0 0; justify-content:flex-start; flex:1 0 100%; }
   .brand-sub{ display:none; }
   .page-title{ font-size:30px; }
 }
@@ -507,6 +507,21 @@ svg.chart .lbl{ font-family:var(--f-b); font-size:10.5px; fill:var(--muted); }
 #mqGate button{width:100%;margin-top:15px;font-size:15px;font-weight:800;color:#fff;background:#0B4D3B;border:none;border-radius:12px;padding:14px;cursor:pointer}
 #mqGate button:hover{background:#1B7A5A}
 #mqGate .err{color:#c0392b;font-size:12px;font-weight:600;min-height:15px;margin-top:10px}
+
+/* country code selector row */
+.ccrow{ display:flex; gap:7px; align-items:stretch; }
+.ccrow .ccsel{ flex:0 0 92px; width:92px; padding-left:8px; padding-right:6px; }
+/* subtle success burst */
+@keyframes mqPop{ 0%{ transform:scale(.6); opacity:0 } 45%{ transform:scale(1.12); opacity:1 } 100%{ transform:scale(1); opacity:1 } }
+@keyframes mqRing{ 0%{ transform:scale(.4); opacity:.55 } 100%{ transform:scale(1.7); opacity:0 } }
+.mq-burst{ position:fixed; z-index:400; top:50%; left:50%; transform:translate(-50%,-50%);
+  pointer-events:none; display:grid; place-items:center; }
+.mq-burst .disc{ width:74px; height:74px; border-radius:50%; background:linear-gradient(180deg,#20563A,#17402B);
+  border:1.5px solid rgba(143,211,174,.6); display:grid; place-items:center; color:#eafff2; font-size:34px;
+  box-shadow:0 12px 40px rgba(0,0,0,.4); animation:mqPop .5s cubic-bezier(.2,1.2,.3,1) both; }
+.mq-burst .ring{ position:absolute; width:74px; height:74px; border-radius:50%; border:2px solid rgba(143,211,174,.7);
+  animation:mqRing .7s ease-out both; }
+
 </style>
 </head>
 <body data-ws="batch">
@@ -549,7 +564,6 @@ svg.chart .lbl{ font-family:var(--f-b); font-size:10.5px; fill:var(--muted); }
         <button class="iconbtn" id="searchBtn" title="Search" aria-label="Search">⌕</button>
         <button class="iconbtn" data-act="alerts" title="Alerts" aria-label="Alerts">◔</button>
         <button class="syncchip off" id="syncChip" data-act="sync-panel" title="Google Sheets sync"><i></i>Sync off</button>
-        <div class="who"><i id="whoInit">YA</i><span id="whoName">Yusuf Admin</span></div>
       </div>
     </div>
     <div class="wsbar">
@@ -1726,6 +1740,28 @@ function toast(msg, type, ms){
   $("#toasts").appendChild(el);
   setTimeout(() => el.remove(), ms || 3300);
 }
+/* subtle one-shot success animation — a small disc + expanding ring */
+function celebrate(icon){
+  try{
+    const b = document.createElement("div");
+    b.className = "mq-burst";
+    b.innerHTML = '<span class="ring"></span><span class="disc">' + (icon || "✓") + '</span>';
+    document.body.appendChild(b);
+    if (navigator.vibrate) { try { navigator.vibrate(18); } catch(e){} }
+    setTimeout(() => b.remove(), 760);
+  }catch(e){}
+}
+/* combine a country-code select + number into one WhatsApp value on save */
+function joinCC(d){
+  if (d && d.whatsapp) {
+    const cc = (d.whatsappCC || "").replace(/[^0-9]/g, "");
+    let num = String(d.whatsapp).replace(/[^0-9]/g, "");
+    if (cc && num && num.indexOf(cc) !== 0) num = cc + num;
+    d.whatsapp = num;
+  }
+  if (d) delete d.whatsappCC;
+  return d;
+}
 let modalSubmit = null;
 function openModal(o){
   closeModal();
@@ -2048,7 +2084,7 @@ function defaultSettings(){
     contactPhone: "7025070415", whatsappNumber: "9995360416",
     currency: "₹", countryCode: "91", defaultDueDay: 5, defaultFeeMethod: "perClass",
     billingMode: "prepaid", advanceDays: 5,
-    teacherLinkBase: "https://manzilulquran.in/attendance/", apiUrl: "", syncKey: "", syncOn: true, syncEvery: 3,
+    teacherLinkBase: "https://manzilulquran.in/attendance/", apiUrl: "https://script.google.com/macros/s/AKfycbzuGmaPn2PQGyS_64RQFF8rY2ZRhb37HTFFjRuvfVEsGn8DB8O8AZsnEbvPdrOSCMuo/exec", syncKey: "mq-7f3a91c4e85b426d9a0c", syncOn: true, syncEvery: 3,
     courses: ["Hifz", "Tarteel Base", "Tarteel Advanced", "Madrasa Batch", "Madrasa Individual", "Tajweed", "Arabic"],
     levels: ["Beginner", "Level 1", "Level 2", "Level 3", "Advanced"],
     paymentMethods: ["Cash", "UPI", "Bank", "Other"],
@@ -2300,8 +2336,12 @@ function bootData(){
   if (saved && saved.students && saved.fees) {
     DB = Object.assign(emptyDB(), saved);
     DB.settings = Object.assign(defaultSettings(), saved.settings || {});
+    /* adopt the built-in sync endpoint if this browser never had one set */
+    const dflt = defaultSettings();
+    if (!DB.settings.apiUrl) DB.settings.apiUrl = dflt.apiUrl;
+    if (!DB.settings.syncKey) DB.settings.syncKey = dflt.syncKey;
     if (!DB.accounts || !DB.accounts.length) DB.accounts = emptyDB().accounts;
-  } else seedDatabase();
+  } else { DB = emptyDB(); persist(); }
 }
 
 /* ==========================================================================
@@ -4503,6 +4543,12 @@ function dayBoxes(days){
 }
 function readDays(form){ return ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].filter(d => form.elements["day_" + d].checked); }
 
+function ccOptions(sel){
+  const list = [["91","🇮🇳 +91"],["971","🇦🇪 +971"],["966","🇸🇦 +966"],["974","🇶🇦 +974"],["965","🇰🇼 +965"],
+    ["968","🇴🇲 +968"],["973","🇧🇭 +973"],["1","🇺🇸 +1"],["44","🇬🇧 +44"],["60","🇲🇾 +60"],["65","🇸🇬 +65"],
+    ["61","🇦🇺 +61"],["49","🇩🇪 +49"],["33","🇫🇷 +33"],["92","🇵🇰 +92"],["880","🇧🇩 +880"],["94","🇱🇰 +94"]];
+  return list.map(c => '<option value="' + c[0] + '"' + (String(sel) === c[0] ? " selected" : "") + '>' + c[1] + '</option>').join("");
+}
 function studentForm(s, isNew){
   s = s || {};
   const set = Settings();
@@ -4510,7 +4556,8 @@ function studentForm(s, isNew){
     field("Student ID", '<input class="input mono" name="id" value="' + esc(s.id || "") + '" readonly placeholder="Generated automatically">') +
     field("Student name", '<input class="input" name="name" required value="' + esc(s.name || "") + '">') +
     field("Parent / guardian", '<input class="input" name="guardian" value="' + esc(s.guardian || "") + '">') +
-    field("WhatsApp number", '<input class="input mono" name="whatsapp" value="' + esc(s.whatsapp || "") + '" placeholder="Used for reminders">') +
+    field("WhatsApp number", '<div class="ccrow"><select class="input ccsel" name="whatsappCC">' + ccOptions(s.whatsappCC || Settings().countryCode || "91") + '</select>' +
+      '<input class="input mono" name="whatsapp" value="' + esc(s.whatsapp || "") + '" placeholder="Number without country code" style="flex:1"></div>') +
     field("Phone number", '<input class="input mono" name="phone" value="' + esc(s.phone || "") + '">') +
     field("Email", '<input class="input" name="email" value="' + esc(s.email || "") + '">') +
     field("Gender", sel("gender", optList(["Male", "Female"], s.gender, "Select"))) +
@@ -4592,7 +4639,8 @@ function teacherForm(t){
     field("Teacher ID", '<input class="input mono" name="id" value="' + esc(t.id || "") + '" readonly placeholder="Generated automatically">') +
     field("Teacher name", '<input class="input" name="name" required value="' + esc(t.name || "") + '">') +
     field("Phone", '<input class="input mono" name="phone" value="' + esc(t.phone || "") + '">') +
-    field("WhatsApp", '<input class="input mono" name="whatsapp" value="' + esc(t.whatsapp || "") + '">') +
+    field("WhatsApp", '<div class="ccrow"><select class="input ccsel" name="whatsappCC">' + ccOptions(t.whatsappCC || Settings().countryCode || "91") + '</select>' +
+      '<input class="input mono" name="whatsapp" value="' + esc(t.whatsapp || "") + '" placeholder="Number only" style="flex:1"></div>') +
     field("Joining date", '<input class="input" type="date" name="joiningDate" value="' + esc(t.joiningDate || today()) + '">') +
     field("Paid into", sel("payAccount", accountOpts(t.payAccount || "Bank"))) +
     field("Kind", sel("kind", optList([{value:"teacher",label:"Teacher"},{value:"staff",label:"Other staff"}], t.kind || "teacher"), 'data-act="kind-toggle"')) +
@@ -4726,12 +4774,12 @@ const Actions = {
   "student-new": () => openModal({ title: "Add student", wide: true, body: studentForm({}, true), submitText: "Save student",
     onSubmit: function(d){
       if (!d.name) { toast("Student name is needed", "bad"); return false; }
-      delete d.id;
+      delete d.id; joinCC(d);
       const id = DataService.saveStudent(d);
-      toast("Student " + id + " added", "ok"); render();
+      toast("Student " + id + " added", "ok"); celebrate("🎓"); render();
     } }),
   "student-edit": (id) => openModal({ title: "Edit " + id, wide: true, body: studentForm(DataService.getStudent(id)), submitText: "Save changes",
-    onSubmit: function(d){ d.id = id; DataService.saveStudent(d); toast("Student updated", "ok"); render(); } }),
+    onSubmit: function(d){ d.id = id; joinCC(d); DataService.saveStudent(d); toast("Student updated", "ok"); render(); } }),
   "student-assign": (id) => {
     const s = DataService.getStudent(id), cur = DataService.getActiveEnrollment(id);
     openModal({
@@ -5414,7 +5462,7 @@ Object.assign(Actions, {
           amount: amount, date: d.date || today(), account: d.account, txnId: d.txnId, remarks: d.remarks });
         const after = Logic.feeView(DataService.getFee(d.feeId));
         toast(money(amount) + " received · " + after.status + (after.balance > 0 ? " · balance " + money(after.balance) : ""), "ok", 4200);
-        render();
+        celebrate("₹"); render();
         setTimeout(() => Actions["receipt"](pid), 220);
       }
     });
@@ -5538,19 +5586,19 @@ Object.assign(Actions, {
   "staff-new": () => openModal({ title: "Add staff", wide: true, body: teacherForm({ kind: "staff" }), submitText: "Save staff",
     onSubmit: function(d){
       if (!d.name) { toast("Name is needed", "bad"); return false; }
-      d.indRate = +d.indRate || 0; d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0; d.kind = "staff"; delete d.id;
+      d.indRate = +d.indRate || 0; d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0; d.kind = "staff"; delete d.id; joinCC(d);
       const id = DataService.saveTeacher(d);
-      toast("Staff " + id + " added", "ok"); render();
+      toast("Staff " + id + " added", "ok"); celebrate("👤"); render();
     } }),
   "teacher-new": () => openModal({ title: "Add teacher", wide: true, body: teacherForm({}), submitText: "Save teacher",
     onSubmit: function(d){
       if (!d.name) { toast("Name is needed", "bad"); return false; }
-      d.indRate = +d.indRate || 0; d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0; delete d.id;
+      d.indRate = +d.indRate || 0; d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0; delete d.id; joinCC(d);
       const id = DataService.saveTeacher(d);
-      toast((d.kind === "staff" ? "Staff " : "Teacher ") + id + " added", "ok"); render();
+      toast((d.kind === "staff" ? "Staff " : "Teacher ") + id + " added", "ok"); celebrate(d.kind === "staff" ? "👤" : "🧑‍🏫"); render();
     } }),
   "teacher-edit": (id) => openModal({ title: "Edit " + id, wide: true, body: teacherForm(DataService.getTeacher(id)), submitText: "Save changes",
-    onSubmit: function(d){ d.id = id; d.indRate = +d.indRate || 0; d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0;
+    onSubmit: function(d){ d.id = id; d.indRate = +d.indRate || 0; d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0; joinCC(d);
       DataService.saveTeacher(d); toast("Saved", "ok"); render(); } }),
   "tpay-new": (teacherId) => {
     const m = State.tpay.month || State.month;
