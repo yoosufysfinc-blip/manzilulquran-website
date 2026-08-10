@@ -65,7 +65,7 @@ button,input,select,textarea{ font:inherit; color:inherit; }
   background:linear-gradient(180deg,rgba(10,31,22,.97),rgba(10,31,22,.88)); backdrop-filter:blur(10px); }
 .tn-row{ display:flex; align-items:center; gap:14px; max-width:1560px; margin:0 auto; }
 .brand{ display:flex; gap:11px; align-items:center; flex:none; }
-.brand-mark{ width:44px; height:44px; flex:none; background:var(--grad); color:#fff; display:grid; place-items:center;
+.brand-mark{ width:44px; height:44px; flex:none; background:var(--grad) center/cover no-repeat; color:transparent; display:grid; place-items:center; background-image:url("/logo.png");
   font-family:var(--f-d); font-weight:700; font-size:15px; background-size:cover; background-position:center;
   clip-path:polygon(50% 0%,67% 12%,88% 12%,88% 33%,100% 50%,88% 67%,88% 88%,67% 88%,50% 100%,33% 88%,12% 88%,12% 67%,0% 50%,12% 33%,12% 12%,33% 12%);
   box-shadow:0 0 0 1px rgba(143,211,174,.35); }
@@ -540,7 +540,7 @@ svg.chart .lbl{ font-family:var(--f-b); font-size:10.5px; fill:var(--muted); }
   <header class="topnav no-print">
     <div class="tn-row">
       <div class="brand">
-        <div class="brand-mark" id="brandMark">MQ</div>
+        <div class="brand-mark" id="brandMark"></div>
         <div><div class="brand-name" id="brandName">Manzilulquran</div>
           <div class="brand-sub" id="brandSub">Learn Quran</div></div>
       </div>
@@ -687,7 +687,7 @@ const Sync = {
   st: { status: "off", msg: "", lastPull: 0, lastPushAt: 0, pending: 0, busy: false, at: 0 },
   _hash: null, _timer: null, _tick: null,
 
-  on(){ return !!(Settings().syncOn && Settings().apiUrl); },
+  on(){ return !!Settings().apiUrl; },  /* always sync when a URL is set */
   load(){
     try {
       const raw = localStorage.getItem(STORE_KEY + "_sync");
@@ -1507,6 +1507,20 @@ const Logic = {
         two streams can never be confused with each other ---- */
 Object.assign(Logic, {
   payrollView(t, month){
+    /* Other staff: fixed monthly salary + incentive, no class-based math */
+    if (t.kind === "staff") {
+      const adj = DataService.getAdjust(t.id, month) || { bonus: 0, deduction: 0, incentive: 0, remarks: "" };
+      const sal = round2(+t.monthlySalary || 0);
+      const payable = round2(sal + (+adj.bonus || 0) + (+adj.incentive || 0) - (+adj.deduction || 0));
+      const paid = round2(DataService.getTeacherPayments({ teacherId: t.id, month: month }).reduce((s, p) => s + (+p.amount || 0), 0));
+      const balance = round2(payable - paid);
+      return { teacherId: t.id, teacherName: t.name, month: month, kind: "staff", role: t.role || "",
+        indAmount: 0, indBasis: "—", batchAmount: 0, batchBasis: "—",
+        classStats: { completed: 0, days: 0, minutes: 0 }, sessions: 0, batchStudents: 0, groups: [],
+        monthlySalary: sal, gross: sal, bonus: +adj.bonus || 0, incentive: +adj.incentive || 0,
+        deduction: +adj.deduction || 0, remarks: adj.remarks || "", payable: payable, paid: paid, balance: balance,
+        status: balance <= 0 && paid > 0 ? "Paid" : (paid > 0 ? "Partial" : (payable > 0 ? "Pending" : "Nil")) };
+    }
     /* individual side, from the class log */
     const rows = DataService.getClasses({ teacherId: t.id, month: month });
     const cs = Logic.classStats(rows);
@@ -1557,10 +1571,10 @@ Object.assign(Logic, {
                : brate + "% of " + money(lines.reduce((x, l) => x + l.feeBase, 0)) + " batch fees";
     } else lines.forEach(l => { l.amount = 0; l.basis = "not paid for batch classes"; });
 
-    const adj = DataService.getAdjust(t.id, month) || { bonus: 0, deduction: 0, custom: 0, remarks: "" };
+    const adj = DataService.getAdjust(t.id, month) || { bonus: 0, deduction: 0, custom: 0, incentive: 0, remarks: "" };
     ind = round2(ind); bat = round2(bat);
     const gross = round2(ind + bat);
-    const payable = round2(gross + (+adj.bonus || 0) - (+adj.deduction || 0));
+    const payable = round2(gross + (+adj.bonus || 0) + (+adj.incentive || 0) - (+adj.deduction || 0));
     const paid = round2(DataService.getTeacherPayments({ teacherId: t.id, month: month })
       .reduce((s, p) => s + (+p.amount || 0), 0));
     const balance = round2(payable - paid);
@@ -1568,7 +1582,7 @@ Object.assign(Logic, {
       teacherId: t.id, teacherName: t.name, month: month,
       indAmount: ind, indBasis: indBasis, batchAmount: bat, batchBasis: batBasis,
       classStats: cs, sessions: sessionCount, batchStudents: batchStudents, groups: lines,
-      gross: gross, bonus: +adj.bonus || 0, deduction: +adj.deduction || 0, remarks: adj.remarks || "",
+      gross: gross, bonus: +adj.bonus || 0, incentive: +adj.incentive || 0, deduction: +adj.deduction || 0, remarks: adj.remarks || "",
       payable: payable, paid: paid, balance: balance,
       status: balance <= 0 && paid > 0 ? "Paid" : (paid > 0 ? "Partial" : (payable > 0 ? "Pending" : "Nil"))
     };
@@ -2034,7 +2048,7 @@ function defaultSettings(){
     contactPhone: "7025070415", whatsappNumber: "9995360416",
     currency: "₹", countryCode: "91", defaultDueDay: 5, defaultFeeMethod: "perClass",
     billingMode: "prepaid", advanceDays: 5,
-    teacherLinkBase: "https://manzilulquran.in/attendance/", apiUrl: "", syncKey: "", syncOn: false, syncEvery: 3,
+    teacherLinkBase: "https://manzilulquran.in/attendance/", apiUrl: "", syncKey: "", syncOn: true, syncEvery: 3,
     courses: ["Hifz", "Tarteel Base", "Tarteel Advanced", "Madrasa Batch", "Madrasa Individual", "Tajweed", "Arabic"],
     levels: ["Beginner", "Level 1", "Level 2", "Level 3", "Advanced"],
     paymentMethods: ["Cash", "UPI", "Bank", "Other"],
@@ -2309,7 +2323,7 @@ const WS = {
   ]},
   books: { label: "Academy books", sub: "Shared workspace", home: "overview", nav: [
     ["Overview", [["overview", "◱", "Academy overview", "Dashboard"]]],
-    ["People", [["students", "☺", "Students", "Students"], ["teachers", "✎", "Teachers", "Teachers"]]],
+    ["People", [["students", "☺", "Students", "Students"], ["teachers", "✎", "Teachers", "Teachers"], ["staff", "◉", "Other staff", "Staff"]]],
     ["Money in", [["payments", "◈", "All payments", "Payments"], ["income", "↑", "Other income", "Income"]]],
     ["Money out", [["tpay", "◇", "Teacher payments", "Salary"], ["expenses", "↓", "Expenses", "Expenses"]]],
     ["Books", [["accounts", "▦", "Accounts", "Accounts"], ["ledger", "☰", "Ledger", "Ledger"],
@@ -2322,6 +2336,7 @@ Object.keys(WS).forEach(ws => WS[ws].nav.forEach(g => g[1].forEach(item => PAGE_
 PAGE_WS.profile = "books";
 
 const PAGE_SUB = {
+  staff: "Admin, counsellors, editors and other staff on a monthly salary plus incentive.",
   bDash: "Batch collection, attendance and dues for the selected month.",
   batches: "One central register of every batch and course.",
   subclasses: "Split a big batch into smaller groups, each with its own teacher, timing and pay.",
@@ -2364,6 +2379,7 @@ const State = {
   iDues:    { quick: "all", q: "", teacher: "" },
   students: { q: "", status: "Active", stream: "" },
   teachers: { q: "" },
+  staff:    { q: "" },
   pays:     { q: "", month: "", account: "", source: "" },
   income:   { q: "", month: "", category: "" },
   expenses: { q: "", month: "", category: "" },
@@ -3578,7 +3594,7 @@ Pages.students = function(){
 
 Pages.teachers = function(){
   const q = State.teachers.q.toLowerCase().trim(), m = State.month;
-  const rows = DataService.getTeachers().map(function(t){
+  const rows = DataService.getTeachers().filter(t => t.kind !== "staff").map(function(t){
     const v = Logic.payrollView(t, m);
     const batches = DataService.getBatches().filter(b => b.teacherId === t.id);
     const plans = DataService.getPlans({ teacherId: t.id, status: "Active" });
@@ -3625,8 +3641,64 @@ Pages.teachers = function(){
       sorts: [{ key: "name", label: "Name", val: t => t.name },
               { key: "pay", label: "Highest payable first", val: t => t.pv.payable, desc: true },
               { key: "bal", label: "Most unpaid first", val: t => t.pv.balance, desc: true }],
-      emptyTitle: "No teachers yet", emptyText: "Add a teacher and set how they are paid.",
+      emptyTitle: "No teachers yet", emptyText: "Add a teacher and set how they are paid across the two streams.",
       emptyAction: '<button class="btn btn-primary" data-act="teacher-new">+ Add teacher</button>'
+    }) +
+  '</div></div>';
+};
+
+/* ---- Dedicated OTHER STAFF page: monthly salary + incentive ---- */
+Pages.staff = function(){
+  const q = State.staff.q.toLowerCase().trim(), m = State.month;
+  const rows = DataService.getTeachers().filter(t => t.kind === "staff").map(function(t){
+    return Object.assign({}, t, { pv: Logic.payrollView(t, m) });
+  }).filter(t => search(t.id + " " + t.name + " " + (t.phone || "") + " " + (t.role || ""), q));
+
+  const totPayable = rows.reduce((s, t) => s + t.pv.payable, 0);
+  const totPaid = rows.reduce((s, t) => s + t.pv.paid, 0);
+  const totBal = rows.reduce((s, t) => s + t.pv.balance, 0);
+
+  return '' +
+  '<div class="note">Other staff — admin, counsellors, editors, digital marketers and the like — are paid a fixed monthly salary plus optional incentive. They appear in payments, the ledger and reports just like teachers.</div>' +
+  '<div class="toolbar no-print">' +
+    field("Search", '<input class="input" data-fset="staff.q" value="' + esc(State.staff.q) + '" placeholder="Name, role or ID">', "grow") +
+    '<div class="push"><button class="btn btn-primary" data-act="staff-new">+ Add staff</button></div>' +
+  '</div>' +
+  '<div class="kpi-grid" style="margin-bottom:12px">' +
+    kpi("Staff", num(rows.length)) + kpi(monthShort(m) + " payable", money(totPayable)) +
+    kpi("Paid", money(totPaid), "", "a-ok") + kpi("Balance", money(totBal), "", totBal > 0 ? "a-warn" : "") +
+  '</div>' +
+  '<div class="card"><div class="card-bd tight">' +
+    renderList("staff", rows, {
+      key: t => t.id, head: ["Staff", monthShort(m) + " payable"],
+      title: t => esc(t.name) + " " + idchip(t.id),
+      sub: t => esc((t.role || "Staff") + " · monthly " + money(+t.monthlySalary || 0)),
+      amount: t => money(t.pv.payable) + '<small>' + (t.pv.balance > 0 ? money(t.pv.balance) + " unpaid" : "settled") + '</small>',
+      badge: t => badge(t.pv.status, FEE_BADGE),
+      detail: t => dl([
+        ["Staff ID", idchip(t.id)], ["Role", '<b>' + esc(t.role || "—") + '</b>'],
+        ["Phone", '<span class="mono">' + esc(t.phone || "—") + '</span>'],
+        ["WhatsApp", '<span class="mono">' + esc(t.whatsapp || "—") + '</span>'],
+        ["Joined", fmtDate(t.joiningDate)], ["Paid into", esc(t.payAccount || "—")], ["Status", badge(t.status)],
+        ["Monthly salary", money(+t.monthlySalary || 0)]
+      ]) +
+      '<div class="sub-hd">' + esc(monthLabel(m)) + ' payslip</div>' +
+      '<div class="minirow"><span>Monthly salary</span><b>' + money(t.pv.monthlySalary || 0) + '</b></div>' +
+      '<div class="minirow"><span>Bonus</span><b>' + money(t.pv.bonus) + '</b></div>' +
+      '<div class="minirow"><span>Incentive</span><b>' + money(t.pv.incentive) + '</b></div>' +
+      '<div class="minirow"><span>Deduction</span><b>− ' + money(t.pv.deduction) + '</b></div>' +
+      '<div class="minirow"><span>Net payable</span><b>' + money(t.pv.payable) + '</b></div>' +
+      '<div class="minirow"><span>Paid</span><b class="in">' + money(t.pv.paid) + '</b></div>' +
+      '<div class="minirow"><span>Balance</span><b class="' + (t.pv.balance > 0 ? "out" : "in") + '">' + money(t.pv.balance) + '</b></div>' +
+      acts('<button class="btn btn-sm" data-act="teacher-edit" data-id="' + t.id + '">Edit</button>' +
+        (t.pv.balance > 0 ? '<button class="btn btn-sm btn-primary" data-act="tpay-new" data-id="' + t.id + '">Pay ' + money(t.pv.balance) + '</button>' : "") +
+        '<button class="btn btn-sm" data-act="tadj-edit" data-id="' + t.id + '">Bonus / incentive</button>' +
+        '<button class="btn btn-sm" data-act="tstatement" data-id="' + t.id + '">Statement</button>'),
+      sorts: [{ key: "name", label: "Name", val: t => t.name },
+              { key: "role", label: "Role", val: t => t.role || "" },
+              { key: "pay", label: "Highest payable first", val: t => t.pv.payable, desc: true }],
+      emptyTitle: "No other staff yet", emptyText: "Add admin, counsellors, editors, digital marketers and others on a monthly salary.",
+      emptyAction: '<button class="btn btn-primary" data-act="staff-new">+ Add staff</button>'
     }) +
   '</div></div>';
 };
@@ -4523,11 +4595,19 @@ function teacherForm(t){
     field("WhatsApp", '<input class="input mono" name="whatsapp" value="' + esc(t.whatsapp || "") + '">') +
     field("Joining date", '<input class="input" type="date" name="joiningDate" value="' + esc(t.joiningDate || today()) + '">') +
     field("Paid into", sel("payAccount", accountOpts(t.payAccount || "Bank"))) +
+    field("Kind", sel("kind", optList([{value:"teacher",label:"Teacher"},{value:"staff",label:"Other staff"}], t.kind || "teacher"), 'data-act="kind-toggle"')) +
+    field("Role", '<input class="input" name="role" list="roleList" value="' + esc(t.role || "") + '" placeholder="Admin, Counsellor, Editor, Digital Marketer…">') +
+    '<datalist id="roleList"><option>Admin</option><option>Counsellor</option><option>Editor</option><option>Digital Marketer</option><option>Coordinator</option><option>Accountant</option><option>Receptionist</option><option>Support</option></datalist>' +
+    '<div class="field span2 staff-only"' + (t.kind === "staff" ? "" : ' style="display:none"') + '><div class="note" style="margin:0">Other staff are paid a fixed monthly salary plus optional incentive. Set the salary below; leave the class-pay rates alone.</div></div>' +
+    '<div class="field staff-only"' + (t.kind === "staff" ? "" : ' style="display:none"') + '><label>Monthly salary</label><input class="input" type="number" name="monthlySalary" min="0" step="0.01" value="' + esc(t.monthlySalary || 0) + '"></div>' +
+    '<div class="field staff-only"' + (t.kind === "staff" ? "" : ' style="display:none"') + '></div>' +
+    '<div class="teacher-only"' + (t.kind === "staff" ? ' style="display:none"' : "") + ' style="display:contents">' +
     '<div class="field span2"><div class="note" style="margin:0">A teacher can teach in both streams. Set how they are paid for each — the two amounts are added into one monthly payable.</div></div>' +
     field("Individual class pay", sel("indRateType", optList(IND_RATE_TYPES, t.indRateType || "perClass"))) +
     field("Individual rate", '<input class="input" type="number" name="indRate" min="0" step="0.01" value="' + esc(t.indRate || 0) + '">') +
     field("Batch class pay", sel("batchPayType", optList(BATCH_PAY_TYPES, t.batchPayType || "none"))) +
     field("Batch rate", '<input class="input" type="number" name="batchRate" min="0" step="0.01" value="' + esc(t.batchRate || 0) + '">') +
+    '</div>' +
     field("Status", sel("status", optList(["Active", "Inactive"], t.status || "Active"))) +
     '<div></div>' +
     '<div class="field span2"><label>Notes</label><textarea class="textarea" name="notes">' + esc(t.notes || "") + '</textarea></div>' +
@@ -5312,7 +5392,9 @@ Object.assign(Actions, {
     openModal({
       title: "Record a payment",
       body: '<div class="form-grid">' +
-        field("Student", sel("studentId", studentOpts(sid, "Select student"), 'data-act="pay-student"')) +
+        '<div class="field"><label>Student</label><input class="input" name="studentId" list="payStuList" value="' + esc(sid) + '" placeholder="Type name or ID to search" data-act="pay-student" autocomplete="off">' +
+          '<datalist id="payStuList">' + DataService.getStudents().slice().sort((a,b)=>a.name.localeCompare(b.name)).map(x => '<option value="' + esc(x.id) + '">' + esc(x.name) + " · " + esc(x.id) + '</option>').join("") + '</datalist></div>' +
+        '<div class="field span2" id="payStuHint"></div>' +
         '<div class="field"><label>Fee month</label><select class="select" name="feeId" data-act="pay-feepick">' +
           (sid ? feeOptionsFor(sid, feeId) : '<option value="">Choose a student first</option>') + '</select></div>' +
         field("Amount", '<input class="input amt" type="number" name="amount" min="0.01" step="0.01" value="' +
@@ -5341,6 +5423,24 @@ Object.assign(Actions, {
     const form = $("#mForm");
     form.elements.feeId.innerHTML = el.value ? feeOptionsFor(el.value, "") : '<option value="">Choose a student first</option>';
     Actions["pay-feepick"](null, form.elements.feeId);
+    Actions["pay-showbal"](null, el);
+  },
+  "pay-showbal": (id, el) => {
+    const form = $("#mForm"); if (!form) return;
+    const hint = form.querySelector("#payStuHint"); if (!hint) return;
+    const sid = el.value;
+    if (!sid) { hint.innerHTML = ""; return; }
+    const views = Logic.feeViews({ studentId: sid }).map(withBasis);
+    const bal = views.reduce((s, v) => s + (v.balance > 0 ? v.balance : 0), 0);
+    const st = DataService.getStudent(sid);
+    hint.innerHTML = '<div class="minirow" style="margin-top:6px"><span>' + esc(st ? st.name : sid) +
+      '</span><b class="' + (bal > 0 ? "out" : "in") + '">' + (bal > 0 ? "Pending " + money(bal) : "No pending balance") + '</b></div>';
+  },
+  "kind-toggle": (id, el) => {
+    const staff = el.value === "staff";
+    const form = $("#mForm"); if (!form) return;
+    form.querySelectorAll(".staff-only").forEach(x => x.style.display = staff ? "" : "none");
+    form.querySelectorAll(".teacher-only").forEach(x => x.style.display = staff ? "none" : "contents");
   },
   "pay-feepick": (id, el) => {
     const opt = el.options[el.selectedIndex], bal = opt ? +opt.dataset.bal : 0;
@@ -5435,16 +5535,23 @@ Object.assign(Actions, {
   },
 
   /* ---------------- teachers ---------------- */
+  "staff-new": () => openModal({ title: "Add staff", wide: true, body: teacherForm({ kind: "staff" }), submitText: "Save staff",
+    onSubmit: function(d){
+      if (!d.name) { toast("Name is needed", "bad"); return false; }
+      d.indRate = +d.indRate || 0; d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0; d.kind = "staff"; delete d.id;
+      const id = DataService.saveTeacher(d);
+      toast("Staff " + id + " added", "ok"); render();
+    } }),
   "teacher-new": () => openModal({ title: "Add teacher", wide: true, body: teacherForm({}), submitText: "Save teacher",
     onSubmit: function(d){
-      if (!d.name) { toast("Teacher name is needed", "bad"); return false; }
-      d.indRate = +d.indRate || 0; d.batchRate = +d.batchRate || 0; delete d.id;
+      if (!d.name) { toast("Name is needed", "bad"); return false; }
+      d.indRate = +d.indRate || 0; d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0; delete d.id;
       const id = DataService.saveTeacher(d);
-      toast("Teacher " + id + " added", "ok"); render();
+      toast((d.kind === "staff" ? "Staff " : "Teacher ") + id + " added", "ok"); render();
     } }),
   "teacher-edit": (id) => openModal({ title: "Edit " + id, wide: true, body: teacherForm(DataService.getTeacher(id)), submitText: "Save changes",
-    onSubmit: function(d){ d.id = id; d.indRate = +d.indRate || 0; d.batchRate = +d.batchRate || 0;
-      DataService.saveTeacher(d); toast("Teacher updated", "ok"); render(); } }),
+    onSubmit: function(d){ d.id = id; d.indRate = +d.indRate || 0; d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0;
+      DataService.saveTeacher(d); toast("Saved", "ok"); render(); } }),
   "tpay-new": (teacherId) => {
     const m = State.tpay.month || State.month;
     const t = teacherId ? DataService.getTeacher(teacherId) : DataService.getTeachers()[0];
@@ -5474,18 +5581,19 @@ Object.assign(Actions, {
   "tadj-edit": (teacherId) => {
     const m = State.tpay.month || State.month, t = DataService.getTeacher(teacherId);
     const a = DataService.getAdjust(teacherId, m) || {}, v = Logic.payrollView(t, m);
-    openModal({ title: "Bonus or deduction — " + t.name,
+    openModal({ title: "Bonus · incentive · deduction — " + t.name,
       body: '<div class="note">' + esc(monthLabel(m)) + ' gross is ' + money(v.gross) + ' (individual ' + money(v.indAmount) +
         ' + batch ' + money(v.batchAmount) + ').</div>' +
         '<div class="form-grid">' +
         field("Bonus", '<input class="input" type="number" name="bonus" min="0" step="0.01" value="' + (+a.bonus || 0) + '">') +
+        field("Incentive", '<input class="input" type="number" name="incentive" min="0" step="0.01" value="' + (+a.incentive || 0) + '">') +
         field("Deduction", '<input class="input" type="number" name="deduction" min="0" step="0.01" value="' + (+a.deduction || 0) + '">') +
         (t.indRateType === "custom" ? field("Custom individual amount",
           '<input class="input" type="number" name="custom" min="0" step="0.01" value="' + (+a.custom || 0) + '">') : "") +
         '<div class="field span2"><label>Remarks</label><input class="input" name="remarks" value="' + esc(a.remarks || "") + '"></div></div>',
       submitText: "Save",
       onSubmit: function(d){
-        DataService.saveAdjust({ teacherId: teacherId, month: m, bonus: +d.bonus || 0, deduction: +d.deduction || 0,
+        DataService.saveAdjust({ teacherId: teacherId, month: m, bonus: +d.bonus || 0, incentive: +d.incentive || 0, deduction: +d.deduction || 0,
           custom: +d.custom || 0, remarks: d.remarks });
         toast("Saved", "ok"); render();
       } });
