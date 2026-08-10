@@ -65,10 +65,11 @@ button,input,select,textarea{ font:inherit; color:inherit; }
   background:linear-gradient(180deg,rgba(10,31,22,.97),rgba(10,31,22,.88)); backdrop-filter:blur(10px); }
 .tn-row{ display:flex; align-items:center; gap:14px; max-width:1560px; margin:0 auto; flex-wrap:wrap; }
 .brand{ display:flex; gap:11px; align-items:center; flex:none; }
-.brand-mark{ width:44px; height:44px; flex:none; background:#fff center/cover no-repeat; color:transparent;
-  display:grid; place-items:center; background-image:url("/logo.png"); background-size:cover; background-position:center;
-  border-radius:13px; border:1.5px solid rgba(143,211,174,.5);
-  box-shadow:0 2px 8px rgba(0,0,0,.28), inset 0 0 0 2px rgba(255,255,255,.35); }
+.brand-mark{ width:46px; height:46px; flex:none; background:#0b1f16 center/cover no-repeat; color:transparent;
+  display:grid; place-items:center; background-image:url("/logo.png"); background-size:88% 88%;
+  background-repeat:no-repeat; background-position:center;
+  border-radius:12px; border:1px solid rgba(143,211,174,.28);
+  box-shadow:0 1px 3px rgba(0,0,0,.3); }
 .brand-name{ font-family:var(--f-d); font-weight:600; font-size:18px; color:#fff; line-height:1.1; }
 .brand-sub{ font-size:9.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--on-dark-2); margin-top:2px; }
 .navpill{ display:flex; gap:2px; background:rgba(255,255,255,.045); border:1px solid var(--shell-line);
@@ -639,8 +640,8 @@ function money(n){
 }
 function num(n){ return (+n || 0).toLocaleString("en-IN"); }
 function pct(a, b){ return b > 0 ? Math.round((a / b) * 100) : 0; }
-function uid(prefix, list, pad){
-  pad = pad || 3; let max = 0;
+function uid(prefix, list, pad, start){
+  pad = pad || 3; let max = (start ? start - 1 : 0);
   list.forEach(o => { const n = parseInt(String(o.id).replace(/\D/g, ""), 10); if (!isNaN(n) && n > max) max = n; });
   return prefix + String(max + 1).padStart(pad, "0");
 }
@@ -920,9 +921,9 @@ const Sync = {
    DATA SERVICE — every read and write goes through here
    ========================================================================== */
 function coll(name){ return DB[name] || (DB[name] = []); }
-function upsert(name, obj, prefix, pad){
+function upsert(name, obj, prefix, pad, start){
   const list = coll(name);
-  if (!obj.id) obj.id = uid(prefix, list, pad);
+  if (!obj.id) obj.id = uid(prefix, list, pad, start);
   const i = list.findIndex(x => x.id === obj.id);
   if (i >= 0) list[i] = Object.assign({}, list[i], obj); else list.push(obj);
   persist(); return obj.id;
@@ -931,10 +932,10 @@ const DataService = {
   /* --- shared people --- */
   getStudents(){ return DB.students.slice(); },
   getStudent(id){ return DB.students.find(s => s.id === id) || null; },
-  saveStudent(s){ return upsert("students", s, "ST"); },
+  saveStudent(s){ return upsert("students", s, "MQ", 4, 4150); },
   getTeachers(){ return DB.teachers.slice(); },
   getTeacher(id){ return DB.teachers.find(t => t.id === id) || null; },
-  saveTeacher(t){ return upsert("teachers", t, "T"); },
+  saveTeacher(t){ return upsert("teachers", t, "MQ", 4, 8086); },
 
   /* --- batch stream --- */
   getBatches(){ return DB.batches.slice(); },
@@ -2094,15 +2095,22 @@ function defaultSettings(){
                         "Hosting", "Domain", "Advertising", "Marketing", "Study Materials", "Printing", "Equipment",
                         "Office Expense", "Bank Charges", "Refund", "Miscellaneous"],
     studentStatuses: ["Active", "Inactive", "Suspended", "Completed", "Left"],
-    batchStatuses: ["Active", "Inactive", "Completed", "Upcoming"]
+    batchStatuses: ["Active", "Inactive", "Completed", "Upcoming"],
+    admissionFeeDefault: 0,
+    courseFormats: [
+      { id: "F1", name: "Tarteel — weekly 3 day", course: "Tarteel Base", stream: "batch", days: "Mon,Wed,Fri", monthlyFee: 2000 },
+      { id: "F2", name: "Tarteel — weekly 5 day", course: "Tarteel Advanced", stream: "batch", days: "Mon,Tue,Wed,Thu,Fri", monthlyFee: 2699 },
+      { id: "F3", name: "Hifz — weekly 6 day", course: "Hifz", stream: "batch", days: "Mon,Tue,Wed,Thu,Fri,Sat", monthlyFee: 3000 },
+      { id: "F4", name: "Madrasa Batch — weekly 5 day", course: "Madrasa Batch", stream: "batch", days: "Mon,Tue,Wed,Thu,Fri", monthlyFee: 1000 }
+    ]
   };
 }
 function emptyDB(){
   return { meta: { version: 1, createdAt: new Date().toISOString() }, settings: defaultSettings(),
     students: [], teachers: [], batches: [], subclasses: [], enrollments: [], attendance: [], plans: [], classes: [],
     fees: [], payments: [], refunds: [], income: [], expenses: [], teacherPayments: [], teacherAdjust: [],
-    holidays: [], adjustments: [], transfers: [], accounts: [{ id: "Cash", name: "Cash", opening: 9000 },
-      { id: "Bank", name: "Bank", opening: 45000 }, { id: "UPI", name: "UPI", opening: 15000 }] };
+    holidays: [], adjustments: [], transfers: [], accounts: [{ id: "Cash", name: "Cash", opening: 0 },
+      { id: "Bank", name: "Bank", opening: 0 }, { id: "UPI", name: "UPI", opening: 0 }] };
 }
 
 function seedDatabase(){
@@ -4494,6 +4502,24 @@ Pages.settings = function(){
       ' fee would fall due on <b>' + esc(fmtDate(Logic.feeDueDate(addMonths(currentMonth(), 1), s.defaultDueDay))) + '</b>.</p>' +
     '<div class="btn-row" style="margin-top:12px"><button class="btn btn-primary" data-act="settings-save">Save settings</button></div>' +
   '</div></div>' +
+  '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Course formats</h3></div><div class="card-bd">' +
+    '<div class="note">Prepare your standard course formats — course, class days and the monthly fee. When you create a batch or an individual plan you can pick one to fill the fields instantly, or still enter everything manually.</div>' +
+    '<div class="tbl-wrap"><table><thead><tr><th>Format</th><th>Course</th><th>Stream</th><th>Days</th><th>Monthly fee</th><th></th></tr></thead><tbody>' +
+    ((s.courseFormats || []).length ? (s.courseFormats || []).map(fm => '<tr>' +
+      '<td><b>' + esc(fm.name) + '</b></td><td>' + esc(fm.course || "—") + '</td>' +
+      '<td>' + esc(fm.stream === "individual" ? "Individual" : "Batch") + '</td>' +
+      '<td style="font-size:12px">' + esc(fm.days || "—") + '</td>' +
+      '<td class="mono">' + money(+fm.monthlyFee || 0) + '</td>' +
+      '<td><button class="btn btn-sm" data-act="fmt-edit" data-id="' + fm.id + '">Edit</button> ' +
+        '<button class="btn btn-sm" data-act="fmt-del" data-id="' + fm.id + '">✕</button></td></tr>').join("")
+      : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">No formats yet.</td></tr>') +
+    '</tbody></table></div>' +
+    '<div class="btn-row" style="margin-top:12px"><button class="btn btn-primary" data-act="fmt-new">+ Add format</button></div>' +
+    '<div class="form-grid" style="margin-top:16px">' +
+      field("Default admission fee", '<input class="input" type="number" min="0" id="set_admissionFeeDefault" value="' + esc(s.admissionFeeDefault || 0) + '">') +
+    '</div>' +
+    '<div class="btn-row" style="margin-top:12px"><button class="btn btn-primary" data-act="settings-save">Save settings</button></div>' +
+  '</div></div>' +
   '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Holidays</h3>' +
     '<span class="spacer"></span><button class="btn btn-sm btn-primary" data-act="hol-new">+ Add holiday</button></div>' +
     '<div class="card-bd">' +
@@ -4569,11 +4595,22 @@ function studentForm(s, isNew){
     (isNew ? '<div class="field span2"><div class="note" style="margin:0">Add the student first. You can then put them in a batch, give them an individual class plan, or both — each is billed on its own fee record.</div></div>' : "") +
   '</div>';
 }
+function formatOpts(stream, selId){
+  const fmts = (Settings().courseFormats || []).filter(f => !stream || f.stream === stream);
+  return '<option value="">Custom (enter manually)</option>' +
+    fmts.map(f => '<option value="' + esc(f.id) + '"' + (selId === f.id ? " selected" : "") + '>' +
+      esc(f.name) + " · " + money(f.monthlyFee) + "/mo</option>").join("");
+}
+function formatDataAttr(){
+  /* expose formats to the browser so the picker can auto-fill */
+  return (Settings().courseFormats || []).map(f => f.id + "|" + f.course + "|" + f.days + "|" + f.monthlyFee).join(";;");
+}
 function batchForm(b){
   b = b || {};
   return '<div class="form-grid">' +
     field("Batch ID", '<input class="input mono" name="id" value="' + esc(b.id || "") + '" readonly placeholder="Generated automatically">') +
     field("Batch name", '<input class="input" name="name" required value="' + esc(b.name || "") + '">') +
+    field("Use a course format", '<select class="select" data-act="apply-format" data-formats="' + esc(formatDataAttr()) + '">' + formatOpts("batch", "") + '</select>') +
     field("Course", sel("course", courseOpts(b.course, "Select course"))) +
     field("Level", sel("level", optList(Settings().levels, b.level, "Select level"))) +
     field("Teacher", sel("teacherId", teacherOpts(b.teacherId, "Select teacher"))) +
@@ -4597,6 +4634,7 @@ function planForm(p, presetStudent){
     field("Plan ID", '<input class="input mono" name="id" value="' + esc(p.id || "") + '" readonly placeholder="Generated automatically">') +
     field("Student", sel("studentId", studentOpts(p.studentId || presetStudent || "", "Select student"))) +
     field("Teacher", sel("teacherId", teacherOpts(p.teacherId, "Select teacher"))) +
+    field("Use a course format", '<select class="select" data-act="apply-format" data-formats="' + esc(formatDataAttr()) + '">' + formatOpts("individual", "") + '</select>') +
     field("Course", sel("course", courseOpts(p.course, "Select course"))) +
     '<div class="field span2"><label>Class days</label><div>' + dayBoxes(p.days) + '</div></div>' +
     field("Class time", '<input class="input" type="time" name="time" value="' + esc(p.time || "18:00") + '">') +
@@ -4610,6 +4648,11 @@ function planForm(p, presetStudent){
     field("Status", sel("status", optList(["Active", "Stopped"], p.status || "Active"))) +
     field("Start date", '<input class="input" type="date" name="startDate" value="' + esc(p.startDate || today()) + '">') +
     field("End date", '<input class="input" type="date" name="endDate" value="' + esc(p.endDate || "") + '">') +
+    (p.id ? "" :
+      field("Admission fee", '<input class="input" type="number" min="0" name="admissionFee" value="' + (set.admissionFeeDefault || 0) + '" placeholder="0 = none">') +
+      '<div class="field"><label>Options</label><label style="display:flex;gap:7px;align-items:center;padding-top:9px;font-size:13px"><input type="checkbox" name="waiveAdmission"> Waive admission fee</label></div>' +
+      '<div class="field span2"><label style="display:flex;gap:7px;align-items:center;font-size:13px"><input type="checkbox" name="raiseFirst" checked> Raise this month\'s fee now (prepaid) using the Rate above so I can collect it</label>' +
+      '<span class="hint">For prepaid collection at signup. Later months are billed normally from the class log.</span></div>') +
     '<div class="field span2"><label>Notes</label><input class="input" name="notes" value="' + esc(p.notes || "") + '"></div>' +
   '</div>';
 }
@@ -4854,6 +4897,9 @@ const Actions = {
       field("Joining date", '<input class="input" type="date" name="date" value="' + today() + '">') +
       field("Monthly fee", '<input class="input" type="number" name="monthlyFee" placeholder="Blank = batch fee">') +
       field("Due day", '<input class="input" type="number" name="dueDay" min="1" max="28" value="' + (Settings().defaultDueDay || 5) + '">') +
+      field("Admission fee", '<input class="input" type="number" name="admissionFee" min="0" value="' + (Settings().admissionFeeDefault || 0) + '" placeholder="0 = none">') +
+      '<div class="field"><label>Options</label><label style="display:flex;gap:7px;align-items:center;padding-top:9px;font-size:13px"><input type="checkbox" name="waiveAdmission"> Waive admission fee</label></div>' +
+      '<div class="field span2"><label style="display:flex;gap:7px;align-items:center;font-size:13px"><input type="checkbox" name="raiseFirst" checked> Raise this month\'s fee now so I can collect it (prepaid)</label></div>' +
       '</div>',
     submitText: "Create enrolment",
     onSubmit: function(d){
@@ -4861,10 +4907,29 @@ const Actions = {
       const b = DataService.getBatch(d.batchId), cur = DataService.getActiveEnrollment(d.studentId);
       if (cur) DataService.closeEnrollment(cur.id, "Transferred", d.date, "Batch change");
       const sc = d.subClassId ? DataService.getSubclass(d.subClassId) : null;
+      const monthlyFee = +d.monthlyFee || (sc && sc.monthlyFee) || b.monthlyFee;
       const id = DataService.saveEnrollment({ studentId: d.studentId, batchId: d.batchId, subClassId: d.subClassId || "",
-        joiningDate: d.date, leavingDate: "", monthlyFee: +d.monthlyFee || (sc && sc.monthlyFee) || b.monthlyFee,
+        joiningDate: d.date, leavingDate: "", monthlyFee: monthlyFee,
         dueDay: +d.dueDay || 5, status: "Active", reason: "", notes: "" });
-      toast("Enrolment " + id + " created", "ok"); render();
+      /* prepaid: raise the first month's fee immediately so it can be collected */
+      const m = String(d.date || today()).slice(0, 7);
+      if (d.raiseFirst) {
+        const due = Logic.feeDueDate(m, +d.dueDay || Settings().defaultDueDay || 5);
+        DataService.saveFee({ source: "batch", month: m, studentId: d.studentId, batchId: d.batchId,
+          subClassId: d.subClassId || "", enrollmentId: id, teacherId: b ? b.teacherId : "",
+          feeType: "monthly", rate: monthlyFee, gross: monthlyFee, discount: 0, waived: false, locked: false,
+          dueDate: due, remarks: "First month (prepaid)", createdAt: new Date().toISOString() });
+      }
+      /* admission fee as a one-off fee, unless waived */
+      const adm = +d.admissionFee || 0;
+      if (adm > 0 && !d.waiveAdmission) {
+        DataService.saveFee({ source: "batch", month: m, studentId: d.studentId, batchId: d.batchId,
+          subClassId: d.subClassId || "", enrollmentId: id, teacherId: b ? b.teacherId : "",
+          feeType: "admission", rate: adm, gross: adm, discount: 0, waived: false, locked: true,
+          dueDate: Logic.feeDueDate(m, +d.dueDay || 5), remarks: "Admission fee", createdAt: new Date().toISOString() });
+      }
+      toast("Enrolment " + id + " created" + (d.raiseFirst ? " · fee raised for " + monthLabel(m) : ""), "ok");
+      celebrate("🎓"); render();
     }
   }),
   "enrol-close": (id) => {
@@ -5243,9 +5308,28 @@ const Actions = {
       d.days = readDays(form);
       d.perWeek = d.days.length;
       ["duration","rate","discount","dueDay"].forEach(k => d[k] = +d[k] || 0);
-      delete d.id;
+      const raiseFirst = d.raiseFirst, adm = +d.admissionFee || 0, waiveAdm = d.waiveAdmission;
+      const dueDay = d.dueDay || Settings().defaultDueDay || 5;
+      delete d.id; delete d.raiseFirst; delete d.admissionFee; delete d.waiveAdmission;
       const id = DataService.savePlan(d);
-      toast("Class plan " + id + " created", "ok"); render();
+      const m = String(d.startDate || today()).slice(0, 7);
+      /* prepaid: raise the first month's fee now using the plan rate, so it can be collected immediately */
+      if (raiseFirst && (+d.rate || 0) > 0) {
+        const gross = Math.max(0, (+d.rate || 0) - (+d.discount || 0));
+        DataService.saveFee({ source: "individual", month: m, studentId: d.studentId, planId: id,
+          teacherId: d.teacherId || "", feeType: "monthly", rate: +d.rate || 0, gross: gross, discount: +d.discount || 0,
+          carry: 0, billing: "prepaid", reconciled: false, waived: false, locked: false,
+          dueDate: Logic.feeDueDate(m, dueDay), remarks: "First month (prepaid)", createdAt: new Date().toISOString() });
+      }
+      /* admission fee as a one-off */
+      if (adm > 0 && !waiveAdm) {
+        DataService.saveFee({ source: "individual", month: m, studentId: d.studentId, planId: id,
+          teacherId: d.teacherId || "", feeType: "admission", rate: adm, gross: adm, discount: 0,
+          carry: 0, billing: "prepaid", reconciled: false, waived: false, locked: true,
+          dueDate: Logic.feeDueDate(m, dueDay), remarks: "Admission fee", createdAt: new Date().toISOString() });
+      }
+      toast("Class plan " + id + " created" + (raiseFirst && (+d.rate || 0) > 0 ? " · fee raised for " + monthLabel(m) : ""), "ok");
+      celebrate("🎓"); render();
     } }),
   "plan-edit": (id) => openModal({ title: "Edit " + id, wide: true, body: planForm(DataService.getPlan(id)), submitText: "Save changes",
     onSubmit: function(d, form){
@@ -5483,6 +5567,25 @@ Object.assign(Actions, {
     const st = DataService.getStudent(sid);
     hint.innerHTML = '<div class="minirow" style="margin-top:6px"><span>' + esc(st ? st.name : sid) +
       '</span><b class="' + (bal > 0 ? "out" : "in") + '">' + (bal > 0 ? "Pending " + money(bal) : "No pending balance") + '</b></div>';
+  },
+  "apply-format": (id, el) => {
+    const fid = el.value;
+    const form = el.closest("form") || $("#mForm"); if (!form) return;
+    if (!fid) return;  /* Custom — leave fields as-is */
+    const map = {};
+    (el.dataset.formats || "").split(";;").forEach(s => { const p = s.split("|"); if (p[0]) map[p[0]] = { course: p[1], days: p[2], fee: p[3] }; });
+    const fmt = map[fid]; if (!fmt) return;
+    /* course */
+    if (form.elements.course) form.elements.course.value = fmt.course;
+    /* days checkboxes (named day_Mon, day_Tue, …) */
+    const want = (fmt.days || "").split(",").map(x => x.trim());
+    ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(d => {
+      const cb = form.elements["day_" + d]; if (cb) cb.checked = want.indexOf(d) >= 0;
+    });
+    /* fee: batch uses monthlyFee input; individual uses rate input if present */
+    if (form.elements.monthlyFee) form.elements.monthlyFee.value = fmt.fee;
+    if (form.elements.rate) form.elements.rate.value = fmt.fee;
+    toast("Filled from format — you can still edit", "ok", 1800);
   },
   "kind-toggle": (id, el) => {
     const staff = el.value === "staff";
@@ -5724,15 +5827,46 @@ Object.assign(Actions, {
   "rep-csv": () => { const rep = buildReport(); downloadCSV(State.reports.which + "-report.csv", rep.csv.headers, rep.csv.rows); },
   "rep-statement": (id) => { State.reports.which = "statement"; State.reports.studentId = id; State.reports.preset = "month"; go("reports"); },
 
+  /* ---------------- course formats ---------------- */
+  "fmt-new": () => Actions["_fmt-form"](null),
+  "fmt-edit": (id) => Actions["_fmt-form"](id),
+  "_fmt-form": (id) => {
+    const fmt = id ? (Settings().courseFormats || []).find(f => f.id === id) : {};
+    openModal({ title: id ? "Edit format" : "Add course format", body: '<div class="form-grid">' +
+      field("Format name", '<input class="input" name="name" required value="' + esc(fmt.name || "") + '" placeholder="e.g. Tarteel — weekly 3 day">') +
+      field("Course", sel("course", courseOpts(fmt.course, "Select course"))) +
+      field("Stream", sel("stream", optList([{value:"batch",label:"Batch"},{value:"individual",label:"Individual"}], fmt.stream || "batch"))) +
+      field("Monthly fee", '<input class="input" type="number" min="0" name="monthlyFee" value="' + esc(fmt.monthlyFee || 0) + '">') +
+      '<div class="field span2"><label>Class days</label><div>' + dayBoxes(fmt.days) + '</div></div>' +
+    '</div>', submitText: id ? "Save format" : "Add format",
+      onSubmit: function(d){
+        if (!d.name) { toast("Format name is needed", "bad"); return false; }
+        const list = (Settings().courseFormats || []).slice();
+        const days = Array.isArray(d.days) ? d.days.join(",") : (d.days || "");
+        const rec = { id: id || ("F" + Date.now().toString(36)), name: d.name, course: d.course || "",
+          stream: d.stream || "batch", days: days, monthlyFee: +d.monthlyFee || 0 };
+        const i = list.findIndex(f => f.id === rec.id);
+        if (i >= 0) list[i] = rec; else list.push(rec);
+        DataService.saveSettings({ courseFormats: list });
+        toast(id ? "Format saved" : "Format added", "ok"); render();
+      } });
+  },
+  "fmt-del": (id) => confirmAction({ title: "Remove format", message: "Remove this course format?", danger: true, submitText: "Remove",
+    onConfirm: function(){
+      const list = (Settings().courseFormats || []).filter(f => f.id !== id);
+      DataService.saveSettings({ courseFormats: list }); toast("Format removed", "ok"); render();
+    } }),
+
   /* ---------------- settings + data ---------------- */
   "settings-save": () => {
     const patch = {};
     ["academyName","academyTagline","website","email","contactPhone","whatsappNumber","currency","countryCode",
      "defaultDueDay","defaultFeeMethod","billingMode","advanceDays","teacherLinkBase","apiUrl",
-     "syncKey","syncEvery"].forEach(k => {
+     "syncKey","syncEvery","admissionFeeDefault"].forEach(k => {
       const el = $("#set_" + k); if (el) patch[k] = el.value;
     });
     patch.defaultDueDay = +patch.defaultDueDay || 5;
+    if (patch.admissionFeeDefault !== undefined) patch.admissionFeeDefault = Math.max(0, +patch.admissionFeeDefault || 0);
     const so = $("#set_syncOn"); if (so) patch.syncOn = so.checked;
     if (patch.syncEvery !== undefined) patch.syncEvery = Math.max(1, +patch.syncEvery || 3);
     if (patch.advanceDays !== undefined) patch.advanceDays = Math.max(0, +patch.advanceDays || 0);
