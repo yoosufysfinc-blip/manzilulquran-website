@@ -2318,7 +2318,7 @@ function defaultSettings(){
     contactPhone: "7025070415", whatsappNumber: "9995360416",
     currency: "₹", countryCode: "91", defaultDueDay: 5, defaultFeeMethod: "perClass",
     billingMode: "prepaid", advanceDays: 5,
-    supabaseUrl: "", supabaseKey: "", supabaseOn: true,
+    supabaseUrl: "https://uuwboujrotmmpofjynhz.supabase.co", supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2JvdWpyb3RtbXBvZmp5bmh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Mjk4OTQsImV4cCI6MjEwMjAwNTg5NH0.z0_G7oKlmGILPr8zzOOQEgtUDrT8rNQLjrV9GQQdA9U", supabaseOn: true,
     teacherLinkBase: "https://manzilulquran.in/attendance/", apiUrl: "https://script.google.com/macros/s/AKfycbzuGmaPn2PQGyS_64RQFF8rY2ZRhb37HTFFjRuvfVEsGn8DB8O8AZsnEbvPdrOSCMuo/exec", syncKey: "mq-7f3a91c4e85b426d9a0c", syncOn: true, syncEvery: 3,
     courses: ["Hifz", "Tarteel Base", "Tarteel Advanced", "Madrasa Batch", "Madrasa Individual", "Tajweed", "Arabic"],
     levels: ["Beginner", "Level 1", "Level 2", "Level 3", "Advanced"],
@@ -2582,6 +2582,8 @@ function bootData(){
     const dflt = defaultSettings();
     if (!DB.settings.apiUrl) DB.settings.apiUrl = dflt.apiUrl;
     if (!DB.settings.syncKey) DB.settings.syncKey = dflt.syncKey;
+    if (!DB.settings.supabaseUrl) DB.settings.supabaseUrl = dflt.supabaseUrl;
+    if (!DB.settings.supabaseKey) DB.settings.supabaseKey = dflt.supabaseKey;
     if (!DB.accounts || !DB.accounts.length) DB.accounts = emptyDB().accounts;
   } else { DB = emptyDB(); persist(); }
 }
@@ -2607,7 +2609,7 @@ const WS = {
     ["Overview", [["overview", "◱", "Academy overview", "Dashboard"]]],
     ["People", [["students", "☺", "Students", "Students"], ["teachers", "✎", "Teachers", "Teachers"], ["staff", "◉", "Other staff", "Staff"]]],
     ["Money in", [["payments", "◈", "All payments", "Payments"], ["income", "↑", "Other income", "Income"]]],
-    ["Money out", [["tpay", "◇", "Teacher payments", "Salary"], ["expenses", "↓", "Expenses", "Expenses"]]],
+    ["Money out", [["expenses", "↓", "Expenses", "Expenses"]]],
     ["Books", [["accounts", "▦", "Accounts", "Accounts"], ["ledger", "☰", "Ledger", "Ledger"],
       ["reports", "▥", "Reports", "Reports"]]],
     ["System", [["settings", "⚙", "Settings", "Settings"]]]
@@ -4689,12 +4691,17 @@ Pages.settings = function(){
     '<div class="card-bd" style="text-align:center; padding:26px 22px">' +
       '<div style="font-size:34px; line-height:1">📊</div>' +
       '<h3 style="font-family:var(--f-d,serif); font-size:22px; margin:8px 0 4px; color:#eafff2">Data Sync &amp; Backup</h3>' +
-      '<div class="note" style="margin:0 auto 18px; max-width:520px; color:#bfe6cd">Supabase is the live database. Your Google Sheet is a full backup — you can pull everything back from it any time (for example if Supabase ever has a problem).</div>' +
+      '<div style="margin:0 auto 18px; max-width:540px; color:#eafff2; font-size:14px; line-height:1.5; background:rgba(0,0,0,.18); padding:12px 16px; border-radius:12px">Supabase is the live database. Your Google Sheet is a full backup — you can pull everything back from it any time (for example if Supabase ever has a problem).</div>' +
       '<div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:center">' +
         '<button data-act="imp-open" style="cursor:pointer; border:none; border-radius:14px; padding:15px 30px; font-size:17px; font-weight:700; color:#06140e; background:linear-gradient(90deg,#8fe0b6,#5fbf88); box-shadow:0 8px 22px rgba(95,191,136,.4)">🔄 Import from Sheet</button>' +
         '<button class="btn" data-act="sync-full" style="padding:15px 24px; font-size:15px">⬆️ Export to Sheet</button>' +
       '</div>' +
-      '<div class="note" style="margin:14px auto 0; max-width:520px; font-size:12.5px; color:#9fd8b6">Import pulls the latest data from the Google Sheet into the app, overwriting the local copy on this device.</div>' +
+      '<div style="margin:14px auto 4px; max-width:520px; font-size:13px; color:#cfeeda; line-height:1.5">Import pulls the latest data from the Google Sheet into the app, overwriting the local copy on this device.</div>' +
+      '<div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:14px; padding-top:14px; border-top:1px solid rgba(143,211,174,.2)">' +
+        '<button class="btn" data-act="backup" style="font-size:13.5px">⬇️ Export backup (JSON file)</button>' +
+        '<button class="btn" data-act="restore" style="font-size:13.5px">⬆️ Import backup (JSON file)</button>' +
+      '</div>' +
+      '<div style="margin:10px auto 0; max-width:520px; font-size:12px; color:#9fd8b6">A JSON file is a full offline copy of everything — handy to keep on your computer.</div>' +
     '</div>' +
   '</div>' +
   '<div class="card"><div class="card-hd"><h3>Academy details</h3></div><div class="card-bd">' +
@@ -4716,6 +4723,22 @@ Pages.settings = function(){
     '<div class="btn-row" style="margin-top:13px"><button class="btn btn-primary" data-act="settings-save">Save settings</button>' +
       (s.logo ? '<button class="btn" data-act="logo-clear">Remove logo</button>' : "") + '</div>' +
   '</div></div>' +
+  '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Supabase — live database</h3></div>' +
+    '<div class="card-bd">' +
+    '<div class="note">Supabase is the <b>primary live database</b>. Every device reads and writes here live, so everyone always sees the same up-to-date data. The Google Sheet below keeps running as a <b>backup</b>. Paste your project URL and the <b>anon public / publishable</b> key from Supabase → Project Settings → API. Use the base URL only (no /rest/v1 at the end).</div>' +
+    '<div class="form-grid">' +
+      '<div class="field span2"><label>Project URL</label>' +
+        '<input class="input" id="set_supabaseUrl" value="' + esc(s.supabaseUrl || "") + '" placeholder="https://xxxxxxxx.supabase.co"></div>' +
+      '<div class="field span2"><label>Anon public / publishable key</label>' +
+        '<input class="input mono" id="set_supabaseKey" value="' + esc(s.supabaseKey || "") + '" placeholder="eyJhbGciOi… or sb_publishable_…"></div>' +
+      '<div class="field"><label>Use Supabase</label><label style="display:flex;gap:8px;align-items:center;padding-top:9px;font-size:13.5px">' +
+        '<input type="checkbox" id="set_supabaseOn"' + (s.supabaseOn ? " checked" : "") + '> Make Supabase the live source of truth</label></div>' +
+    '</div>' +
+    '<div class="btn-row" style="margin-top:12px">' +
+      '<button class="btn btn-primary" data-act="settings-save">Save settings</button>' +
+      '<button class="btn" data-act="supa-test">Test Supabase</button>' +
+      '<button class="btn" data-act="supa-pull">Load everything from Supabase</button>' +
+    '</div></div></div>' +
   '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Google Sheets backup</h3>' +
     '<span class="spacer"></span><button class="btn btn-sm" data-act="sync-panel">Open backup panel</button></div>' +
     '<div class="card-bd">' +
@@ -4800,8 +4823,8 @@ Pages.settings = function(){
       '<br><br>Teacher pay — batch: ' + BATCH_PAY_TYPES.map(m => '<span class="badge stream-b" style="margin-right:4px">' +
       esc(m.label) + '</span>').join("") + '</p>' +
   '</div></div>' +
-  '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Data</h3></div><div class="card-bd">' +
-    '<p class="tagline">Everything lives in this browser. Export a backup before clearing browser data or moving to another device.</p>' +
+  '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Data overview</h3></div><div class="card-bd">' +
+    '<p class="tagline">A quick count of what is stored. Use the Data Sync &amp; Backup section at the top to import, export or back up.</p>' +
     '<div class="grid-2">' +
       '<div>' + [["Students", DB.students.length], ["Teachers", DB.teachers.length], ["Batches", DB.batches.length],
         ["Enrolments", DB.enrollments.length], ["Attendance marks", DB.attendance.length]]
@@ -4809,11 +4832,6 @@ Pages.settings = function(){
       '<div>' + [["Class plans", DB.plans.length], ["Classes logged", DB.classes.length], ["Fee records", DB.fees.length],
         ["Payments", DB.payments.length], ["Expenses", DB.expenses.length]]
         .map(x => '<div class="kv"><span>' + x[0] + '</span><b>' + num(x[1]) + '</b></div>').join("") + '</div>' +
-    '</div>' +
-    '<div class="btn-row" style="margin-top:13px">' +
-      '<button class="btn btn-primary" data-act="backup">Export backup (JSON)</button>' +
-      '<button class="btn" data-act="restore">Import backup</button>' +
-      '<button class="btn btn-danger" data-act="reset-demo">Reset to sample data</button>' +
     '</div>' +
   '</div></div>';
 };
