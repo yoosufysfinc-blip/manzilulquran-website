@@ -523,7 +523,48 @@ svg.chart .lbl{ font-family:var(--f-b); font-size:10.5px; fill:var(--muted); }
 .mq-burst .ring{ position:absolute; width:74px; height:74px; border-radius:50%; border:2px solid rgba(143,211,174,.7);
   animation:mqRing .7s ease-out both; }
 
+
+/* ===== Import-from-Sheet overlay ===== */
+.imp-scrim{ position:fixed; inset:0; z-index:900; display:grid; place-items:center;
+  background:rgba(6,20,14,.55); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  animation:impFade .25s ease both; }
+.imp-scrim.min{ inset:auto 18px 18px auto; background:none; backdrop-filter:none; -webkit-backdrop-filter:none; display:block; }
+@keyframes impFade{ from{ opacity:0 } to{ opacity:1 } }
+.imp-card{ width:min(440px,92vw); background:linear-gradient(180deg,#123a28,#0d2c1e);
+  border:1px solid rgba(143,211,174,.35); border-radius:20px; padding:26px 24px 22px;
+  box-shadow:0 30px 80px rgba(0,0,0,.5); color:#eafff2; position:relative; }
+.imp-scrim.min .imp-card{ width:230px; padding:14px 16px; border-radius:14px; cursor:pointer; }
+.imp-scrim.min .imp-body{ display:none; }
+.imp-scrim.min .imp-mintag{ display:block; }
+.imp-mintag{ display:none; font-size:13px; font-weight:600; }
+.imp-mintag small{ display:block; color:#9fd8b6; font-weight:500; margin-top:2px; }
+.imp-head{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+.imp-book{ font-size:30px; animation:impSpin 2.4s ease-in-out infinite; transform-origin:50% 60%; }
+@keyframes impSpin{ 0%{ transform:rotateY(0) } 50%{ transform:rotateY(180deg) } 100%{ transform:rotateY(360deg) } }
+.imp-title{ font-family:var(--f-d,serif); font-size:19px; font-weight:600; }
+.imp-sub{ color:#9fd8b6; font-size:12.5px; margin-bottom:16px; }
+.imp-dots{ display:inline-flex; gap:4px; margin-left:4px; }
+.imp-dots i{ width:5px; height:5px; border-radius:50%; background:#7fd3a6; display:inline-block; animation:impDot 1s infinite; }
+.imp-dots i:nth-child(2){ animation-delay:.2s } .imp-dots i:nth-child(3){ animation-delay:.4s }
+@keyframes impDot{ 0%,100%{ opacity:.3; transform:translateY(0) } 50%{ opacity:1; transform:translateY(-3px) } }
+.imp-step{ margin:12px 0; }
+.imp-step .lbl{ display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px; }
+.imp-step .lbl .em{ font-size:15px; }
+.imp-step .bar{ height:9px; border-radius:6px; background:rgba(255,255,255,.1); overflow:hidden; }
+.imp-step .fill{ height:100%; width:0%; border-radius:6px; background:linear-gradient(90deg,#3f9d6b,#7fd3a6);
+  transition:width .5s cubic-bezier(.4,0,.2,1); box-shadow:0 0 10px rgba(127,211,166,.5); }
+.imp-step.done .fill{ background:linear-gradient(90deg,#2f8d5b,#8fe0b6); }
+.imp-step.active .lbl .em{ animation:impPulse 1s infinite; }
+@keyframes impPulse{ 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.25) } }
+.imp-min{ position:absolute; top:12px; right:14px; background:rgba(255,255,255,.12); border:none; color:#eafff2;
+  width:28px; height:28px; border-radius:8px; cursor:pointer; font-size:15px; line-height:1; }
+.imp-min:hover{ background:rgba(255,255,255,.22); }
+.imp-err{ margin-top:14px; padding:10px 12px; border-radius:10px; background:rgba(220,90,70,.18);
+  border:1px solid rgba(220,90,70,.4); color:#ffd9d0; font-size:13px; display:none; }
+.imp-err.show{ display:block; }
+
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body data-ws="batch">
 <div id="mqGate">
@@ -672,6 +713,175 @@ function persist(){
 }
 function Settings(){ return DB.settings || {}; }
 
+/* ==========================================================================
+   Import from Google Sheet — staged pull with a friendly progress overlay.
+   Uses the existing Apps Script "pull" action (with the "only" filter) so it
+   needs NO Code.gs change. Handy as a restore-from-backup if Supabase is down.
+   ========================================================================== */
+const Importer = {
+  steps: [
+    { key: "teachers", em: "👨‍🏫", label: "Teachers", colls: ["teachers", "holidays"] },
+    { key: "students", em: "👨‍🎓", label: "Students", colls: ["students", "batches", "subclasses", "enrollments", "plans", "attendance", "classes"] },
+    { key: "money",    em: "💰", label: "Payments & Ledger", colls: ["fees", "payments", "refunds", "income", "expenses", "teacherPayments", "teacherAdjust", "adjustments", "transfers", "accounts"] }
+  ],
+  open(){
+    if (!Sync.on()) { toast("Add the Google Sheet URL in Settings first", "bad"); return; }
+    const wrap = document.createElement("div");
+    wrap.className = "imp-scrim"; wrap.id = "impScrim";
+    wrap.innerHTML =
+      '<div class="imp-card" data-act="imp-restore">' +
+        '<button class="imp-min" data-act="imp-min" title="Minimise">–</button>' +
+        '<div class="imp-mintag">Syncing…<small id="impMinPct">0%</small></div>' +
+        '<div class="imp-body">' +
+          '<div class="imp-head"><span class="imp-book">📖</span>' +
+            '<div><div class="imp-title">Importing from Google Sheet</div>' +
+            '<div class="imp-sub">Syncing data… please wait<span class="imp-dots"><i></i><i></i><i></i></span></div></div></div>' +
+            this.steps.map((st, i) => '<div class="imp-step" id="impStep' + i + '"><div class="lbl"><span><span class="em">' + st.em + '</span> ' + st.label + ' syncing</span><span class="pc">0%</span></div><div class="bar"><div class="fill"></div></div></div>').join("") +
+          '<div class="imp-err" id="impErr"></div>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(wrap);
+    this.run();
+  },
+  setStep(i, pct, state){
+    const el = document.getElementById("impStep" + i); if (!el) return;
+    el.querySelector(".fill").style.width = pct + "%";
+    el.querySelector(".pc").textContent = Math.round(pct) + "%";
+    el.classList.toggle("active", state === "active");
+    el.classList.toggle("done", state === "done");
+    /* overall % for the minimised tag */
+    const overall = Math.round((i * 100 + pct) / this.steps.length);
+    const mp = document.getElementById("impMinPct"); if (mp) mp.textContent = overall + "%";
+  },
+  async run(){
+    const counts = { teachers: 0, students: 0 };
+    try {
+      for (let i = 0; i < this.steps.length; i++) {
+        const st = this.steps[i];
+        this.setStep(i, 8, "active");
+        /* small animated ramp so the bar feels alive while the request is in flight */
+        let p = 8; const ramp = setInterval(() => { p = Math.min(p + 6, 82); this.setStep(i, p, "active"); }, 160);
+        const r = await Sync.jsonp({ action: "pull", key: Settings().syncKey, since: 0, only: st.colls });
+        clearInterval(ramp);
+        if (!r || !r.ok) throw new Error((r && r.error) || "the sheet refused the request");
+        const changes = r.changes || {};
+        /* apply just these collections */
+        Object.keys(changes).forEach(c => {
+          if (c === "settings") return;
+          DB[c] = (changes[c] || []).filter(x => x && x.id && !x._d);
+        });
+        if (changes.teachers) counts.teachers = (changes.teachers.filter(x => !x._d) || []).length;
+        if (changes.students) counts.students = (changes.students.filter(x => !x._d) || []).length;
+        this.setStep(i, 100, "done");
+        await new Promise(res => setTimeout(res, 260));
+      }
+      Cache.clear(); Storage.save(DB); if (typeof Sync !== "undefined") Sync.snapshot();
+      /* also push the freshly-imported data up to Supabase if it's the primary */
+      setTimeout(() => this.close(), 500);
+      setTimeout(() => { render(); toast("✅ Sync complete! " + counts.teachers + " teachers, " + counts.students + " students updated", "ok", 5000); }, 560);
+    } catch (e) {
+      const box = document.getElementById("impErr");
+      if (box) { box.textContent = "⚠️ " + (e.message || e) + " — tap the – to close and try again."; box.classList.add("show"); }
+    }
+  },
+  close(){ const el = document.getElementById("impScrim"); if (el) el.remove(); },
+  minimise(){ const el = document.getElementById("impScrim"); if (el) el.classList.add("min"); },
+  restore(){ const el = document.getElementById("impScrim"); if (el) el.classList.remove("min"); }
+};
+
+
+/* ==========================================================================
+   Supabase — the primary live database (the "bank").
+   Every save writes here immediately so all devices share one truth.
+   The Google Sheet keeps running as a readable backup mirror (see Sync).
+   ========================================================================== */
+const SUPA_TABLE = {
+  students:"mq_students", teachers:"mq_teachers", batches:"mq_batches", subclasses:"mq_subclasses",
+  enrollments:"mq_enrollments", attendance:"mq_attendance", plans:"mq_plans", classes:"mq_classes",
+  fees:"mq_fees", payments:"mq_payments", refunds:"mq_refunds", income:"mq_income", expenses:"mq_expenses",
+  teacherPayments:"mq_teacherpayments", teacherAdjust:"mq_teacheradjust", holidays:"mq_holidays",
+  adjustments:"mq_adjustments", transfers:"mq_transfers", accounts:"mq_accounts", settings:"mq_settings",
+  holds:"mq_holds"
+};
+const SUPA_COLLS = Object.keys(SUPA_TABLE);
+
+const Supa = {
+  client: null,
+  st: { ready:false, busy:false, at:0, err:"", pending:0 },
+
+  on(){ const s = Settings(); return !!(s.supabaseOn && s.supabaseUrl && s.supabaseKey && window.supabase); },
+
+  init(){
+    if (!this.on()) { this.st.ready = false; return false; }
+    try {
+      const s = Settings();
+      this.client = window.supabase.createClient(s.supabaseUrl, s.supabaseKey, { auth: { persistSession: false } });
+      this.st.ready = true; this.st.err = "";
+      return true;
+    } catch (e) { this.st.ready = false; this.st.err = String(e.message || e); return false; }
+  },
+
+  /* pull EVERY row from EVERY table into the in-memory DB (source of truth on load) */
+  async pullAll(){
+    if (!this.st.ready && !this.init()) return { ok:false, error:"Supabase not configured" };
+    this.st.busy = true; this.paint("busy", "loading from Supabase…");
+    try {
+      for (const c of SUPA_COLLS) {
+        const { data, error } = await this.client.from(SUPA_TABLE[c]).select("id,data,deleted").limit(10000);
+        if (error) throw new Error(c + ": " + error.message);
+        if (c === "settings") {
+          const patch = {};
+          (data || []).forEach(r => { if (!r.deleted) patch[r.id] = r.data && r.data.value !== undefined ? r.data.value : r.data; });
+          DB.settings = Object.assign({}, DB.settings, patch);
+        } else {
+          DB[c] = (data || []).filter(r => !r.deleted).map(r => Object.assign({ id: r.id }, r.data));
+        }
+      }
+      Cache.clear(); Storage.save(DB);
+      this.st.at = Date.now(); this.paint("ok", "loaded from Supabase");
+      return { ok:true };
+    } catch (e) {
+      this.st.err = String(e.message || e); this.paint("err", this.st.err);
+      return { ok:false, error: this.st.err };
+    } finally { this.st.busy = false; }
+  },
+
+  /* upsert a single record live. coll = collection name, rec = the object (must have id) */
+  async put(coll, rec){
+    if (!this.on()) return;
+    if (!this.st.ready && !this.init()) return;
+    const table = SUPA_TABLE[coll]; if (!table || !rec || !rec.id) return;
+    try {
+      const row = { id: String(rec.id), data: rec, deleted: !!rec._d };
+      const { error } = await this.client.from(table).upsert(row, { onConflict: "id" });
+      if (error) throw new Error(error.message);
+      this.st.at = Date.now(); this.paint("ok", "saved");
+    } catch (e) {
+      this.st.pending++; this.st.err = String(e.message || e); this.paint("err", this.st.err);
+    }
+  },
+
+  /* settings are key/value: store each key as its own row */
+  async putSetting(key, value){
+    if (!this.on()) return;
+    if (!this.st.ready && !this.init()) return;
+    try {
+      const { error } = await this.client.from("mq_settings").upsert({ id: key, data: { value: value }, deleted: false }, { onConflict: "id" });
+      if (error) throw new Error(error.message);
+    } catch (e) { this.st.pending++; this.paint("err", String(e.message || e)); }
+  },
+
+  paint(kind, msg){
+    const chip = document.getElementById("syncChip"); if (!chip) return;
+    /* Supabase drives the chip now; the sheet mirror runs quietly behind it */
+    chip.className = "syncchip " + (kind === "ok" ? "ok" : kind === "busy" ? "busy" : kind === "err" ? "err" : "off");
+    const label = kind === "ok" ? "Saved" : kind === "busy" ? "Saving…" : kind === "err" ? "Save problem" : "Not connected";
+    chip.innerHTML = "<i></i>" + label;
+    chip.title = msg || "";
+  }
+};
+
+
 /* Derived data is cached and dropped on every write, so nothing can go stale. */
 const Cache = {
   _p: null, _pLen: -1, _l: null,
@@ -694,7 +904,7 @@ const Cache = {
    Records carry _u (last changed, ms). Newest _u wins on both sides, so the
    same record can be edited here and in the sheet without corrupting either.
    ========================================================================== */
-const SYNC_COLLS = ["students","teachers","batches","subclasses","enrollments","attendance","holidays",
+const SYNC_COLLS = ["students","teachers","batches","subclasses","enrollments","attendance","holidays","holds",
   "plans","classes","fees","payments","refunds","income","expenses","teacherPayments","teacherAdjust",
   "adjustments","transfers","accounts"];
 
@@ -926,7 +1136,17 @@ function upsert(name, obj, prefix, pad, start){
   if (!obj.id) obj.id = uid(prefix, list, pad, start);
   const i = list.findIndex(x => x.id === obj.id);
   if (i >= 0) list[i] = Object.assign({}, list[i], obj); else list.push(obj);
-  persist(); return obj.id;
+  persist();
+  /* live write to Supabase (the primary bank); the sheet mirror runs via Sync */
+  if (typeof Supa !== "undefined" && Supa.on() && SUPA_TABLE[name]) Supa.put(name, list[i >= 0 ? i : list.length - 1]);
+  return obj.id;
+}
+/* remove-from-store also needs to reach Supabase as a soft delete */
+function removeRow(name, id){
+  const list = coll(name); const i = list.findIndex(x => x.id === id);
+  if (i < 0) return;
+  const rec = list[i]; list.splice(i, 1); persist();
+  if (typeof Supa !== "undefined" && Supa.on() && SUPA_TABLE[name]) Supa.put(name, Object.assign({}, rec, { _d: true }));
 }
 const DataService = {
   /* --- shared people --- */
@@ -1044,6 +1264,16 @@ const DataService = {
   },
   getFee(id){ return DB.fees.find(f => f.id === id) || null; },
   saveFee(f){ return upsert("fees", f, "FEE", 5); },
+  getHolds(filter){ let l = DB.holds.slice(); if (filter && filter.studentId) l = l.filter(h => h.studentId === filter.studentId); return l; },
+  saveHold(h){ return upsert("holds", h, "HOLD", 4); },
+  removeHold(id){ removeRow("holds", id); },
+  /* is a student (or the whole academy) on hold for a given YYYY-MM month? returns the hold or null */
+  holdFor(studentId, month){
+    const acad = (Settings().academyHolds || []).find(h => month >= h.from && month <= h.to);
+    if (acad) return Object.assign({ scope: "academy" }, acad);
+    const h = DB.holds.find(h => h.studentId === studentId && month >= (h.from||"") && month <= (h.to||"9999-99"));
+    return h ? Object.assign({ scope: "student" }, h) : null;
+  },
 
   /* --- money --- */
   getPayments(f){
@@ -1096,7 +1326,10 @@ const DataService = {
   getTransfers(){ return DB.transfers.slice(); },
   saveTransfer(t){ t.id = uid("TRF", DB.transfers); DB.transfers.push(t); persist(); return t.id; },
 
-  saveSettings(patch){ DB.settings = Object.assign({}, DB.settings, patch); persist(); },
+  saveSettings(patch){
+    DB.settings = Object.assign({}, DB.settings, patch); persist();
+    if (typeof Supa !== "undefined" && Supa.on()) { Object.keys(patch).forEach(k => Supa.putSetting(k, patch[k])); }
+  },
   exportAll(){ return JSON.parse(JSON.stringify(DB)); },
   importAll(o){ DB = o; persist(); }
 };
@@ -2085,6 +2318,7 @@ function defaultSettings(){
     contactPhone: "7025070415", whatsappNumber: "9995360416",
     currency: "₹", countryCode: "91", defaultDueDay: 5, defaultFeeMethod: "perClass",
     billingMode: "prepaid", advanceDays: 5,
+    supabaseUrl: "", supabaseKey: "", supabaseOn: true,
     teacherLinkBase: "https://manzilulquran.in/attendance/", apiUrl: "https://script.google.com/macros/s/AKfycbzuGmaPn2PQGyS_64RQFF8rY2ZRhb37HTFFjRuvfVEsGn8DB8O8AZsnEbvPdrOSCMuo/exec", syncKey: "mq-7f3a91c4e85b426d9a0c", syncOn: true, syncEvery: 3,
     courses: ["Hifz", "Tarteel Base", "Tarteel Advanced", "Madrasa Batch", "Madrasa Individual", "Tajweed", "Arabic"],
     levels: ["Beginner", "Level 1", "Level 2", "Level 3", "Advanced"],
@@ -2109,7 +2343,7 @@ function emptyDB(){
   return { meta: { version: 1, createdAt: new Date().toISOString() }, settings: defaultSettings(),
     students: [], teachers: [], batches: [], subclasses: [], enrollments: [], attendance: [], plans: [], classes: [],
     fees: [], payments: [], refunds: [], income: [], expenses: [], teacherPayments: [], teacherAdjust: [],
-    holidays: [], adjustments: [], transfers: [], accounts: [{ id: "Cash", name: "Cash", opening: 0 },
+    holidays: [], holds: [], adjustments: [], transfers: [], accounts: [{ id: "Cash", name: "Cash", opening: 0 },
       { id: "Bank", name: "Bank", opening: 0 }, { id: "UPI", name: "UPI", opening: 0 }] };
 }
 
@@ -3623,6 +3857,10 @@ Pages.students = function(){
         ["Outstanding (all months)", s.due ? '<span class="out">' + money(s.due) + '</span>' : '<span class="in">Nil</span>'],
         s.address ? ["Address", esc(s.address)] : null, s.notes ? ["Notes", esc(s.notes)] : null
       ]) +
+      (DataService.getHolds({ studentId: s.id }).length ? ('<div class="sub-hd">Holds / leave</div>' +
+        DataService.getHolds({ studentId: s.id }).map(h => '<div class="minirow"><span>⏸ ' + esc(h.from) + " → " + esc(h.to || "open") +
+          (h.reason ? " · " + esc(h.reason) : "") + '</span><b>' + (h.waiveFee ? "fee waived" : "fee kept") +
+          ' <button class="btn btn-sm" data-act="hold-del" data-id="' + h.id + '">✕</button></b></div>').join("")) : "") +
       '<div class="sub-hd">' + esc(monthLabel(m)) + ' fees</div>' +
       (s.fees.length ? s.fees.map(v => '<div class="minirow"><span>' + streamChip(v.source) + ' ' + esc(v.shortBasis) +
           ' · ' + v.status + '</span><b>' + money(v.paidAmount) + " / " + money(v.netFee) + '</b></div>').join("")
@@ -3631,6 +3869,7 @@ Pages.students = function(){
         '<button class="btn btn-sm" data-act="student-edit" data-id="' + s.id + '">Edit</button>' +
         '<button class="btn btn-sm" data-act="student-assign" data-id="' + s.id + '">Batch</button>' +
         '<button class="btn btn-sm" data-act="plan-new" data-id="' + s.id + '">Individual plan</button>' +
+        '<button class="btn btn-sm" data-act="hold-new" data-id="' + s.id + '">⏸ Hold / Leave</button>' +
         (s.due > 0 ? '<button class="btn btn-sm btn-wa" data-act="wa-student" data-id="' + s.id + '">WhatsApp</button>' : "")),
       sorts: [{ key: "name", label: "Name", val: s => s.name }, { key: "id", label: "Student ID", val: s => s.id },
               { key: "due", label: "Most outstanding first", val: s => s.due, desc: true }],
@@ -4446,6 +4685,18 @@ Pages.settings = function(){
     '<button class="btn" data-act="list-add" data-k="' + k + '">Add</button></div></div>';
 
   return '' +
+  '<div class="card" style="margin-bottom:14px; border:1.5px solid rgba(143,211,174,.45); background:linear-gradient(135deg,#173d29,#0f3222); box-shadow:0 10px 30px rgba(0,0,0,.3)">' +
+    '<div class="card-bd" style="text-align:center; padding:26px 22px">' +
+      '<div style="font-size:34px; line-height:1">📊</div>' +
+      '<h3 style="font-family:var(--f-d,serif); font-size:22px; margin:8px 0 4px; color:#eafff2">Data Sync &amp; Backup</h3>' +
+      '<div class="note" style="margin:0 auto 18px; max-width:520px; color:#bfe6cd">Supabase is the live database. Your Google Sheet is a full backup — you can pull everything back from it any time (for example if Supabase ever has a problem).</div>' +
+      '<div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:center">' +
+        '<button data-act="imp-open" style="cursor:pointer; border:none; border-radius:14px; padding:15px 30px; font-size:17px; font-weight:700; color:#06140e; background:linear-gradient(90deg,#8fe0b6,#5fbf88); box-shadow:0 8px 22px rgba(95,191,136,.4)">🔄 Import from Sheet</button>' +
+        '<button class="btn" data-act="sync-full" style="padding:15px 24px; font-size:15px">⬆️ Export to Sheet</button>' +
+      '</div>' +
+      '<div class="note" style="margin:14px auto 0; max-width:520px; font-size:12.5px; color:#9fd8b6">Import pulls the latest data from the Google Sheet into the app, overwriting the local copy on this device.</div>' +
+    '</div>' +
+  '</div>' +
   '<div class="card"><div class="card-hd"><h3>Academy details</h3></div><div class="card-bd">' +
     '<div class="form-grid">' +
       field("Academy name", '<input class="input" id="set_academyName" value="' + esc(s.academyName || "") + '">') +
@@ -4465,8 +4716,8 @@ Pages.settings = function(){
     '<div class="btn-row" style="margin-top:13px"><button class="btn btn-primary" data-act="settings-save">Save settings</button>' +
       (s.logo ? '<button class="btn" data-act="logo-clear">Remove logo</button>' : "") + '</div>' +
   '</div></div>' +
-  '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Google Sheets sync</h3>' +
-    '<span class="spacer"></span><button class="btn btn-sm" data-act="sync-panel">Open sync panel</button></div>' +
+  '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Google Sheets backup</h3>' +
+    '<span class="spacer"></span><button class="btn btn-sm" data-act="sync-panel">Open backup panel</button></div>' +
     '<div class="card-bd">' +
     '<div class="note">Two spreadsheets sit behind this app: <b>MQ Batch</b> (classes, sub-classes, enrolment, attendance) ' +
     'and <b>MQ Individual + Books</b> (class plans, class log, fees and all the money). One Apps Script web app writes to both. ' +
@@ -4519,6 +4770,15 @@ Pages.settings = function(){
       field("Default admission fee", '<input class="input" type="number" min="0" id="set_admissionFeeDefault" value="' + esc(s.admissionFeeDefault || 0) + '">') +
     '</div>' +
     '<div class="btn-row" style="margin-top:12px"><button class="btn btn-primary" data-act="settings-save">Save settings</button></div>' +
+  '</div></div>' +
+  '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Academy holds / breaks</h3></div><div class="card-bd">' +
+    '<div class="note">Pause the whole academy for a period (Ramadan, annual break). You can waive fees for everyone during that time, or keep them. For a single student on leave, use the ⏸ Hold / Leave button beside them in Students.</div>' +
+    ((s.academyHolds || []).length ? '<div class="tbl-wrap"><table><thead><tr><th>From</th><th>To</th><th>Fees</th><th>Reason</th><th></th></tr></thead><tbody>' +
+      (s.academyHolds || []).map(h => '<tr><td>' + esc(h.from) + '</td><td>' + esc(h.to || h.from) + '</td><td>' +
+        (h.waiveFee ? "Waived" : "Kept") + '</td><td>' + esc(h.reason || "—") + '</td>' +
+        '<td><button class="btn btn-sm" data-act="acad-hold-del" data-id="' + h.id + '">✕</button></td></tr>').join("") +
+      '</tbody></table></div>' : '<div class="note" style="opacity:.7">No academy holds set.</div>') +
+    '<div class="btn-row" style="margin-top:12px"><button class="btn btn-primary" data-act="acad-hold-new">+ Add academy hold</button></div>' +
   '</div></div>' +
   '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Holidays</h3>' +
     '<span class="spacer"></span><button class="btn btn-sm btn-primary" data-act="hol-new">+ Add holiday</button></div>' +
@@ -4794,7 +5054,7 @@ document.addEventListener("click", function(e){
   if (!el) return;
   if (el.tagName === "SELECT" || el.tagName === "OPTION" || el.tagName === "INPUT") return;
   const A = Actions[el.dataset.act];
-  if (A) { e.preventDefault(); A(el.dataset.id, el); }
+  if (A) { e.preventDefault(); A(el.dataset.id, el, e); }
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeDrawer(); } });
 
@@ -4913,7 +5173,8 @@ const Actions = {
         dueDay: +d.dueDay || 5, status: "Active", reason: "", notes: "" });
       /* prepaid: raise the first month's fee immediately so it can be collected */
       const m = String(d.date || today()).slice(0, 7);
-      if (d.raiseFirst) {
+      const holdB = DataService.holdFor(d.studentId, m);
+      if (d.raiseFirst && !(holdB && holdB.waiveFee)) {
         const due = Logic.feeDueDate(m, +d.dueDay || Settings().defaultDueDay || 5);
         DataService.saveFee({ source: "batch", month: m, studentId: d.studentId, batchId: d.batchId,
           subClassId: d.subClassId || "", enrollmentId: id, teacherId: b ? b.teacherId : "",
@@ -4968,6 +5229,69 @@ const Actions = {
           '<button type="button" class="btn" data-act="sync-full">Push everything</button>' +
           '<button type="button" class="btn" data-act="goto" data-page="settings">Settings</button>' +
         '</div>' });
+  },
+  "supa-test": async () => {
+    if (!Settings().supabaseUrl || !Settings().supabaseKey) { toast("Add the Supabase URL and key first, then Save", "bad"); return; }
+    toast("Testing Supabase…", "ok");
+    Supa.init();
+    try {
+      const { error } = await Supa.client.from("mq_students").select("id").limit(1);
+      if (error) throw new Error(error.message);
+      toast("Supabase connected \u2713", "ok");
+    } catch (e) { toast("Supabase error: " + (e.message || e), "bad", 6000); }
+  },
+  "hold-new": (studentId) => {
+    const st = DataService.getStudent(studentId);
+    openModal({ title: "Hold / leave — " + (st ? st.name : studentId), body: '<div class="form-grid">' +
+      '<div class="field span2"><div class="note" style="margin:0">Record a leave or hold for this student. Choose whether the fee is waived for the paused period or kept as normal.</div></div>' +
+      field("From month", '<input class="input" type="month" name="from" value="' + State.month + '" required>') +
+      field("To month", '<input class="input" type="month" name="to" value="' + State.month + '">') +
+      '<div class="field span2"><label style="display:flex;gap:8px;align-items:center;font-size:13.5px"><input type="checkbox" name="waiveFee" checked> Waive the fee for this period (uncheck to keep charging)</label></div>' +
+      field("Reason", '<input class="input" name="reason" placeholder="Travel, illness, Ramadan break…">') +
+    '</div>', submitText: "Save hold",
+      onSubmit: function(d){
+        if (!d.from) { toast("Pick a start month", "bad"); return false; }
+        DataService.saveHold({ studentId: studentId, from: d.from, to: d.to || d.from, waiveFee: !!d.waiveFee, reason: d.reason || "" });
+        /* if waiving, also waive any already-raised fees in that range */
+        if (d.waiveFee) {
+          DB.fees.filter(fe => fe.studentId === studentId && fe.month >= d.from && fe.month <= (d.to || d.from) && !fe.waived)
+            .forEach(fe => DataService.saveFee({ id: fe.id, waived: true, remarks: (fe.remarks ? fe.remarks + " · " : "") + "On hold" }));
+        }
+        toast("Hold saved", "ok"); celebrate("⏸"); render();
+      } });
+  },
+  "hold-del": (id) => { DataService.removeHold(id); toast("Hold removed", "ok"); render(); },
+  "acad-hold-new": () => {
+    openModal({ title: "Academy-wide hold", body: '<div class="form-grid">' +
+      '<div class="field span2"><div class="note" style="margin:0">Pause the whole academy for a period (e.g. Ramadan break, vacation). Applies to every student.</div></div>' +
+      field("From month", '<input class="input" type="month" name="from" value="' + State.month + '" required>') +
+      field("To month", '<input class="input" type="month" name="to" value="' + State.month + '">') +
+      '<div class="field span2"><label style="display:flex;gap:8px;align-items:center;font-size:13.5px"><input type="checkbox" name="waiveFee"> Waive fees for everyone during this period</label></div>' +
+      field("Reason", '<input class="input" name="reason" placeholder="Ramadan, annual break…">') +
+    '</div>', submitText: "Save academy hold",
+      onSubmit: function(d){
+        if (!d.from) { toast("Pick a start month", "bad"); return false; }
+        const list = (Settings().academyHolds || []).slice();
+        list.push({ id: "AH" + Date.now().toString(36), from: d.from, to: d.to || d.from, waiveFee: !!d.waiveFee, reason: d.reason || "" });
+        DataService.saveSettings({ academyHolds: list });
+        toast("Academy hold saved", "ok"); render();
+      } });
+  },
+  "acad-hold-del": (id) => {
+    const list = (Settings().academyHolds || []).filter(h => h.id !== id);
+    DataService.saveSettings({ academyHolds: list }); toast("Removed", "ok"); render();
+  },
+  "imp-open": () => Importer.open(),
+  "imp-min": (id, el, ev) => { if (ev) ev.stopPropagation(); Importer.minimise(); },
+  "imp-restore": (id, el, ev) => {
+    const sc = document.getElementById("impScrim");
+    if (sc && sc.classList.contains("min")) Importer.restore();
+  },
+  "supa-pull": async () => {
+    if (!Supa.on()) { toast("Turn on Supabase and Save first", "warn"); return; }
+    if (!confirm("Load everything from Supabase into this device? This replaces what is shown here with the live database.")) return;
+    const r = await Supa.pullAll();
+    toast(r.ok ? "Loaded from Supabase \u2713" : ("Could not load: " + (r.error || "")), r.ok ? "ok" : "bad"); render();
   },
   "sync-now": async () => {
     if (!Sync.on()) { toast("Turn sync on in Settings first", "warn"); return; }
@@ -5314,7 +5638,8 @@ const Actions = {
       const id = DataService.savePlan(d);
       const m = String(d.startDate || today()).slice(0, 7);
       /* prepaid: raise the first month's fee now using the plan rate, so it can be collected immediately */
-      if (raiseFirst && (+d.rate || 0) > 0) {
+      const holdI = DataService.holdFor(d.studentId, m);
+      if (raiseFirst && (+d.rate || 0) > 0 && !(holdI && holdI.waiveFee)) {
         const gross = Math.max(0, (+d.rate || 0) - (+d.discount || 0));
         DataService.saveFee({ source: "individual", month: m, studentId: d.studentId, planId: id,
           teacherId: d.teacherId || "", feeType: "monthly", rate: +d.rate || 0, gross: gross, discount: +d.discount || 0,
@@ -5944,8 +6269,14 @@ Object.assign(Actions, {
 /* ==========================================================================
    START UP
    ========================================================================== */
-function init(){
+async function init(){
   bootData();
+  /* Supabase is the primary source of truth: load everything from it on start */
+  if (typeof Supa !== "undefined" && Supa.on()) {
+    Supa.init();
+    const r = await Supa.pullAll();
+    if (!r.ok) toast("Could not load from Supabase: " + (r.error || "unknown") + " — showing the last saved copy", "warn", 6000);
+  }
   const months = allMonths();
   if (months.indexOf(State.month) < 0) State.month = months[months.length - 1];
   $("#globalMonth").innerHTML = monthOpts(State.month, "");
