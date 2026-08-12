@@ -861,6 +861,40 @@ const Supa = {
     }
   },
 
+  /* push EVERYTHING currently in the app up to Supabase (clean upload / migration) */
+  async pushAll(onProgress){
+    if (!this.st.ready && !this.init()) return { ok:false, error:"Supabase not configured" };
+    this.st.busy = true;
+    let total = 0;
+    try {
+      for (let i = 0; i < SUPA_COLLS.length; i++) {
+        const c = SUPA_COLLS[i];
+        if (onProgress) onProgress(i, SUPA_COLLS.length, c);
+        if (c === "settings") {
+          const st = DB.settings || {};
+          const rows = Object.keys(st).map(k => ({ id: k, data: { value: st[k] }, deleted: false }));
+          if (rows.length) { const { error } = await this.client.from("mq_settings").upsert(rows, { onConflict: "id" }); if (error) throw new Error("settings: " + error.message); total += rows.length; }
+        } else {
+          const list = (DB[c] || []).filter(x => x && x.id);
+          if (list.length) {
+            const rows = list.map(x => ({ id: String(x.id), data: x, deleted: !!x._d }));
+            /* chunk to keep requests small */
+            for (let j = 0; j < rows.length; j += 200) {
+              const chunk = rows.slice(j, j + 200);
+              const { error } = await this.client.from(SUPA_TABLE[c]).upsert(chunk, { onConflict: "id" });
+              if (error) throw new Error(c + ": " + error.message);
+              total += chunk.length;
+            }
+          }
+        }
+      }
+      this.st.at = Date.now();
+      return { ok:true, count: total };
+    } catch (e) {
+      return { ok:false, error: String(e.message || e) };
+    } finally { this.st.busy = false; }
+  },
+
   /* settings are key/value: store each key as its own row */
   async putSetting(key, value){
     if (!this.on()) return;
@@ -4737,8 +4771,11 @@ Pages.settings = function(){
     '<div class="btn-row" style="margin-top:12px">' +
       '<button class="btn btn-primary" data-act="settings-save">Save settings</button>' +
       '<button class="btn" data-act="supa-test">Test Supabase</button>' +
-      '<button class="btn" data-act="supa-pull">Load everything from Supabase</button>' +
-    '</div></div></div>' +
+      '<button class="btn" data-act="supa-push">⬆️ Upload everything to Supabase</button>' +
+      '<button class="btn" data-act="supa-pull">⬇️ Load everything from Supabase</button>' +
+    '</div>' +
+    '<div class="note" style="margin-top:10px; font-size:12.5px">First time moving to Supabase? Connect above, then click <b>Upload everything to Supabase</b> to send this device\'s current data up. After that every device shares it live.</div>' +
+    '</div></div>' +
   '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Google Sheets backup</h3>' +
     '<span class="spacer"></span><button class="btn btn-sm" data-act="sync-panel">Open backup panel</button></div>' +
     '<div class="card-bd">' +
@@ -5304,6 +5341,16 @@ const Actions = {
   "imp-restore": (id, el, ev) => {
     const sc = document.getElementById("impScrim");
     if (sc && sc.classList.contains("min")) Importer.restore();
+  },
+  "supa-push": async () => {
+    if (!Supa.on()) { toast("Enter the Supabase URL and key, tick 'Make Supabase the live source of truth', and Save first", "bad", 6000); return; }
+    const n = DataService.getStudents().length, t = DataService.getTeachers().length;
+    if (!confirm("Upload this device's current data to Supabase?\n\nThis sends " + n + " students, " + t + " teachers and all fees, payments and records up to Supabase. Existing rows with the same id are updated. Nothing is deleted.")) return;
+    toast("Uploading to Supabase…", "ok");
+    Supa.init();
+    const r = await Supa.pushAll();
+    if (r.ok) { toast("✅ Uploaded " + r.count + " records to Supabase", "ok", 5000); }
+    else { toast("Upload problem: " + (r.error || "unknown"), "bad", 7000); }
   },
   "supa-pull": async () => {
     if (!Supa.on()) { toast("Turn on Supabase and Save first", "warn"); return; }
