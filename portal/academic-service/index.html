@@ -5458,7 +5458,7 @@ const Actions = {
             subId, "Whole batch") + '</select></div>' +
         '<div class="field span2"><label>Where the teacher page is hosted</label>' +
           '<input class="input" name="base" value="' + esc(Settings().teacherLinkBase || "") + '" placeholder="https://manzilulquran.in/attendance/">' +
-          '<span class="hint">Upload <b>mq-teacher.html</b> there once, then every link works from any phone.</span></div>' +
+          '<span class="hint">The attendance page is already hosted here — every link works from any phone.</span></div>' +
         '</div>',
       submitText: "Build the link",
       onSubmit: function(d){
@@ -5486,7 +5486,7 @@ const Actions = {
       api: set.apiUrl || "", made: today(),
       r: roster.map(x => [x.id, x.name])
     }));
-    const url = (base || set.teacherLinkBase || "").replace(/\/?$/, "/") + "mq-teacher.html#c=" + token;
+    const url = (base || set.teacherLinkBase || "").replace(/\/?$/, "/") + "index.html#c=" + token;
     const msg = "Assalamu Alaikum " + (t ? t.name : "") + ",\n\n" +
       "Please mark attendance for " + b.name + (sc ? " · " + sc.name : "") + " here:\n" + url +
       "\n\nThe link works every day — open it after class, mark the students, and press Submit. " +
