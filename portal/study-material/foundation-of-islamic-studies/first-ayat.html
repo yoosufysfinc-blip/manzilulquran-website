@@ -375,7 +375,19 @@ function buildSurah(s,S){
   SURAHS.slice(1).forEach(S=>buildSurah(s,S));
 })();
 
-show('join');
+/* ---- hash routing ----
+   class/index.html links students as  <path>#lesson1 .. #lesson5
+   so those must resolve, as well as the friendly ids. */
+const SCREEN_ORDER=['join','faces','words','fatiha','short'];
+function fromHash(){
+  const h=(location.hash||'').replace('#','');
+  if(!h) return 'join';
+  const m=h.match(/^lesson(\d+)$/);
+  if(m) return SCREEN_ORDER[parseInt(m[1],10)-1] || 'join';
+  return screens.some(x=>x.id===h) ? h : 'join';
+}
+show(fromHash());
+window.addEventListener('hashchange',()=>show(fromHash()));
 </script>
 </body>
 </html>
