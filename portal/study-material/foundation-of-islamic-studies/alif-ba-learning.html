@@ -20,6 +20,7 @@
   --kasra:#2E9E63;   /* green = kasra */
   --damma:#2E7CD6;   /* blue = damma */
   --madd:#8E5BD6;    /* purple = madd */
+  --sukoon:#5C6BC0;  /* indigo = sukoon (no vowel) */
   --card:#FFFFFF;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -189,6 +190,28 @@ section.screen.show{display:block}
 .tip{
   max-width:560px;margin:0 auto 16px;background:#EAF7FF;border-radius:20px;
   padding:12px 16px;font-weight:700;color:#3d6e85;text-align:center;font-size:1rem;
+}
+
+/* ---------- MARKS: sukoon · tanween · shaddah ---------- */
+.n-marks{background:var(--sukoon)}
+.mark-h{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-size:1.2rem;font-weight:800;color:var(--ink);margin:22px 0 4px;
+}
+.mark-h .sym{font-size:2rem;line-height:1;color:var(--sukoon)}
+.mark-note{text-align:center;color:#8b86ad;font-weight:700;font-size:.92rem;margin-bottom:12px}
+.hcard.s{background:var(--sukoon);box-shadow:0 6px 0 #3d4a9e}
+.rest-note{
+  max-width:560px;margin:14px auto 0;background:#FFF3E0;border-radius:20px;
+  padding:12px 16px;font-weight:700;color:#8a5a12;text-align:center;font-size:.95rem;
+}
+.mark-rule{
+  max-width:560px;margin:0 auto 14px;background:#F3F0FF;border-radius:20px;
+  padding:12px 16px;font-weight:700;color:#5b4b8a;text-align:center;font-size:.95rem;
+}
+@media (max-width:480px){
+  .mark-h{font-size:1.05rem}
+  .mark-h .sym{font-size:1.7rem}
 }
 
 /* ---------- TEXT BOOK (A4 pages) ---------- */
@@ -560,6 +583,130 @@ GROUPS.forEach((range,gi)=>{
   sh.addEventListener('click',makeCombos);
   prac.appendChild(sh);
 });
+
+/* ================= MARKS SCREEN — sukoon · tanween · shaddah ================= */
+const SUKOON='\u0652', FATHATAN='\u064B', KASRATAN='\u064D', DAMMATAN='\u064C', SHADDA='\u0651';
+(function(){
+  const s=addScreen('marks','\u27b0 More Marks','n-marks');
+  s.appendChild(el(`<h2 class="screen-title">Three More Marks! \u27b0</h2>`));
+  s.appendChild(el(`<p class="screen-hint">Tap a letter \u2014 see it with sukoon, tanween and shaddah! \ud83d\udc47</p>`));
+
+  /* alif does not carry these marks */
+  const POOL=LETTERS.filter(L=>!L.alif);
+
+  /* letter row */
+  const row=el(`<div class="group-row"></div>`);
+  s.appendChild(row);
+
+  const stage=el(`<div class="stage">
+    <div class="who" id="who-marks">Pick a letter! \u261d\ufe0f</div>
+    <div id="marks-body"></div>
+  </div>`);
+  s.appendChild(stage);
+  s.appendChild(el(`<div class="rest-note">\ud83d\ude34 Alif <b>\u0627</b> rests \u2014 it does not take these three marks.</div>`));
+
+  const who=stage.querySelector('#who-marks');
+  const body=stage.querySelector('#marks-body');
+
+  function cards(list){
+    const r=el(`<div class="haraka-row"></div>`);
+    list.forEach(o=>{
+      const c=el(`<button class="hcard ${o.cls}">
+        <span class="ar">${o.ar}</span>
+        <span class="say">${o.say}</span>
+      </button>`);
+      c.addEventListener('click',()=>popIt(c));
+      r.appendChild(c);
+    });
+    return r;
+  }
+
+  function render(L){
+    body.innerHTML='';
+
+    /* 1. SUKOON */
+    body.appendChild(el(`<div class="mark-h"><span class="sym">\u25cc\u0652</span> Sukoon \u2014 stop!</div>`));
+    body.appendChild(el(`<div class="mark-note">No vowel. The sound stops right there.</div>`));
+    body.appendChild(cards([
+      {cls:'s', ar:'\u0623\u064e'+L.ch+SUKOON, say:'a'+L.tr}
+    ]));
+    body.appendChild(el(`<div class="mark-rule">\ud83e\udde9 A sukoon letter never stands alone \u2014 a vowel letter comes first, then it closes the sound.</div>`));
+
+    /* 2. TANWEEN */
+    body.appendChild(el(`<div class="mark-h"><span class="sym">\u25cc\u064b</span> Tanween \u2014 double marks</div>`));
+    body.appendChild(el(`<div class="mark-note">Two fathas, two kasras, two dammas \u2014 add an <b>n</b> at the end.</div>`));
+    body.appendChild(cards([
+      {cls:'f', ar:L.ch+FATHATAN, say:L.tr+'an'},
+      {cls:'k', ar:L.ch+KASRATAN, say:L.tr+'in'},
+      {cls:'d', ar:L.ch+DAMMATAN, say:L.tr+'un'}
+    ]));
+    body.appendChild(el(`<div class="mark-rule">\ud83d\udcd6 In the Qur'an, tanween fath usually carries an alif too: <b>${L.ch+FATHATAN}\u0627</b></div>`));
+
+    /* 3. SHADDAH */
+    body.appendChild(el(`<div class="mark-h"><span class="sym">\u25cc\u0651</span> Shaddah \u2014 press it twice</div>`));
+    body.appendChild(el(`<div class="mark-note">Say the letter <b>twice</b>, holding it strong.</div>`));
+    body.appendChild(cards([
+      {cls:'f', ar:L.ch+SHADDA+FATHA, say:L.tr+'\u00b7'+L.tr+'a'},
+      {cls:'k', ar:L.ch+SHADDA+KASRA, say:L.tr+'\u00b7'+L.tr+'i'},
+      {cls:'d', ar:L.ch+SHADDA+DAMMA, say:L.tr+'\u00b7'+L.tr+'u'}
+    ]));
+  }
+
+  function selectLetter(L,tileEl){
+    row.querySelectorAll('.tile').forEach(t=>t.classList.remove('selected'));
+    tileEl.classList.add('selected');
+    who.textContent=`${L.name} ( ${L.ch} ) with the marks...`;
+    render(L);
+  }
+
+  POOL.forEach((L,i)=>{
+    const t=el(`<button class="tile"><span class="ar">${L.ch}</span><span class="nm">${L.name}</span></button>`);
+    t.addEventListener('click',()=>selectLetter(L,t));
+    row.appendChild(t);
+    if(i===0){
+      setTimeout(()=>{
+        t.classList.add('selected');
+        who.textContent=`${L.name} ( ${L.ch} ) with the marks...`;
+        render(L);
+      },0);
+    }
+  });
+
+  /* mixed practice */
+  const prac=el(`<div class="practice">
+    <h3>\ud83c\udfaf Mixed Marks Practice!</h3>
+    <p>Read each one out loud, then tap it.</p>
+    <div class="combo-grid" id="cg-marks"></div>
+  </div>`);
+  s.appendChild(prac);
+  const cg=prac.querySelector('#cg-marks');
+
+  const TANW=[{m:FATHATAN,v:'an'},{m:KASRATAN,v:'in'},{m:DAMMATAN,v:'un'}];
+  const HRK=[{m:FATHA,v:'a'},{m:KASRA,v:'i'},{m:DAMMA,v:'u'}];
+
+  function makeMarks(){
+    cg.innerHTML='';
+    for(let i=0;i<9;i++){
+      const L=rand(POOL);
+      const kind=i%3;
+      let ar,tr;
+      if(kind===0){
+        ar='\u0623\u064e'+L.ch+SUKOON; tr='a'+L.tr;
+      } else if(kind===1){
+        const T=rand(TANW); ar=L.ch+T.m; tr=L.tr+T.v;
+      } else {
+        const H=rand(HRK); ar=L.ch+SHADDA+H.m; tr=L.tr+'\u00b7'+L.tr+H.v;
+      }
+      const c=el(`<button class="combo"><span class="ar">${ar}</span><span class="tr">${tr}</span></button>`);
+      c.addEventListener('click',()=>popIt(c));
+      cg.appendChild(c);
+    }
+  }
+  makeMarks();
+  const sh=el(`<button class="shuffle">\ud83c\udfb2 New marks!</button>`);
+  sh.addEventListener('click',makeMarks);
+  prac.appendChild(sh);
+})();
 
 /* ================= MADD SCREEN ================= */
 (function(){
