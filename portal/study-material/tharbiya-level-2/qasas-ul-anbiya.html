@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Qaṣaṣ ul-Anbiyā · قَصَصُ الأَنْبِيَاء — ManzilulQuran</title>
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#241B4A; --indigo:#4B3F94; --indigo-l:#C9C2F0; --indigo-bg:#EFECFC;
+  --sand:#E8A03C; --sand-d:#B36F14; --sand-l:#FBE3BC; --sand-bg:#FFF8EC;
+  --clay:#C25A45; --clay-bg:#FDF1EE;
+  --teal:#177C74; --teal-bg:#E6F5F2;
+  --ink:#2C2545; --ink-soft:#6B6390;
+  --ui:'Nunito',system-ui,-apple-system,sans-serif;
+  --disp:'Fredoka','Nunito',system-ui,sans-serif;
+  --ar:'Amiri',serif;
+  --r:22px;
+  --shadow:0 18px 44px -22px rgba(36,27,74,.5);
+  --shadow-sm:0 8px 22px -14px rgba(36,27,74,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--ui);color:var(--ink);line-height:1.75;min-height:100vh;overflow-x:hidden;
+  background:
+    radial-gradient(900px 420px at 104% -6%,rgba(232,160,60,.26),transparent 62%),
+    radial-gradient(760px 400px at -12% 16%,rgba(201,194,240,.48),transparent 58%),
+    linear-gradient(178deg,#FCFAF6 0%,#F4F1FA 46%,#FBF7F1 100%);
+  background-attachment:fixed;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+  background-image:
+    radial-gradient(circle at 14% 22%,rgba(255,255,255,.95) 0 2px,transparent 3px),
+    radial-gradient(circle at 74% 10%,rgba(255,255,255,.8) 0 3px,transparent 4px),
+    radial-gradient(circle at 36% 72%,rgba(255,255,255,.75) 0 2px,transparent 3px);
+  background-size:380px 380px;animation:drift 30s linear infinite;
+}
+@keyframes drift{from{background-position:0 0,0 0,0 0}to{background-position:0 -380px,0 -380px,0 -380px}}
+.rv{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+#progress{position:fixed;top:0;left:0;height:5px;width:0;z-index:120;
+  background:linear-gradient(90deg,var(--indigo-l),var(--indigo),var(--sand));background-size:220% 100%;
+  animation:flow 4s linear infinite;transition:width .1s}
+@keyframes flow{from{background-position:0 0}to{background-position:220% 0}}
+
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px;padding:11px 16px;
+  backdrop-filter:blur(14px);background:linear-gradient(180deg,rgba(255,255,255,.93),rgba(246,243,253,.68));
+  border-bottom:1px solid rgba(75,63,148,.16)}
+.menu-btn{width:46px;height:46px;min-height:44px;border:0;border-radius:15px;cursor:pointer;flex:0 0 auto;color:#fff;font-size:19px;
+  background:linear-gradient(140deg,var(--indigo),var(--night));display:grid;place-items:center;transition:.2s}
+.menu-btn:hover,.menu-btn:focus-visible{transform:translateY(-2px) scale(1.05)}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand-logo{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--sand-l);flex:0 0 auto}
+.brand-txt h1{font-family:var(--ar);font-size:20px;font-weight:700;color:var(--indigo);line-height:1.15;white-space:nowrap}
+.brand-txt .en{font-family:var(--disp);font-size:11.5px;color:var(--sand-d);font-weight:600;letter-spacing:1.1px}
+.spring{flex:1}
+.pagepill{font-size:12px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--indigo),var(--night));
+  border-radius:100px;padding:6px 13px;white-space:nowrap}
+
+.scrim{position:fixed;inset:0;background:rgba(36,27,74,.55);z-index:130;opacity:0;pointer-events:none;transition:.25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(320px,84vw);z-index:140;overflow-y:auto;padding:22px 16px;
+  background:linear-gradient(180deg,#fff,var(--indigo-bg) 62%,var(--sand-bg));
+  border-right:1px solid rgba(75,63,148,.18);transform:translateX(-105%);
+  transition:transform .32s cubic-bezier(.3,.85,.3,1)}
+.drawer.on{transform:none}
+.drawer-h{font-family:var(--disp);font-size:22px;color:var(--indigo);font-weight:600;padding:4px 12px}
+.drawer-h .ar{font-family:var(--ar);color:var(--sand-d);font-size:17px;display:block;margin-top:2px}
+.drawer-sub{font-size:12px;color:var(--ink-soft);padding:0 12px 16px;border-bottom:2px dotted rgba(75,63,148,.28);margin-bottom:12px}
+.bn-a{display:flex;align-items:center;gap:12px;padding:12px;min-height:44px;border-radius:14px;text-decoration:none;
+  color:var(--ink);font-weight:700;font-size:14.5px;transition:.16s;margin-bottom:3px}
+.bn-a:hover,.bn-a:focus-visible{background:#fff;transform:translateX(3px)}
+.bn-a .bn-n{width:30px;height:30px;flex:0 0 auto;border-radius:10px;display:grid;place-items:center;
+  background:linear-gradient(140deg,var(--indigo),var(--night));color:#fff;font-size:13px;font-weight:800}
+.bn-a.cp .bn-n{background:linear-gradient(140deg,var(--sand),var(--sand-d))}
+.bn-a.cp{color:var(--sand-d)}
+
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:26px 18px 80px}
+
+.cover{text-align:center;padding:40px 24px 46px;border-radius:var(--r);position:relative;overflow:hidden;margin-bottom:26px;
+  background:linear-gradient(165deg,#fff 0%,var(--indigo-bg) 55%,var(--sand-bg) 100%);
+  border:1px solid rgba(75,63,148,.18);box-shadow:var(--shadow)}
+.cover-logo{width:92px;height:92px;border-radius:50%;object-fit:cover;margin:0 auto 18px;border:3px solid var(--sand-l);
+  box-shadow:0 0 0 7px rgba(232,160,60,.16);animation:float 5.5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.cover .ar-title{font-family:var(--ar);font-size:clamp(2rem,8vw,2.9rem);font-weight:700;line-height:1.35;
+  background:linear-gradient(120deg,var(--night),var(--indigo),var(--sand-d));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.cover .en-title{font-family:var(--disp);font-size:clamp(1.1rem,4vw,1.4rem);font-weight:600;color:var(--indigo);letter-spacing:1.6px}
+.cover .tag{display:inline-block;margin-top:12px;font-size:13px;font-weight:800;color:#7a4a08;background:var(--sand-l);
+  border:1px solid rgba(179,111,20,.32);border-radius:100px;padding:7px 17px}
+.cover h2{font-family:var(--disp);font-size:23px;color:var(--ink);margin:22px 0 8px;font-weight:600}
+.cover p{color:var(--ink-soft);font-size:15px;max-width:56ch;margin:0 auto}
+.start-btn{margin-top:24px;display:inline-block;text-decoration:none;
+  background:linear-gradient(135deg,var(--sand),var(--sand-d));color:#3a2200;font-family:var(--disp);font-weight:600;font-size:16px;
+  padding:15px 34px;border-radius:100px;transition:.22s}
+.start-btn:hover,.start-btn:focus-visible{transform:translateY(-3px) scale(1.03)}
+
+.howto{background:var(--teal-bg);border:1px solid rgba(23,124,116,.25);border-left:5px solid var(--teal);
+  border-radius:16px;padding:18px 20px;margin-bottom:26px}
+.howto h3{font-family:var(--disp);color:var(--teal);font-size:17px;font-weight:600;margin-bottom:6px}
+.howto ol{margin:8px 0 0 18px;font-size:14.5px;color:var(--ink-soft)}
+.howto li{margin-bottom:5px}
+
+.lesson{background:rgba(255,255,255,.94);border:1px solid rgba(75,63,148,.14);border-radius:var(--r);
+  padding:0 0 26px;margin-bottom:26px;box-shadow:var(--shadow);scroll-margin-top:82px;position:relative;overflow:hidden}
+.lesson::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;z-index:2;
+  background:linear-gradient(90deg,var(--indigo),var(--clay),var(--sand))}
+.pad{padding:0 22px}
+.l-head{text-align:center;padding:28px 22px 0}
+.l-badge{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:1.6px;color:#fff;
+  background:linear-gradient(135deg,var(--indigo),var(--night));border-radius:100px;padding:6px 16px}
+.l-emoji{font-size:52px;margin:14px 0 4px;line-height:1;animation:bob 3.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+.l-head h2{font-family:var(--disp);font-size:27px;color:var(--ink);font-weight:600;line-height:1.25}
+.l-head .l-ar{font-family:var(--ar);font-size:22px;color:var(--indigo);font-weight:700}
+.l-head .l-mean{font-size:13px;color:var(--ink-soft);font-weight:600}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0 4px}
+.fact{background:var(--indigo-bg);border-radius:14px;padding:10px 13px}
+.fact .fl{font-size:10.5px;font-weight:800;letter-spacing:.9px;color:var(--indigo);text-transform:uppercase}
+.fact .fv{font-size:14px;font-weight:700;color:var(--ink);line-height:1.4}
+
+.hook{background:var(--clay-bg);border:2px dashed var(--clay);border-radius:16px;padding:16px 18px;margin:18px 0}
+.hook .tag{font-size:12px;font-weight:800;color:var(--clay);letter-spacing:.5px;display:block;margin-bottom:4px}
+.hook p{font-size:15.5px;color:var(--ink);font-weight:600}
+
+.plates{margin:22px 0}
+.plates-tag{font-size:12px;font-weight:800;letter-spacing:.6px;color:var(--indigo);margin:0 22px 10px}
+.plate{margin-bottom:20px}
+.plate figure{margin:0}
+.plate img{width:100%;display:block}
+.plate .ph{aspect-ratio:16/9;border-top:2px dashed var(--indigo);border-bottom:2px dashed var(--indigo);
+  background:linear-gradient(160deg,var(--indigo-bg),#fff);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:18px;gap:6px}
+.plate .ph .ic{font-size:34px}
+.plate .ph .ttl{font-weight:800;color:var(--indigo);font-size:14px}
+.plate .ph .id{font-family:monospace;font-size:11px;color:var(--ink-soft)}
+.plate .ph .pr{font-size:12px;color:var(--ink-soft);max-width:60ch;line-height:1.55}
+.plate .ph .fn{font-family:monospace;font-size:11px;color:var(--indigo);word-break:break-all}
+.plate figcaption{padding:12px 22px 0}
+.plate .cap{font-family:var(--disp);font-size:17px;font-weight:600;color:var(--night)}
+.plate .info{font-size:14.5px;color:var(--ink-soft);margin-top:2px}
+.plate .pfact{display:block;margin-top:8px;background:var(--sand-bg);border-left:4px solid var(--sand);
+  border-radius:0 10px 10px 0;padding:8px 12px;font-size:13.5px;color:#6b4708;font-weight:600}
+
+.story-card{background:linear-gradient(165deg,#fff,var(--sand-bg));border:1px solid rgba(179,111,20,.24);
+  border-radius:20px;padding:22px 20px;margin-bottom:16px}
+.story-card .card-tag{font-size:12px;font-weight:800;letter-spacing:.6px;color:var(--sand-d);margin-bottom:10px}
+.scene{margin-bottom:16px}
+.scene:last-child{margin-bottom:0}
+.scene .sn{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1px;color:#fff;
+  background:var(--sand-d);border-radius:100px;padding:3px 11px;margin-bottom:6px}
+.scene p{font-size:15.5px;color:var(--ink);line-height:1.95}
+
+.dyk{background:linear-gradient(160deg,#fff,var(--teal-bg));border:1px solid rgba(23,124,116,.26);
+  border-radius:18px;padding:18px 20px;margin-bottom:16px}
+.dyk .card-tag{font-size:12px;font-weight:800;color:var(--teal);letter-spacing:.6px;margin-bottom:10px}
+.dyk ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.dyk li{display:flex;gap:10px;font-size:14.5px;color:var(--ink);line-height:1.7}
+.dyk li .b{flex:0 0 auto;font-size:15px}
+
+.ayah-card{background:linear-gradient(160deg,var(--indigo-bg),#fff);border:1px solid rgba(75,63,148,.28);
+  border-radius:18px;padding:22px;margin-bottom:16px;text-align:center;box-shadow:var(--shadow-sm)}
+.ayah-card .card-tag{font-size:12px;font-weight:800;color:var(--indigo);letter-spacing:.6px;margin-bottom:8px}
+.ayah-ar{font-family:var(--ar);font-size:27px;line-height:2.1;color:var(--night);font-weight:700;direction:rtl;margin-bottom:8px}
+.ayah-mean{font-size:15.5px;color:var(--ink);font-style:italic}
+.ayah-ref{font-size:12.5px;font-weight:800;color:var(--indigo);margin-top:8px}
+
+.discuss{background:#fff;border:2px solid var(--indigo-l);border-radius:18px;padding:18px 20px;margin-bottom:16px}
+.discuss .card-tag{font-size:12px;font-weight:800;color:var(--indigo);letter-spacing:.6px;margin-bottom:4px}
+.discuss .sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px}
+.discuss ol{margin-left:18px;display:flex;flex-direction:column;gap:9px}
+.discuss li{font-size:14.5px;color:var(--ink);font-weight:600;line-height:1.65}
+.discuss .how{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  background:var(--indigo-bg);color:var(--indigo);border-radius:100px;padding:2px 9px;margin-left:6px;vertical-align:1px}
+
+.why-box{background:linear-gradient(160deg,#fff,var(--clay-bg));border:1px solid rgba(194,90,69,.26);
+  border-left:5px solid var(--clay);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.why-tag{font-size:12.5px;font-weight:800;color:var(--clay);margin-bottom:8px}
+.why-box p{font-size:15px;color:var(--ink-soft);margin-bottom:12px}
+.kp-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+.kp-list li{display:flex;align-items:flex-start;gap:10px;font-size:14.5px;color:var(--ink);font-weight:700}
+.kp-dot{color:var(--clay);font-size:14px;flex:0 0 auto;margin-top:2px}
+
+.task{background:linear-gradient(160deg,#fff,var(--sand-bg));border:2px solid var(--sand);border-radius:18px;padding:18px 20px}
+.task .card-tag{font-size:12px;font-weight:800;color:var(--sand-d);letter-spacing:.6px}
+.task h4{font-family:var(--disp);font-size:18px;color:var(--night);font-weight:600;margin:2px 0 8px}
+.task ol{margin-left:18px;display:flex;flex-direction:column;gap:7px}
+.task li{font-size:14.5px;color:var(--ink-soft)}
+.task .send{margin-top:12px;background:var(--night);color:#fff;border-radius:12px;padding:10px 14px;
+  font-size:13.5px;font-weight:700;display:flex;gap:8px;align-items:flex-start}
+
+.checkpoint{background:linear-gradient(165deg,#fff,var(--sand-bg));border:1px solid rgba(179,111,20,.28);border-radius:var(--r);
+  padding:28px 22px;margin-bottom:26px;box-shadow:var(--shadow);scroll-margin-top:82px;position:relative;overflow:hidden}
+.checkpoint::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,var(--sand),var(--sand-d),var(--clay))}
+.cp-head{text-align:center;margin-bottom:18px}
+.cp-badge{display:inline-block;font-size:12px;font-weight:800;letter-spacing:1.2px;color:#5c3a06;
+  background:linear-gradient(135deg,var(--sand-l),var(--sand));border:1px solid rgba(179,111,20,.35);border-radius:100px;padding:6px 16px}
+.cp-head h2{font-family:var(--disp);font-size:24px;color:var(--ink);margin-top:12px;font-weight:600}
+.cp-head p{font-size:13.5px;color:var(--ink-soft);margin-top:4px}
+.cp-cards{display:flex;flex-direction:column;gap:12px}
+.cp-card{text-align:left;width:100%;min-height:44px;background:#fff;border:2px solid rgba(75,63,148,.18);border-radius:16px;
+  padding:16px 18px;cursor:pointer;transition:.2s;font-family:inherit;display:flex;flex-direction:column;gap:6px}
+.cp-card:hover,.cp-card:focus-visible{border-color:var(--indigo);transform:translateY(-2px)}
+.cp-card.open{border-color:var(--sand);background:linear-gradient(160deg,#fff,var(--sand-bg))}
+.cp-q{font-weight:800;font-size:15px;color:var(--ink)}
+.cp-hint{font-size:12px;color:var(--indigo);font-weight:700}
+.cp-a{font-size:14.5px;color:var(--indigo);font-weight:700;max-height:0;overflow:hidden;opacity:0;transition:.3s}
+.cp-card.open .cp-a{max-height:240px;opacity:1}
+.cp-card.open .cp-hint{display:none}
+
+.done{text-align:center;padding:44px 26px;border-radius:var(--r);color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  background:linear-gradient(160deg,var(--indigo),var(--night))}
+.done .em{font-size:62px;animation:bob 3.4s ease-in-out infinite}
+.done h2{font-family:var(--disp);font-size:30px;margin:10px 0 8px;font-weight:600}
+.done p{font-size:15px;opacity:.95;max-width:48ch;margin:0 auto}
+
+.foot{text-align:center;color:var(--ink-soft);font-size:12.5px;margin-top:34px;padding-top:20px;border-top:2px dotted rgba(75,63,148,.3)}
+.foot .ar{font-family:var(--ar);font-size:17px;color:var(--indigo);display:block;margin-bottom:4px}
+
+@media(max-width:520px){
+  .brand-txt .en{display:none}
+  .cover{padding:32px 18px 40px}
+  .wrap{padding:18px 13px 60px}
+  .pad,.plate figcaption,.plates-tag{padding-left:16px;padding-right:16px}
+  .l-head{padding:24px 16px 0}
+  .checkpoint{padding:24px 16px}
+  .l-emoji{font-size:44px}
+  .l-head h2{font-size:23px}
+  .ayah-ar{font-size:23px}
+  .done h2{font-size:26px}
+  .plate .ph{aspect-ratio:4/3}
+  .plate .ph .pr{display:none}
+}
+@media(max-width:380px){
+  .l-head h2{font-size:21px}
+  .ayah-ar{font-size:21px}
+  .facts{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open lesson menu">☰</button>
+  <div class="brand">
+    <img class="brand-logo" src="/logo.png" alt="ManzilulQuran">
+    <div class="brand-txt">
+      <h1>قَصَصُ الأَنْبِيَاء</h1>
+      <div class="en">QAṢAṢ UL-ANBIYĀ</div>
+    </div>
+  </div>
+  <div class="spring"></div>
+  <div class="pagepill">Tharbiya · L2</div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-h">Qaṣaṣ ul-Anbiyā<span class="ar">قَصَصُ الأَنْبِيَاء</span></div>
+  <div class="drawer-sub">Stories of the Prophets · 10 online lessons</div>
+  <div id="bnList"></div>
+</nav>
+
+<div class="wrap">
+  <section class="cover" id="top">
+    <img class="cover-logo" src="/logo.png" alt="">
+    <div class="ar-title">قَصَصُ الأَنْبِيَاء</div>
+    <div class="en-title">STORIES OF THE PROPHETS</div>
+    <span class="tag">Tharbiya · Level 2 · Ages 9–12</span>
+    <h2>Ten lives that lit the world</h2>
+    <p>Allah sent messengers to every people. Ten of their stories are here — each one a real life, with real fear, real courage and real trust in Allah.</p>
+    <a class="start-btn" href="#lesson1">Begin the first story →</a>
+  </section>
+
+  <div class="howto">
+    <h3>How each online lesson runs</h3>
+    <ol>
+      <li><b>Before class</b> — read the Opening Question and look at the three picture plates on your own.</li>
+      <li><b>In class</b> — your teacher shares the screen and reads the three scenes with you, then opens the Talk About It questions. Answer in the chat or unmute.</li>
+      <li><b>After class</b> — do This Week's Task at home and send it to your teacher before the next lesson.</li>
+    </ol>
+  </div>
+
+  <main id="lessons"></main>
+
+  <section class="done" id="done">
+    <div class="em">🌟</div>
+    <h2>Mā shā' Allah!</h2>
+    <p>You have read all ten stories. These prophets were not made of stone — they were people who chose Allah when it was hard. May Allah make you like them.</p>
+  </section>
+
+  <div class="foot">
+    <span class="ar">وَلَقَدْ أَرْسَلْنَا رُسُلًا مِنْ قَبْلِكَ</span>
+    Qaṣaṣ ul-Anbiyā · ManzilulQuran E-learning Academy
+  </div>
+</div>
+
+<script>
+/* ============================================================================
+   VERIFY every Arabic ayah and every "Interesting fact" in LESSONS before
+   publishing. Surah numbers and ayah references are stated as fact.
+
+   Images: 3 plates per lesson, 30 total. Flip status "placeholder" -> "ready"
+   per plate once the file exists in assets/img/. Export WebP, not PNG.
+
+   Malayalam later: add ml:{...} to each lesson object plus a toggle.
+   This page renders from data, so no markup changes are needed.
+   ============================================================================ */
+
+const P=(id,file,prompt)=>({id,status:"placeholder",file:"assets/img/"+file,prompt});
+
+const LESSONS=[
+{
+ emoji:"🌍", title:"Ādam and the Names", ar:"آدَم", mean:"from the earth",
+ facts:{where:"Jannah, then the earth",when:"The very beginning",quran:"Al-Baqarah 2:30–37",also:"Father of humankind"},
+ hook:"If you broke something and nobody saw you do it — what would you say, and to whom?",
+ plates:[
+  {p:P("QSS-01A","qss-01a-clay.jpg","Children's storybook illustration, indigo night and warm gold palette. Handfuls of coloured earth — red, black, pale sand, brown — gathered together on a plain, soft light above. No human figures."),
+   cap:"Clay from every corner",
+   info:"Ādam was shaped from clay gathered from all over the earth. This is why people are every colour there is — the soil was not all one shade.",
+   fact:"The Prophet ﷺ said the children of Ādam came out like the earth itself: some red, some white, some black, some in between."},
+  {p:P("QSS-01B","qss-01b-names.jpg","Children's storybook illustration, indigo and gold. A garden of light: birds, trees, deer and fish, with glowing word-lanterns drifting above each one as if being named. No human figures."),
+   cap:"The naming of everything",
+   info:"Allah taught Ādam the names of all things and asked the angels to repeat them. They could not. Ādam could.",
+   fact:"This is the first honour ever given to a human being — and it was knowledge, not strength."},
+  {p:P("QSS-01C","qss-01c-tawbah.jpg","Children's storybook illustration, indigo and gold. Two small figures seen from far behind, heads lowered, standing under a wide dawn sky with a single warm beam of light reaching down. Faces not visible."),
+   cap:"The first tawbah",
+   info:"After the mistake, Ādam and Ḥawwā' did not blame each other or Shayṭān. They said: 'Our Lord, we have wronged ourselves.'",
+   fact:"The first sin in human history was followed immediately by the first repentance — and Allah accepted it."}
+ ],
+ scenes:[
+  ["The first of us","Before there were cities or crowds, Allah made a man from clay and breathed life into him. His name was Ādam. The angels were told to prostrate to him, and all of them did — except Iblīs, who refused out of pride. Pride, not ignorance, was the very first sin."],
+  ["The test of the names","Allah taught Ādam the names of all things: every animal, every plant, every star. Then He gathered the angels and asked them to say those names. They could not. 'Glory be to You,' they said, 'we know only what You have taught us.' Then Ādam spoke, and named them all."],
+  ["The tree and the turning","Ādam and Ḥawwā' were told not to eat from one tree. Shayṭān whispered until they forgot, and they ate. The moment they realised, they did not argue or point at anyone else. They turned to Allah and said: 'Our Lord, we have wronged ourselves.' And Allah forgave them."]
+ ],
+ dyk:["🕌","Iblīs was not an angel — the Qur'an says he was of the jinn. Angels cannot disobey; jinn can choose.",
+      "📖","Sūrah Al-Baqarah tells this story in only a handful of āyāt, but the whole human condition is inside them.",
+      "🤲","The duʿā Ādam made is one we still say today: <span dir='rtl' style='font-family:var(--ar)'>رَبَّنَا ظَلَمْنَا أَنفُسَنَا</span>",
+      "🌍","Ādam is called Abul-Bashar — the father of humankind. Every person you have ever met is his descendant."],
+ ayahAr:"وَعَلَّمَ آدَمَ الْأَسْمَاءَ كُلَّهَا",
+ ayahEn:"And He taught Ādam the names of all things.",
+ ayahRef:"Sūrah Al-Baqarah 2:31",
+ discuss:[["Iblīs knew Allah existed and still refused. So what exactly was his problem?","chat"],
+          ["Ādam said 'we have wronged ourselves' instead of 'Shayṭān made us do it'. Why does that difference matter?","unmute"],
+          ["Name one thing you know how to do that you had to be taught. Who taught you?","chat"]],
+ why:"Ādam was honoured for knowledge and forgiven for owning his mistake. Both matter. A person who learns, and a person who can say 'I was wrong', are both walking Ādam's path.",
+ points:["Knowledge is an honour Allah gave to humans","Pride was the first sin — not ignorance","Own your mistake instead of passing it on"],
+ task:{title:"The no-excuse day",
+  steps:["Choose one day this week.","Every time you get something wrong, say 'I was wrong' out loud — with no 'but' after it.","Write down how many times you managed it, and how many times you slipped and made an excuse."],
+  send:"Send your count to your teacher with one sentence about which was hardest."}
+},
+{
+ emoji:"🚢", title:"Nūḥ and the Ark", ar:"نُوح", mean:"the grateful one",
+ facts:{where:"Ancient Mesopotamia",when:"After many generations",quran:"Hūd 11:25–49 · Sūrah Nūḥ 71",also:"A whole sūrah bears his name"},
+ hook:"Could you keep doing something good for 950 years if nobody ever thanked you for it?",
+ plates:[
+  {p:P("QSS-02A","qss-02a-calling.jpg","Children's storybook illustration, indigo and gold. A small figure seen from behind on a hillside at dusk, arms slightly raised, facing a village whose windows are all shuttered. Face not visible."),
+   cap:"950 years of calling",
+   info:"Nūḥ invited his people by day and by night, in public and one by one. Almost nobody listened.",
+   fact:"The Qur'an says he stayed among them a thousand years less fifty — the longest recorded mission of any prophet."},
+  {p:P("QSS-02B","qss-02b-building.jpg","Children's storybook illustration, indigo and gold. A huge half-built wooden ship standing on dry cracked desert ground, wooden ribs and scaffolding, tools resting nearby, no water anywhere in sight."),
+   cap:"A ship on dry land",
+   info:"Allah told Nūḥ to build a ship far from any sea. People came to watch and laugh at him.",
+   fact:"Being mocked is not evidence that you are wrong. Every single person who laughed at that ship was wrong."},
+  {p:P("QSS-02C","qss-02c-ark.jpg","Children's storybook illustration, indigo night and gold. A great wooden ark riding tall grey waves under a breaking sky, pairs of animals at the rail, one shaft of golden light. Hopeful, not frightening."),
+   cap:"In the name of Allah it sails",
+   info:"The believers boarded with a pair of every animal. As the ark lifted off the earth, Nūḥ spoke the words of āyah 41.",
+   fact:"Nūḥ's own son refused to board and said he would climb a mountain instead. There was no mountain high enough that day."}
+ ],
+ scenes:[
+  ["The long invitation","Nūḥ called his people to worship Allah alone for nine hundred and fifty years. Longer than any of us will live. Longer than most countries have existed. He called them gently and firmly, in daylight and at night. They put their fingers in their ears when they saw him coming and pulled their coats over their heads."],
+  ["The carpenter prophet","Then Allah told him to build a ship — in the middle of dry land, nowhere near any sea. The people came to watch and laugh. 'The prophet has become a carpenter!' they shouted. Nūḥ kept hammering. He answered them once: if you mock us now, we will mock you as you mock us."],
+  ["The water and the son","When the ship was finished the water came — from the sky above and from the ground below, until the two met. Nūḥ took the believers aboard, and a pair of every animal. His own son refused to come. 'I will climb a mountain,' the boy said. Even a prophet cannot force someone's heart."]
+ ],
+ dyk:["📖","Sūrah Nūḥ is number 71 and is almost entirely his own words to Allah — a prophet's report on 950 years of work.",
+      "🕊️","The Qur'an calls Nūḥ <i>ʿabdan shakūrā</i> — a deeply grateful servant. Grateful, after all that.",
+      "🚢","He is one of the five <i>Ūlul-ʿAzm</i> — the messengers of firm resolve, with Ibrāhīm, Mūsā, ʿĪsā and Muḥammad ﷺ.",
+      "🌊","When it was over, Allah told the earth to swallow its water and the sky to hold back — and the ark came to rest on Mount Jūdī."],
+ ayahAr:"بِسْمِ اللَّهِ مَجْرَاهَا وَمُرْسَاهَا",
+ ayahEn:"In the name of Allah it sails and it anchors.",
+ ayahRef:"Sūrah Hūd 11:41",
+ discuss:[["Nūḥ 'failed' for 950 years by most people's measure. Did he actually fail? Explain your answer.","unmute"],
+          ["Type one thing you stopped doing because someone laughed at you.","chat"],
+          ["His son was on the wrong side. What does that tell us about who is responsible for our choices?","unmute"]],
+ why:"Nūḥ measured success by whether he kept trying, not by how many agreed. That is the only measure any of us actually controls.",
+ points:["Keep doing right even when nobody joins you","Being mocked is not the same as being wrong","You can invite people to good — you cannot force them"],
+ task:{title:"Start it again",
+  steps:["Think of one good habit you gave up because someone teased you about it.","Start it again this week — just once is enough to count.","Write three lines: what it was, who teased you, and how it felt to do it anyway."],
+  send:"Send your three lines to your teacher."}
+},
+{
+ emoji:"🔥", title:"Ibrāhīm and the Fire", ar:"إِبْرَاهِيم", mean:"friend of Allah",
+ facts:{where:"Babylon, then Makkah",when:"Age of the idol-makers",quran:"Al-Anbiyā' 21:51–70",also:"Sūrah 14 bears his name"},
+ hook:"If everyone around you was doing something that made no sense — would you be the one to say so out loud?",
+ plates:[
+  {p:P("QSS-03A","qss-03a-idols.jpg","Children's storybook illustration, indigo and gold. A dim stone temple hall lined with carved stone statues on pedestals, dust in the light beams, an empty doorway. No human figures."),
+   cap:"Statues they carved themselves",
+   info:"Ibrāhīm's people bowed to figures they had shaped with their own hands. He asked one simple question nobody could answer.",
+   fact:"His question was: do they hear you when you call? Can they help you or harm you? The only reply was 'this is what our fathers did.'"},
+  {p:P("QSS-03B","qss-03b-axe.jpg","Children's storybook illustration, indigo and gold. A temple hall of broken stone rubble, one tall statue left standing with a woodcutter's axe hanging from its neck by a cord. No human figures."),
+   cap:"The axe on the big one",
+   info:"While the city was away at a festival, Ibrāhīm broke every idol but the largest, and hung the axe around its neck.",
+   fact:"When they demanded to know who did it, he said: ask the big one. They replied that it could not speak — and walked straight into his point."},
+  {p:P("QSS-03C","qss-03c-fire.jpg","Children's storybook illustration, indigo and gold. An enormous bonfire whose centre has turned cool blue and green, flowers blooming in the calm middle of the flames. No human figures. Awe and peace, not danger."),
+   cap:"Be coolness and peace",
+   info:"They built a fire so large that birds would not fly over it, and threw him in. Allah gave the fire one instruction.",
+   fact:"Fire has no will of its own. It burns because Allah allows it to — and stops the moment He says stop."}
+ ],
+ scenes:[
+  ["The question nobody could answer","Ibrāhīm grew up among people who bowed to statues they had carved themselves. Even young, he could not understand it. 'Do they hear you when you call? Can they help you, or harm you?' His people had no answer except: 'This is what our fathers did.'"],
+  ["The axe and the argument","So one day, while the city was away at a festival, Ibrāhīm went into the temple with an axe and broke every idol — except the largest. He hung the axe around its neck and walked out. When they returned, furious, and demanded who had done it, he said calmly: 'Ask the big one. He still has the axe.' They said, 'You know these do not speak!' And he replied: 'Then why do you worship them?'"],
+  ["The fire that would not burn","They had no argument left, so they used fire instead. They built a blaze so enormous that birds would not fly over it, and threw Ibrāhīm in. Allah spoke one command: 'O fire, be coolness and peace upon Ibrāhīm.' He walked out unharmed."]
+ ],
+ dyk:["🤝","Allah calls him <i>Khalīlullāh</i> — the intimate friend of Allah. Only Ibrāhīm carries that title.",
+      "🕋","He and his son Ismāʿīl raised the foundations of the Kaʿbah — the building Muslims still face five times a day.",
+      "🤲","We mention him in every single ṣalāh, in the durūd: <i>kamā ṣallayta ʿalā Ibrāhīm</i>.",
+      "🐦","He once asked Allah to show him how the dead are brought to life — not from doubt, but so his heart could be at rest. Allah answered with four birds."],
+ ayahAr:"يَا نَارُ كُونِي بَرْدًا وَسَلَامًا عَلَىٰ إِبْرَاهِيمَ",
+ ayahEn:"O fire, be coolness and peace upon Ibrāhīm.",
+ ayahRef:"Sūrah Al-Anbiyā' 21:69",
+ discuss:[["'This is what our fathers did.' Is that ever a good reason? When might it be, and when is it not?","unmute"],
+          ["Ibrāhīm left the big idol standing on purpose. Why was that clever rather than just destructive?","chat"],
+          ["Type one thing people around you do that you have never asked 'why' about.","chat"]],
+ why:"'Everyone else does it' is not a reason. Ibrāhīm asked one honest question nobody could answer, and it changed history.",
+ points:["Ask why, even when the answer is uncomfortable","Truth does not become false because it is unpopular","Allah's protection reaches into the middle of the fire"],
+ task:{title:"One respectful why",
+  steps:["Choose something you have always just accepted without asking about it.","Ask a parent or teacher about it this week — to understand, not to argue.","Write down their answer and whether it satisfied you."],
+  send:"Send your question and the answer you got to your teacher."}
+},
+{
+ emoji:"👕", title:"Yūsuf and His Brothers", ar:"يُوسُف", mean:"Allah will add",
+ facts:{where:"Canaan, then Egypt",when:"Time of Yaʿqūb",quran:"Sūrah Yūsuf 12 — 111 āyāt",also:"One complete story"},
+ hook:"Someone in your own family hurts you badly. Years later, you have complete power over them. What do you do?",
+ plates:[
+  {p:P("QSS-04A","qss-04a-well.jpg","Children's storybook illustration, indigo and gold. An old stone well in a desert at dawn, a striped cloak folded on the sand beside it, a caravan silhouetted far away on the horizon. No faces."),
+   cap:"The well and the shirt",
+   info:"His brothers threw him into a well and took his shirt home dipped in animal blood, telling their father a wolf had eaten him.",
+   fact:"A passing caravan pulled him out and sold him in Egypt. The Qur'an says they sold him for a low price — they did not know what they had."},
+  {p:P("QSS-04B","qss-04b-prison.jpg","Children's storybook illustration, indigo and gold. A narrow barred window high on a stone wall, warm light falling on the floor below, a clay water jar in the corner. No human figures."),
+   cap:"Years he did not deserve",
+   info:"Accused of something he did not do, Yūsuf spent years in prison — and spent them interpreting dreams for the other prisoners.",
+   fact:"He stayed useful in the worst place he had ever been. That habit is what eventually got him out."},
+  {p:P("QSS-04C","qss-04c-grain.jpg","Children's storybook illustration, indigo and gold. Great stone granary halls stacked with sacks of golden grain, dusty light from high windows, a long queue of empty baskets waiting. No faces."),
+   cap:"Seven years of grain",
+   info:"Yūsuf read the king's dream — seven good years, then seven of famine — and was put in charge of all Egypt's food.",
+   fact:"The famine is what finally brought his brothers to his door, hungry, without recognising him."}
+ ],
+ scenes:[
+  ["The dream and the well","Yūsuf was a boy when he dreamt of eleven stars, the sun and the moon bowing to him. His father Yaʿqūb told him not to tell his brothers. Fathers know things. They were jealous anyway — they took him out to play, threw him into a well, and went home with his shirt dipped in animal blood."],
+  ["The long years","A caravan pulled him out and sold him in Egypt like a piece of goods. There he was accused of something he did not do and thrown into prison for years. Still he did not turn bitter. He interpreted dreams for the other prisoners. He stayed useful."],
+  ["The door opens","The king had a dream nobody could explain, and Yūsuf explained it: seven good years, then seven of famine. Store the grain. He was made minister over all the food in Egypt. And one day the famine drove ten hungry travellers to his door — his brothers, who did not recognise him. He had every kind of power over them. He said: 'No blame upon you today.'"]
+ ],
+ dyk:["📖","Sūrah Yūsuf tells one complete story from beginning to end, without interruption — unlike any other sūrah.",
+      "⭐","Allah calls it <i>aḥsan al-qaṣaṣ</i> — the most beautiful of stories.",
+      "😢","It was revealed in the Year of Sorrow, after the Prophet ﷺ lost both Khadījah and his uncle. A story about patience, sent exactly when it was needed.",
+      "👕","The story begins and ends with a shirt: one used to lie about his death, one used to restore his father's sight."],
+ ayahAr:"لَا تَثْرِيبَ عَلَيْكُمُ الْيَوْمَ",
+ ayahEn:"No blame upon you today.",
+ ayahRef:"Sūrah Yūsuf 12:92",
+ discuss:[["Yūsuf could have punished his brothers and everyone would have said it was fair. Why didn't he?","unmute"],
+          ["He kept helping people even in prison. Type one way you could be useful somewhere you don't want to be.","chat"],
+          ["Yaʿqūb told Yūsuf not to tell his brothers the dream. Was that good advice? Why?","unmute"]],
+ why:"Yūsuf was the one person entitled to revenge, and he refused it. Forgiveness is not weakness — it is what strength looks like when it has a choice.",
+ points:["Jealousy destroys the person carrying it","Stay useful even in your worst season","Forgive when you have the power not to"],
+ task:{title:"The quiet kindness",
+  steps:["Think of someone in your family who annoyed or hurt you recently.","Do one kind thing for them this week without mentioning it or telling them why.","Write down what you did and what happened next."],
+  send:"Send it to your teacher. You do not have to name the person."}
+},
+{
+ emoji:"🌊", title:"Mūsā and Fir'awn", ar:"مُوسَىٰ", mean:"drawn from the water",
+ facts:{where:"Egypt and Sinai",when:"Reign of Fir'awn",quran:"Ṭā-Hā 20 · Al-Qaṣaṣ 28",also:"The most-named prophet"},
+ hook:"You have to walk into a room and tell the most powerful person alive that they are wrong. You are terrified. Do you go?",
+ plates:[
+  {p:P("QSS-05A","qss-05a-basket.jpg","Children's storybook illustration, indigo dawn and gold. A woven reed basket floating on a wide calm river between tall papyrus reeds, soft morning light, a palace roofline far in the distance. No human figures."),
+   cap:"A mother's impossible trust",
+   info:"Fir'awn was killing the baby boys. Allah put an instruction in Mūsā's mother's heart: put him in the river.",
+   fact:"The river carried him to Fir'awn's own palace — and the baby refused every nurse until they found one he would take. She was his own mother, paid a wage to feed her own son."},
+  {p:P("QSS-05B","qss-05b-fire.jpg","Children's storybook illustration, indigo night and gold. A warm golden fire glowing on a dark mountainside, stars overhead, the light not consuming anything around it. No human figures."),
+   cap:"The fire on the mountain",
+   info:"Years later, at a fire on the mountain, Allah spoke directly to Mūsā and sent him back to Egypt.",
+   fact:"Mūsā said plainly that he was afraid. Allah's answer was not 'don't be' — it was 'I am with you, hearing and seeing.'"},
+  {p:P("QSS-05C","qss-05c-sea.jpg","Children's storybook illustration, indigo night and gold. A wide sea split into two towering walls of water with a dry sand path between, fish visible inside the water walls, stars above. No human figures. Majestic."),
+   cap:"A road through the sea",
+   info:"With an army closing behind them, Mūsā struck the water with his staff and the sea opened.",
+   fact:"Muslims fast on ʿĀshūrā because this is the day Allah saved Mūsā and his people."}
+ ],
+ scenes:[
+  ["The river","Fir'awn ruled Egypt and called himself a god. Warned that a boy of the Banī Isrā'īl would end his rule, he ordered their baby boys killed. Mūsā's mother had a newborn. Allah put an instruction in her heart: put him in the river. Imagine being asked that. She did it — and the river carried him to Fir'awn's own palace."],
+  ["The voice in the fire","Mūsā grew up in that palace, and later fled it. Years afterwards, at a fire on a dark mountainside, Allah spoke to him and told him to go back and warn Fir'awn. Mūsā was afraid, and said so. Allah answered: 'Do not fear. Indeed I am with you both, hearing and seeing.'"],
+  ["The staff and the sea","Fir'awn's magicians threw ropes that seemed to slither; Mūsā threw his staff and it swallowed them whole. The magicians fell into sujūd on the spot — they knew real from fake better than anyone in the room. In the end Mūsā led his people to a sea with an army behind them, and his staff opened a road through the water."]
+ ],
+ dyk:["📖","Mūsā is named more often in the Qur'an than any other prophet.",
+      "🗣️","He is called <i>Kalīmullāh</i> — the one Allah spoke to directly, without an angel in between.",
+      "🌙","We fast ʿĀshūrā, the 10th of Muḥarram, because the Prophet ﷺ found the Jews of Madinah fasting it in gratitude for Mūsā's rescue.",
+      "✋","The magicians who became Muslim that day were threatened with death and did not take it back. They were believers for a few minutes and it was enough."],
+ ayahAr:"إِنَّنِي مَعَكُمَا أَسْمَعُ وَأَرَىٰ",
+ ayahEn:"Indeed I am with you both — I hear and I see.",
+ ayahRef:"Sūrah Ṭā-Hā 20:46",
+ discuss:[["Mūsā told Allah he was scared. Does admitting fear make someone weaker or stronger?","unmute"],
+          ["The magicians changed their minds in one moment. What made them able to?","unmute"],
+          ["Type one thing you are avoiding right now because it frightens you a little.","chat"]],
+ why:"Mūsā admitted he was frightened, and went anyway. Courage is not the absence of fear. It is fear plus one more step.",
+ points:["Being afraid does not disqualify you","Allah's help arrives at the edge, not before it","No power on earth outranks Allah"],
+ task:{title:"One step into the fear",
+  steps:["Name one thing you have been avoiding because it makes you nervous.","Do the smallest first step of it this week — just the first step.","Write down what the step was and how you felt before and after."],
+  send:"Send those two feelings to your teacher, before and after."}
+},
+{
+ emoji:"🪨", title:"Dāwūd and the Giant", ar:"دَاوُود", mean:"the beloved",
+ facts:{where:"The valley of Ṭālūt's army",when:"After Mūsā",quran:"Al-Baqarah 2:246–251",also:"Given the Zabūr"},
+ hook:"Everyone older and stronger than you is standing still. You could act. Do you wait for permission?",
+ plates:[
+  {p:P("QSS-06A","qss-06a-armies.jpg","Children's storybook illustration, indigo and gold. Two armies facing each other across a wide dry valley at dawn, spears in rows, a very long shadow stretching from one side. No faces, no gore."),
+   cap:"The army that would not move",
+   info:"Jālūt called for a challenger every day. Grown soldiers went quiet each time.",
+   fact:"Before the battle the believers prayed: pour patience on us, and make our feet firm."},
+  {p:P("QSS-06B","qss-06b-sling.jpg","Children's storybook illustration, indigo and gold. Five smooth river stones and a simple leather sling resting on a rock beside a clear stream, warm dawn light. No human figures."),
+   cap:"Stones from a stream",
+   info:"Dāwūd was a shepherd, not a soldier. The only weapon he really knew was a sling for driving wolves off his flock.",
+   fact:"The skill he learned alone in the hills, doing an ordinary job, is exactly what Allah used."},
+  {p:P("QSS-06C","qss-06c-mountains.jpg","Children's storybook illustration, indigo evening and gold. Mountains and flocks of birds turned toward a warm glow on a hillside, soft light rippling outward as if sound were visible. No human figures."),
+   cap:"When the mountains joined in",
+   info:"Allah later gave Dāwūd a kingdom, wisdom, and a voice so beautiful that the mountains and birds echoed his praise.",
+   fact:"Iron was made soft in his hands — the Qur'an says he shaped it freely."}
+ ],
+ scenes:[
+  ["The daily challenge","Ṭālūt's army faced the army of Jālūt — a warrior so huge that grown soldiers went silent when he stepped forward. Every day he shouted for someone to fight him. Every day nobody moved."],
+  ["The shepherd steps out","Among the believers was a young shepherd named Dāwūd. He was not a soldier. He had spent his life in the hills with sheep, and the only weapon he really knew was a sling. He volunteered. People told him not to be foolish. He picked up smooth stones from a stream and walked out in front of the whole army."],
+  ["One stone","He said what the believers had said before the battle: 'How many a small group has overcome a large group by Allah's permission.' One stone was all it took. Allah gave Dāwūd far more afterwards — a kingdom, wisdom, and a voice the mountains answered. But it began with a boy willing to step out of the line."]
+ ],
+ dyk:["📖","Dāwūd was given the Zabūr, one of the scriptures named in the Qur'an.",
+      "🐦","The Qur'an says the mountains and the birds joined him in glorifying Allah — his recitation was that beautiful.",
+      "⚒️","Allah made iron soft for him, and he made armour with his own hands rather than living off the treasury.",
+      "🌙","He fasted every other day for life. The Prophet ﷺ called it the most beloved fasting to Allah."],
+ ayahAr:"كَم مِّن فِئَةٍ قَلِيلَةٍ غَلَبَتْ فِئَةً كَثِيرَةً بِإِذْنِ اللَّهِ",
+ ayahEn:"How many a small group has overcome a large group by Allah's permission.",
+ ayahRef:"Sūrah Al-Baqarah 2:249",
+ discuss:[["Why do you think the trained soldiers stayed still and the shepherd did not?","unmute"],
+          ["Dāwūd's sling was a shepherd's tool, not a weapon of war. What ordinary skill do you have that might matter one day?","chat"],
+          ["Is being outnumbered the same as being beaten? Give a reason.","unmute"]],
+ why:"Numbers are not the same as strength. Dāwūd counted differently from everyone else on that field — he counted Allah.",
+ points:["Being small is not being weak","Do not wait for someone older to act first","Skills learned quietly become useful later"],
+ task:{title:"Step out of the line",
+  steps:["This week, watch for something that needs doing that nobody is doing — a spill, a heavy bag, a classmate sitting alone.","Be the one who does it, without being asked.","Write down what it was and whether anyone noticed."],
+  send:"Send it to your teacher, even if nobody noticed. Especially then."}
+},
+{
+ emoji:"🐜", title:"Sulaymān and the Ant", ar:"سُلَيْمَان", mean:"peaceful",
+ facts:{where:"The valley of the ants",when:"After Dāwūd",quran:"An-Naml 27:15–19",also:"Sūrah 27 is named for the ant"},
+ hook:"You are the most powerful person in the world. Something tiny asks you to stop. Do you?",
+ plates:[
+  {p:P("QSS-07A","qss-07a-army.jpg","Children's storybook illustration, indigo and gold. A vast army with banners crossing a wide sandy valley, birds wheeling in formation overhead, dust rising. Seen from far away, no faces."),
+   cap:"An army of every kind",
+   info:"Sulaymān's forces included humans, jinn and birds, gathered in ranks. The wind itself carried his travels.",
+   fact:"He understood the speech of birds and animals — a gift the Qur'an describes as given to him uniquely."},
+  {p:P("QSS-07B","qss-07b-ant.jpg","Children's storybook illustration, indigo and gold. A close friendly view of a single ant at the mouth of a sandy anthill, calling to a line of ants hurrying home, an immense shadow approaching across the sand. Charming, not scary."),
+   cap:"The smallest voice in the valley",
+   info:"An ant warned her colony to get inside so the army would not crush them without noticing.",
+   fact:"She said 'without realising' — even while warning, she assumed the best about Sulaymān."},
+  {p:P("QSS-07C","qss-07c-halt.jpg","Children's storybook illustration, indigo and gold. A vast army halted mid-march on a sandy plain, banners still, everything paused, a small anthill in the foreground catching the light. No faces."),
+   cap:"The king who stopped",
+   info:"Sulaymān heard her, smiled, and halted. Then he prayed — not for more power, but to be made grateful.",
+   fact:"His duʿā was: my Lord, help me to be grateful for the favour You have given me."}
+ ],
+ scenes:[
+  ["Everything at his command","Sulaymān, son of Dāwūd, was given what no other king has ever had. He understood the speech of animals and birds. The wind carried his travels. Even the jinn worked for him. He asked Allah for a kingdom no one after him would have — and was given it."],
+  ["The warning in the sand","One day he was marching with his enormous army through a valley. Soldiers, horses, birds overhead — the ground shook. In the sand ahead, an ant saw them coming and called out: 'O ants, enter your homes, so that Sulaymān and his soldiers do not crush you without realising.' Notice what she said. Without realising. Even in warning, she assumed the best of him."],
+  ["The smile and the duʿā","Sulaymān heard her. A king with the wind at his command, an army behind him and the earth at his feet — and he stopped, and he smiled, and he laughed at her words. Then he prayed. Not for more power. He said: 'My Lord, help me to be grateful for the favour You have given me.'"]
+ ],
+ dyk:["🐜","Sūrah An-Naml — 'The Ant' — is the 27th sūrah, named after this one small creature.",
+      "🐦","The hoopoe bird went missing from his ranks and returned with news of the Queen of Sabaʾ, beginning a whole other story.",
+      "🌬️","The wind travelled a month's journey in a morning and a month's journey in an evening at his command.",
+      "🤲","He asked Allah for a kingdom that would belong to no one after him — and Allah granted exactly that."],
+ ayahAr:"يَا أَيُّهَا النَّمْلُ ادْخُلُوا مَسَاكِنَكُمْ",
+ ayahEn:"O ants, enter your homes.",
+ ayahRef:"Sūrah An-Naml 27:18",
+ discuss:[["The ant assumed Sulaymān would not crush them on purpose. Why is assuming the best about people so hard?","unmute"],
+          ["Sulaymān's first thought after all that power was gratitude. What would most people's first thought be?","chat"],
+          ["Name one small creature or person you tend to overlook.","chat"]],
+ why:"The most powerful man alive listened to the smallest voice in the valley — and his first thought afterwards was thankfulness, not pride.",
+ points:["Never look down on anyone smaller than you","Assume the best about people, as the ant did","When you are given much, be grateful first"],
+ task:{title:"Watch where you walk",
+  steps:["For three days, watch the ground when you walk outside.","Step around the ants, the beetles, the lines of insects on the path.","Write down one moment you would have crushed something without noticing."],
+  send:"Send that one moment to your teacher."}
+},
+{
+ emoji:"🐋", title:"Yūnus in the Deep", ar:"يُونُس", mean:"the dove",
+ facts:{where:"Nineveh, then the open sea",when:"—",quran:"Al-Anbiyā' 21:87–88",also:"Also called Dhun-Nūn"},
+ hook:"What is the loneliest place you can imagine? Could a duʿā still reach Allah from there?",
+ plates:[
+  {p:P("QSS-08A","qss-08a-ship.jpg","Children's storybook illustration, indigo night and gold. A small wooden sailing ship on heaving dark waves under a storm sky, cargo being thrown overboard, one lantern swinging. Seen from a distance, no faces."),
+   cap:"The storm and the lot",
+   info:"Yūnus left his city without waiting for Allah's permission and boarded a ship. A violent storm rose.",
+   fact:"The sailors drew lots to decide who should go overboard. The lot fell on Yūnus."},
+  {p:P("QSS-08B","qss-08b-deep.jpg","Children's storybook illustration, deep indigo with gold. Dark ocean depths, a single warm golden glow far below the surface, gentle bubbles rising, a large whale silhouette curving around the light. Calm and hopeful, never frightening."),
+   cap:"Three darknesses",
+   info:"The dark of the night, the dark of the sea, and the dark inside the fish — all at once.",
+   fact:"No human being has ever prayed from a more hidden place. And Allah heard him."},
+  {p:P("QSS-08C","qss-08c-city.jpg","Children's storybook illustration, indigo dawn and gold. A walled city at sunrise with warm lantern light glowing in every window and doorway, light spreading over the rooftops. No faces."),
+   cap:"The city that believed",
+   info:"When Yūnus returned, he found that his whole town had turned to Allah.",
+   fact:"The Qur'an singles out the people of Yūnus as a town whose faith came in time and benefited them."}
+ ],
+ scenes:[
+  ["Walking away","Yūnus called his people to Allah, and they refused for a long time. He grew frustrated and left the city without waiting for Allah's permission. He boarded a ship, and a storm rose so violently that the sailors began throwing cargo overboard, then drew lots to see who should go. The lot fell on Yūnus."],
+  ["The three darknesses","He went into the water, and a great fish swallowed him whole. Now he was in three darknesses at once: the dark of night, the dark of the sea, the dark inside the fish. No light. No way out. Nobody even knew where he was."],
+  ["The duʿā that reached","And there, in the deepest and loneliest place any human being has ever prayed from, he called out: 'There is no god but You. Glory be to You. Truly I was among the wrongdoers.' He did not ask for rescue. He admitted his mistake and praised Allah. Allah answered him — and when Yūnus finally returned to his city, he found the whole town had believed."]
+ ],
+ dyk:["📖","Sūrah Yūnus is the 10th sūrah of the Qur'an.",
+      "🤲","The Prophet ﷺ said no Muslim makes the duʿā of Yūnus for anything without Allah answering him.",
+      "🐋","He is also called <i>Dhun-Nūn</i> — the companion of the fish.",
+      "🏙️","His people are described as a town whose faith came in time and benefited them — an exception among the warned nations."],
+ ayahAr:"لَا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ",
+ ayahEn:"There is no god but You. Glory be to You. Truly I was among the wrongdoers.",
+ ayahRef:"Sūrah Al-Anbiyā' 21:87",
+ discuss:[["Yūnus did not ask to be rescued. He praised Allah and admitted he was wrong. Why might that be more powerful than asking?","unmute"],
+          ["He left because he was frustrated. When has frustration made you want to walk away from something?","chat"],
+          ["Type the duʿā of Yūnus in the chat from memory, without scrolling up.","chat"]],
+ why:"No place is too far, too dark or too deep for a duʿā to reach Allah. Yūnus proved it from inside a fish at the bottom of the sea.",
+ points:["Allah hears you from anywhere","Say sorry properly instead of making excuses","Do not walk away from your responsibility in anger"],
+ task:{title:"Learn it by heart",
+  steps:["Memorise the duʿā of Yūnus this week.","Say it quietly every night in the dark before you sleep.","On the last night, write down what it felt like to say it in the dark."],
+  send:"Record a short voice note reciting it and send it to your teacher."}
+},
+{
+ emoji:"🌴", title:"Maryam and ʿĪsā", ar:"مَرْيَم وَعِيسَىٰ", mean:"the devoted servant",
+ facts:{where:"Bayt al-Maqdis",when:"Before the Prophet ﷺ",quran:"Sūrah Maryam 19:16–34",also:"The only woman named in the Qur'an"},
+ hook:"Allah promises you food and water — then tells you to go and shake a whole tree yourself. Why not just give it to you?",
+ plates:[
+  {p:P("QSS-09A","qss-09a-mihrab.jpg","Children's storybook illustration, indigo and gold. A quiet stone prayer chamber with an arched niche, a bowl of fresh out-of-season fruit on a ledge, warm light through a high window. No human figures."),
+   cap:"Provision out of season",
+   info:"Maryam lived in the sanctuary in worship. Whenever Zakariyyā visited, he found food with her he had not brought.",
+   fact:"He asked where it came from. She said: it is from Allah. Allah provides for whom He wills without limit."},
+  {p:P("QSS-09B","qss-09b-palm.jpg","Children's storybook illustration, indigo dawn and gold. A slender date palm heavy with ripe dates bending gently over dry ground, a clear stream appearing at its roots, soft light. No human figures."),
+   cap:"Shake the trunk",
+   info:"Alone, in pain and afraid, she was told: shake the trunk of the palm and ripe dates will fall.",
+   fact:"Allah could have dropped the dates. He asked a woman too weak to stand to reach for them anyway."},
+  {p:P("QSS-09C","qss-09c-cradle.jpg","Children's storybook illustration, indigo and gold. A simple woven cradle on the ground surrounded by a semicircle of standing shadows, a warm light rising from the cradle. No faces visible."),
+   cap:"The baby who spoke",
+   info:"Her people accused her. She had been told to stay silent, so she pointed at the child.",
+   fact:"ʿĪsā spoke from the cradle: 'I am a servant of Allah.' His very first words defended his mother's honour."}
+ ],
+ scenes:[
+  ["The most devoted","Maryam was the most devoted young woman of her time. She lived in the sanctuary, and whenever Zakariyyā came to her he found provision with her that he had not brought. 'Where is this from?' he asked. 'It is from Allah,' she said."],
+  ["The tree and the stream","An angel told her she would have a son, though no man had touched her. When the time came she was alone, far from anyone, in pain and afraid of what people would say. She said, 'I wish I had died before this.' A voice called from below: do not grieve. Allah had placed a stream beneath her. Shake the trunk of the palm tree, she was told, and ripe dates will fall. She was too weak to stand — and Allah's instruction was to shake a whole tree."],
+  ["The answer from the cradle","When she carried her baby back to her people, they accused her. She had been told to stay silent, so she pointed at the child. And the infant ʿĪsā spoke: 'I am a servant of Allah. He has given me the Scripture and made me a prophet.'"]
+ ],
+ dyk:["👑","Maryam is the only woman named by name in the entire Qur'an. Sūrah 19 carries her name.",
+      "📖","Sūrah Āl ʿImrān — the third sūrah — is named after her family.",
+      "🕊️","When the early Muslims fled to Abyssinia, Jaʿfar recited Sūrah Maryam to the Christian king, and he wept.",
+      "🤝","The Prophet ﷺ named her among the best women of all mankind."],
+ ayahAr:"إِنِّي عَبْدُ اللَّهِ آتَانِيَ الْكِتَابَ وَجَعَلَنِي نَبِيًّا",
+ ayahEn:"Indeed I am a servant of Allah. He has given me the Scripture and made me a prophet.",
+ ayahRef:"Sūrah Maryam 19:30",
+ discuss:[["Why do you think Allah told her to shake the tree instead of just dropping the dates?","unmute"],
+          ["ʿĪsā's first words were 'I am a servant of Allah.' Why does that matter so much?","unmute"],
+          ["Type one thing you have prayed for but not yet done anything about.","chat"]],
+ why:"Allah promised Maryam dates and water, and still asked her to shake the tree. Trust in Allah does not mean sitting still — it means doing your part and knowing who makes it work.",
+ points:["Do your part; Allah does the rest","Allah defends those who are wrongly accused","ʿĪsā is a prophet and a servant of Allah, not a son of God"],
+ task:{title:"Shake your own palm tree",
+  steps:["Pick one thing you have been making duʿā for.","Do one practical thing towards it this week — however small.","Write down the duʿā and the action side by side."],
+  send:"Send both lines to your teacher: what you asked for, and what you did."}
+},
+{
+ emoji:"🌙", title:"Muḥammad ﷺ — Mercy to the Worlds", ar:"مُحَمَّد ﷺ", mean:"the praised one",
+ facts:{where:"Makkah and Madinah",when:"570–632 CE",quran:"Al-Anbiyā' 21:107",also:"The final messenger"},
+ hook:"The people who drove you out of your home are now standing in front of you, defeated. What is the first thing you say?",
+ plates:[
+  {p:P("QSS-10A","qss-10a-amin.jpg","Children's storybook illustration, indigo and gold. A busy old Makkan marketplace at dusk with stalls, scales and sealed goods left safely unattended, warm lantern light. No faces."),
+   cap:"Al-Amīn, before prophethood",
+   info:"Long before revelation, the whole city called him the trustworthy one and left their valuables in his keeping.",
+   fact:"Even the people who later fought him still trusted him with their money. On the night of Hijrah he made sure every deposit was returned."},
+  {p:P("QSS-10B","qss-10b-hira.jpg","Children's storybook illustration, indigo night and gold. A narrow cave opening high on a dark rocky mountain, the lights of a sleeping city far below, a wide field of stars above. No human figures."),
+   cap:"Read",
+   info:"At forty, in the cave of Ḥirā', the angel Jibrīl brought the first word of the Qur'an.",
+   fact:"The very first command revealed to an unlettered man in an unlettered city was: read."},
+  {p:P("QSS-10C","qss-10c-mercy.jpg","Children's storybook illustration, indigo night and gold. A warm lantern glow spreading over a desert horizon with date palms and distant rooftops, a crescent moon and stars above. No human figures, and no depiction of the Prophet."),
+   cap:"Go — you are free",
+   info:"He returned to Makkah with ten thousand men, and pardoned the city that had driven him out.",
+   fact:"Every prophet before him was sent to one people. He was sent to all of them — and to you."}
+ ],
+ scenes:[
+  ["The trustworthy orphan","He was born in Makkah and orphaned young — his father before his birth, his mother at six, his grandfather at eight. He grew up quiet, honest, and so trusted that the whole city called him Al-Amīn, the trustworthy one, long before he was a prophet."],
+  ["Read","At forty, in the cave of Ḥirā', the angel Jibrīl came with the first word of the Qur'an: Read. What followed was thirteen years of being insulted, boycotted and hurt in his own hometown. In Ṭā'if they set children to throw stones at him until his sandals filled with blood. An angel offered to crush the town between two mountains. He said no — perhaps their children will worship Allah."],
+  ["You are free","Then the Hijrah to Madinah, and a community built from strangers who became brothers. And at the end, he returned to Makkah with ten thousand men. The people who had driven him out, starved his family and killed his uncle stood waiting to hear their sentence. He said: 'Go — you are free.'"]
+ ],
+ dyk:["📖","The Qur'an was revealed over about 23 years — not all at once, but as life happened.",
+      "🌍","He is the only prophet sent to all of humanity, not to one people alone.",
+      "🕋","He is <i>Khātam an-Nabiyyīn</i> — the seal of the prophets. There is no messenger after him.",
+      "🤲","He is the only prophet we are asked to send blessings upon in every ṣalāh."],
+ ayahAr:"وَمَا أَرْسَلْنَاكَ إِلَّا رَحْمَةً لِّلْعَالَمِينَ",
+ ayahEn:"And We have not sent you except as a mercy to all the worlds.",
+ ayahRef:"Sūrah Al-Anbiyā' 21:107",
+ discuss:[["He was called Al-Amīn before he was called a prophet. What does that order tell us?","unmute"],
+          ["At Ṭā'if he refused to let the town be destroyed. What was he thinking about?","unmute"],
+          ["Type one thing from these ten stories you want to keep with you.","chat"]],
+ why:"He had every reason and every opportunity for revenge, and chose mercy in public, on the biggest day of his life. That is the character we are asked to copy.",
+ points:["Be trustworthy before you are anything else","Answer cruelty with mercy when you can","He was sent for all people — including you"],
+ task:{title:"Ten ṣalawāt and one mercy",
+  steps:["Send ṣalawāt on him ten times today: <span dir='rtl' style='font-family:var(--ar)'>اللَّهُمَّ صَلِّ عَلَى مُحَمَّد</span>","Then do one merciful thing for someone who did not deserve it from you.","Write down what you did — and what it cost you to do it."],
+  send:"Send it to your teacher as your final task for this course."}
+}
+];
+
+const CHECKPOINTS={
+ 5:{n:1,qs:[
+  ["What did Allah teach Ādam that the angels could not repeat?","The names of all things."],
+  ["Was Iblīs an angel?","No — the Qur'an says he was of the jinn."],
+  ["How long did Nūḥ call his people?","950 years."],
+  ["What did Allah command the fire to be for Ibrāhīm?","Coolness and peace."],
+  ["Which sūrah tells one complete story from start to finish?","Sūrah Yūsuf."],
+  ["What did Allah say to Mūsā when he was afraid?","'Indeed I am with you both — I hear and I see.'"]
+ ]},
+ 10:{n:2,qs:[
+  ["What was Dāwūd's weapon, and where did he learn to use it?","A sling — from shepherding in the hills."],
+  ["Which sūrah is named after the ant?","Sūrah An-Naml, number 27."],
+  ["Name the three darknesses Yūnus prayed from.","The night, the sea, and inside the fish."],
+  ["Which woman is named by name in the Qur'an?","Maryam."],
+  ["Why was Maryam told to shake the palm tree?","To do her part — Allah provided, but she had to reach."],
+  ["What did the Prophet ﷺ say to the people of Makkah?","'Go — you are free.'"]
+ ]}
+};
+
+/* ================= RENDER ================= */
+function el(h){const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;}
+const host=document.getElementById('lessons');
+const bnList=document.getElementById('bnList');
+
+function plateHTML(pl){
+  const a=pl.p;
+  const media = a.status==="ready"
+    ? `<img src="${a.file}" alt="${pl.cap}" loading="lazy">`
+    : `<div class="ph">
+         <div class="ic">🎨</div>
+         <div class="ttl">${pl.cap}</div>
+         <div class="id">${a.id}</div>
+         <div class="pr">${a.prompt}</div>
+         <div class="fn">${a.file}</div>
+       </div>`;
+  return `<div class="plate"><figure>
+    ${media}
+    <figcaption>
+      <div class="cap">${pl.cap}</div>
+      <div class="info">${pl.info}</div>
+      <span class="pfact">✦ ${pl.fact}</span>
+    </figcaption>
+  </figure></div>`;
+}
+
+function cpHTML(cp){
+  const cards=cp.qs.map(q=>`<button class="cp-card">
+    <span class="cp-q">${q[0]}</span>
+    <span class="cp-hint">Tap to reveal ▾</span>
+    <span class="cp-a">${q[1]}</span>
+  </button>`).join('');
+  return `<section class="checkpoint" id="check${cp.n}">
+    <div class="cp-head">
+      <span class="cp-badge">✦ CHECKPOINT ${cp.n}</span>
+      <h2>What do you remember?</h2>
+      <p>Your teacher may ask these live. Tap each card to check yourself first.</p>
+    </div>
+    <div class="cp-cards">${cards}</div>
+  </section>`;
+}
+
+LESSONS.forEach((L,i)=>{
+  const n=i+1;
+  const F=L.facts;
+  const facts=[["Where",F.where],["When",F.when],["In the Qur'an",F.quran],["Note",F.also]]
+    .map(f=>`<div class="fact"><div class="fl">${f[0]}</div><div class="fv">${f[1]}</div></div>`).join('');
+  const plates=L.plates.map(plateHTML).join('');
+  const scenes=L.scenes.map((s,k)=>`<div class="scene">
+      <span class="sn">SCENE ${k+1} · ${s[0]}</span><p>${s[1]}</p></div>`).join('');
+  let dyk='';
+  for(let k=0;k<L.dyk.length;k+=2){
+    dyk+=`<li><span class="b">${L.dyk[k]}</span><span>${L.dyk[k+1]}</span></li>`;
+  }
+  const disc=L.discuss.map(d=>`<li>${d[0]}<span class="how">${d[1]==='chat'?'in the chat':'unmute'}</span></li>`).join('');
+  const pts=L.points.map(p=>`<li><span class="kp-dot">◆</span>${p}</li>`).join('');
+  const steps=L.task.steps.map(s=>`<li>${s}</li>`).join('');
+
+  host.appendChild(el(`<section class="lesson" id="lesson${n}">
+    <div class="l-head">
+      <span class="l-badge">LESSON ${n} OF ${LESSONS.length}</span>
+      <div class="l-emoji">${L.emoji}</div>
+      <h2>${L.title}</h2>
+      <div class="l-ar">${L.ar}</div>
+      <div class="l-mean">${L.mean}</div>
+    </div>
+    <div class="pad">
+      <div class="facts">${facts}</div>
+      <div class="hook"><span class="tag">❓ OPENING QUESTION — think before class</span><p>${L.hook}</p></div>
+    </div>
+    <div class="plates">
+      <div class="plates-tag">🖼️ THE PICTURES — look at these first</div>
+      ${plates}
+    </div>
+    <div class="pad">
+      <div class="story-card">
+        <div class="card-tag">❦ THE STORY</div>
+        ${scenes}
+      </div>
+      <div class="dyk">
+        <div class="card-tag">💡 INTERESTING FACTS</div>
+        <ul>${dyk}</ul>
+      </div>
+      <div class="ayah-card">
+        <div class="card-tag">✦ FROM THE QUR'AN</div>
+        <div class="ayah-ar">${L.ayahAr}</div>
+        <div class="ayah-mean">${L.ayahEn}</div>
+        <div class="ayah-ref">${L.ayahRef}</div>
+      </div>
+      <div class="discuss">
+        <div class="card-tag">🎧 TALK ABOUT IT — in the live class</div>
+        <div class="sub">Your teacher will open these. Answer where it says.</div>
+        <ol>${disc}</ol>
+      </div>
+      <div class="why-box">
+        <div class="why-tag">🧭 WHY IT MATTERS</div>
+        <p>${L.why}</p>
+        <ul class="kp-list">${pts}</ul>
+      </div>
+      <div class="task">
+        <div class="card-tag">🏠 THIS WEEK'S TASK</div>
+        <h4>${L.task.title}</h4>
+        <ol>${steps}</ol>
+        <div class="send"><span>📤</span><span>${L.task.send}</span></div>
+      </div>
+    </div>
+  </section>`));
+
+  bnList.appendChild(el(`<a class="bn-a" href="#lesson${n}"><span class="bn-n">${n}</span>${L.title}</a>`));
+
+  if(CHECKPOINTS[n]){
+    const cp=CHECKPOINTS[n];
+    host.appendChild(el(cpHTML(cp)));
+    bnList.appendChild(el(`<a class="bn-a cp" href="#check${cp.n}"><span class="bn-n">✦</span>Checkpoint ${cp.n}</a>`));
+  }
+});
+bnList.appendChild(el(`<a class="bn-a cp" href="#done"><span class="bn-n">★</span>Finish</a>`));
+
+/* ================= BEHAVIOUR ================= */
+const $$=s=>Array.from(document.querySelectorAll(s));
+const drawer=document.getElementById('drawer');
+const scrim=document.getElementById('scrim');
+function closeDrawer(){drawer.classList.remove('on');scrim.classList.remove('on');}
+document.getElementById('menuBtn').addEventListener('click',()=>{drawer.classList.add('on');scrim.classList.add('on');});
+scrim.addEventListener('click',closeDrawer);
+bnList.addEventListener('click',e=>{if(e.target.closest('.bn-a'))closeDrawer();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+
+$$('.cp-card').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('open')));
+
+const bar=document.getElementById('progress');
+function onScroll(){
+  const h=document.documentElement;
+  const max=h.scrollHeight-h.clientHeight;
+  bar.style.width=(max>0?(h.scrollTop/max)*100:0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+onScroll();
+
+try{
+  const io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{rootMargin:'0px 0px -6% 0px',threshold:.05});
+  $$('.cover,.lesson,.checkpoint,.done').forEach(function(x){x.classList.add('rv');io.observe(x);});
+}catch(e){}
+</script>
+</body>
+</html>
