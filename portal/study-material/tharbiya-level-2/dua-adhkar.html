@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Duʿā wa Adhkār · الدُّعَاء وَالأَذْكَار — ManzilulQuran</title>
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --em:#0B4D3B; --em-d:#083728; --em-l:#B9DDCF; --em-bg:#E8F5EF;
+  --gold:#C9A96E; --gold-d:#8E6F2E; --gold-l:#F2E4C6; --gold-bg:#FDF8EC;
+  --rose:#B4544E; --rose-bg:#FBEFEE;
+  --sky:#2E6E8E; --sky-bg:#E8F2F7;
+  --ink:#12362A; --ink-soft:#5E7A6E;
+  --ui:'Nunito',system-ui,-apple-system,sans-serif;
+  --disp:'Fredoka','Nunito',system-ui,sans-serif;
+  --ar:'Amiri',serif;
+  --r:22px;
+  --shadow:0 18px 44px -22px rgba(11,77,59,.5);
+  --shadow-sm:0 8px 22px -14px rgba(11,77,59,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--ui);color:var(--ink);line-height:1.75;min-height:100vh;overflow-x:hidden;
+  background:
+    radial-gradient(900px 420px at 104% -6%,rgba(201,169,110,.3),transparent 62%),
+    radial-gradient(760px 400px at -12% 16%,rgba(185,221,207,.55),transparent 58%),
+    linear-gradient(178deg,#FCFAF4 0%,#F2F8F5 46%,#FBF8F0 100%);
+  background-attachment:fixed;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
+  background-image:
+    radial-gradient(circle at 14% 22%,rgba(255,255,255,.95) 0 2px,transparent 3px),
+    radial-gradient(circle at 74% 10%,rgba(255,255,255,.8) 0 3px,transparent 4px),
+    radial-gradient(circle at 36% 72%,rgba(255,255,255,.75) 0 2px,transparent 3px);
+  background-size:380px 380px;animation:drift 30s linear infinite;
+}
+@keyframes drift{from{background-position:0 0,0 0,0 0}to{background-position:0 -380px,0 -380px,0 -380px}}
+.rv{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+#progress{position:fixed;top:0;left:0;height:5px;width:0;z-index:120;
+  background:linear-gradient(90deg,var(--em-l),var(--em),var(--gold));background-size:220% 100%;
+  animation:flow 4s linear infinite;transition:width .1s}
+@keyframes flow{from{background-position:0 0}to{background-position:220% 0}}
+
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px;padding:11px 16px;
+  backdrop-filter:blur(14px);background:linear-gradient(180deg,rgba(255,255,255,.93),rgba(242,248,245,.68));
+  border-bottom:1px solid rgba(11,77,59,.16)}
+.menu-btn{width:46px;height:46px;min-height:44px;border:0;border-radius:15px;cursor:pointer;flex:0 0 auto;color:#fff;font-size:19px;
+  background:linear-gradient(140deg,var(--em),var(--em-d));display:grid;place-items:center;transition:.2s}
+.menu-btn:hover,.menu-btn:focus-visible{transform:translateY(-2px) scale(1.05)}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand-logo{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--gold-l);flex:0 0 auto}
+.brand-txt h1{font-family:var(--ar);font-size:20px;font-weight:700;color:var(--em);line-height:1.15;white-space:nowrap}
+.brand-txt .en{font-family:var(--disp);font-size:11.5px;color:var(--gold-d);font-weight:600;letter-spacing:1.1px}
+.spring{flex:1}
+.pagepill{font-size:12px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--em),var(--em-d));
+  border-radius:100px;padding:6px 13px;white-space:nowrap}
+
+.scrim{position:fixed;inset:0;background:rgba(8,55,40,.55);z-index:130;opacity:0;pointer-events:none;transition:.25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(320px,84vw);z-index:140;overflow-y:auto;padding:22px 16px;
+  background:linear-gradient(180deg,#fff,var(--em-bg) 62%,var(--gold-bg));
+  border-right:1px solid rgba(11,77,59,.18);transform:translateX(-105%);
+  transition:transform .32s cubic-bezier(.3,.85,.3,1)}
+.drawer.on{transform:none}
+.drawer-h{font-family:var(--disp);font-size:22px;color:var(--em);font-weight:600;padding:4px 12px}
+.drawer-h .ar{font-family:var(--ar);color:var(--gold-d);font-size:17px;display:block;margin-top:2px}
+.drawer-sub{font-size:12px;color:var(--ink-soft);padding:0 12px 16px;border-bottom:2px dotted rgba(11,77,59,.28);margin-bottom:12px}
+.bn-a{display:flex;align-items:center;gap:12px;padding:12px;min-height:44px;border-radius:14px;text-decoration:none;
+  color:var(--ink);font-weight:700;font-size:14.5px;transition:.16s;margin-bottom:3px}
+.bn-a:hover,.bn-a:focus-visible{background:#fff;transform:translateX(3px)}
+.bn-a .bn-n{width:30px;height:30px;flex:0 0 auto;border-radius:10px;display:grid;place-items:center;
+  background:linear-gradient(140deg,var(--em),var(--em-d));color:#fff;font-size:13px;font-weight:800}
+.bn-a.cp .bn-n{background:linear-gradient(140deg,var(--gold),var(--gold-d))}
+.bn-a.cp{color:var(--gold-d)}
+
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:26px 18px 80px}
+
+.cover{text-align:center;padding:40px 24px 46px;border-radius:var(--r);position:relative;overflow:hidden;margin-bottom:26px;
+  background:linear-gradient(165deg,#fff 0%,var(--em-bg) 55%,var(--gold-bg) 100%);
+  border:1px solid rgba(11,77,59,.18);box-shadow:var(--shadow)}
+.cover-logo{width:92px;height:92px;border-radius:50%;object-fit:cover;margin:0 auto 18px;border:3px solid var(--gold-l);
+  box-shadow:0 0 0 7px rgba(201,169,110,.18);animation:float 5.5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.cover .ar-title{font-family:var(--ar);font-size:clamp(1.9rem,7.5vw,2.8rem);font-weight:700;line-height:1.35;
+  background:linear-gradient(120deg,var(--em-d),var(--em),var(--gold-d));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.cover .en-title{font-family:var(--disp);font-size:clamp(1.1rem,4vw,1.4rem);font-weight:600;color:var(--em);letter-spacing:1.6px}
+.cover .tag{display:inline-block;margin-top:12px;font-size:13px;font-weight:800;color:#6a5015;background:var(--gold-l);
+  border:1px solid rgba(142,111,46,.32);border-radius:100px;padding:7px 17px}
+.cover h2{font-family:var(--disp);font-size:23px;color:var(--ink);margin:22px 0 8px;font-weight:600}
+.cover p{color:var(--ink-soft);font-size:15px;max-width:56ch;margin:0 auto}
+.start-btn{margin-top:24px;display:inline-block;text-decoration:none;
+  background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#2b1f05;font-family:var(--disp);font-weight:600;font-size:16px;
+  padding:15px 34px;border-radius:100px;transition:.22s}
+.start-btn:hover,.start-btn:focus-visible{transform:translateY(-3px) scale(1.03)}
+
+.howto{background:var(--sky-bg);border:1px solid rgba(46,110,142,.25);border-left:5px solid var(--sky);
+  border-radius:16px;padding:18px 20px;margin-bottom:26px}
+.howto h3{font-family:var(--disp);color:var(--sky);font-size:17px;font-weight:600;margin-bottom:6px}
+.howto ol{margin:8px 0 0 18px;font-size:14.5px;color:var(--ink-soft)}
+.howto li{margin-bottom:5px}
+
+.lesson{background:rgba(255,255,255,.94);border:1px solid rgba(11,77,59,.14);border-radius:var(--r);
+  padding:0 0 26px;margin-bottom:26px;box-shadow:var(--shadow);scroll-margin-top:82px;position:relative;overflow:hidden}
+.lesson::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;z-index:2;
+  background:linear-gradient(90deg,var(--em),var(--sky),var(--gold))}
+.pad{padding:0 22px}
+.l-head{text-align:center;padding:28px 22px 0}
+.l-badge{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:1.6px;color:#fff;
+  background:linear-gradient(135deg,var(--em),var(--em-d));border-radius:100px;padding:6px 16px}
+.l-emoji{font-size:52px;margin:14px 0 4px;line-height:1;animation:bob 3.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+.l-head h2{font-family:var(--disp);font-size:27px;color:var(--ink);font-weight:600;line-height:1.25}
+.l-head .l-ar{font-family:var(--ar);font-size:22px;color:var(--em);font-weight:700}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0 4px}
+.fact{background:var(--em-bg);border-radius:14px;padding:10px 13px}
+.fact .fl{font-size:10.5px;font-weight:800;letter-spacing:.9px;color:var(--em);text-transform:uppercase}
+.fact .fv{font-size:14px;font-weight:700;color:var(--ink);line-height:1.4}
+
+.hook{background:var(--rose-bg);border:2px dashed var(--rose);border-radius:16px;padding:16px 18px;margin:18px 0}
+.hook .tag{font-size:12px;font-weight:800;color:var(--rose);letter-spacing:.5px;display:block;margin-bottom:4px}
+.hook p{font-size:15.5px;color:var(--ink);font-weight:600}
+
+/* full-width plates */
+.plates{margin:22px 0}
+.plates-tag{font-size:12px;font-weight:800;letter-spacing:.6px;color:var(--em);margin:0 22px 10px}
+.plate{margin-bottom:20px}
+.plate figure{margin:0}
+.plate img{width:100%;display:block}
+.plate .ph{aspect-ratio:16/9;border-top:2px dashed var(--em);border-bottom:2px dashed var(--em);
+  background:linear-gradient(160deg,var(--em-bg),#fff);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:18px;gap:6px}
+.plate .ph .ic{font-size:34px}
+.plate .ph .ttl{font-weight:800;color:var(--em);font-size:14px}
+.plate .ph .id{font-family:monospace;font-size:11px;color:var(--ink-soft)}
+.plate .ph .pr{font-size:12px;color:var(--ink-soft);max-width:60ch;line-height:1.55}
+.plate .ph .fn{font-family:monospace;font-size:11px;color:var(--em);word-break:break-all}
+.plate figcaption{padding:12px 22px 0}
+.plate .cap{font-family:var(--disp);font-size:17px;font-weight:600;color:var(--em-d)}
+.plate .info{font-size:14.5px;color:var(--ink-soft);margin-top:2px}
+.plate .pfact{display:block;margin-top:8px;background:var(--gold-bg);border-left:4px solid var(--gold);
+  border-radius:0 10px 10px 0;padding:8px 12px;font-size:13.5px;color:#6a5015;font-weight:600}
+
+/* dua cards */
+.duas{margin-bottom:16px}
+.duas .card-tag{font-size:12px;font-weight:800;letter-spacing:.6px;color:var(--em);margin-bottom:10px}
+.dua{background:linear-gradient(160deg,#fff,var(--em-bg));border:1px solid rgba(11,77,59,.22);
+  border-radius:18px;padding:20px;margin-bottom:12px;box-shadow:var(--shadow-sm)}
+.dua .when{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  background:var(--em);color:#fff;border-radius:100px;padding:3px 12px;margin-bottom:10px}
+.dua .ar{font-family:var(--ar);font-size:26px;line-height:2.15;color:var(--em-d);font-weight:700;
+  direction:rtl;text-align:right;margin-bottom:8px}
+.dua .tr{font-style:italic;color:var(--sky);font-weight:600;font-size:14.5px}
+.dua .en{font-size:15px;color:var(--ink);margin-top:2px}
+.dua .src{font-size:12px;font-weight:700;color:var(--ink-soft);margin-top:8px}
+.dua.key{border:2px solid var(--gold);background:linear-gradient(160deg,#fff,var(--gold-bg))}
+.dua.key .when{background:var(--gold-d)}
+.dua .star{float:right;font-size:12px;font-weight:800;color:var(--gold-d)}
+
+/* MEMORISE block */
+.memo{background:linear-gradient(160deg,#fff,var(--gold-bg));border:2px solid var(--gold);
+  border-radius:20px;padding:20px;margin-bottom:16px}
+.memo .card-tag{font-size:12px;font-weight:800;color:var(--gold-d);letter-spacing:.6px}
+.memo h4{font-family:var(--disp);font-size:19px;color:var(--em-d);font-weight:600;margin:2px 0 4px}
+.memo .lead{font-size:14px;color:var(--ink-soft);margin-bottom:14px}
+.chunks{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.chunk{background:#fff;border:1px solid rgba(142,111,46,.28);border-radius:14px;padding:12px 14px;
+  display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:center}
+.chunk .cn{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:var(--gold);color:#2b1f05;font-weight:800;font-size:14px}
+.chunk .car{font-family:var(--ar);font-size:23px;font-weight:700;color:var(--em-d);direction:rtl;text-align:right;line-height:1.9}
+.chunk .ctr{font-style:italic;font-size:13px;color:var(--sky);font-weight:600}
+.chunk .cen{font-size:13.5px;color:var(--ink-soft)}
+.steps{counter-reset:st;display:flex;flex-direction:column;gap:10px}
+.step{display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:start}
+.step .num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  background:var(--em);color:#fff;font-weight:800;font-size:13px}
+.step .sb{font-size:14.5px;color:var(--ink);line-height:1.7}
+.step .sb b{color:var(--em-d)}
+
+.dyk{background:linear-gradient(160deg,#fff,var(--sky-bg));border:1px solid rgba(46,110,142,.26);
+  border-radius:18px;padding:18px 20px;margin-bottom:16px}
+.dyk .card-tag{font-size:12px;font-weight:800;color:var(--sky);letter-spacing:.6px;margin-bottom:10px}
+.dyk ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.dyk li{display:flex;gap:10px;font-size:14.5px;color:var(--ink);line-height:1.7}
+.dyk li .b{flex:0 0 auto;font-size:15px}
+
+.discuss{background:#fff;border:2px solid var(--em-l);border-radius:18px;padding:18px 20px;margin-bottom:16px}
+.discuss .card-tag{font-size:12px;font-weight:800;color:var(--em);letter-spacing:.6px;margin-bottom:4px}
+.discuss .sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px}
+.discuss ol{margin-left:18px;display:flex;flex-direction:column;gap:9px}
+.discuss li{font-size:14.5px;color:var(--ink);font-weight:600;line-height:1.65}
+.discuss .how{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  background:var(--em-bg);color:var(--em);border-radius:100px;padding:2px 9px;margin-left:6px;vertical-align:1px}
+
+.why-box{background:linear-gradient(160deg,#fff,var(--rose-bg));border:1px solid rgba(180,84,78,.26);
+  border-left:5px solid var(--rose);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.why-tag{font-size:12.5px;font-weight:800;color:var(--rose);margin-bottom:8px}
+.why-box p{font-size:15px;color:var(--ink-soft);margin-bottom:12px}
+.kp-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+.kp-list li{display:flex;align-items:flex-start;gap:10px;font-size:14.5px;color:var(--ink);font-weight:700}
+.kp-dot{color:var(--rose);font-size:14px;flex:0 0 auto;margin-top:2px}
+
+.task{background:linear-gradient(160deg,#fff,var(--em-bg));border:2px solid var(--em);border-radius:18px;padding:18px 20px}
+.task .card-tag{font-size:12px;font-weight:800;color:var(--em);letter-spacing:.6px}
+.task h4{font-family:var(--disp);font-size:18px;color:var(--em-d);font-weight:600;margin:2px 0 8px}
+.task ol{margin-left:18px;display:flex;flex-direction:column;gap:7px}
+.task li{font-size:14.5px;color:var(--ink-soft)}
+.task .send{margin-top:12px;background:var(--em-d);color:#fff;border-radius:12px;padding:10px 14px;
+  font-size:13.5px;font-weight:700;display:flex;gap:8px;align-items:flex-start}
+
+.checkpoint{background:linear-gradient(165deg,#fff,var(--gold-bg));border:1px solid rgba(142,111,46,.28);border-radius:var(--r);
+  padding:28px 22px;margin-bottom:26px;box-shadow:var(--shadow);scroll-margin-top:82px;position:relative;overflow:hidden}
+.checkpoint::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,var(--gold),var(--gold-d),var(--em))}
+.cp-head{text-align:center;margin-bottom:18px}
+.cp-badge{display:inline-block;font-size:12px;font-weight:800;letter-spacing:1.2px;color:#4a3708;
+  background:linear-gradient(135deg,var(--gold-l),var(--gold));border:1px solid rgba(142,111,46,.35);border-radius:100px;padding:6px 16px}
+.cp-head h2{font-family:var(--disp);font-size:24px;color:var(--ink);margin-top:12px;font-weight:600}
+.cp-head p{font-size:13.5px;color:var(--ink-soft);margin-top:4px}
+.cp-cards{display:flex;flex-direction:column;gap:12px}
+.cp-card{text-align:left;width:100%;min-height:44px;background:#fff;border:2px solid rgba(11,77,59,.18);border-radius:16px;
+  padding:16px 18px;cursor:pointer;transition:.2s;font-family:inherit;display:flex;flex-direction:column;gap:6px}
+.cp-card:hover,.cp-card:focus-visible{border-color:var(--em);transform:translateY(-2px)}
+.cp-card.open{border-color:var(--gold);background:linear-gradient(160deg,#fff,var(--gold-bg))}
+.cp-q{font-weight:800;font-size:15px;color:var(--ink)}
+.cp-hint{font-size:12px;color:var(--em);font-weight:700}
+.cp-a{font-size:14.5px;color:var(--em);font-weight:700;max-height:0;overflow:hidden;opacity:0;transition:.3s}
+.cp-card.open .cp-a{max-height:260px;opacity:1}
+.cp-card.open .cp-hint{display:none}
+
+.done{text-align:center;padding:44px 26px;border-radius:var(--r);color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  background:linear-gradient(160deg,var(--em),var(--em-d))}
+.done .em-ic{font-size:62px;animation:bob 3.4s ease-in-out infinite}
+.done h2{font-family:var(--disp);font-size:30px;margin:10px 0 8px;font-weight:600}
+.done p{font-size:15px;opacity:.95;max-width:48ch;margin:0 auto}
+
+.foot{text-align:center;color:var(--ink-soft);font-size:12.5px;margin-top:34px;padding-top:20px;border-top:2px dotted rgba(11,77,59,.3)}
+.foot .ar{font-family:var(--ar);font-size:17px;color:var(--em);display:block;margin-bottom:4px}
+
+@media(max-width:520px){
+  .brand-txt .en{display:none}
+  .cover{padding:32px 18px 40px}
+  .wrap{padding:18px 13px 60px}
+  .pad,.plate figcaption,.plates-tag{padding-left:16px;padding-right:16px}
+  .l-head{padding:24px 16px 0}
+  .checkpoint{padding:24px 16px}
+  .l-emoji{font-size:44px}
+  .l-head h2{font-size:23px}
+  .dua .ar{font-size:22px}
+  .chunk .car{font-size:20px}
+  .done h2{font-size:26px}
+  .plate .ph{aspect-ratio:4/3}
+  .plate .ph .pr{display:none}
+}
+@media(max-width:380px){
+  .l-head h2{font-size:21px}
+  .dua .ar{font-size:20px}
+  .facts{grid-template-columns:1fr}
+  .chunk{grid-template-columns:28px 1fr;gap:9px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open lesson menu">☰</button>
+  <div class="brand">
+    <img class="brand-logo" src="/logo.png" alt="ManzilulQuran">
+    <div class="brand-txt">
+      <h1>الدُّعَاء وَالأَذْكَار</h1>
+      <div class="en">DUʿĀ WA ADHKĀR</div>
+    </div>
+  </div>
+  <div class="spring"></div>
+  <div class="pagepill">Tharbiya · L2</div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-h">Duʿā wa Adhkār<span class="ar">الدُّعَاء وَالأَذْكَار</span></div>
+  <div class="drawer-sub">Duas for every day · 10 online lessons</div>
+  <div id="bnList"></div>
+</nav>
+
+<div class="wrap">
+  <section class="cover" id="top">
+    <img class="cover-logo" src="/logo.png" alt="">
+    <div class="ar-title">الدُّعَاء وَالأَذْكَار</div>
+    <div class="en-title">DUAS FOR EVERY DAY</div>
+    <span class="tag">Tharbiya · Level 2 · Ages 9–12</span>
+    <h2>A word for every moment of your day</h2>
+    <p>Duʿā is not only for when something goes wrong. There is a word for waking, for eating, for leaving the house, for being afraid. Learn one each week until your whole day is wrapped in them.</p>
+    <a class="start-btn" href="#lesson1">Start with waking up →</a>
+  </section>
+
+  <div class="howto">
+    <h3>How each online lesson runs</h3>
+    <ol>
+      <li><b>Before class</b> — read the Opening Question and look at the picture plates.</li>
+      <li><b>In class</b> — your teacher recites each duʿā and you repeat. Then you work through the seven memorising steps together, and answer the Talk About It questions in the chat or unmuted.</li>
+      <li><b>After class</b> — finish the memorising steps at home and do This Week's Task.</li>
+      <li><b>Next class</b> — recite your duʿā with your camera on, from memory, without reading.</li>
+    </ol>
+  </div>
+
+  <main id="lessons"></main>
+
+  <section class="done" id="done">
+    <div class="em-ic">🤲</div>
+    <h2>Mā shā' Allah!</h2>
+    <p>Ten duas, learned and lived. Keep saying them at their moments and they will stay with you for life, in shā' Allah.</p>
+  </section>
+
+  <div class="foot">
+    <span class="ar">وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ</span>
+    Duʿā wa Adhkār · ManzilulQuran E-learning Academy
+  </div>
+</div>
+
+<script>
+/* ============================================================================
+   VERIFY every Arabic duʿā, transliteration, translation and source in
+   LESSONS against a reliable collection (e.g. Ḥiṣn al-Muslim) before
+   publishing. These are recited by children — accuracy matters more here
+   than anywhere else on the site.
+
+   Images: 2 plates per lesson, 20 total. Flip status "placeholder" -> "ready"
+   once the file exists in assets/img/. Export WebP, not PNG.
+
+   Malayalam later: add ml:{...} to each lesson object plus a toggle.
+   This page renders from data, so no markup changes are needed.
+   ============================================================================ */
+
+const P=(id,file,prompt)=>({id,status:"placeholder",file:"assets/img/"+file,prompt});
+
+/* The same seven steps in every lesson — repetition is what builds the habit. */
+const MEMO_STEPS=[
+ "<b>Listen only.</b> Your teacher recites the duʿā twice. Do not read, do not repeat — just listen. Your ear learns before your tongue does.",
+ "<b>Repeat after.</b> Teacher says one chunk, you say it back. One chunk at a time, never the whole duʿā yet.",
+ "<b>Chunk 1, five times.</b> Say the first chunk on your own five times, out loud. Then cover it and say it once more without looking.",
+ "<b>Add the next chunk.</b> Now say chunk 1 + chunk 2 together, five times. Then add chunk 3 the same way. Always go back to the beginning — never practise a middle piece alone.",
+ "<b>Say the meaning.</b> For each chunk, say the English meaning first, then the Arabic. A duʿā you understand is one you will not forget.",
+ "<b>Attach it to the moment.</b> Say it today at the real time — before you eat, before you sleep, as you leave the house. A duʿā stuck to a moment stays; one practised on its own fades.",
+ "<b>Test yourself tomorrow.</b> Before you look at this page again, say the whole duʿā from memory. Whatever you forget, that is the chunk to practise."
+];
+
+const LESSONS=[
+{
+ emoji:"🌅", title:"Waking Up & Going to Sleep", ar:"النَّوْم وَالاسْتِيقَاظ",
+ facts:{when:"First and last words of your day",count:"3 duas",source:"Bukhārī · Muslim",best:"Learn the sleeping one first"},
+ hook:"What is the very first thing you say in the morning — before you say anything to anyone else?",
+ plates:[
+  {p:P("DUA-01A","dua-01a-morning.jpg","Warm children's storybook illustration, deep emerald green and soft gold palette. A bedroom at sunrise, curtains glowing, a neatly folded blanket, morning light falling across the floor. No human figures. Calm and gentle."),
+   cap:"The first words of the day",
+   info:"Waking up is described in the Qur'an as a small return to life. The duʿā on waking thanks Allah for giving life back after a kind of death.",
+   fact:"The duʿā ends with 'and to Him is the resurrection' — every morning is a tiny reminder of a much bigger one."},
+  {p:P("DUA-01B","dua-01b-night.jpg","Warm children's storybook illustration, deep emerald and gold. A quiet bedroom at night, a small lamp, a closed book, a window full of stars. No human figures. Peaceful and safe."),
+   cap:"The last words of the night",
+   info:"The Prophet ﷺ taught a short duʿā to say as you lie down, placing your night in Allah's hands.",
+   fact:"It is only four words in Arabic. Short enough that there is no excuse to skip it."}
+ ],
+ duas:[
+  {when:"When you wake",key:false,
+   ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+   tr:"Al-ḥamdu lillāhi lladhī aḥyānā baʿda mā amātanā wa ilayhi n-nushūr",
+   en:"All praise is for Allah, who gave us life after He caused us to die, and to Him is the resurrection.",
+   src:"Ṣaḥīḥ al-Bukhārī"},
+  {when:"As you lie down — memorise this one",key:true,
+   ar:"بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
+   tr:"Bismika Allāhumma amūtu wa aḥyā",
+   en:"In Your name, O Allah, I die and I live.",
+   src:"Ṣaḥīḥ al-Bukhārī"},
+  {when:"After a frightening dream",key:false,
+   ar:"أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+   tr:"Aʿūdhu billāhi mina sh-shayṭāni r-rajīm",
+   en:"I seek refuge in Allah from the accursed Shayṭān.",
+   src:"Ṣaḥīḥ Muslim"}
+ ],
+ memo:{name:"بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
+  lead:"Only three chunks. Most students have this by the end of the lesson.",
+  chunks:[
+   {ar:"بِاسْمِكَ",tr:"Bismika",en:"In Your name"},
+   {ar:"اللَّهُمَّ أَمُوتُ",tr:"Allāhumma amūtu",en:"O Allah, I die"},
+   {ar:"وَأَحْيَا",tr:"wa aḥyā",en:"and I live"}
+  ]},
+ dyk:["🌙","Sleep is called a 'small death' — the duʿā uses the same words for sleeping and dying.",
+      "🤲","The Prophet ﷺ would sleep on his right side with his right hand under his cheek.",
+      "📖","He also recited Sūrah Al-Ikhlāṣ, Al-Falaq and An-Nās before sleeping, blowing into his hands and wiping over himself.",
+      "🌅","Saying the waking duʿā takes about five seconds. Over a year that is thirty minutes — and a whole year of mornings begun with Allah's name."],
+ discuss:[["Why do you think sleep is described as a kind of death?","unmute"],
+          ["Type the last thing you usually say or do before you fall asleep.","chat"],
+          ["Which is harder to remember — the morning duʿā or the night one? Why?","unmute"]],
+ why:"Your first and last words each day shape everything between them. These two duas put Allah at both ends of your day, and they take under ten seconds together.",
+ points:["Sleep is a small death; waking is a small resurrection","Short duas are the easiest to keep for life","Attach the duʿā to the pillow, not to the clock"],
+ task:{title:"Seven nights, seven mornings",
+  steps:["Say the sleeping duʿā every night this week, as your head touches the pillow.","Say the waking duʿā every morning before you get out of bed.","Make a simple 7-day chart with two boxes a day and tick each one you managed."],
+  send:"Photograph your chart and send it to your teacher before the next class."}
+},
+{
+ emoji:"🍽️", title:"Eating & Drinking", ar:"الطَّعَام وَالشَّرَاب",
+ facts:{when:"Every meal, every day",count:"3 duas",source:"Bukhārī · Abū Dāwūd",best:"The most-used duʿā you will learn"},
+ hook:"You have eaten roughly 10,000 meals in your life. How many of them did you begin with Allah's name?",
+ plates:[
+  {p:P("DUA-02A","dua-02a-table.jpg","Warm children's storybook illustration, emerald and gold palette. A simple family meal laid out on a mat — rice, bread, dates, a jug of water, cups. Seen from above. No human figures. Warm and inviting."),
+   cap:"Before the first bite",
+   info:"Two words — bismillāh — turn an ordinary meal into an act of worship.",
+   fact:"If you forget and remember halfway, you do not start again: you say bismillāhi awwalahu wa ākhirahu — in the name of Allah, at its beginning and its end."},
+  {p:P("DUA-02B","dua-02b-thanks.jpg","Warm children's storybook illustration, emerald and gold. Empty clean plates and cups stacked neatly after a meal, a few crumbs, soft afternoon light through a window. No human figures."),
+   cap:"After the last bite",
+   info:"The duʿā after eating thanks Allah for three things at once: the food, the drink, and being Muslim.",
+   fact:"Notice the order — food, then water, then Islam. The greatest blessing is mentioned last, where you will remember it."}
+ ],
+ duas:[
+  {when:"Before eating",key:false,
+   ar:"بِسْمِ اللَّهِ",tr:"Bismillāh",en:"In the name of Allah.",src:"Ṣaḥīḥ al-Bukhārī"},
+  {when:"If you forgot and remembered midway",key:false,
+   ar:"بِسْمِ اللَّهِ أَوَّلَهُ وَآخِرَهُ",
+   tr:"Bismillāhi awwalahu wa ākhirahu",
+   en:"In the name of Allah, at its beginning and its end.",src:"Sunan Abī Dāwūd · Tirmidhī"},
+  {when:"After eating — memorise this one",key:true,
+   ar:"الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ",
+   tr:"Al-ḥamdu lillāhi lladhī aṭʿamanā wa saqānā wa jaʿalanā muslimīn",
+   en:"All praise is for Allah, who fed us and gave us drink, and made us Muslims.",
+   src:"Sunan Abī Dāwūd · Tirmidhī"}
+ ],
+ memo:{name:"الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ",
+  lead:"Three chunks. Chunk 2 has two verbs that rhyme — aṭʿamanā, saqānā — which makes it stick.",
+  chunks:[
+   {ar:"الْحَمْدُ لِلَّهِ الَّذِي",tr:"Al-ḥamdu lillāhi lladhī",en:"All praise is for Allah, who"},
+   {ar:"أَطْعَمَنَا وَسَقَانَا",tr:"aṭʿamanā wa saqānā",en:"fed us and gave us drink"},
+   {ar:"وَجَعَلَنَا مُسْلِمِينَ",tr:"wa jaʿalanā muslimīn",en:"and made us Muslims"}
+  ]},
+ dyk:["🤲","The Prophet ﷺ taught a boy at the table: say bismillāh, eat with your right hand, and eat from what is nearest you.",
+      "💧","He would drink in three breaths rather than one long gulp, and praise Allah after each.",
+      "🍽️","He never criticised food. If he liked it he ate it; if not, he left it without a word.",
+      "🌙","Ending the duʿā with 'and made us Muslims' turns a meal into a moment of gratitude for īmān."],
+ discuss:[["Why do you think 'made us Muslims' comes at the end of a duʿā about food?","unmute"],
+          ["Type one food you are genuinely grateful for.","chat"],
+          ["Is it harder to remember bismillāh before eating, or al-ḥamdulillāh after? Why?","unmute"]],
+ why:"You will eat thousands more meals. These few words cost nothing and turn every one of them into worship — which is the cheapest good deed available to you.",
+ points:["Bismillāh before, al-ḥamdulillāh after","Never criticise food that Allah provided","Eat with your right hand, from what is nearest"],
+ task:{title:"Twenty-one meals",
+  steps:["Count roughly three meals a day for a week — that is twenty-one.","Say bismillāh before each and the full duʿā after each.","Keep a tally of how many of the twenty-one you remembered."],
+  send:"Send your number to your teacher. Be honest — an honest 12 is worth more than a made-up 21."}
+},
+{
+ emoji:"🚪", title:"Home, Bathroom & Clothes", ar:"الْبَيْت",
+ facts:{when:"Every time you go in or out",count:"4 duas",source:"Abū Dāwūd · Bukhārī",best:"Say them at the doorway"},
+ hook:"How many times a day do you walk through a doorway without noticing it at all?",
+ plates:[
+  {p:P("DUA-03A","dua-03a-door.jpg","Warm children's storybook illustration, emerald and gold. An open wooden front door of a home seen from inside, warm light spilling in from the street, a pair of sandals on the step. No human figures."),
+   cap:"The doorway duʿā",
+   info:"Leaving the house has its own duʿā — one that hands the whole journey over to Allah before it starts.",
+   fact:"The Prophet ﷺ said whoever says it is told: you are guided, protected and taken care of — and Shayṭān turns away from him."},
+  {p:P("DUA-03B","dua-03b-clothes.jpg","Warm children's storybook illustration, emerald and gold. Freshly washed clothes folded in a neat stack beside a window, soft daylight, a small basket. No human figures."),
+   cap:"Small moments, small words",
+   info:"Entering the bathroom, leaving it, putting on new clothes — each has a short duʿā of its own.",
+   fact:"The duʿā for leaving the bathroom is a single word: ghufrānak — 'Your forgiveness'."}
+ ],
+ duas:[
+  {when:"Leaving the house — memorise this one",key:true,
+   ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+   tr:"Bismillāhi tawakkaltu ʿala llāhi wa lā ḥawla wa lā quwwata illā billāh",
+   en:"In the name of Allah, I place my trust in Allah, and there is no power and no strength except with Allah.",
+   src:"Sunan Abī Dāwūd · Tirmidhī"},
+  {when:"Entering the bathroom",key:false,
+   ar:"اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ",
+   tr:"Allāhumma innī aʿūdhu bika mina l-khubuthi wa l-khabā'ith",
+   en:"O Allah, I seek refuge in You from all evil and evil beings.",
+   src:"Ṣaḥīḥ al-Bukhārī · Muslim"},
+  {when:"Leaving the bathroom",key:false,
+   ar:"غُفْرَانَكَ",tr:"Ghufrānak",en:"I seek Your forgiveness.",src:"Sunan Abī Dāwūd · Tirmidhī"},
+  {when:"Entering the house",key:false,
+   ar:"بِسْمِ اللَّهِ وَلَجْنَا وَبِسْمِ اللَّهِ خَرَجْنَا وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا",
+   tr:"Bismillāhi walajnā wa bismillāhi kharajnā wa ʿala llāhi rabbinā tawakkalnā",
+   en:"In the name of Allah we enter, in the name of Allah we leave, and upon Allah our Lord we rely.",
+   src:"Sunan Abī Dāwūd"}
+ ],
+ memo:{name:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+  lead:"Longer than last week's, so the chunking matters. Chunk 3 is a famous phrase you will hear all your life.",
+  chunks:[
+   {ar:"بِسْمِ اللَّهِ",tr:"Bismillāh",en:"In the name of Allah"},
+   {ar:"تَوَكَّلْتُ عَلَى اللَّهِ",tr:"tawakkaltu ʿala llāh",en:"I place my trust in Allah"},
+   {ar:"وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",tr:"wa lā ḥawla wa lā quwwata illā billāh",en:"and there is no power or strength except with Allah"}
+  ]},
+ dyk:["🚪","The Prophet ﷺ entered the bathroom with his left foot and left it with his right.",
+      "👕","There is even a duʿā for new clothes, thanking Allah for clothing you without any strength of your own.",
+      "🛡️","The leaving-home duʿā is a protection duʿā — it is said before the danger, not during it.",
+      "💬","<i>Lā ḥawla wa lā quwwata illā billāh</i> is called a treasure of Jannah in a ḥadīth."],
+ discuss:[["What does it mean to say you have 'no power except with Allah' when you are just going to school?","unmute"],
+          ["Type one moment in your day you pass through without ever thinking about Allah.","chat"],
+          ["Why might the bathroom duʿā ask for protection specifically?","unmute"]],
+ why:"Doorways are the hinges of your day. Attaching a duʿā to a doorway means you cannot forget it — the door itself becomes the reminder.",
+ points:["Right foot in for good places, left for the bathroom","Trust Allah before you leave, not only when you are in trouble","Lā ḥawla wa lā quwwata illā billāh is a treasure"],
+ task:{title:"The door reminder",
+  steps:["Write the leaving-home duʿā on a small card in Arabic and English.","Stick it at eye level beside the door you use most.","Say it every single time you go out this week."],
+  send:"Send your teacher a photo of the card on your door."}
+},
+{
+ emoji:"🚗", title:"Travel & the Road", ar:"السَّفَر",
+ facts:{when:"Every journey, long or short",count:"3 duas",source:"Muslim · Qur'an 43:13",best:"Say it as the engine starts"},
+ hook:"A car, a bus, an aeroplane — none of them were made by you. Who made them possible?",
+ plates:[
+  {p:P("DUA-04A","dua-04a-road.jpg","Warm children's storybook illustration, emerald and gold. An open road curving away between palm trees and low hills at golden hour, a distant vehicle, wide sky. No human figures. Hopeful and spacious."),
+   cap:"Before the wheels turn",
+   info:"The travel duʿā comes straight from the Qur'an. It praises Allah for making the ride possible at all.",
+   fact:"It ends by reminding you where every journey finally goes: 'and indeed to our Lord we will return.'"},
+  {p:P("DUA-04B","dua-04b-rest.jpg","Warm children's storybook illustration, emerald and gold. A quiet roadside resting place at dusk — a bench, a water jug, lantern light, trees. No human figures. Safe and still."),
+   cap:"Arriving somewhere new",
+   info:"There is a duʿā for stopping anywhere unfamiliar, asking Allah's protection from whatever is there.",
+   fact:"The Prophet ﷺ said whoever says it will not be harmed until he moves on from that place."}
+ ],
+ duas:[
+  {when:"When the journey begins — memorise this one",key:true,
+   ar:"سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَىٰ رَبِّنَا لَمُنْقَلِبُونَ",
+   tr:"Subḥāna lladhī sakhkhara lanā hādhā wa mā kunnā lahu muqrinīn, wa innā ilā rabbinā la-munqalibūn",
+   en:"Glory to the One who made this subject to us, when we could never have done it ourselves — and indeed to our Lord we will return.",
+   src:"Sūrah Az-Zukhruf 43:13–14 · Ṣaḥīḥ Muslim"},
+  {when:"Stopping anywhere new",key:false,
+   ar:"أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+   tr:"Aʿūdhu bi kalimāti llāhi t-tāmmāti min sharri mā khalaq",
+   en:"I seek refuge in the perfect words of Allah from the evil of what He has created.",
+   src:"Ṣaḥīḥ Muslim"},
+  {when:"Returning home",key:false,
+   ar:"آيِبُونَ تَائِبُونَ عَابِدُونَ لِرَبِّنَا حَامِدُونَ",
+   tr:"Ā'ibūna tā'ibūna ʿābidūna li-rabbinā ḥāmidūn",
+   en:"We return, repenting, worshipping, and praising our Lord.",
+   src:"Ṣaḥīḥ Muslim"}
+ ],
+ memo:{name:"سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا …",
+  lead:"The longest so far. Four chunks — do not try to take it in one piece.",
+  chunks:[
+   {ar:"سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا",tr:"Subḥāna lladhī sakhkhara lanā hādhā",en:"Glory to the One who made this subject to us"},
+   {ar:"وَمَا كُنَّا لَهُ مُقْرِنِينَ",tr:"wa mā kunnā lahu muqrinīn",en:"when we could never have done it ourselves"},
+   {ar:"وَإِنَّا إِلَىٰ رَبِّنَا",tr:"wa innā ilā rabbinā",en:"and indeed to our Lord"},
+   {ar:"لَمُنْقَلِبُونَ",tr:"la-munqalibūn",en:"we will return"}
+  ]},
+ dyk:["📖","This duʿā is not just a ḥadīth — it is an āyah of the Qur'an, from Sūrah Az-Zukhruf.",
+      "🐪","It was taught for camels and horses. It works exactly the same for a car, a train or a plane.",
+      "🤲","The duʿā of a traveller is one of the duas the Prophet ﷺ said is answered.",
+      "🏠","There is even a duʿā for coming home again — travel has a beginning and an end, and both belong to Allah."],
+ discuss:[["The duʿā says 'we could never have done it ourselves'. What does that mean about a car?","unmute"],
+          ["Type the longest journey you have ever made.","chat"],
+          ["Why do you think the traveller's duʿā is especially answered?","unmute"]],
+ why:"Every vehicle you have ever ridden in exists because Allah made metal, fuel and human minds work together. The duʿā stops you taking that for granted.",
+ points:["Nothing you ride was made subject to you by you","A traveller's duʿā is answered — use the journey","Every journey ends where all journeys end"],
+ task:{title:"Every ride this week",
+  steps:["Say the travel duʿā at the start of every journey this week — even a five-minute one.","Teach it to whoever is driving or sitting beside you.","Write down how many journeys you managed, and who you taught."],
+  send:"Send both numbers to your teacher: journeys, and people taught."}
+},
+{
+ emoji:"☀️", title:"Morning Adhkār", ar:"أَذْكَار الصَّبَاح",
+ facts:{when:"After Fajr, before sunrise",count:"3 core adhkār",source:"Abū Dāwūd · Tirmidhī",best:"Same place, same time daily"},
+ hook:"If you could put a shield around your whole day before it started, would you spend three minutes on it?",
+ plates:[
+  {p:P("DUA-05A","dua-05a-fajr.jpg","Warm children's storybook illustration, emerald and gold. A prayer mat by a window at first light, a set of prayer beads, dawn sky just turning pale gold outside. No human figures. Still and quiet."),
+   cap:"The quietest part of the day",
+   info:"The adhkār of the morning are said after Fajr, in the stillness before everything begins.",
+   fact:"The Qur'an mentions glorifying Allah at both ends of the day — morning and evening — in several places."},
+  {p:P("DUA-05B","dua-05b-shield.jpg","Warm children's storybook illustration, emerald and gold. A softly glowing protective circle of light around a small house at dawn, gentle rays, birds in the sky. No human figures. Reassuring."),
+   cap:"A shield for the day",
+   info:"Some adhkār come with a specific promise of protection for the whole day until evening.",
+   fact:"The Prophet ﷺ said whoever says the bismillāh protection duʿā three times will not be harmed by anything that day."}
+ ],
+ duas:[
+  {when:"On entering the morning — memorise this one",key:true,
+   ar:"أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ",
+   tr:"Aṣbaḥnā wa aṣbaḥa l-mulku lillāh, wa l-ḥamdu lillāh",
+   en:"We have entered the morning, and the kingdom belongs to Allah — and all praise is for Allah.",
+   src:"Ṣaḥīḥ Muslim"},
+  {when:"Three times, morning and evening",key:false,
+   ar:"بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+   tr:"Bismillāhi lladhī lā yaḍurru maʿa smihi shay'un fi l-arḍi wa lā fi s-samā', wa huwa s-samīʿu l-ʿalīm",
+   en:"In the name of Allah, with whose name nothing on earth or in the heaven can cause harm — and He is the All-Hearing, the All-Knowing.",
+   src:"Sunan Abī Dāwūd · Tirmidhī"},
+  {when:"Three times in the morning",key:false,
+   ar:"رَضِيتُ بِاللَّهِ رَبًّا وَبِالْإِسْلَامِ دِينًا وَبِمُحَمَّدٍ ﷺ نَبِيًّا",
+   tr:"Raḍītu billāhi rabban wa bil-islāmi dīnan wa bi-Muḥammadin ﷺ nabiyyā",
+   en:"I am pleased with Allah as my Lord, with Islam as my religion, and with Muḥammad ﷺ as my Prophet.",
+   src:"Sunan Abī Dāwūd · Tirmidhī"}
+ ],
+ memo:{name:"أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ",
+  lead:"Three chunks, and chunk 1 and 2 share the same root — aṣbaḥnā, aṣbaḥa. Listen for the echo.",
+  chunks:[
+   {ar:"أَصْبَحْنَا",tr:"Aṣbaḥnā",en:"We have entered the morning"},
+   {ar:"وَأَصْبَحَ الْمُلْكُ لِلَّهِ",tr:"wa aṣbaḥa l-mulku lillāh",en:"and the kingdom has entered the morning belonging to Allah"},
+   {ar:"وَالْحَمْدُ لِلَّهِ",tr:"wa l-ḥamdu lillāh",en:"and all praise is for Allah"}
+  ]},
+ dyk:["🌅","The morning adhkār window is from after Fajr until sunrise — the best of it is straight after the prayer.",
+      "📿","Many people keep a small booklet or app for the adhkār. Using the same one daily helps the order stick.",
+      "🛡️","Āyat al-Kursī after Fajr is part of the morning adhkār, with a promise of protection until evening.",
+      "🔁","The same duas mostly repeat in the evening with one word changed: aṣbaḥnā becomes amsaynā."],
+ discuss:[["Why do you think the morning adhkār are said before the day starts, not during it?","unmute"],
+          ["Type the time you usually wake up. Is there room for three quiet minutes?","chat"],
+          ["What is the difference between saying words and meaning them?","unmute"]],
+ why:"Three minutes after Fajr costs you almost nothing and comes with promises of protection for the entire day. Very few things you do have that ratio.",
+ points:["Morning adhkār: after Fajr, before sunrise","Same time and same place turns it into a habit","Understand what you are saying, or it becomes noise"],
+ task:{title:"Five mornings",
+  steps:["Choose a fixed spot — the same corner, mat or chair each morning.","Say your memorised duʿā there for five mornings this week.","Note which morning was hardest and why."],
+  send:"Send your teacher the hardest morning and the reason."}
+},
+{
+ emoji:"🌇", title:"Evening Adhkār", ar:"أَذْكَار الْمَسَاء",
+ facts:{when:"After ʿAṣr, before sunset",count:"3 core adhkār",source:"Muslim · Abū Dāwūd",best:"Mirrors the morning set"},
+ hook:"You said the morning adhkār at dawn. What has changed by evening — in the world, or in you?",
+ plates:[
+  {p:P("DUA-06A","dua-06a-dusk.jpg","Warm children's storybook illustration, emerald and deep gold. Rooftops and palm trees against a dusk sky, the last light on the horizon, first stars appearing. No human figures. Calm."),
+   cap:"The other end of the day",
+   info:"The evening adhkār are said after ʿAṣr until sunset — the mirror of the morning set.",
+   fact:"Almost every morning dhikr has an evening twin, with one word changed from 'morning' to 'evening'."},
+  {p:P("DUA-06B","dua-06b-lamp.jpg","Warm children's storybook illustration, emerald and gold. A warm oil lamp on a windowsill at nightfall, an open book beside it, soft glow spreading. No human figures."),
+   cap:"Closing the day well",
+   info:"Ending the day in dhikr means the last account of your day is a good one.",
+   fact:"The three Quls — Ikhlāṣ, Falaq and Nās — are recited three times each in the evening adhkār."}
+ ],
+ duas:[
+  {when:"On entering the evening — memorise this one",key:true,
+   ar:"أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ",
+   tr:"Amsaynā wa amsa l-mulku lillāh, wa l-ḥamdu lillāh",
+   en:"We have entered the evening, and the kingdom belongs to Allah — and all praise is for Allah.",
+   src:"Ṣaḥīḥ Muslim"},
+  {when:"Three times in the evening",key:false,
+   ar:"أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+   tr:"Aʿūdhu bi kalimāti llāhi t-tāmmāti min sharri mā khalaq",
+   en:"I seek refuge in the perfect words of Allah from the evil of what He has created.",
+   src:"Ṣaḥīḥ Muslim"},
+  {when:"Morning and evening",key:false,
+   ar:"اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي",
+   tr:"Allāhumma ʿāfinī fī badanī, Allāhumma ʿāfinī fī samʿī, Allāhumma ʿāfinī fī baṣarī",
+   en:"O Allah, grant me well-being in my body; O Allah, grant me well-being in my hearing; O Allah, grant me well-being in my sight.",
+   src:"Sunan Abī Dāwūd"}
+ ],
+ memo:{name:"أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ",
+  lead:"If you learned last week's, this is almost free — only the first word changes.",
+  chunks:[
+   {ar:"أَمْسَيْنَا",tr:"Amsaynā",en:"We have entered the evening"},
+   {ar:"وَأَمْسَى الْمُلْكُ لِلَّهِ",tr:"wa amsa l-mulku lillāh",en:"and the kingdom has entered the evening belonging to Allah"},
+   {ar:"وَالْحَمْدُ لِلَّهِ",tr:"wa l-ḥamdu lillāh",en:"and all praise is for Allah"}
+  ]},
+ dyk:["🌆","Aṣbaḥnā means 'we entered the morning'; amsaynā means 'we entered the evening'. Same pattern, one letter group changed.",
+      "📖","The Qur'an repeatedly pairs morning and evening as the two times for remembering Allah.",
+      "🩺","One of the adhkār asks for ʿāfiyah — well-being — in body, hearing and sight. Health is a blessing you only notice when it goes.",
+      "🌙","Saying the evening adhkār before Maghrib means you have closed your day before the new one begins."],
+ discuss:[["Why do you think the morning and evening duas are almost identical?","unmute"],
+          ["Type one blessing you have that you never usually thank Allah for.","chat"],
+          ["Is it easier to remember Allah at the start of a day or the end? Why?","unmute"]],
+ why:"Bookending your day with dhikr means neither end of it belongs to distraction. And the evening set costs you almost nothing once you know the morning one.",
+ points:["Evening adhkār: after ʿAṣr, before sunset","One word changes between morning and evening","Ask for well-being before you lose it"],
+ task:{title:"Both ends, five days",
+  steps:["This week say both the morning and the evening duʿā, five days out of seven.","Make a two-column chart: morning ticked, evening ticked.","Notice which column has more ticks."],
+  send:"Send your chart and one sentence on why one column was fuller."}
+},
+{
+ emoji:"🕌", title:"After Every Ṣalāh", ar:"أَذْكَار بَعْدَ الصَّلَاة",
+ facts:{when:"Right after the salām",count:"4 adhkār",source:"Bukhārī · Muslim",best:"Before you stand up"},
+ hook:"The moment you say salām, what do you usually do next — and how fast do you do it?",
+ plates:[
+  {p:P("DUA-07A","dua-07a-mat.jpg","Warm children's storybook illustration, emerald and gold. A prayer mat still spread on the floor after prayer, prayer beads resting on it, warm light from a window. No human figures. Peaceful."),
+   cap:"Do not stand up yet",
+   info:"The minutes right after the salām are some of the most valuable of the whole prayer.",
+   fact:"The Prophet ﷺ would say astaghfirullāh three times before anything else after finishing."},
+  {p:P("DUA-07B","dua-07b-tasbih.jpg","Warm children's storybook illustration, emerald and gold. A close view of wooden prayer beads in a spiral on a cloth, warm light, a few beads catching the glow. No human figures."),
+   cap:"Thirty-three, thirty-three, thirty-four",
+   info:"The tasbīḥ after prayer: subḥānallāh 33, al-ḥamdulillāh 33, Allāhu akbar 34.",
+   fact:"The Prophet ﷺ said whoever says these after every prayer will have their sins forgiven even if they were like the foam of the sea."}
+ ],
+ duas:[
+  {when:"Three times, immediately",key:false,
+   ar:"أَسْتَغْفِرُ اللَّهَ",tr:"Astaghfirullāh",en:"I seek Allah's forgiveness.",src:"Ṣaḥīḥ Muslim"},
+  {when:"Once, after the istighfār",key:false,
+   ar:"اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ",
+   tr:"Allāhumma anta s-salām wa minka s-salām, tabārakta yā dha l-jalāli wa l-ikrām",
+   en:"O Allah, You are Peace and from You comes peace. Blessed are You, Owner of Majesty and Honour.",
+   src:"Ṣaḥīḥ Muslim"},
+  {when:"33 · 33 · 34",key:false,
+   ar:"سُبْحَانَ اللَّهِ · الْحَمْدُ لِلَّهِ · اللَّهُ أَكْبَرُ",
+   tr:"Subḥānallāh · Al-ḥamdulillāh · Allāhu akbar",
+   en:"Glory be to Allah · All praise is for Allah · Allah is the Greatest.",
+   src:"Ṣaḥīḥ al-Bukhārī · Muslim"},
+  {when:"After every prayer — memorise this one",key:true,
+   ar:"اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ",
+   tr:"Allāhumma aʿinnī ʿalā dhikrika wa shukrika wa ḥusni ʿibādatik",
+   en:"O Allah, help me to remember You, to thank You, and to worship You well.",
+   src:"Sunan Abī Dāwūd · Nasā'ī"}
+ ],
+ memo:{name:"اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ",
+  lead:"The Prophet ﷺ taught this one to Muʿādh and told him never to leave it after any prayer.",
+  chunks:[
+   {ar:"اللَّهُمَّ أَعِنِّي",tr:"Allāhumma aʿinnī",en:"O Allah, help me"},
+   {ar:"عَلَى ذِكْرِكَ وَشُكْرِكَ",tr:"ʿalā dhikrika wa shukrik",en:"to remember You and thank You"},
+   {ar:"وَحُسْنِ عِبَادَتِكَ",tr:"wa ḥusni ʿibādatik",en:"and to worship You well"}
+  ]},
+ dyk:["🤲","The Prophet ﷺ told Muʿādh ibn Jabal that he loved him, then taught him this duʿā — and told him not to leave it after any prayer.",
+      "🔢","33 + 33 + 34 = 100. One hundred remembrances after every prayer, five times a day.",
+      "📿","You can count on your right hand — the fingers will testify on the Day of Judgement.",
+      "🕌","Notice the duʿā asks for help to worship. Even worship needs Allah's help."],
+ discuss:[["The duʿā asks for help to worship. Why would you need help with something you are already doing?","unmute"],
+          ["Type how many seconds you usually stay on the mat after salām — honestly.","chat"],
+          ["Which is hardest: remembering Allah, thanking Him, or worshipping Him well?","unmute"]],
+ why:"You already pray five times a day. These adhkār cost two extra minutes each time and carry some of the largest promises in the Sunnah. The work is already done — this is the interest on it.",
+ points:["Do not stand up the second you say salām","33 · 33 · 34 after every farḍ prayer","Even worship needs Allah's help — so ask for it"],
+ task:{title:"Stay on the mat",
+  steps:["After every farḍ prayer this week, stay seated and say your memorised duʿā before standing.","Add the tasbīḥ 33·33·34 to at least one prayer a day.","Count how many of the 35 farḍ prayers this week you managed it in."],
+  send:"Send your number out of 35 to your teacher."}
+},
+{
+ emoji:"💛", title:"When You Are Afraid, Sad or Sick", ar:"عِنْدَ الشِّدَّة",
+ facts:{when:"The hardest moments",count:"3 duas",source:"Bukhārī · Tirmidhī",best:"Learn before you need it"},
+ hook:"When something frightens you, what is the first thing your mind reaches for?",
+ plates:[
+  {p:P("DUA-08A","dua-08a-storm.jpg","Warm children's storybook illustration, emerald and gold. A small warm lit window seen from outside during heavy rain and wind at night, light steady behind the glass. No human figures. Comforting, not frightening."),
+   cap:"A light that stays on",
+   info:"Ḥasbunallāh wa niʿma l-wakīl was said by Ibrāhīm in the fire, and by the believers when they were warned of a great army.",
+   fact:"It does not ask for anything. It simply states that Allah is enough — and that is the whole duʿā."},
+  {p:P("DUA-08B","dua-08b-care.jpg","Warm children's storybook illustration, emerald and gold. A bedside table with a glass of water, a folded cloth and a small bowl of dates, soft lamplight. No human figures. Gentle and caring."),
+   cap:"Visiting someone who is unwell",
+   info:"There is a short duʿā the Prophet ﷺ said when visiting the sick, placing his hand on them.",
+   fact:"He would say it while wiping with his right hand — care and duʿā together, not one instead of the other."}
+ ],
+ duas:[
+  {when:"When you are afraid — memorise this one",key:true,
+   ar:"حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ",
+   tr:"Ḥasbunallāhu wa niʿma l-wakīl",
+   en:"Allah is enough for us, and He is the best Trustee.",
+   src:"Sūrah Āl ʿImrān 3:173 · Ṣaḥīḥ al-Bukhārī"},
+  {when:"When you are in distress",key:false,
+   ar:"لَا إِلَٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
+   tr:"Lā ilāha illā anta subḥānaka innī kuntu mina ẓ-ẓālimīn",
+   en:"There is no god but You. Glory be to You. Truly I was among the wrongdoers.",
+   src:"Sūrah Al-Anbiyā' 21:87 · Tirmidhī"},
+  {when:"For someone who is ill",key:false,
+   ar:"أَذْهِبِ الْبَأْسَ رَبَّ النَّاسِ، اشْفِ أَنْتَ الشَّافِي، لَا شِفَاءَ إِلَّا شِفَاؤُكَ",
+   tr:"Adhhibi l-ba'sa rabba n-nās, ishfi anta sh-shāfī, lā shifā'a illā shifā'uk",
+   en:"Remove the harm, Lord of mankind. Heal — You are the Healer. There is no healing except Your healing.",
+   src:"Ṣaḥīḥ al-Bukhārī · Muslim"}
+ ],
+ memo:{name:"حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ",
+  lead:"Only two chunks and four words. The shortest in the course — and possibly the one you will use most.",
+  chunks:[
+   {ar:"حَسْبُنَا اللَّهُ",tr:"Ḥasbunallāh",en:"Allah is enough for us"},
+   {ar:"وَنِعْمَ الْوَكِيلُ",tr:"wa niʿma l-wakīl",en:"and He is the best Trustee"}
+  ]},
+ dyk:["🔥","Ibrāhīm said these words as he was thrown into the fire.",
+      "📖","The believers said them when they were told a huge army was gathering against them — and it increased their faith.",
+      "🐋","The duʿā of Yūnus was made from inside the fish, in three darknesses, and Allah answered it.",
+      "🤲","Notice none of these duas panic. They state a fact about Allah, calmly, and that is the point."],
+ discuss:[["Ḥasbunallāh does not ask for anything. Why might that be more powerful than asking?","unmute"],
+          ["Type one thing that makes you nervous — you do not have to explain it.","chat"],
+          ["Why is it better to learn these duas now rather than when you need them?","unmute"]],
+ why:"Fear arrives without warning. If a duʿā is already in your memory it will come to your tongue by itself — but only if you put it there first, on a calm day.",
+ points:["Learn the duʿā before the hard day comes","These duas state a fact, they do not panic","Make duʿā and take action — both, not one"],
+ task:{title:"Ready before you need it",
+  steps:["Memorise ḥasbunallāhu wa niʿma l-wakīl until you can say it instantly, without thinking.","Say it once a day this week, even on the good days.","Teach it to one person younger than you."],
+  send:"Tell your teacher who you taught it to, and whether they got it."}
+},
+{
+ emoji:"👨‍👩‍👧", title:"For Parents, Teachers & Friends", ar:"الدُّعَاء لِلْغَيْر",
+ facts:{when:"Whenever someone is good to you",count:"3 duas",source:"Qur'an 17:24 · Tirmidhī",best:"Say it to their face"},
+ hook:"Someone did something kind for you this week. Did you thank them — or did you make duʿā for them?",
+ plates:[
+  {p:P("DUA-09A","dua-09a-parents.jpg","Warm children's storybook illustration, emerald and gold. Two empty chairs side by side by a window with two cups of tea on a table between them, warm afternoon light. No human figures. Tender."),
+   cap:"The duʿā for parents",
+   info:"This duʿā is an āyah of the Qur'an. It asks Allah to show them mercy in the way they showed it to you.",
+   fact:"It says 'as they raised me when I was small' — you are asking Allah to repay something you cannot repay yourself."},
+  {p:P("DUA-09B","dua-09b-gift.jpg","Warm children's storybook illustration, emerald and gold. A small wrapped gift and a handwritten note left on a desk, soft light, a pen beside them. No human figures."),
+   cap:"Better than thank you",
+   info:"Jazāk Allāhu khayran means 'may Allah reward you with good' — it hands the thanks over to Allah, who can actually repay it.",
+   fact:"The Prophet ﷺ said whoever says it to someone who did them a favour has fully praised them."}
+ ],
+ duas:[
+  {when:"For your parents — memorise this one",key:true,
+   ar:"رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا",
+   tr:"Rabbi rḥamhumā kamā rabbayānī ṣaghīrā",
+   en:"My Lord, have mercy on them as they raised me when I was small.",
+   src:"Sūrah Al-Isrā' 17:24"},
+  {when:"When someone does you a favour",key:false,
+   ar:"جَزَاكَ اللَّهُ خَيْرًا",tr:"Jazāk Allāhu khayrā",
+   en:"May Allah reward you with good.",src:"Sunan at-Tirmidhī"},
+  {when:"For a friend or a blessing",key:false,
+   ar:"بَارَكَ اللَّهُ فِيكَ",tr:"Bārak Allāhu fīk",
+   en:"May Allah bless you.",src:"Sunan at-Tirmidhī"}
+ ],
+ memo:{name:"رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا",
+  lead:"Listen for the echo between rabbi, irḥamhumā and rabbayānī — the sounds are related on purpose.",
+  chunks:[
+   {ar:"رَبِّ ارْحَمْهُمَا",tr:"Rabbi rḥamhumā",en:"My Lord, have mercy on them both"},
+   {ar:"كَمَا رَبَّيَانِي",tr:"kamā rabbayānī",en:"as they raised me"},
+   {ar:"صَغِيرًا",tr:"ṣaghīrā",en:"when I was small"}
+  ]},
+ dyk:["📖","This duʿā comes right after the āyah that forbids saying even 'uff' to your parents.",
+      "🤲","Duʿā for someone while they are absent is answered, and an angel says: and the same for you.",
+      "💬","Jazāk Allāhu khayran is not just politeness — it is asking Allah to reward what you cannot.",
+      "🌱","A righteous child who makes duʿā for a parent continues benefiting them even after they have died."],
+ discuss:[["Why does the duʿā say 'as they raised me when I was small' instead of just 'have mercy on them'?","unmute"],
+          ["Type the name of one person you will make duʿā for tonight.","chat"],
+          ["Is duʿā for someone better than a gift? Give a reason either way.","unmute"]],
+ why:"You cannot repay your parents. This duʿā hands the debt to the only One who can settle it — and it works whether they are near you, far away, or gone.",
+ points:["Make duʿā for people, not only for yourself","Duʿā in someone's absence returns to you","Jazāk Allāhu khayran is a duʿā, not a phrase"],
+ task:{title:"Three names, seven days",
+  steps:["Write down three names: one parent, one teacher, one friend.","Make duʿā for each of them every day this week, by name.","Say jazāk Allāhu khayran out loud to at least three people."],
+  send:"Tell your teacher how it felt to say it out loud rather than just 'thanks'."}
+},
+{
+ emoji:"📖", title:"Rabbanā — Duas from the Qur'an", ar:"أَدْعِيَة قُرْآنِيَّة",
+ facts:{when:"Any time at all",count:"3 duas",source:"Qur'an 2:201 · 20:114 · 2:286",best:"Allah's own words back to Him"},
+ hook:"If Allah taught you exactly what to ask Him for, would you use those words or your own?",
+ plates:[
+  {p:P("DUA-10A","dua-10a-mushaf.jpg","Warm children's storybook illustration, emerald and gold. An open muṣḥaf on a wooden stand, warm light across the pages, a bookmark ribbon. No human figures. Reverent and calm."),
+   cap:"Duas Allah taught",
+   info:"Many duas in the Qur'an begin with rabbanā — 'our Lord'. These are words Allah Himself chose.",
+   fact:"The duʿā of 2:201 asks for good in this life and the next in a single sentence — it covers everything."},
+  {p:P("DUA-10B","dua-10b-hands.jpg","Warm children's storybook illustration, emerald and gold. A pair of empty open palms resting on a prayer mat seen from above, warm light falling into them. No faces, hands only, respectful."),
+   cap:"The shortest duʿā in the Qur'an",
+   info:"Rabbi zidnī ʿilmā — 'My Lord, increase me in knowledge' — is three words long.",
+   fact:"It is the only place in the Qur'an where the Prophet ﷺ is told to ask for an increase in something."}
+ ],
+ duas:[
+  {when:"For this world and the next — memorise this one",key:true,
+   ar:"رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+   tr:"Rabbanā ātinā fi d-dunyā ḥasanatan wa fi l-ākhirati ḥasanatan wa qinā ʿadhāba n-nār",
+   en:"Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.",
+   src:"Sūrah Al-Baqarah 2:201"},
+  {when:"Before studying",key:false,
+   ar:"رَبِّ زِدْنِي عِلْمًا",tr:"Rabbi zidnī ʿilmā",
+   en:"My Lord, increase me in knowledge.",src:"Sūrah Ṭā-Hā 20:114"},
+  {when:"When you have made a mistake",key:false,
+   ar:"رَبَّنَا لَا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا",
+   tr:"Rabbanā lā tu'ākhidhnā in nasīnā aw akhṭa'nā",
+   en:"Our Lord, do not hold us accountable if we forget or make a mistake.",
+   src:"Sūrah Al-Baqarah 2:286"}
+ ],
+ memo:{name:"رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً …",
+  lead:"The duʿā the Prophet ﷺ said most often. Four chunks — and chunks 2 and 3 are almost identical.",
+  chunks:[
+   {ar:"رَبَّنَا آتِنَا",tr:"Rabbanā ātinā",en:"Our Lord, give us"},
+   {ar:"فِي الدُّنْيَا حَسَنَةً",tr:"fi d-dunyā ḥasanah",en:"good in this world"},
+   {ar:"وَفِي الْآخِرَةِ حَسَنَةً",tr:"wa fi l-ākhirati ḥasanah",en:"and good in the Hereafter"},
+   {ar:"وَقِنَا عَذَابَ النَّارِ",tr:"wa qinā ʿadhāba n-nār",en:"and protect us from the punishment of the Fire"}
+  ]},
+ dyk:["📖","Anas ibn Mālik said this was the duʿā the Prophet ﷺ made most frequently.",
+      "🤲","It is also said between the corners while making ṭawāf around the Kaʿbah.",
+      "📚","Rabbi zidnī ʿilmā is three words and asks for the one thing you can never have too much of.",
+      "✋","The Qur'an contains dozens of rabbanā duas — a whole duʿā book inside the Book."],
+ discuss:[["'Good in this world' — what does that mean to you? Type one thing.","chat"],
+          ["Why do you think the Prophet ﷺ chose this duʿā most often out of all of them?","unmute"],
+          ["Which of the ten duas from this course will you actually keep? Say why.","unmute"]],
+ why:"When you use the Qur'an's own words, you are asking Allah in the language He chose. You cannot phrase it better than He did.",
+ points:["The Qur'an is full of duas — use them","Ask for both this world and the next","Rabbi zidnī ʿilmā before every lesson"],
+ task:{title:"All ten, one recording",
+  steps:["Go back through the ten duas you memorised in this course.","Practise them in order until you can say all ten without reading.","Record yourself reciting all ten, one after another."],
+  send:"Send the recording to your teacher as your final assessment for this course."}
+}
+];
+
+const CHECKPOINTS={
+ 5:{n:1,qs:[
+  ["What do you say as you lie down to sleep?","Bismika Allāhumma amūtu wa aḥyā."],
+  ["What do you say if you forgot bismillāh and remembered halfway through eating?","Bismillāhi awwalahu wa ākhirahu."],
+  ["Which duʿā do you say leaving the house?","Bismillāhi tawakkaltu ʿala llāh, wa lā ḥawla wa lā quwwata illā billāh."],
+  ["Which sūrah is the travel duʿā taken from?","Sūrah Az-Zukhruf, 43:13–14."],
+  ["When are the morning adhkār said?","After Fajr, before sunrise."],
+  ["What does the word ghufrānak mean?","'Your forgiveness' — said on leaving the bathroom."]
+ ]},
+ 10:{n:2,qs:[
+  ["What is the only word that changes between the morning and evening dhikr?","Aṣbaḥnā becomes amsaynā."],
+  ["What are the counts of the tasbīḥ after prayer?","33 subḥānallāh, 33 al-ḥamdulillāh, 34 Allāhu akbar."],
+  ["Who was taught 'Allāhumma aʿinnī ʿalā dhikrik…'?","Muʿādh ibn Jabal."],
+  ["Who said ḥasbunallāhu wa niʿma l-wakīl in the fire?","Ibrāhīm."],
+  ["Which duʿā did the Prophet ﷺ make most often?","Rabbanā ātinā fi d-dunyā ḥasanah…"],
+  ["What does rabbi zidnī ʿilmā mean?","My Lord, increase me in knowledge."]
+ ]}
+};
+
+/* ================= RENDER ================= */
+function el(h){const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;}
+const host=document.getElementById('lessons');
+const bnList=document.getElementById('bnList');
+
+function plateHTML(pl){
+  const a=pl.p;
+  const media = a.status==="ready"
+    ? `<img src="${a.file}" alt="${pl.cap}" loading="lazy">`
+    : `<div class="ph"><div class="ic">🎨</div><div class="ttl">${pl.cap}</div>
+         <div class="id">${a.id}</div><div class="pr">${a.prompt}</div><div class="fn">${a.file}</div></div>`;
+  return `<div class="plate"><figure>${media}<figcaption>
+      <div class="cap">${pl.cap}</div><div class="info">${pl.info}</div>
+      <span class="pfact">✦ ${pl.fact}</span></figcaption></figure></div>`;
+}
+
+function cpHTML(cp){
+  const cards=cp.qs.map(q=>`<button class="cp-card">
+    <span class="cp-q">${q[0]}</span><span class="cp-hint">Tap to reveal ▾</span>
+    <span class="cp-a">${q[1]}</span></button>`).join('');
+  return `<section class="checkpoint" id="check${cp.n}">
+    <div class="cp-head"><span class="cp-badge">✦ CHECKPOINT ${cp.n}</span>
+      <h2>What do you remember?</h2>
+      <p>Your teacher may ask these live. Tap each card to check yourself first.</p></div>
+    <div class="cp-cards">${cards}</div></section>`;
+}
+
+LESSONS.forEach((L,i)=>{
+  const n=i+1;
+  const F=L.facts;
+  const facts=[["When",F.when],["How many",F.count],["Source",F.source],["Tip",F.best]]
+    .map(f=>`<div class="fact"><div class="fl">${f[0]}</div><div class="fv">${f[1]}</div></div>`).join('');
+  const plates=L.plates.map(plateHTML).join('');
+  const duas=L.duas.map(d=>`<div class="dua${d.key?' key':''}">
+      <span class="when">${d.when}</span>${d.key?'<span class="star">★ THIS WEEK</span>':''}
+      <div class="ar">${d.ar}</div>
+      <div class="tr">${d.tr}</div>
+      <div class="en">${d.en}</div>
+      <div class="src">${d.src}</div>
+    </div>`).join('');
+  const chunks=L.memo.chunks.map((c,k)=>`<div class="chunk">
+      <div class="cn">${k+1}</div>
+      <div><div class="car">${c.ar}</div><div class="ctr">${c.tr}</div><div class="cen">${c.en}</div></div>
+    </div>`).join('');
+  const steps=MEMO_STEPS.map((s,k)=>`<div class="step"><div class="num">${k+1}</div><div class="sb">${s}</div></div>`).join('');
+  let dyk='';
+  for(let k=0;k<L.dyk.length;k+=2){ dyk+=`<li><span class="b">${L.dyk[k]}</span><span>${L.dyk[k+1]}</span></li>`; }
+  const disc=L.discuss.map(d=>`<li>${d[0]}<span class="how">${d[1]==='chat'?'in the chat':'unmute'}</span></li>`).join('');
+  const pts=L.points.map(p=>`<li><span class="kp-dot">◆</span>${p}</li>`).join('');
+  const tsteps=L.task.steps.map(s=>`<li>${s}</li>`).join('');
+
+  host.appendChild(el(`<section class="lesson" id="lesson${n}">
+    <div class="l-head">
+      <span class="l-badge">LESSON ${n} OF ${LESSONS.length}</span>
+      <div class="l-emoji">${L.emoji}</div>
+      <h2>${L.title}</h2>
+      <div class="l-ar">${L.ar}</div>
+    </div>
+    <div class="pad">
+      <div class="facts">${facts}</div>
+      <div class="hook"><span class="tag">❓ OPENING QUESTION — think before class</span><p>${L.hook}</p></div>
+    </div>
+    <div class="plates">
+      <div class="plates-tag">🖼️ THE PICTURES — look at these first</div>
+      ${plates}
+    </div>
+    <div class="pad">
+      <div class="duas">
+        <div class="card-tag">🤲 THE DUAS</div>
+        ${duas}
+      </div>
+      <div class="memo">
+        <div class="card-tag">🧠 MEMORISE IT — STEP BY STEP</div>
+        <h4>${L.memo.name}</h4>
+        <div class="lead">${L.memo.lead}</div>
+        <div class="chunks">${chunks}</div>
+        <div class="steps">${steps}</div>
+      </div>
+      <div class="dyk">
+        <div class="card-tag">💡 INTERESTING FACTS</div>
+        <ul>${dyk}</ul>
+      </div>
+      <div class="discuss">
+        <div class="card-tag">🎧 TALK ABOUT IT — in the live class</div>
+        <div class="sub">Your teacher will open these. Answer where it says.</div>
+        <ol>${disc}</ol>
+      </div>
+      <div class="why-box">
+        <div class="why-tag">🧭 WHY IT MATTERS</div>
+        <p>${L.why}</p>
+        <ul class="kp-list">${pts}</ul>
+      </div>
+      <div class="task">
+        <div class="card-tag">🏠 THIS WEEK'S TASK</div>
+        <h4>${L.task.title}</h4>
+        <ol>${tsteps}</ol>
+        <div class="send"><span>📤</span><span>${L.task.send}</span></div>
+      </div>
+    </div>
+  </section>`));
+
+  bnList.appendChild(el(`<a class="bn-a" href="#lesson${n}"><span class="bn-n">${n}</span>${L.title}</a>`));
+
+  if(CHECKPOINTS[n]){
+    const cp=CHECKPOINTS[n];
+    host.appendChild(el(cpHTML(cp)));
+    bnList.appendChild(el(`<a class="bn-a cp" href="#check${cp.n}"><span class="bn-n">✦</span>Checkpoint ${cp.n}</a>`));
+  }
+});
+bnList.appendChild(el(`<a class="bn-a cp" href="#done"><span class="bn-n">★</span>Finish</a>`));
+
+/* ================= BEHAVIOUR ================= */
+const $$=s=>Array.from(document.querySelectorAll(s));
+const drawer=document.getElementById('drawer');
+const scrim=document.getElementById('scrim');
+function closeDrawer(){drawer.classList.remove('on');scrim.classList.remove('on');}
+document.getElementById('menuBtn').addEventListener('click',()=>{drawer.classList.add('on');scrim.classList.add('on');});
+scrim.addEventListener('click',closeDrawer);
+bnList.addEventListener('click',e=>{if(e.target.closest('.bn-a'))closeDrawer();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+
+$$('.cp-card').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('open')));
+
+const bar=document.getElementById('progress');
+function onScroll(){
+  const h=document.documentElement;
+  const max=h.scrollHeight-h.clientHeight;
+  bar.style.width=(max>0?(h.scrollTop/max)*100:0)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+onScroll();
+
+try{
+  const io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{rootMargin:'0px 0px -6% 0px',threshold:.05});
+  $$('.cover,.lesson,.checkpoint,.done').forEach(function(x){x.classList.add('rv');io.observe(x);});
+}catch(e){}
+</script>
+</body>
+</html>
