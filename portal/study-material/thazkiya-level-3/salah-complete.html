@@ -1,1 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Ṣalāh Complete · الصَّلَاة — ManzilulQuran</title>
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Poppins:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FCFAF4; --edge:#E4DCC8;
+  --ink:#22302B; --soft:#5F7268;
+  --em:#0B4D3B; --em-l:#D9E8E1;
+  --gold:#B08A32; --gold-l:#F4EAD2;
+  --rule:#CFC4A8;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+@page{size:A4 portrait;margin:0}
+html,body{font-family:'Poppins',sans-serif;color:var(--ink);font-size:14px;line-height:1.6;background:#8E9A93}
+body{padding:14px 0}
 
+/* ---------- screen chrome (hidden when printing) ---------- */
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;
+  padding:10px 14px;background:rgba(252,250,244,.96);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--rule);max-width:210mm;margin:0 auto 14px}
+.bar .t{font-family:'Lora',serif;font-weight:700;color:var(--em);font-size:15px}
+.bar .ar{font-family:'Amiri',serif;color:var(--gold);font-size:17px}
+.bar .sp{flex:1}
+.bar button{min-height:40px;border:1.5px solid var(--em);background:#fff;color:var(--em);
+  font-family:'Poppins',sans-serif;font-weight:600;font-size:12.5px;border-radius:8px;
+  padding:8px 13px;cursor:pointer;white-space:nowrap}
+.bar button:hover{background:var(--em);color:#fff}
+
+/* ---------- the A4 sheet ---------- */
+.page.p1{--acc:#0B4D3B;--accbg:#E4F0EA}
+.page.p2{--acc:#1F5C82;--accbg:#E4EFF6}
+.page.p3{--acc:#8A5A12;--accbg:#F8EEDC}
+.page.p4{--acc:#5B4076;--accbg:#EDE7F4}
+.page.p5{--acc:#8C3A34;--accbg:#F8E9E7}
+.page{--acc:var(--em);--accbg:var(--em-l);border-top:5mm solid var(--acc);
+  width:210mm;min-height:297mm;position:relative;overflow:hidden;
+  page-break-after:always;background:var(--paper);
+  padding:18mm 18mm 16mm;margin:0 auto 14px;
+  text-align:center;
+  box-shadow:0 10px 30px -12px rgba(0,0,0,.5);
+}
+.page:last-child{page-break-after:auto}
+
+.ptop{display:flex;justify-content:space-between;align-items:center;
+  font-size:9pt;letter-spacing:1.6px;text-transform:uppercase;color:var(--soft);
+  border-bottom:1px solid var(--rule);padding-bottom:3mm;margin-bottom:8mm}
+.ptop .part{font-weight:700;color:var(--acc)}
+
+.lnum{display:inline-block;font-family:'Lora',serif;font-size:11pt;font-weight:700;
+  color:#fff;background:var(--acc);border-radius:100px;padding:2mm 6mm;margin-bottom:4mm}
+h1.ltitle{font-family:'Lora',serif;font-size:24pt;font-weight:700;color:var(--acc);line-height:1.25}
+.lar{font-family:'Amiri',serif;font-size:20pt;font-weight:700;color:var(--gold);direction:rtl;margin-top:1mm}
+.lsub{font-family:'Lora',serif;font-style:italic;font-size:11pt;color:var(--soft);
+  margin:3mm auto 7mm;max-width:150mm}
+.rule{width:36mm;height:2px;background:var(--acc);margin:0 auto 7mm;opacity:.55}
+
+/* content blocks — everything centred */
+.blk{margin-bottom:6mm}
+.h{font-family:'Lora',serif;font-size:13pt;font-weight:700;color:var(--acc);margin-bottom:2mm}
+p.txt{font-size:11pt;color:var(--ink);max-width:150mm;margin:0 auto 2mm;line-height:1.75}
+.lead{font-size:11.5pt;color:var(--soft);max-width:150mm;margin:0 auto}
+
+/* Arabic always right-to-left */
+.arb{direction:rtl;text-align:right;font-family:'Amiri',serif;font-size:17pt;font-weight:700;
+  color:var(--acc);line-height:2.15;background:#fff;border:1px solid var(--accbg);
+  border-right:4px solid var(--acc);border-radius:3mm;padding:5mm 6mm;margin:0 auto 2mm;max-width:158mm}
+.trn{font-style:italic;font-size:10pt;color:var(--gold);max-width:150mm;margin:0 auto 1mm}
+.mng{font-size:10.5pt;color:var(--soft);max-width:150mm;margin:0 auto}
+
+ul.pts,ol.pts{list-style:none;max-width:150mm;margin:0 auto;padding:0}
+ul.pts li,ol.pts li{font-size:11pt;padding:1.6mm 0;border-bottom:1px dotted var(--rule)}
+ul.pts li:last-child,ol.pts li:last-child{border-bottom:0}
+ol.pts{counter-reset:c}
+ol.pts li::before{counter-increment:c;content:counter(c);display:inline-grid;place-items:center;
+  width:6mm;height:6mm;border-radius:50%;background:var(--gold-l);color:var(--gold);
+  font-weight:700;font-size:9pt;margin-right:3mm;vertical-align:middle}
+
+table{border-collapse:collapse;margin:0 auto;max-width:160mm;width:100%;font-size:10pt}
+th{background:var(--acc);color:#fff;font-weight:600;padding:2.5mm;font-size:9.5pt;
+  letter-spacing:.4px;text-transform:uppercase}
+td{border-bottom:1px solid var(--rule);padding:2.5mm;text-align:center}
+td.ar{font-family:'Amiri',serif;font-size:14pt;font-weight:700;direction:rtl;color:var(--em);line-height:1.9}
+tr:nth-child(even) td{background:var(--accbg)}
+
+.note{background:var(--gold-l);border:1px solid rgba(176,138,50,.35);border-radius:3mm;
+  padding:4mm 6mm;max-width:155mm;margin:0 auto;font-size:10.5pt;color:#6B531A}
+.note b{color:#4A3910}
+.remember{background:var(--acc);color:#fff;border-radius:3mm;padding:5mm 7mm;
+  max-width:155mm;margin:6mm auto 0}
+.remember .rh{font-family:'Lora',serif;font-weight:700;font-size:11pt;letter-spacing:1px;
+  text-transform:uppercase;opacity:.8;margin-bottom:1.5mm}
+.remember p{font-size:11pt;line-height:1.7}
+
+.wm{position:absolute;bottom:7mm;left:50%;transform:translateX(-50%);
+  font-family:'Lora',serif;font-size:9pt;color:var(--em);opacity:.4;letter-spacing:2.5px;
+  font-style:italic;white-space:nowrap}
+.pno{position:absolute;bottom:7mm;right:14mm;font-size:9pt;color:var(--soft)}
+
+/* audience badge + class mode */
+.aud{display:inline-block;font-size:8.5pt;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  border:1.5px solid var(--acc);color:var(--acc);border-radius:100px;padding:1mm 4mm;margin-bottom:3mm}
+.tocaud{color:var(--gold);font-size:8.5pt;font-weight:700}
+
+/* cover */
+.cover{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.cover .crest{width:34mm;height:34mm;border-radius:50%;object-fit:cover;border:2px solid var(--gold);margin-bottom:8mm}
+.cover .car{font-family:'Amiri',serif;font-size:42pt;font-weight:700;color:var(--em);line-height:1.3}
+.cover .cen{font-family:'Lora',serif;font-size:22pt;font-weight:700;color:var(--gold);letter-spacing:3px;margin-top:2mm}
+.cover .cline{width:60mm;height:2px;background:var(--rule);margin:8mm auto}
+.cover .cmeta{font-size:11pt;color:var(--soft);line-height:2}
+
+/* contents */
+.toc{max-width:160mm;margin:0 auto;text-align:left}
+.toc .grp{font-family:'Lora',serif;font-weight:700;color:var(--gold);font-size:11pt;
+  text-transform:uppercase;letter-spacing:1.2px;margin:5mm 0 2mm;text-align:center}
+.toc a{display:flex;gap:4mm;align-items:baseline;text-decoration:none;color:var(--ink);
+  font-size:10.5pt;padding:1.4mm 0;border-bottom:1px dotted var(--rule)}
+.toc a .n{width:7mm;text-align:right;color:var(--em);font-weight:700}
+.toc a .t{flex:1}
+.toc a:hover{color:var(--em)}
+
+/* the two-part lesson chooser */
+.chooser{display:flex;gap:5mm;justify-content:center;margin:0 auto 6mm;max-width:150mm}
+.chooser button{flex:1;min-height:44px;border:2px solid var(--em);background:#fff;color:var(--em);
+  font-family:'Lora',serif;font-weight:700;font-size:12pt;border-radius:3mm;padding:4mm;cursor:pointer}
+.chooser button.on{background:var(--em);color:#fff}
+.sect{display:none} .sect.on{display:block}
+
+
+/* ---------- illustrations ---------- */
+.seq{display:grid;grid-template-columns:repeat(5,1fr);gap:4mm;max-width:165mm;margin:0 auto}
+.seq.four{grid-template-columns:repeat(4,1fr)}
+.seq.three{grid-template-columns:repeat(3,1fr)}
+.fig{text-align:center}
+.fig .box{position:relative;aspect-ratio:3/4;border:1px solid var(--rule);border-radius:2mm;
+  background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.fig img{width:100%;height:100%;object-fit:contain;display:block}
+.fig .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1mm;
+  width:100%;height:100%;background:repeating-linear-gradient(45deg,#fff,#fff 3mm,var(--gold-l) 3mm,var(--gold-l) 6mm)}
+.fig .ph .i{font-size:15pt;opacity:.6}
+.fig .ph .c{font-family:monospace;font-size:6.5pt;color:var(--soft);word-break:break-all;padding:0 1mm}
+.fig .n{position:absolute;top:1mm;left:1mm;width:5mm;height:5mm;border-radius:50%;
+  background:var(--acc);color:#fff;font-size:7.5pt;font-weight:700;display:grid;place-items:center}
+.fig .lb{font-size:8pt;font-weight:600;color:var(--ink);margin-top:1.5mm;line-height:1.35}
+.fig .lar{font-family:'Amiri',serif;font-size:9.5pt;color:var(--gold);direction:rtl;line-height:1.5}
+.imgone{max-width:120mm;margin:0 auto}
+.imgone .box{aspect-ratio:16/10;border:1px solid var(--rule);border-radius:2mm;background:#fff;overflow:hidden}
+.imgone img{width:100%;display:block}
+.imgcap{font-size:9.5pt;color:var(--soft);margin-top:2mm;max-width:150mm;margin-left:auto;margin-right:auto}
+@media(max-width:820px){
+  .seq{grid-template-columns:repeat(3,1fr);gap:8px}
+  .seq.four,.seq.three{grid-template-columns:repeat(3,1fr)}
+  .fig .lb{font-size:10px}
+}
+@media print{.fig .ph{background:#fff;border:1px dashed var(--rule)}}
+
+@media print{
+  body{background:#fff;padding:0}
+  .bar{display:none!important}
+  .page{box-shadow:none;margin:0}
+  .chooser{display:none!important}
+}
+@media(max-width:820px){
+  body{padding:0}
+  .bar{max-width:100%;margin-bottom:0}
+  .page{width:100%;min-height:auto;padding:22px 16px 30px;margin-bottom:10px;box-shadow:none;
+    border-bottom:6px solid var(--edge)}
+  h1.ltitle{font-size:20pt}.cover .car{font-size:30pt}.cover .cen{font-size:16pt}
+  .arb{font-size:15pt;padding:12px 14px}
+  table{font-size:9pt}th,td{padding:6px 4px}
+  .wm,.pno{position:static;transform:none;display:block;margin-top:14px}
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div><span class="t">Ṣalāh Complete</span> <span class="ar">الصَّلَاة</span></div>
+  <div class="sp"></div>
+  <span style="font-size:11.5px;color:var(--soft)">23 lessons · Shāfiʿī</span>
+  
+
+<div id="book"></div>
+
+<script>
+/* ==========================================================================
+   ⚠️  SHĀFIʿĪ FIQH. Every Arabic formula, niyyah wording, ḥadīth reference and
+   fiqh ruling below MUST be checked by a qualified teacher before publishing.
+   Lesson 21 (major impurity) must additionally be reviewed by a female teacher
+   for the section written for girls.
+
+   A4 model matches basic-arabic.html: 210×297mm, page-break-after, @page.
+   All text centre-aligned; every Arabic block is direction:rtl.
+
+   Malayalam later: this renders from LESSONS, so add ml:{} per lesson.
+   ========================================================================== */
+
+
+/* ---- illustrations. status "placeholder" -> "ready" once uploaded ---- */
+const IMG_STATUS="placeholder";
+const F=(f,lb,ar,prompt)=>({file:"assets/img/"+f,lb,ar,prompt});
+
+const POSITIONS=[
+ F("slh-01-qiyam.jpeg","Qiyām — standing","الْقِيَام","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. The figure wears a plain long white thawb and a white kufi prayer cap. The head is a plain rounded shape with NO facial features at all — no eyes, no nose, no mouth, no beard. Plain cream background, a simple green prayer mat under the figure, nothing else in the scene. Full body visible, side view facing right. QIYĀM. Standing upright and still, feet flat and about a hand-span apart, arms hanging relaxed at the sides, body straight, head tilted very slightly down as if looking at the floor ahead."),
+ F("slh-02-takbir.jpeg","Takbīrat al-iḥrām","تَكْبِيرَةُ الإِحْرَام","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. The figure wears a plain long white thawb and a white kufi prayer cap. The head is a plain rounded shape with NO facial features at all — no eyes, no nose, no mouth, no beard. Plain cream background, a simple green prayer mat under the figure, nothing else in the scene. Full body visible, side view facing right. TAKBĪRAT AL-IḤRĀM. Standing upright. BOTH hands raised to shoulder level, level with the ears, palms flat and facing forward, fingers together and pointing straight up, elbows bent and held away from the body. Feet flat and apart."),
+ F("slh-03-qiyam-hands.jpeg","Hands folded","وَضْعُ الْيَدَيْن","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. The figure wears a plain long white thawb and a white kufi prayer cap. The head is a plain rounded shape with NO facial features at all — no eyes, no nose, no mouth, no beard. Plain cream background, a simple green prayer mat under the figure, nothing else in the scene. Full body visible, side view facing right. HANDS FOLDED. Standing upright. The RIGHT hand rests on top of the LEFT forearm just above the wrist, both hands held together against the body BELOW the chest and ABOVE the navel. Elbows relaxed at the sides."),
+ F("slh-04-ruku.jpeg","Rukūʿ — bowing","الرُّكُوع","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. The figure wears a plain long white thawb and a white kufi prayer cap. The head is a plain rounded shape with NO facial features at all — no eyes, no nose, no mouth, no beard. Plain cream background, a simple green prayer mat under the figure, nothing else in the scene. Full body visible, side view facing right. RUKŪʿ, bowing. The back is FLAT and HORIZONTAL, parallel to the ground, like a table top. The head is level with the back — not raised above it and not dropped below it. Both hands grip the knees with fingers spread wide. Legs straight, knees not bent."),
+ F("slh-05-itidal.jpeg","Iʿtidāl — rising","الاعْتِدَال","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. The figure wears a plain long white thawb and a white kufi prayer cap. The head is a plain rounded shape with NO facial features at all — no eyes, no nose, no mouth, no beard. Plain cream background, a simple green prayer mat under the figure, nothing else in the scene. Full body visible, side view facing right. IʿTIDĀL, rising from bowing. Standing completely upright again, spine straight, arms hanging relaxed at the sides, feet flat. Identical to plain standing — show the body fully settled and still."),
+ F("slh-06-sujud.jpeg","Sujūd","السُّجُود","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. The figure wears a plain long white thawb and a white kufi prayer cap. The head is a plain rounded shape with NO facial features at all — no eyes, no nose, no mouth, no beard. Plain cream background, a simple green prayer mat under the figure, nothing else in the scene. Full body visible, side view facing right. SUJŪD, prostration. FOREHEAD AND NOSE both touch the mat. Palms flat on the mat level with the shoulders, fingers together pointing forward. ELBOWS RAISED clear of the ground and held away from the sides. Knees on the mat. TOES BENT FORWARD so the toe-tips press the mat. Back raised and sloping."),
+ F("slh-07-jalsa.jpeg","Sitting between","الْجُلُوسُ بَيْنَ السَّجْدَتَيْن","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. The figure wears a plain long white thawb and a white kufi prayer cap. The head is a plain rounded shape with NO facial features at all — no eyes, no nose, no mouth, no beard. Plain cream background, a simple green prayer mat under the figure, nothing else in the scene. Full body visible, side view facing right. SITTING BETWEEN THE TWO PROSTRATIONS (iftirāsh). Seated on the LEFT foot which is laid flat on its side underneath. The RIGHT foot is UPRIGHT with the toes bent forward pressing the mat. Both hands flat on the thighs near the knees, fingers together pointing forward. Back straight."),
+ F("slh-08-sujud2.jpeg","Second sujūd","السَّجْدَةُ الثَّانِيَة","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. The figure wears a plain long white thawb and a white kufi prayer cap. The head is a plain rounded shape with NO facial features at all — no eyes, no nose, no mouth, no beard. Plain cream background, a simple green prayer mat under the figure, nothing else in the scene. Full body visible, side view facing right. SECOND SUJŪD, identical posture to the first prostration. Forehead and nose on the mat, palms flat level with the shoulders, elbows raised clear of the ground and away from the sides, knees down, toes bent forward."),
+ F("slh-09-tashahhud.jpeg","Tashahhud","التَّشَهُّد","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. The figure wears a plain long white thawb and a white kufi prayer cap. The head is a plain rounded shape with NO facial features at all — no eyes, no nose, no mouth, no beard. Plain cream background, a simple green prayer mat under the figure, nothing else in the scene. Full body visible, side view facing right. FINAL TASHAHHUD (tawarruk). The LEFT foot is passed under the right leg and out to the right side, so the figure sits directly on the mat, not on the foot. The RIGHT foot is UPRIGHT with toes bent forward. LEFT hand flat on the left thigh, fingers forward. RIGHT hand closed into a soft fist with ONLY the index finger extended and pointing forward. Back straight."),
+ F("slh-10-salam.jpeg","Salām","السَّلَام","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. The figure wears a plain long white thawb and a white kufi prayer cap. The head is a plain rounded shape with NO facial features at all — no eyes, no nose, no mouth, no beard. Plain cream background, a simple green prayer mat under the figure, nothing else in the scene. Seen from behind and slightly to the side. GIVING SALĀM. Seated in the same tawarruk position, turning the HEAD to the RIGHT so the side of the plain featureless head is visible over the shoulder. Hands still resting on the thighs. Shoulders relaxed.")
+];
+
+const WUDU=[
+ F("wud-01-hands.jpeg","Wash both hands","الْيَدَان","Cartoon illustration for a children's Islamic guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. Show hands and forearms only with rolled-up white sleeves — no face and no body. Plain cream background, water drawn as simple blue droplets and curved lines. Washing both hands together up to the wrists under pouring water over a simple basin."),
+ F("wud-02-mouth.jpeg","Rinse the mouth","الْمَضْمَضَة","Cartoon illustration for a children's Islamic guide. Simple rounded shapes, flat bright colours, thick outlines. A plain rounded head with NO facial features at all — no eyes, nose or mouth — wearing a white kufi cap where relevant. Plain cream background, water as simple blue droplets. MAḌMAḌAH. A cupped RIGHT hand lifting water toward the mouth area of a plain featureless head. Show only the head and one hand."),
+ F("wud-03-nose.jpeg","Water into the nose","الاسْتِنْشَاق","Cartoon illustration for a children's Islamic guide. Simple rounded shapes, flat bright colours, thick outlines. A plain rounded head with NO facial features at all — no eyes, nose or mouth — wearing a white kufi cap where relevant. Plain cream background, water as simple blue droplets. ISTINSHĀQ. A cupped RIGHT hand drawing water up toward the nose area of a plain featureless head, with a small blue arrow curving upward to show the water going in."),
+ F("wud-04-face.jpeg","Wash the face","غَسْلُ الْوَجْه","Cartoon illustration for a children's Islamic guide. Simple rounded shapes, flat bright colours, thick outlines. A plain rounded head with NO facial features at all — no eyes, nose or mouth — wearing a white kufi cap where relevant. Plain cream background, water as simple blue droplets. WASHING THE FACE. Two hands washing a plain featureless head, with a dotted outline marking the boundary of the face from hairline to chin and from ear to ear."),
+ F("wud-05-arms.jpeg","Arms to the elbows","الذِّرَاعَان","Cartoon illustration for a children's Islamic guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. Show hands and forearms only with rolled-up white sleeves — no face and no body. Plain cream background, water drawn as simple blue droplets and curved lines. Washing the right forearm with the left hand, water running down, and a clear dotted marker ring AT THE ELBOW showing the elbow is included."),
+ F("wud-06-head.jpeg","Wipe the head","مَسْحُ الرَّأْس","Cartoon illustration for a children's Islamic guide. Simple rounded shapes, flat bright colours, thick outlines. A plain rounded head with NO facial features at all — no eyes, nose or mouth — wearing a white kufi cap where relevant. Plain cream background, water as simple blue droplets. MASḤ. Two wet hands wiping over the TOP of a plain featureless head from front to back, seen from the side, cap removed."),
+ F("wud-07-ears.jpeg","Wipe the ears","مَسْحُ الأُذُنَيْن","Cartoon illustration for a children's Islamic guide. Simple rounded shapes, flat bright colours, thick outlines. A plain rounded head with NO facial features at all — no eyes, nose or mouth — wearing a white kufi cap where relevant. Plain cream background, water as simple blue droplets. WIPING THE EARS. Index fingers inside the ears and thumbs behind them, on a plain featureless head seen from the side."),
+ F("wud-08-feet.jpeg","Feet to the ankles","الرِّجْلَان","Cartoon illustration for a children's Islamic guide. Simple rounded shapes, flat bright colours, thick outlines. Show one bare FOOT only, no body and no face. A hand passes fingers between the toes while water pours over it. A dotted marker ring AT THE ANKLE shows the ankle is included. Plain cream background.")
+];
+
+const TAYAMMUM=[
+ F("tay-01-strike.jpeg","Strike clean earth","الضَّرْبَة","Cartoon illustration for a children's Islamic guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. Show hands and forearms only with rolled-up white sleeves — no face and no body. Plain cream background, water drawn as simple blue droplets and curved lines. TAYAMMUM, first strike. Both open palms pressed flat down onto clean dry earth or a flat stone, with light dust puffs around them."),
+ F("tay-02-face.jpeg","Wipe the face","مَسْحُ الْوَجْه","Cartoon illustration for a children's Islamic guide. Simple rounded shapes, flat bright colours, thick outlines. A plain rounded head with NO facial features at all — no eyes, nose or mouth — wearing a white kufi cap where relevant. Plain cream background, water as simple blue droplets. TAYAMMUM. Two dusty palms wiping across a plain featureless head, with a dotted outline marking the face boundary. Dust shown as light beige specks, no water."),
+ F("tay-03-arms.jpeg","Wipe the arms","مَسْحُ الْيَدَيْن","Cartoon illustration for a children's Islamic guide. Simple rounded shapes, flat bright colours, thick clean outlines, no shading. Show hands and forearms only with rolled-up white sleeves — no face and no body. Plain cream background, water drawn as simple blue droplets and curved lines. TAYAMMUM, second strike. One dusty palm wiping along the opposite forearm from the wrist up to and INCLUDING the elbow, with a dotted marker ring at the elbow. Dust as light beige specks, no water.")
+];
+
+const SINGLES={
+ saff:F("slh-11-saff.jpeg","A straight row","الصَّفّ","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick outlines. Seen FROM BEHIND: five figures in white thawbs and white kufi caps standing in ONE straight row, shoulders touching and feet aligned, NO GAPS between them, on a long green prayer mat. No faces visible. Plain cream background."),
+ janazah:F("slh-12-janazah.jpeg","Ṣalāt al-Janāzah","صَلَاةُ الْجَنَازَة","Cartoon illustration for a children's Islamic prayer guide. Simple rounded shapes, flat bright colours, thick outlines. Seen FROM BEHIND: three neat rows of figures in white thawbs and white kufi caps, all STANDING upright with hands folded — nobody bowing and nobody prostrating. A simple green mat beneath. No faces visible. Respectful and calm. Plain cream background."),
+ ghusl:F("gsl-01-order.jpeg","The order of ghusl","تَرْتِيبُ الْغُسْل","Cartoon diagram for a children's Islamic guide, NOT a detailed person. Four numbered panels in a row, flat bright colours and thick outlines on a plain cream background. Panel 1: water poured over the head of a simple grey body outline. Panel 2: the RIGHT half of the outline shaded blue. Panel 3: the LEFT half shaded blue. Panel 4: the whole outline shaded blue to show no dry part remains. No face, no clothing detail, no features.")
+};
+
+const PARTS={1:"Part 1 · Why and When",2:"Part 2 · The Prayer Itself",
+             3:"Part 3 · When Things Change",4:"Part 4 · Together and Beyond",
+             5:"Part 5 · Fiqh — Ṭahārah"};
+
+const NIY=[
+ ["Fajr","الصُّبْحِ","2","أُصَلِّي فَرْضَ الصُّبْحِ رَكْعَتَيْنِ مُتَوَجِّهًا إِلَى الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى"],
+ ["Ẓuhr","الظُّهْرِ","4","أُصَلِّي فَرْضَ الظُّهْرِ أَرْبَعَ رَكَعَاتٍ مُتَوَجِّهًا إِلَى الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى"],
+ ["ʿAṣr","الْعَصْرِ","4","أُصَلِّي فَرْضَ الْعَصْرِ أَرْبَعَ رَكَعَاتٍ مُتَوَجِّهًا إِلَى الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى"],
+ ["Maghrib","الْمَغْرِبِ","3","أُصَلِّي فَرْضَ الْمَغْرِبِ ثَلَاثَ رَكَعَاتٍ مُتَوَجِّهًا إِلَى الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى"],
+ ["ʿIshā'","الْعِشَاءِ","4","أُصَلِّي فَرْضَ الْعِشَاءِ أَرْبَعَ رَكَعَاتٍ مُتَوَجِّهًا إِلَى الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى"]
+];
+
+const LESSONS=[
+/* ---------------- PART 1 ---------------- */
+{p:1,t:"Why Ṣalāh",ar:"لِمَاذَا الصَّلَاة",
+ sub:"The one act of worship given directly, above the seven heavens.",
+ b:[{t:"txt",x:"Every other command came down to the earth through Jibrīl. Ṣalāh alone was given to the Prophet ﷺ on the night of Isrā' and Miʿrāj, above the seven heavens, with no messenger in between. That alone tells you its weight."},
+    {t:"h",x:"Why five"},
+    {t:"txt",x:"Fifty prayers were first commanded. Mūsā advised the Prophet ﷺ to return and ask for relief, and he did so until they became five in number and fifty in reward. Allah's mercy is written into the count itself."},
+    {t:"ar",x:"إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَوْقُوتًا",
+     tr:"Inna ṣ-ṣalāta kānat ʿala l-mu'minīna kitāban mawqūtā",
+     en:"Indeed, prayer is prescribed for the believers at fixed times. — An-Nisā' 4:103"},
+    {t:"h",x:"The first thing weighed"},
+    {t:"txt",x:"The Prophet ﷺ said the first matter a servant is questioned about on the Day of Judgement is the prayer. If it is sound, the rest follows; if it is ruined, the rest is ruined."},
+    {t:"rem",x:"Ṣalāh is not a part of your day. It is the frame your day is built around."}]},
+
+{p:1,t:"The Five Prayers",ar:"الصَّلَوَاتُ الْخَمْس",
+ sub:"Names, times, and how many rakʿahs — in one table.",
+ b:[{t:"tbl",head:["Prayer","Arabic","Farḍ","Time begins","Time ends"],
+     rows:[["Ṣubḥ (Fajr)","الصُّبْح","2","True dawn","Sunrise"],
+           ["Ẓuhr","الظُّهْر","4","Sun passes zenith","Shadow = object + noon shadow"],
+           ["ʿAṣr","الْعَصْر","4","End of Ẓuhr","Sunset"],
+           ["Maghrib","الْمَغْرِب","3","Sunset","Disappearance of red twilight"],
+           ["ʿIshā'","الْعِشَاء","4","Red twilight gone","True dawn"]]},
+    {t:"note",x:"<b>Shāfiʿī note.</b> ʿAṣr begins when an object's shadow equals its own length plus the shadow it had at noon. Delaying a prayer past its time without excuse is a serious sin — pray it at its beginning wherever you can."},
+    {t:"h",x:"The ten rakʿah rawātib"},
+    {t:"tbl",head:["Prayer","Before","After"],
+     rows:[["Ṣubḥ","2","—"],["Ẓuhr","2","2"],["Maghrib","—","2"],["ʿIshā'","—","2"]]},
+    {t:"note",x:"<b>Ten rakʿahs in total.</b> ʿAṣr has no rawātib, and Witr is not counted among them. Both are covered in Lesson 16."},
+    {t:"rem",x:"Learn the table by heart. A person who knows the times never misses a prayer by accident."}]},
+
+{p:1,t:"Conditions Before You Stand",ar:"شُرُوطُ الصَّلَاة",
+ sub:"Five things must be true before the takbīr — and purity is one of them.",
+ b:[{t:"ol",x:["<b>Purity from ḥadath</b> — minor and major. Taught fully in Part 5.",
+     "<b>Purity of body, clothes and place</b> from najāsah.",
+     "<b>Covering the ʿawrah</b> — for men, navel to knee; for women, all but the face and hands.",
+     "<b>Facing the qiblah</b> — with certainty if you can, with best effort if you cannot.",
+     "<b>The time has entered</b> — praying before the time does not count."]},
+    {t:"h",x:"And then the niyyah"},
+    {t:"txt",x:"Niyyah is not a condition standing outside the prayer — in the Shāfiʿī madhhab it is the first pillar, made in the heart at the moment of takbīrat al-iḥrām. The next lesson gives the wording for every prayer."},
+    {t:"note",x:"If any of the five is missing, the prayer is not valid, however beautifully it is performed. Check them before you raise your hands, not after."},
+    {t:"rem",x:"Five conditions, then the intention. Nothing before that, nothing skipped."}]},
+
+/* ---------------- PART 2 ---------------- */
+{p:2,t:"Adhān and Iqāmah",ar:"الأَذَان وَالإِقَامَة",
+ sub:"The call that opens the time, and the call that opens the prayer.",
+ b:[{t:"txt",x:"The adhān announces that the time has entered. The iqāmah announces that the prayer is beginning. Both are sunnah muakkadah for the five daily prayers."},
+    {t:"h",x:"Replying to the adhān"},
+    {t:"txt",x:"Repeat after the mu'adhdhin word for word — except after ḥayya ʿala ṣ-ṣalāh and ḥayya ʿala l-falāḥ, where you say instead:"},
+    {t:"ar",x:"لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",tr:"Lā ḥawla wa lā quwwata illā billāh",
+     en:"There is no power and no strength except with Allah."},
+    {t:"h",x:"The duʿā after the adhān"},
+    {t:"ar",x:"اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ آتِ مُحَمَّدٍ الْوَسِيلَةَ وَالْفَضِيلَةَ وَالدَّرَجَةَ الرَّفِيعَةَ وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ وَارْزُقْنَا شَفَاعَتَهُ يَوْمَ الْقِيَامَةِ إِنَّكَ لَا تُخْلِفُ الْمِيعَادَ",
+     tr:"Allāhumma rabba hādhihi d-daʿwati t-tāmmah wa ṣ-ṣalāti l-qā'imah, āti Muḥammadan il-wasīlata wa l-faḍīlata wa d-darajata r-rafīʿah, wabʿathhu maqāman maḥmūdan illadhī waʿadtah, warzuqnā shafāʿatahu yawma l-qiyāmah, innaka lā tukhlifu l-mīʿād",
+     en:"O Allah, Lord of this perfect call and the prayer to be established, grant Muḥammad the wasīlah, the excellence and the lofty rank, and raise him to the praised station You promised him. Grant us his intercession on the Day of Resurrection — indeed You do not break Your promise."},
+    {t:"note",x:"Whoever says this duʿā after the adhān will have the intercession of the Prophet ﷺ on the Day of Judgement."},
+    {t:"rem",x:"Do not talk over the adhān. Answer it — it costs thirty seconds and carries a promise."}]},
+
+{p:2,t:"Niyyah for Every Prayer",ar:"النِّيَّة",
+ sub:"Alone, behind an imām, and leading — the wording for all five.",
+ b:[{t:"txt",x:"In the Shāfiʿī madhhab the niyyah is made <b>in the heart</b> at the moment of takbīrat al-iḥrām. Saying it aloud beforehand is not required; it is done to help the heart settle on what it intends."},
+    {t:"h",x:"Praying alone — مُنْفَرِدًا"},
+    {t:"niy",mode:""},
+    {t:"h",x:"In jamāʿah"},
+    {t:"txt",x:"Add one word before <span class='arb-inline'>لِلَّهِ تَعَالَى</span>:"},
+    {t:"tbl",head:["You are","Add","Meaning"],
+     rows:[["Following the imām","<span style='font-family:Amiri,serif;font-size:14pt'>مَأْمُومًا</span>","as a follower"],
+           ["Leading the prayer","<span style='font-family:Amiri,serif;font-size:14pt'>إِمَامًا</span>","as an imām"]]},
+    {t:"txt",x:"So Ẓuhr behind an imām becomes: أُصَلِّي فَرْضَ الظُّهْرِ أَرْبَعَ رَكَعَاتٍ مُتَوَجِّهًا إِلَى الْقِبْلَةِ أَدَاءً مَأْمُومًا لِلَّهِ تَعَالَى"},
+    {t:"note",x:"<b>Making up a missed prayer?</b> Replace <span style='font-family:Amiri,serif'>أَدَاءً</span> (on time) with <span style='font-family:Amiri,serif'>قَضَاءً</span> (made up)."},
+    {t:"rem",x:"The tongue may be silent. The heart must not be."}]},
+
+{p:2,t:"Takbīr to Rukūʿ",ar:"مِنَ التَّكْبِيرِ إِلَى الرُّكُوع",
+ sub:"Standing, opening, reciting, and bowing.",
+ b:[{t:"ol",x:["Stand facing the qiblah, feet apart, eyes on the place of sujūd.",
+     "Raise both hands to shoulder level and say <b>Allāhu akbar</b> — this is takbīrat al-iḥrām, and the niyyah is in the heart at this moment.",
+     "Place the right hand over the left, below the chest and above the navel.",
+     "Recite the opening duʿā, then aʿūdhu billāh, then Al-Fātiḥah.",
+     "Recite a short sūrah — in the first two rakʿahs only.",
+     "Say Allāhu akbar, raise the hands, and bow into rukūʿ with a straight back."]},
+    {t:"seq",x:"POS_A",cls:"four"},
+    {t:"h",x:"In rukūʿ"},
+    {t:"ar",x:"سُبْحَانَ رَبِّيَ الْعَظِيمِ وَبِحَمْدِهِ",tr:"Subḥāna rabbiya l-ʿaẓīmi wa bi-ḥamdih",
+     en:"Glory to my Lord the Most Great, and praise be to Him. — three times"},
+    {t:"h",x:"Rising — iʿtidāl"},
+    {t:"ar",x:"سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ",tr:"Samiʿa llāhu liman ḥamidah",en:"Allah hears whoever praises Him — said while rising."},
+    {t:"ar",x:"رَبَّنَا لَكَ الْحَمْدُ، مِلْءَ السَّمَاوَاتِ وَمِلْءَ الْأَرْضِ وَمِلْءَ مَا شِئْتَ مِنْ شَيْءٍ بَعْدُ",
+     tr:"Rabbanā laka l-ḥamd, mil'a s-samāwāti wa mil'a l-arḍi wa mil'a mā shi'ta min shay'in baʿd",
+     en:"Our Lord, all praise is Yours — filling the heavens, filling the earth, and filling whatever else You will."},
+    {t:"note",x:"<b>Shāfiʿī.</b> Al-Fātiḥah is a pillar in every rakʿah, for the imām and the follower alike. If you cannot finish it before the imām bows, you may still follow — but learn it until you can."},
+    {t:"rem",x:"Stillness is a pillar. Never move to the next position until the body has settled in this one."}]},
+
+{p:2,t:"Sujūd to Salām",ar:"مِنَ السُّجُودِ إِلَى السَّلَام",
+ sub:"The closest a servant comes to his Lord, and how the prayer ends.",
+ b:[{t:"txt",x:"Sujūd is made on <b>seven bones</b>: the forehead with the nose, the two palms, the two knees, and the toes of both feet. All seven must touch the ground."},
+    {t:"ar",x:"سُبْحَانَ رَبِّيَ الأَعْلَى وَبِحَمْدِهِ",tr:"Subḥāna rabbiya l-aʿlā wa bi-ḥamdih",
+     en:"Glory to my Lord the Most High, and praise be to Him. — three times"},
+    {t:"seq",x:"POS_B",cls:"three"},
+    {t:"h",x:"Sitting between the two sujūd"},
+    {t:"ar",x:"رَبِّ اغْفِرْ لِي وَارْحَمْنِي وَاجْبُرْنِي وَارْفَعْنِي وَارْزُقْنِي وَاهْدِنِي وَعَافِنِي وَاعْفُ عَنِّي",
+     tr:"Rabbi ghfir lī warḥamnī wajburnī warfaʿnī warzuqnī wahdinī wa ʿāfinī waʿfu ʿannī",
+     en:"My Lord, forgive me, have mercy on me, mend me, raise me, provide for me, guide me, grant me well-being, and pardon me."},
+    {t:"h",x:"Tashahhud, then durūd, then salām"},
+    {t:"txt",x:"In the final sitting, recite the tashahhud, then the durūd Ibrāhīmī, then a duʿā, then turn the face right and left saying:"},
+    {t:"ar",x:"السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ",tr:"As-salāmu ʿalaykum wa raḥmatullāh",
+     en:"Peace be upon you and the mercy of Allah."},
+    {t:"rem",x:"The prayer is opened with Allah's greatness and closed with peace given to others. That is the whole religion in one movement."}]},
+
+{p:2,t:"What We Recite",ar:"مَا نَقْرَؤُهُ فِي الصَّلَاة",
+ sub:"Al-Fātiḥah, tashahhud, durūd — and the Qunūt of Ṣubḥ.",
+ b:[{t:"h",x:"Tashahhud"},
+    {t:"ar",x:"التَّحِيَّاتُ الْمُبَارَكَاتُ الصَّلَوَاتُ الطَّيِّبَاتُ لِلَّهِ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلَامُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ",
+     tr:"At-taḥiyyātu l-mubārakātu ṣ-ṣalawātu ṭ-ṭayyibātu lillāh…",
+     en:"All greetings, blessings and good deeds are for Allah. Peace be upon you, O Prophet, and the mercy of Allah and His blessings…"},
+    {t:"h",x:"Durūd Ibrāhīmī"},
+    {t:"ar",x:"اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ فِي الْعَالَمِينَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
+     tr:"Allāhumma ṣalli ʿalā sayyidinā Muḥammadin wa ʿalā āli sayyidinā Muḥammad, kamā ṣallayta ʿalā Ibrāhīma wa ʿalā āli Ibrāhīm, wa bārik ʿalā sayyidinā Muḥammadin wa ʿalā āli sayyidinā Muḥammad, kamā bārakta ʿalā Ibrāhīma wa ʿalā āli Ibrāhīma fi l-ʿālamīn, innaka ḥamīdun majīd",
+     en:"O Allah, send blessings upon our master Muḥammad and upon the family of our master Muḥammad, as You blessed Ibrāhīm and the family of Ibrāhīm; and send favour upon our master Muḥammad and upon his family, as You favoured Ibrāhīm and his family among the worlds. Indeed You are Praiseworthy, Glorious."},
+    {t:"h",x:"The duʿā after the durūd, before the salām"},
+    {t:"ar",x:"اللَّهُمَّ اغْفِرْ لِي مَا قَدَّمْتُ وَمَا أَخَّرْتُ وَمَا أَسْرَرْتُ وَمَا أَعْلَنْتُ وَمَا أَسْرَفْتُ وَمَا أَنْتَ أَعْلَمُ بِهِ مِنِّي، أَنْتَ الْمُقَدِّمُ وَأَنْتَ الْمُؤَخِّرُ، لَا إِلَهَ إِلَّا أَنْتَ",
+     tr:"Allāhumma ghfir lī mā qaddamtu wa mā akhkhartu wa mā asrartu wa mā aʿlantu wa mā asraftu wa mā anta aʿlamu bihi minnī, anta l-muqaddimu wa anta l-mu'akhkhiru, lā ilāha illā ant",
+     en:"O Allah, forgive me what I have sent ahead and what I have left behind, what I have concealed and what I have declared, and what I have been excessive in, and what You know better than I. You are the One who brings forward and the One who puts back. There is no god but You."},
+    {t:"ar",x:"اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ وَمِنْ عَذَابِ النَّارِ وَمِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ وَمِنْ فِتْنَةِ الْمَسِيحِ الدَّجَّالِ",
+     tr:"Allāhumma innī aʿūdhu bika min ʿadhābi l-qabri wa min ʿadhābi n-nāri wa min fitnati l-maḥyā wa l-mamāti wa min fitnati l-masīḥi d-dajjāl",
+     en:"O Allah, I seek refuge in You from the punishment of the grave, from the punishment of the Fire, from the trial of life and death, and from the trial of the Masīḥ ad-Dajjāl."},
+    {t:"note",x:"<b>Qunūt — a Shāfiʿī practice.</b> In the second rakʿah of Ṣubḥ, after rising from rukūʿ, the Qunūt duʿā is recited standing. It is sunnah; if forgotten, sujūd as-sahw is performed. It is also recited in the last rakʿah of Witr in the second half of Ramaḍān."},
+    {t:"rem",x:"Learn the meanings, not only the sounds. You cannot mean what you do not understand."}]},
+
+{p:2,t:"After the Salām",ar:"أَذْكَارُ بَعْدَ الصَّلَاة",
+ sub:"The most valuable two minutes of the whole prayer.",
+ b:[{t:"ol",x:["<b>Astaghfirullāh</b> — three times.",
+     "<b>Allāhumma anta s-salām wa minka s-salām, tabārakta yā dha l-jalāli wa l-ikrām.</b>",
+     "<b>Āyat al-Kursī</b> — whoever recites it after each farḍ prayer, nothing stands between him and Paradise except death.",
+     "<b>Subḥānallāh</b> 33 · <b>Al-ḥamdulillāh</b> 33 · <b>Allāhu akbar</b> 34.",
+     "The duʿā taught to Muʿādh ibn Jabal, below."]},
+    {t:"ar",x:"اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ",
+     tr:"Allāhumma aʿinnī ʿalā dhikrika wa shukrika wa ḥusni ʿibādatik",
+     en:"O Allah, help me to remember You, to thank You, and to worship You well."},
+    {t:"note",x:"Do not stand up the instant you say salām. The Prophet ﷺ would remain seated facing the qiblah, and the reward attached to these few minutes is out of all proportion to their length."},
+    {t:"rem",x:"You have already done the hard part. This is the interest on it."}]},
+
+/* ---------------- PART 3 ---------------- */
+{p:3,t:"Sujūd as-Sahw",ar:"سُجُودُ السَّهْو",
+ sub:"What to do when you forget, add, or lose count.",
+ b:[{t:"txt",x:"Sujūd as-sahw is two prostrations that repair a prayer disturbed by forgetfulness. <b>In the Shāfiʿī madhhab they are performed before the salām</b>, after the tashahhud."},
+    {t:"h",x:"When it is done"},
+    {t:"ul",x:["You left out a <b>sunnah abʿāḍ</b> — such as the first tashahhud, or the Qunūt of Ṣubḥ.",
+     "You added an action from the prayer — an extra rukūʿ, sujūd or rakʿah — by mistake.",
+     "You are unsure how many rakʿahs you have prayed."]},
+    {t:"h",x:"The rule for doubt"},
+    {t:"txt",x:"Build on <b>the smaller number</b>, which is what you are certain of. If you cannot decide between three and four, treat it as three, complete the fourth, then make sujūd as-sahw before the salām."},
+    {t:"h",x:"What is recited in the two sajdahs"},
+    {t:"ar",x:"سُبْحَانَ مَنْ لَا يَنَامُ وَلَا يَسْهُو",
+     tr:"Subḥāna man lā yanāmu wa lā yashū",
+     en:"Glory to the One who neither sleeps nor forgets. — said in each of the two sajdahs"},
+    {t:"txt",x:"The two sajdahs are performed exactly like the sujūd of the prayer, with a sitting between them, after the final tashahhud and <b>before</b> the salām."},
+    {t:"note",x:"A pillar (rukn) that is left out cannot be repaired by sujūd as-sahw. If you forget an entire rakʿah, you must pray it."},
+    {t:"rem",x:"Forgetting is human. Shayṭān wants you to abandon the prayer over it — instead, repair it and continue."}]},
+
+{p:3,t:"What Breaks the Prayer",ar:"مُبْطِلَاتُ الصَّلَاة",
+ sub:"And several things people believe break it, which do not.",
+ b:[{t:"h",x:"These invalidate the prayer"},
+    {t:"ul",x:["Speaking deliberately, even one word.",
+     "Eating or drinking anything.",
+     "Excessive continuous movement unrelated to the prayer — three successive movements.",
+     "Losing wudu, or the occurrence of major impurity.",
+     "Uncovering the ʿawrah, or najāsah touching the body, clothes or place.",
+     "Turning the chest away from the qiblah.",
+     "Laughing aloud.",
+     "Leaving out a pillar deliberately, or changing the intention."]},
+    {t:"h",x:"These do <i>not</i> break it"},
+    {t:"ul",x:["A small unavoidable movement — scratching once, adjusting a garment.",
+     "Involuntary coughing, sneezing or yawning.",
+     "Saying subḥānallāh to correct the imām, or a woman clapping once.",
+     "Tears, or a quiet involuntary sound.",
+     "A child walking past, or a small movement to prevent someone passing in front."]},
+    {t:"rem",x:"Do not restart a prayer out of vague worry. Learn what genuinely breaks it and stop doubting the rest."}]},
+
+{p:3,t:"Missed Prayers and Qaḍā'",ar:"قَضَاءُ الصَّلَاة",
+ sub:"What to do about the prayers behind you.",
+ b:[{t:"txt",x:"A prayer missed with a valid excuse — sleep or genuine forgetfulness — is prayed as soon as you wake or remember. The Prophet ﷺ said there is no negligence in sleep; negligence is in delaying the prayer until the next one comes."},
+    {t:"txt",x:"A prayer left deliberately is a serious sin, and it must still be made up. The Shāfiʿī position is that qaḍā' remains obligatory and should be done <b>immediately and in order</b>, alongside your current prayers, until the debt is cleared."},
+    {t:"h",x:"How to make them up"},
+    {t:"ol",x:["Pray them in the order they were missed, where you can recall the order.",
+     "Use the niyyah with <span style='font-family:Amiri,serif'>قَضَاءً</span> in place of <span style='font-family:Amiri,serif'>أَدَاءً</span>.",
+     "Add a fixed number of missed prayers to each day alongside the five current ones.",
+     "Keep a written count so the debt is real and visible."]},
+    {t:"note",x:"Despair is not repentance. A person who has missed years of prayer begins with the next one — today's — and then starts paying back."},
+    {t:"rem",x:"You cannot change what you missed. You can decide that today is where the missing stops."}]},
+
+{p:3,t:"Travelling",ar:"صَلَاةُ الْمُسَافِر",
+ sub:"Shortening and joining — a mercy, not a loophole.",
+ b:[{t:"h",x:"Qaṣr — shortening"},
+    {t:"txt",x:"On a journey of the required distance and for a permissible purpose, the four-rakʿah prayers — Ẓuhr, ʿAṣr and ʿIshā' — are prayed as <b>two</b>. Ṣubḥ and Maghrib are never shortened."},
+    {t:"h",x:"Jamʿ — joining"},
+    {t:"tbl",head:["Pair","Joined at","Called"],
+     rows:[["Ẓuhr + ʿAṣr","Ẓuhr time","jamʿ taqdīm"],["Ẓuhr + ʿAṣr","ʿAṣr time","jamʿ ta'khīr"],
+           ["Maghrib + ʿIshā'","Maghrib time","jamʿ taqdīm"],["Maghrib + ʿIshā'","ʿIshā' time","jamʿ ta'khīr"]]},
+    {t:"txt",x:"The travel concession begins once you have left the built-up area of your town, and ends when you return to it or intend a long stay."},
+    {t:"note",x:"<b>Behind a resident imām</b>, pray the full number. Shortening applies when you pray alone or behind another traveller."},
+    {t:"rem",x:"Allah made travel easier, not optional. Shorten the prayer — never drop it."}]},
+
+/* ---------------- PART 4 ---------------- */
+{p:4,t:"Praying Behind an Imām",ar:"صَلَاةُ الْجَمَاعَة",
+ sub:"Twenty-seven times the reward, and the manners that come with it.",
+ b:[{t:"txt",x:"The Prophet ﷺ said prayer in congregation is twenty-seven degrees above prayer alone. For men it is strongly emphasised; for women, prayer at home is permitted and rewarded, and joining the congregation is allowed."},
+    {t:"h",x:"Joining late — masbūq"},
+    {t:"ol",x:["Make the niyyah with <span style='font-family:Amiri,serif'>مَأْمُومًا</span> and give the takbīr.",
+     "Join the imām in whatever position he is in — do not wait for him to stand.",
+     "If you catch the rukūʿ, that rakʿah counts for you.",
+     "When the imām gives salām, stand and complete the rakʿahs you missed."]},
+    {t:"h",x:"The rows"},
+    {t:"ul",x:["Straighten the row; shoulder to shoulder, foot to foot.",
+     "Fill the front row first, and close every gap.",
+     "Do not begin a new row while there is space in the one ahead.",
+     "Never move ahead of the imām — follow him, do not race him."]},
+    {t:"one",x:"SAFF",cap:"Shoulder to shoulder, foot to foot, no gaps. Fill the front row first."},
+    {t:"rem",x:"A straight row is not decoration. The Prophet ﷺ would not begin until the rows were straight."}]},
+
+{p:4,t:"Jumuʿah",ar:"صَلَاةُ الْجُمُعَة",
+ sub:"The best day on which the sun rises.",
+ b:[{t:"txt",x:"Jumuʿah replaces Ẓuhr on Friday and is obligatory on adult, sane, resident men. It is two rakʿahs, preceded by two khuṭbahs, which are part of the prayer — not an introduction to it."},
+    {t:"h",x:"The sunnahs of the day"},
+    {t:"ul",x:["Ghusl, and wearing your best clean clothes.",
+     "Using the miswāk and applying perfume.",
+     "Going early — the earlier you arrive, the greater the reward.",
+     "Reciting Sūrah Al-Kahf.",
+     "Sending abundant ṣalawāt on the Prophet ﷺ."]},
+    {t:"note",x:"<b>Silence during the khuṭbah is obligatory.</b> The Prophet ﷺ said if you tell your companion to be quiet while the imām is speaking, you have spoken idly yourself. No phones, no whispering, no reading."},
+    {t:"txt",x:"There is an hour on Friday in which no Muslim asks Allah for something good except that it is granted. Many scholars place it in the last hour before Maghrib."},
+    {t:"rem",x:"Arrive early, sit close, stay silent. Friday rewards the one who prepares for it."}]},
+
+{p:4,t:"Sunnah and Nafl",ar:"السُّنَنُ وَالنَّوَافِل",
+ sub:"The ten rawātib the Prophet ﷺ kept, and the voluntary prayers beyond them.",
+ b:[{t:"txt",x:"Voluntary prayer may be offered in any number at any permitted time. But the ones the Prophet ﷺ kept <b>regularly</b> before and after the farḍ prayers carry special weight. These are <b>ten rakʿahs</b>, and they are called the <b>rawātib</b>."},
+    {t:"tbl",head:["Prayer","Before","After"],
+     rows:[["Ṣubḥ","2","—"],["Ẓuhr","2","2"],["Maghrib","—","2"],["ʿIshā'","—","2"]]},
+    {t:"txt",x:"Ibn ʿUmar (raḍiyallāhu ʿanhu) said: <i>I memorised ten rakʿahs from the Prophet ﷺ — two before Ẓuhr and two after, two after Maghrib at home, two after ʿIshā' at home, and two before Ṣubḥ.</i> (Bukhārī)"},
+    {t:"h",x:"The two before Ṣubḥ — the most emphasised of all"},
+    {t:"txt",x:"The Prophet ﷺ never left them, not even while travelling. He said: <i>The two are more beloved to me than the whole world.</i> (Muslim, Tirmidhī, Aḥmad)"},
+    {t:"txt",x:"Abū Hurayrah (raḍiyallāhu ʿanhu) reported: <i>Do not leave the two rakʿahs before Ṣubḥ, even if cavalry should drive you away.</i> (Aḥmad, Abū Dāwūd). ʿĀ'ishah (raḍiyallāhu ʿanhā) said he never gave any voluntary prayer the attention he gave these two. (Bukhārī, Muslim)"},
+    {t:"ul",x:["Pray them <b>lightly and briefly</b> — ʿĀ'ishah said she wondered whether he had even recited Al-Fātiḥah.",
+     "Recite Sūrah Al-Kāfirūn in the first rakʿah and Al-Ikhlāṣ in the second, quietly. (Aḥmad)",
+     "He would then <b>lie on his right side</b> until the Ṣubḥ prayer — understood by many scholars as applying to one who prays the sunnah at home.",
+     "If missed, they may be prayed after the Ṣubḥ prayer."]},
+    {t:"h",x:"Ẓuhr, Maghrib and ʿIshā'"},
+    {t:"txt",x:"At times the Prophet ﷺ prayed <b>four</b> before Ẓuhr and two after. ʿĀ'ishah (raḍiyallāhu ʿanhā) reported this (Aḥmad, Muslim), and at other times he prayed four after Ẓuhr as well. Two rakʿahs before Maghrib are permitted without making them a fixed practice — <i>Pray before Maghrib</i>, he said, then added, <i>for whoever wishes</i> (Bukhārī), disliking that people take it as a confirmed sunnah."},
+    {t:"h",x:"ʿAṣr — a lighter sunnah"},
+    {t:"txt",x:"Four rakʿahs before ʿAṣr may be prayed. They do not carry the weight of the rawātib. <i>May Allah have mercy on a man who prays four before ʿAṣr.</i> (Abū Dāwūd, Tirmidhī)"},
+    {t:"h",x:"Other voluntary prayers"},
+    {t:"tbl",head:["Prayer","When","Rakʿah"],
+     rows:[["Witr","After ʿIshā', last of the night","1, 3, 5…"],
+           ["Tahajjud","Last third of the night","2 by 2"],
+           ["Ḍuḥā","Mid-morning until before noon","2 to 8"],
+           ["Taḥiyyat al-masjid","On entering the masjid","2"],
+           ["Two after wudu","After completing wudu","2"]]},
+    {t:"note",x:"<b>Change your place.</b> A ḥadīth reported by Abū Hurayrah (Abū Dāwūd) indicates the sunnah should be prayed a little forward, back, left or right of where the farḍ was prayed — not on the same spot."},
+    {t:"rem",x:"Ten rakʿahs a day, kept for a year, build a person more than a hundred prayed once."}]},
+{p:4,t:"Prayers for Special Times",ar:"صَلَوَاتٌ خَاصَّة",
+ sub:"Four prayers every Muslim should know before they are needed.",
+ b:[{t:"h",x:"Ṣalāt al-Janāzah"},
+    {t:"txt",x:"A farḍ kifāyah — if some perform it, the obligation lifts from the rest. It has <b>no rukūʿ and no sujūd</b>: four takbīrs, standing throughout. After the first, Al-Fātiḥah; after the second, durūd; after the third, duʿā for the deceased; after the fourth, the salām."},
+    {t:"one",x:"JANAZAH",cap:"Four takbīrs, standing throughout — no rukūʿ and no sujūd."},
+    {t:"h",x:"The two Eids"},
+    {t:"txt",x:"Two rakʿahs with extra takbīrs — seven in the first rakʿah before Al-Fātiḥah, five in the second — followed by a khuṭbah. Sunnah muakkadah. Eat before Eid al-Fiṭr and after Eid al-Aḍḥā."},
+    {t:"h",x:"Ṣalāt al-Istikhārah"},
+    {t:"txt",x:"Two rakʿahs when you face a decision, then the duʿā of istikhārah. It is not a dream you wait for — you pray, you consult, and then you choose, trusting Allah to turn you toward the better outcome."},
+    {t:"ar",x:"اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ",
+     tr:"Allāhumma innī astakhīruka bi-ʿilmika wa astaqdiruka bi-qudratik",
+     en:"O Allah, I seek Your guidance by Your knowledge and Your power by Your might…"},
+    {t:"h",x:"Sujūd at-Tilāwah"},
+    {t:"txt",x:"On reciting or hearing a verse of prostration, say Allāhu akbar, prostrate once, and rise. Inside the prayer it is done in place; outside it, facing the qiblah in a state of purity."},
+    {t:"rem",x:"Learn the janāzah prayer now. The day you need it, there is no time to learn it."}]},
+{p:4,t:"Khushūʿ",ar:"الْخُشُوع",
+ sub:"Praying with a heart that is actually present.",
+ b:[{t:"txt",x:"A prayer can be perfect in form and empty in substance. Khushūʿ is the stillness of the limbs and the presence of the heart together — and it is what separates a prayer that changes you from one that merely counts."},
+    {t:"h",x:"Before you stand"},
+    {t:"ul",x:["Make wudu slowly and without hurry.",
+     "Put the phone in another room, face down and silent.",
+     "Pray at the start of the time, not at the end when you are rushed.",
+     "Remember who you are about to speak to."]},
+    {t:"h",x:"While you stand"},
+    {t:"ul",x:["Keep the eyes on the place of sujūd. The eyes wander first; the heart follows.",
+     "Understand what you are saying — learn the meaning of Al-Fātiḥah this week.",
+     "Recite slowly, pausing at the end of each āyah.",
+     "When the mind drifts, bring it back without frustration. It will drift again. Bring it back again."]},
+    {t:"note",x:"The Prophet ﷺ said a man may finish his prayer and have only a tenth of it written for him — only the portion he was present for."},
+    {t:"rem",x:"Pray as though it is your last prayer. One day it will be."}]},
+
+/* ---------------- PART 5 : FIQH ---------------- */
+{p:5,t:"Minor Ritual Impurity",ar:"الْحَدَثُ الأَصْغَر",
+ sub:"What wudu removes — and exactly what removes wudu.",
+ b:[{t:"txt",x:"Al-ḥadath al-aṣghar is the state that prevents prayer until wudu is performed. It is not dirt on the body; it is a ruling that attaches to a person until it is lifted."},
+    {t:"h",x:"The six farḍ of wudu (Shāfiʿī)"},
+    {t:"ol",x:["<b>Niyyah</b>, at the moment water first touches the face.",
+     "Washing the <b>whole face</b> — hairline to chin, ear to ear.",
+     "Washing <b>both arms including the elbows</b>.",
+     "Wiping <b>part of the head</b> — even a few hairs suffices.",
+     "Washing <b>both feet including the ankles</b>.",
+     "<b>Tartīb</b> — performing them in this order."]},
+    {t:"seq",x:"WUDU",cls:"four"},
+    {t:"h",x:"What breaks wudu — nawāqiḍ (Shāfiʿī)"},
+    {t:"ol",x:["Anything exiting the front or back passage — urine, stool, wind.",
+     "Loss of reason: sleep, fainting, intoxication. <i>Sleeping firmly seated does not break it.</i>",
+     "Skin contact between an adult man and an adult woman who are not maḥram, without a barrier.",
+     "Touching the private parts with the <b>palm or inner fingers</b>, one's own or another's."]},
+    {t:"note",x:"<b>Rule of doubt.</b> Certainty is not lifted by doubt. If you are sure you had wudu and unsure whether it broke, you still have wudu. Do not repeat wudu over waswasah."},
+    {t:"rem",x:"Points 3 and 4 are Shāfiʿī positions and differ in other madhāhib. Follow the madhhab you are taught."}]},
+
+{p:5,t:"Major Ritual Impurity",ar:"الْحَدَثُ الأَكْبَر",
+ sub:"What ghusl removes, and how it is performed. Causes follow in the next lesson.",
+ b:[{t:"txt",x:"Al-ḥadath al-akbar is the greater state of ritual impurity, lifted only by <b>ghusl</b> — washing the entire body with the intention of removing it. This is a matter of worship, not cleanliness: a person may be perfectly clean and still be in this state."},
+    {t:"h",x:"While in this state you may not"},
+    {t:"ul",x:["Pray, or make ṭawāf around the Kaʿbah.",
+     "Touch or carry the muṣḥaf.",
+     "Recite the Qur'an aloud from memory.",
+     "Remain inside the masjid.",
+     "Fast — in the states covered in the next lesson."]},
+    {t:"h",x:"The two farḍ of ghusl (Shāfiʿī)"},
+    {t:"ol",x:["<b>Niyyah</b> — to lift the major impurity, made as the water first reaches the body.",
+     "<b>Water reaching every part of the body</b>, including the roots of the hair and the skin beneath it."]},
+    {t:"one",x:"GHUSL",cap:"Head first, then the right side, then the left — until no part of the body is left dry."},
+    {t:"h",x:"The complete method"},
+    {t:"ol",x:["Wash both hands, then remove any impurity from the body.",
+     "Perform a complete wudu.",
+     "Pour water over the head three times, working it to the roots of the hair.",
+     "Pour over the right side of the body, then the left.",
+     "Ensure no part is left dry — behind the ears, the navel, between the toes.",
+     "Wash the feet last if they were not washed in the wudu."]},
+    {t:"rem",x:"Ghusl is one intention and water everywhere. Everything else is sunnah."}]},
+
+{p:5,aud:"m",t:"Janābah — Causes and Rulings",ar:"الْجَنَابَة",
+ sub:"The causes of major impurity, and what to do afterwards.",
+ b:[{t:"h",x:"What brings about this state"},
+    {t:"ul",x:["The emission of <b>manī</b> — in sleep or while awake, with or without desire present.",
+     "<b>Jimāʿ</b> — marital relations, whether or not emission occurs.",
+     "Embracing Islam.",
+     "Death — the deceased is washed by others."]},
+    {t:"h",x:"Waking and finding wetness"},
+    {t:"txt",x:"If you wake and find wetness, ghusl is obligatory. If you remember a dream but find nothing, it is not. If you find wetness but remember no dream, ghusl is still obligatory. This is a normal part of growing up — not a fault, and not a thing to feel ashamed about."},
+    {t:"h",x:"Manī, madhī and wadī"},
+    {t:"tbl",head:["Discharge","Description","Ruling"],
+     rows:[["Manī","Thick, released with desire","Ghusl obligatory"],
+           ["Madhī","Thin and clear, with arousal","Wash the area, then wudu"],
+           ["Wadī","Thick and white, after urination","Wash the area, then wudu"]]},
+    {t:"h",x:"Afterwards"},
+    {t:"ol",x:["Perform ghusl as taught in the previous lesson.",
+     "Prayers missed while in this state are made up.",
+     "If it occurs at night in Ramaḍān, perform ghusl and fast normally — the fast is valid even if the ghusl is delayed past Fajr."]},
+    {t:"note",x:"If you are unsure which discharge occurred, ask your teacher privately. Nobody is embarrassed by a fiqh question."},
+    {t:"rem",x:"Learn this before you need it. It is ordinary fiqh, and every Muslim is taught it."}]},
+
+{p:5,aud:"f",t:"Ḥayḍ and Nifās",ar:"الْحَيْضُ وَالنِّفَاس",
+ sub:"The causes of major impurity, and the rulings of the monthly cycle.",
+ b:[{t:"h",x:"What brings about this state"},
+    {t:"ul",x:["The emission of <b>manī</b>.",
+     "<b>Jimāʿ</b> — marital relations.",
+     "<b>Ḥayḍ</b> — the monthly cycle, once it ends.",
+     "<b>Nifās</b> — post-childbirth bleeding, once it ends.",
+     "Embracing Islam."]},
+    {t:"h",x:"Ḥayḍ — a natural state"},
+    {t:"txt",x:"This is something Allah created, not a punishment and not a fault. The Prophet ﷺ told ʿĀ'ishah (raḍiyallāhu ʿanhā) that it is something Allah has decreed for the daughters of Ādam."},
+    {t:"tbl",head:["","Minimum","Usual","Maximum"],
+     rows:[["Ḥayḍ","1 day and night","6–7 days","15 days"],
+           ["Purity between","15 days","—","—"],
+           ["Nifās","a moment","40 days","60 days"]]},
+    {t:"h",x:"During ḥayḍ or nifās"},
+    {t:"ul",x:["Prayer is <b>dropped entirely</b> — and is <b>not</b> made up afterwards.",
+     "Fasting is <b>not</b> permitted — and <b>is</b> made up later, day for day.",
+     "Ṭawāf, touching the muṣḥaf and remaining in the masjid are not permitted.",
+     "Dhikr, duʿā and listening to the Qur'an remain fully permitted."]},
+    {t:"note",x:"<b>Why prayer is not made up but fasting is.</b> Prayer returns five times a day and making it all up would be a burden Allah did not intend. Fasting comes once a year, so it is made up. The mercy is in the ruling itself."},
+    {t:"h",x:"When it ends"},
+    {t:"ol",x:["Purity is known by the flow stopping completely.",
+     "Perform ghusl as taught in the previous lesson, working water to the roots of the hair.",
+     "Braided hair need not be undone, so long as water reaches the scalp.",
+     "Resume prayer from the next prayer whose time is present."]},
+    {t:"note",x:"Bleeding outside the recognised pattern may be <b>istiḥāḍah</b>, which is ruled differently — prayer continues. Ask a female teacher rather than guessing."},
+    {t:"rem",x:"Knowing these rulings is part of your worship. Learn them properly and without embarrassment."}]},
+
+{p:5,t:"When There Is No Water",ar:"التَّيَمُّم وَالْمَسْح",
+ sub:"Tayammum, and wiping over socks and bandages.",
+ b:[{t:"txt",x:"Tayammum replaces wudu or ghusl when water is genuinely unavailable, or when using it would cause or worsen illness. It is a real substitute, not a lesser one."},
+    {t:"h",x:"The farḍ of tayammum (Shāfiʿī)"},
+    {t:"ol",x:["<b>Niyyah</b> — specifically to make the prayer permissible.",
+     "Striking clean earth or dust and <b>wiping the whole face</b>.",
+     "A second strike, wiping <b>both arms to the elbows</b>.",
+     "<b>Tartīb</b> — face before arms."]},
+    {t:"seq",x:"TAYAMMUM",cls:"three"},
+    {t:"note",x:"<b>Shāfiʿī.</b> One tayammum permits <b>one</b> farḍ prayer, plus as many voluntary prayers as you wish. A new farḍ prayer requires a fresh tayammum."},
+    {t:"h",x:"Masḥ over khuffayn"},
+    {t:"txt",x:"Leather socks put on while in a state of wudu may be wiped instead of washing the feet: <b>one day and night</b> for a resident, <b>three days and nights</b> for a traveller. Major impurity ends the concession — for ghusl the socks must come off."},
+    {t:"h",x:"Over a bandage"},
+    {t:"txt",x:"Wash what you can reach and wipe gently over the dressing. Do not remove a bandage if doing so would harm the wound."},
+    {t:"rem",x:"Allah does not intend hardship for you. Learn the concession properly and use it without guilt."}]}
+];
+
+/* ================= RENDER ================= */
+function el(h){const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;}
+const book=document.getElementById('book');
+let pageNo=0;
+
+function niyTable(mode){
+  const rows=NIY.map(r=>{
+    let ar=r[3];
+    if(mode) ar=ar.replace("لِلَّهِ تَعَالَى", mode+" لِلَّهِ تَعَالَى");
+    return `<tr><td><b>${r[0]}</b></td><td>${r[2]}</td><td class="ar">${ar}</td></tr>`;
+  }).join('');
+  return `<table><thead><tr><th>Prayer</th><th>Rakʿah</th><th>Niyyah</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+
+function figHTML(f,i){
+  const media = IMG_STATUS==="ready"
+    ? `<img src="${f.file}" alt="${f.lb}" loading="lazy">`
+    : `<div class="ph"><div class="i">🖼️</div><div class="c">${f.file.replace("assets/img/","")}</div></div>`;
+  return `<div class="fig"><div class="box">${i?`<span class="n">${i}</span>`:``}${media}</div>
+    <div class="lb">${f.lb}</div><div class="lar">${f.ar}</div></div>`;
+}
+function seqHTML(arr,cls){
+  return `<div class="blk"><div class="seq ${cls||''}">${arr.map((f,k)=>figHTML(f,k+1)).join('')}</div></div>`;
+}
+function oneHTML(f,cap){
+  const media = IMG_STATUS==="ready"
+    ? `<img src="${f.file}" alt="${f.lb}" loading="lazy">`
+    : `<div class="ph" style="aspect-ratio:16/10"><div class="i">🖼️</div><div class="c">${f.file.replace("assets/img/","")}</div></div>`;
+  return `<div class="blk"><div class="imgone"><div class="box">${media}</div></div>
+    <div class="imgcap">${cap||f.lb}</div></div>`;
+}
+
+function blocks(arr){
+  return arr.map(b=>{
+    switch(b.t){
+      case "h":   return `<div class="blk"><div class="h">${b.x}</div></div>`;
+      case "txt": return `<div class="blk"><p class="txt">${b.x}</p></div>`;
+      case "ar":  return `<div class="blk"><div class="arb">${b.x}</div>`+
+                         (b.tr?`<div class="trn">${b.tr}</div>`:``)+
+                         (b.en?`<div class="mng">${b.en}</div>`:``)+`</div>`;
+      case "ul":  return `<div class="blk"><ul class="pts">${b.x.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+      case "ol":  return `<div class="blk"><ol class="pts">${b.x.map(i=>`<li>${i}</li>`).join('')}</ol></div>`;
+      case "tbl": return `<div class="blk"><table><thead><tr>${b.head.map(h=>`<th>${h}</th>`).join('')}</tr></thead>`+
+                         `<tbody>${b.rows.map(r=>`<tr>${r.map((c,i)=>`<td${i===1&&/[\u0600-\u06FF]/.test(c)?' class="ar"':''}>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      case "niy": return `<div class="blk">${niyTable(b.mode)}</div>`;
+      case "note":return `<div class="blk"><div class="note">${b.x}</div></div>`;
+      case "rem": return `<div class="remember"><div class="rh">Remember</div><p>${b.x}</p></div>`;
+      case "seq": return seqHTML({POS_A:POSITIONS.slice(0,4),POS_B:POSITIONS.slice(4),
+                    WUDU:WUDU,TAYAMMUM:TAYAMMUM}[b.x],b.cls);
+      case "one": return oneHTML({SAFF:SINGLES.saff,JANAZAH:SINGLES.janazah,GHUSL:SINGLES.ghusl}[b.x],b.cap);
+      default: return "";
+    }
+  }).join('');
+}
+
+function page(inner,partLabel,right,part){
+  pageNo++;
+  return `<section class="page p${part||1}">
+    <div class="ptop"><span class="part">${partLabel||''}</span><span>${right||''}</span></div>
+    ${inner}
+    <div class="wm">Ṣalāh Complete · Thazkiya Level 3</div>
+    <div class="pno">${pageNo}</div>
+  </section>`;
+}
+
+const AUD={m:"For boys' class",f:"For girls' class"};
+
+function render(){
+book.innerHTML=""; pageNo=0;
+const SHOW=LESSONS;
+
+/* cover */
+book.appendChild(el(`<section class="page p1 cover">
+  <img class="crest" src="/logo.png" alt="">
+  <div class="car">الصَّلَاة</div>
+  <div class="cen">ṢALĀH COMPLETE</div>
+  <div class="cline"></div>
+  <div class="cmeta">
+    Thazkiya · Level 3<br>
+    Twenty-two lessons in five parts<br>
+    Shāfiʿī madhhab<br>
+    ManzilulQuran E-learning Academy
+  </div>
+  <div class="wm">Ṣalāh Complete · Thazkiya Level 3</div>
+</section>`));
+
+/* contents */
+let toc='',cur=0;
+SHOW.forEach((L,i)=>{
+  if(L.p!==cur){cur=L.p;toc+=`<div class="grp">${PARTS[cur]}</div>`;}
+  toc+=`<a href="#l${i+1}"><span class="n">${i+1}</span><span class="t">${L.t}</span>`+
+       (L.aud?`<span class="tocaud">${AUD[L.aud]}</span>`:``)+`</a>`;
+});
+book.appendChild(el(`<section class="page p1">
+  <h1 class="ltitle">Contents</h1>
+  <div class="rule"></div>
+  <div class="toc">${toc}</div>
+  <div class="wm">Ṣalāh Complete · Thazkiya Level 3</div>
+</section>`));
+
+/* lessons */
+SHOW.forEach((L,i)=>{
+  const n=i+1;
+  let inner=`<span class="lnum">Lesson ${n}</span>`+
+    (L.aud?`<div><span class="aud">${AUD[L.aud]}</span></div>`:``)+`
+    <h1 class="ltitle" id="l${n}">${L.t}</h1>
+    <div class="lar">${L.ar}</div>
+    <div class="lsub">${L.sub}</div>
+    <div class="rule"></div>
+    ${blocks(L.b)}`;
+  book.appendChild(el(page(inner,PARTS[L.p],`Lesson ${n} of ${SHOW.length}`,L.p)));
+});
+}
+render();
+
+
+</script>
+</body>
+</html>
