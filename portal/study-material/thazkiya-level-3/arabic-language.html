@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Arabic for Beginners · اللُّغَةُ الْعَرَبِيَّة — ManzilulQuran</title>
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lora:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sand:#FBF6EC;
+  --ink:#243642; --soft:#6C8291;
+  --sea:#12667F; --sea-d:#0B4A5C; --sea-l:#CDE7EE;
+  --sun:#D98B2B; --sun-l:#FBE7C9; --sun-bg:#FEF7EA;
+  --leaf:#3F7D4E; --leaf-bg:#E9F3EB;
+  --line:#E6DCC8;
+  --ui:'Poppins',system-ui,sans-serif;
+  --disp:'Lora',Georgia,serif;
+  --ar:'Amiri',serif;
+  --r:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:var(--ui);color:var(--ink);line-height:1.7;min-height:100vh;
+  background:
+    radial-gradient(800px 400px at 105% -5%,rgba(217,139,43,.16),transparent 60%),
+    radial-gradient(700px 380px at -10% 15%,rgba(205,231,238,.7),transparent 58%),
+    var(--sand);
+  background-attachment:fixed}
+
+#progress{position:fixed;top:0;left:0;height:4px;width:0;z-index:120;
+  background:linear-gradient(90deg,var(--sea-l),var(--sea),var(--sun));transition:width .1s}
+
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:11px;padding:10px 14px;
+  backdrop-filter:blur(12px);background:rgba(251,246,236,.94);border-bottom:1px solid var(--line)}
+.menu-btn{width:44px;height:44px;border:0;border-radius:13px;cursor:pointer;flex:0 0 auto;color:#fff;font-size:18px;
+  background:linear-gradient(140deg,var(--sea),var(--sea-d));display:grid;place-items:center;transition:.2s}
+.menu-btn:hover{transform:translateY(-2px)}
+.brand h1{font-family:var(--ar);font-size:19px;font-weight:700;color:var(--sea);line-height:1.15;white-space:nowrap}
+.brand .en{font-family:var(--disp);font-size:11px;color:var(--sun);font-weight:700;letter-spacing:1px}
+.sp{flex:1}
+.pill{font-size:11.5px;font-weight:700;color:#fff;background:var(--sea);border-radius:100px;padding:5px 12px;white-space:nowrap}
+
+.scrim{position:fixed;inset:0;background:rgba(11,74,92,.5);z-index:130;opacity:0;pointer-events:none;transition:.25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(310px,84vw);z-index:140;overflow-y:auto;padding:20px 14px;
+  background:linear-gradient(180deg,#fff,var(--sea-l) 70%,var(--sun-bg));border-right:1px solid var(--line);
+  transform:translateX(-105%);transition:transform .3s cubic-bezier(.3,.85,.3,1)}
+.drawer.on{transform:none}
+.drawer h2{font-family:var(--disp);font-size:20px;color:var(--sea);padding:2px 10px}
+.drawer .ar{font-family:var(--ar);font-size:16px;color:var(--sun);display:block}
+.drawer .sub{font-size:11.5px;color:var(--soft);padding:0 10px 14px;border-bottom:2px dotted var(--line);margin-bottom:10px}
+.bn{display:flex;align-items:center;gap:10px;padding:11px;min-height:44px;border-radius:12px;text-decoration:none;
+  color:var(--ink);font-weight:600;font-size:14px;transition:.15s;margin-bottom:2px}
+.bn:hover{background:#fff;transform:translateX(3px)}
+.bn .n{width:28px;height:28px;flex:0 0 auto;border-radius:9px;display:grid;place-items:center;
+  background:var(--sea);color:#fff;font-size:12px;font-weight:700}
+
+.wrap{max-width:780px;margin:0 auto;padding:22px 16px 70px}
+
+.cover{text-align:center;padding:36px 22px;border-radius:var(--r);margin-bottom:24px;
+  background:linear-gradient(160deg,#fff,var(--sea-l) 60%,var(--sun-bg));
+  border:1px solid var(--line);box-shadow:0 16px 40px -22px rgba(11,74,92,.5)}
+.cover .logo{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 14px;border:3px solid var(--sun-l)}
+.cover .ar-t{font-family:var(--ar);font-size:clamp(1.9rem,7vw,2.6rem);font-weight:700;color:var(--sea-d)}
+.cover .en-t{font-family:var(--disp);font-size:clamp(1.05rem,3.6vw,1.3rem);font-weight:700;color:var(--sun);letter-spacing:2px}
+.cover .tag{display:inline-block;margin-top:10px;font-size:12.5px;font-weight:700;color:#7a4f10;
+  background:var(--sun-l);border:1px solid rgba(217,139,43,.35);border-radius:100px;padding:6px 15px}
+.cover p{color:var(--soft);font-size:14.5px;max-width:52ch;margin:14px auto 0}
+.cover a{display:inline-block;margin-top:18px;text-decoration:none;background:linear-gradient(135deg,var(--sun),#B0691A);
+  color:#fff;font-family:var(--disp);font-weight:700;font-size:15px;padding:13px 30px;border-radius:100px}
+
+.howto{background:var(--leaf-bg);border-left:5px solid var(--leaf);border-radius:14px;padding:16px 18px;margin-bottom:24px}
+.howto h3{font-family:var(--disp);color:var(--leaf);font-size:16px;margin-bottom:5px}
+.howto ol{margin:6px 0 0 17px;font-size:14px;color:var(--soft)}
+
+.lesson{background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:var(--r);
+  padding:26px 20px;margin-bottom:24px;box-shadow:0 16px 40px -24px rgba(11,74,92,.45);
+  scroll-margin-top:76px;position:relative;overflow:hidden}
+.lesson::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--sea),var(--leaf),var(--sun))}
+.l-head{text-align:center;margin-bottom:14px}
+.l-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.5px;color:#fff;
+  background:var(--sea);border-radius:100px;padding:5px 14px}
+.l-em{font-size:44px;margin:10px 0 2px;line-height:1}
+.l-head h2{font-family:var(--disp);font-size:24px;color:var(--ink);font-weight:700}
+.l-head .l-ar{font-family:var(--ar);font-size:21px;color:var(--sea);font-weight:700;direction:rtl}
+.l-intro{font-size:14.5px;color:var(--soft);text-align:center;margin-bottom:16px}
+
+.plate{margin:16px -20px}
+.plate img{width:100%;display:block}
+.plate .ph{aspect-ratio:16/9;border-top:2px dashed var(--sea-l);border-bottom:2px dashed var(--sea-l);
+  background:repeating-linear-gradient(45deg,#fff,#fff 10px,var(--sun-bg) 10px,var(--sun-bg) 20px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;padding:16px}
+.plate .ph .i{font-size:28px}.plate .ph .c{font-family:monospace;font-size:11px;color:var(--soft);word-break:break-all}
+.plate .cap{text-align:center;font-size:13px;color:var(--soft);padding:8px 20px 0}
+
+.sec-tag{font-size:11.5px;font-weight:700;letter-spacing:.6px;margin-bottom:8px}
+
+/* vocabulary */
+.vocab{margin-bottom:18px}
+.vocab .sec-tag{color:var(--sea)}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.vc{background:linear-gradient(160deg,#fff,var(--sea-l));border:1.5px solid rgba(18,102,127,.25);
+  border-radius:14px;padding:13px 10px;text-align:center;cursor:pointer;transition:.18s;min-height:44px}
+.vc:active{transform:scale(.96)}
+.vc .a{font-family:var(--ar);font-size:25px;font-weight:700;color:var(--sea-d);direction:rtl;line-height:1.7}
+.vc .t{font-style:italic;font-size:12px;color:var(--sun);font-weight:600}
+.vc .e{font-size:13.5px;color:var(--ink);font-weight:600;max-height:0;overflow:hidden;opacity:0;transition:.22s}
+.vc.on{border-color:var(--sun);background:linear-gradient(160deg,#fff,var(--sun-bg))}
+.vc.on .e{max-height:60px;opacity:1;margin-top:3px}
+.vhint{text-align:center;font-size:12px;color:var(--soft);margin-top:8px}
+
+/* grammar */
+.gram{background:linear-gradient(160deg,#fff,var(--leaf-bg));border:1px solid rgba(63,125,78,.3);
+  border-left:5px solid var(--leaf);border-radius:14px;padding:16px 18px;margin-bottom:18px}
+.gram .sec-tag{color:var(--leaf)}
+.gram h4{font-family:var(--disp);font-size:17px;color:var(--leaf);margin-bottom:5px}
+.gram p{font-size:14.5px;color:var(--ink);margin-bottom:8px}
+.gram .ex{background:#fff;border:1px solid rgba(63,125,78,.22);border-radius:10px;padding:9px 12px;margin-bottom:6px}
+.gram .ex .a{font-family:var(--ar);font-size:20px;font-weight:700;color:var(--sea-d);direction:rtl;text-align:right}
+.gram .ex .m{font-size:13px;color:var(--soft)}
+
+/* sentences */
+.sents{margin-bottom:18px}
+.sents .sec-tag{color:var(--sun)}
+.sent{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:9px}
+.sent .a{font-family:var(--ar);font-size:22px;font-weight:700;color:var(--sea-d);direction:rtl;text-align:right;line-height:2}
+.sent .t{font-style:italic;font-size:12.5px;color:var(--sun);font-weight:600}
+.sent .m{font-size:14px;color:var(--soft)}
+
+/* quran link */
+.qlink{background:linear-gradient(160deg,#fff,var(--sun-bg));border:2px solid var(--sun-l);
+  border-radius:14px;padding:16px 18px;margin-bottom:18px}
+.qlink .sec-tag{color:var(--sun)}
+.qlink p{font-size:14px;color:var(--ink);margin-bottom:8px}
+.qlink .a{font-family:var(--ar);font-size:21px;font-weight:700;color:var(--sea-d);direction:rtl;text-align:right;line-height:2}
+.qlink .r{font-size:12px;font-weight:700;color:var(--sun);text-align:right}
+
+/* task */
+.task{background:linear-gradient(160deg,#fff,var(--sea-l));border:2px solid var(--sea);border-radius:14px;padding:16px 18px}
+.task .sec-tag{color:var(--sea)}
+.task h4{font-family:var(--disp);font-size:16px;color:var(--sea-d);margin:2px 0 6px}
+.task ol{margin-left:17px;font-size:14px;color:var(--soft)}
+.task li{margin-bottom:4px}
+.task .send{margin-top:10px;background:var(--sea-d);color:#fff;border-radius:10px;padding:9px 13px;font-size:13px;font-weight:600}
+
+.done{text-align:center;padding:38px 24px;border-radius:var(--r);color:#fff;
+  background:linear-gradient(160deg,var(--sea),var(--sea-d))}
+.done .em{font-size:52px}
+.done h2{font-family:var(--disp);font-size:26px;margin:8px 0 6px}
+.done p{font-size:14.5px;opacity:.95;max-width:44ch;margin:0 auto}
+.foot{text-align:center;color:var(--soft);font-size:12px;margin-top:28px;padding-top:16px;border-top:2px dotted var(--line)}
+.foot .ar{font-family:var(--ar);font-size:16px;color:var(--sea);display:block;margin-bottom:3px}
+
+@media(max-width:520px){
+  .brand .en{display:none}
+  .wrap{padding:16px 12px 50px}
+  .lesson{padding:22px 15px}
+  .plate{margin:14px -15px}
+  .l-head h2{font-size:21px}
+  .vgrid{grid-template-columns:repeat(auto-fill,minmax(125px,1fr))}
+  .sent .a{font-size:19px}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Lesson menu">☰</button>
+  <div class="brand">
+    <h1>اللُّغَةُ الْعَرَبِيَّة</h1>
+    <div class="en">ARABIC FOR BEGINNERS</div>
+  </div>
+  <div class="sp"></div>
+  <div class="pill">Thazkiya · L3</div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<nav class="drawer" id="drawer">
+  <h2>Arabic for Beginners<span class="ar">اللُّغَةُ الْعَرَبِيَّة</span></h2>
+  <div class="sub">Ten lessons · about 100 words</div>
+  <div id="bn"></div>
+</nav>
+
+<div class="wrap">
+  <section class="cover">
+    <img class="logo" src="/logo.png" alt="">
+    <div class="ar-t">اللُّغَةُ الْعَرَبِيَّة</div>
+    <div class="en-t">ARABIC FOR BEGINNERS</div>
+    <span class="tag">Thazkiya · Level 3 · Ages 11–15</span>
+    <p>You can already read Arabic letters. Now learn what the words mean. Ten lessons, about a hundred words, and enough grammar to build your own sentences — and to start recognising real words inside the āyāt you recite.</p>
+    <a href="#lesson1">Start lesson one →</a>
+  </section>
+
+  <div class="howto">
+    <h3>How to use this book</h3>
+    <ol>
+      <li><b>Tap a word card</b> to hide or show the English. Cover the meanings and test yourself.</li>
+      <li><b>Read every sentence out loud.</b> Arabic is learned by the mouth, not only the eyes.</li>
+      <li><b>Do the task</b> before the next class and send it to your teacher.</li>
+    </ol>
+  </div>
+
+  <main id="lessons"></main>
+
+  <section class="done" id="done">
+    <div class="em">🎉</div>
+    <h2>Mabrūk! مَبْرُوك</h2>
+    <p>A hundred words and ten grammar points. You can now build your own Arabic sentences — keep going.</p>
+  </section>
+
+  <div class="foot">
+    <span class="ar">وَقُل رَّبِّ زِدْنِي عِلْمًا</span>
+    Arabic for Beginners · ManzilulQuran E-learning Academy
+  </div>
+</div>
+
+<script>
+/* ==========================================================================
+   Arabic language course — vocabulary, grammar and sentences.
+   ⚠️ Have a teacher check the harakāt on every Arabic word and sentence
+   before publishing. Beginners copy exactly what they see.
+
+   Images: 10 plates, one per lesson. Flip IMG_STATUS to "ready" once
+   thazkiya-level-3/assets/img/ holds all ten. Export .jpeg.
+
+   Malayalam later: this renders from LESSONS, so add ml:{} per lesson.
+   ========================================================================== */
+
+const IMG_STATUS="placeholder";
+
+const LESSONS=[
+{
+ em:"👋", t:"Greetings and Names", ar:"التَّحِيَّةُ وَالأَسْمَاء",
+ intro:"The first words you will ever say in Arabic.",
+ img:{f:"arb-01-greeting.jpeg",cap:"Two children greeting each other outside a school gate.",
+  p:"Cartoon illustration for a children's Arabic textbook. Flat bright colours, thick clean outlines, simple rounded shapes, no facial detail beyond a simple smile. Two children greeting each other with a wave outside a school gate, morning light, plain cream background. 16:9."},
+ vocab:[["السَّلَامُ عَلَيْكُمْ","as-salāmu ʿalaykum","peace be upon you"],
+        ["وَعَلَيْكُمُ السَّلَام","wa ʿalaykumu s-salām","and upon you peace"],
+        ["صَبَاحُ الْخَيْر","ṣabāḥu l-khayr","good morning"],
+        ["مَسَاءُ الْخَيْر","masā'u l-khayr","good evening"],
+        ["أَنَا","anā","I / I am"],
+        ["أَنْتَ","anta","you (to a boy)"],
+        ["أَنْتِ","anti","you (to a girl)"],
+        ["اسْم","ism","name"],
+        ["مَنْ","man","who"],
+        ["شُكْرًا","shukran","thank you"]],
+ gram:{h:"Talking to a boy and to a girl",
+  p:"Arabic changes the word for <i>you</i> depending on who you are speaking to. A boy is <b>anta</b>. A girl is <b>anti</b>. Only the last vowel changes — but you must get it right.",
+  ex:[["أَنْتَ وَلَد","You are a boy."],["أَنْتِ بِنْت","You are a girl."]]},
+ sents:[["مَا اسْمُكَ؟","mā smuka?","What is your name? (to a boy)"],
+        ["مَا اسْمُكِ؟","mā smuki?","What is your name? (to a girl)"],
+        ["اسْمِي أَحْمَد","ismī Aḥmad","My name is Ahmad."],
+        ["كَيْفَ حَالُكَ؟","kayfa ḥāluka?","How are you?"],
+        ["أَنَا بِخَيْر، الْحَمْدُ لِلَّه","anā bi-khayr, al-ḥamdu lillāh","I am well, praise be to Allah."]],
+ q:{p:"You say <b>as-salāmu ʿalaykum</b> every day. It is also how the people of Jannah greet one another:",
+    a:"تَحِيَّتُهُمْ فِيهَا سَلَامٌ",r:"Sūrah Ibrāhīm 14:23"},
+ task:{h:"Ten greetings",
+  steps:["Greet ten different people with as-salāmu ʿalaykum this week.","Ask one of them مَا اسْمُكَ؟ and understand the answer.","Write down how many replied in Arabic."],
+  send:"Send your number to your teacher."}
+},
+{
+ em:"👉", t:"This and That", ar:"هٰذَا وَهٰذِهِ",
+ intro:"Pointing at things — and the first rule of Arabic gender.",
+ img:{f:"arb-02-this.jpeg",cap:"A child pointing at objects on a table — a book, a pen, a bag, a door.",
+  p:"Cartoon illustration for a children's Arabic textbook. Flat bright colours, thick outlines, simple shapes. A child pointing at a table holding a book, a pen, a school bag and a key, with a door behind. Plain cream background, no text. 16:9."},
+ vocab:[["هٰذَا","hādhā","this (masculine)"],
+        ["هٰذِهِ","hādhihi","this (feminine)"],
+        ["كِتَاب","kitāb","book"],
+        ["قَلَم","qalam","pen"],
+        ["بَاب","bāb","door"],
+        ["حَقِيبَة","ḥaqībah","bag"],
+        ["نَافِذَة","nāfidhah","window"],
+        ["سَاعَة","sāʿah","clock / watch"],
+        ["مِفْتَاح","miftāḥ","key"],
+        ["كُرْسِيّ","kursī","chair"]],
+ gram:{h:"Every Arabic word is a boy or a girl",
+  p:"Arabic nouns are masculine or feminine. Most feminine words end in <b>ة</b> — the tā' marbūṭah. For masculine words say <b>hādhā</b>; for feminine say <b>hādhihi</b>.",
+  ex:[["هٰذَا كِتَاب","This is a book. (kitāb — masculine)"],
+      ["هٰذِهِ حَقِيبَة","This is a bag. (ḥaqībah — ends in ة, feminine)"]]},
+ sents:[["هٰذَا قَلَم","hādhā qalam","This is a pen."],
+        ["هٰذِهِ سَاعَة","hādhihi sāʿah","This is a clock."],
+        ["هٰذَا بَاب وَهٰذِهِ نَافِذَة","hādhā bāb wa hādhihi nāfidhah","This is a door and this is a window."],
+        ["مَا هٰذَا؟","mā hādhā?","What is this?"],
+        ["هٰذَا مِفْتَاح","hādhā miftāḥ","This is a key."]],
+ q:{p:"The word <b>kitāb</b> means book. You already know it from the name of the Qur'an itself:",
+    a:"ذَٰلِكَ الْكِتَابُ لَا رَيْبَ فِيهِ",r:"Sūrah Al-Baqarah 2:2"},
+ task:{h:"Ten things in your room",
+  steps:["Point at ten things in your room and name each in Arabic.","Write hādhā or hādhihi in front of each one.","Check: does the word end in ة?"],
+  send:"Send your list of ten to your teacher."}
+},
+{
+ em:"👨‍👩‍👧", t:"My Family", ar:"أُسْرَتِي",
+ intro:"The people closest to you — and how to say <i>my</i>.",
+ img:{f:"arb-03-family.jpeg",cap:"A family at home — father, mother, brother, sister, grandfather.",
+  p:"Cartoon illustration for a children's Arabic textbook. Flat bright colours, thick outlines, simple rounded shapes. A warm family scene at home with a father, mother, grandfather, a boy and a girl, modest clothing, plain cream background. 16:9."},
+ vocab:[["أُسْرَة","usrah","family"],
+        ["أَب","ab","father"],
+        ["أُمّ","umm","mother"],
+        ["أَخ","akh","brother"],
+        ["أُخْت","ukht","sister"],
+        ["جَدّ","jadd","grandfather"],
+        ["جَدَّة","jaddah","grandmother"],
+        ["ابْن","ibn","son"],
+        ["بِنْت","bint","daughter / girl"],
+        ["بَيْت","bayt","house"]],
+ gram:{h:"Saying <i>my</i> — just add ي",
+  p:"To say <i>my</i> in Arabic, add <b>ـي</b> to the end of the word. No separate word is needed.",
+  ex:[["كِتَاب ← كِتَابِي","book → my book"],
+      ["أُمّ ← أُمِّي","mother → my mother"],
+      ["بَيْت ← بَيْتِي","house → my house"]]},
+ sents:[["هٰذَا أَبِي","hādhā abī","This is my father."],
+        ["هٰذِهِ أُمِّي","hādhihi ummī","This is my mother."],
+        ["لِي أَخ وَأُخْت","lī akh wa ukht","I have a brother and a sister."],
+        ["أُسْرَتِي كَبِيرَة","usratī kabīrah","My family is big."],
+        ["أَيْنَ جَدِّي؟","ayna jaddī?","Where is my grandfather?"]],
+ q:{p:"<b>Bayt</b> means house. The Kaʿbah is called the House of Allah — <i>bayt</i>:",
+    a:"وَطَهِّرْ بَيْتِيَ لِلطَّائِفِينَ",r:"Sūrah Al-Ḥajj 22:26"},
+ task:{h:"Draw your family",
+  steps:["Write out your family tree on one sheet.","Label every person in Arabic — abī, ummī, akhī, ukhtī, jaddī.","Read the whole tree aloud to someone at home."],
+  send:"Photograph your labelled family tree and send it."}
+},
+{
+ em:"🏠", t:"In the House", ar:"فِي الْبَيْت",
+ intro:"Where things are — in, on, under, beside.",
+ img:{f:"arb-04-house.jpeg",cap:"A cutaway house showing a book on a table, a cat under a chair, a bird beside a window.",
+  p:"Cartoon illustration for a children's Arabic textbook. Flat bright colours, thick outlines. A simple cutaway view of a house interior: a book on a table, a cat under a chair, a bird on a windowsill, a bed and a lamp. Plain cream background. 16:9."},
+ vocab:[["فِي","fī","in"],
+        ["عَلَى","ʿalā","on"],
+        ["تَحْتَ","taḥta","under"],
+        ["أَمَامَ","amāma","in front of"],
+        ["خَلْفَ","khalfa","behind"],
+        ["مَعَ","maʿa","with"],
+        ["غُرْفَة","ghurfah","room"],
+        ["مَطْبَخ","maṭbakh","kitchen"],
+        ["سَرِير","sarīr","bed"],
+        ["طَاوِلَة","ṭāwilah","table"]],
+ gram:{h:"Words that show place",
+  p:"These little words come <b>before</b> the noun, exactly as in English. Learn them as a group — they appear in almost every sentence you will ever read.",
+  ex:[["الْكِتَابُ عَلَى الطَّاوِلَة","The book is on the table."],
+      ["الْقِطُّ تَحْتَ الْكُرْسِيّ","The cat is under the chair."]]},
+ sents:[["أَنَا فِي الْبَيْت","anā fi l-bayt","I am in the house."],
+        ["أُمِّي فِي الْمَطْبَخ","ummī fi l-maṭbakh","My mother is in the kitchen."],
+        ["الْحَقِيبَةُ تَحْتَ السَّرِير","al-ḥaqībatu taḥta s-sarīr","The bag is under the bed."],
+        ["الْبَابُ أَمَامَ النَّافِذَة","al-bābu amāma n-nāfidhah","The door is in front of the window."],
+        ["أَنَا مَعَ أَخِي","anā maʿa akhī","I am with my brother."]],
+ q:{p:"<b>Fī</b> — in — is one of the commonest words in the Qur'an. You have read it hundreds of times:",
+    a:"مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ",r:"Sūrah Al-Baqarah 2:284"},
+ task:{h:"Where is it?",
+  steps:["Put five objects around your room in different places.","Write a sentence for each using fī, ʿalā, taḥta, amāma or khalfa.","Read all five aloud."],
+  send:"Send your five sentences."}
+},
+{
+ em:"🎨", t:"Colours", ar:"الأَلْوَان",
+ intro:"Describing things — and the word order that surprises everyone.",
+ img:{f:"arb-05-colours.jpeg",cap:"Coloured objects — a red book, a green door, a blue bag, a white cup, a black pen.",
+  p:"Cartoon illustration for a children's Arabic textbook. Flat bright colours, thick outlines. A neat row of coloured objects on a shelf: a red book, a green door, a blue bag, a white cup, a black pen, a yellow flower. Plain cream background, no text. 16:9."},
+ vocab:[["لَوْن","lawn","colour"],
+        ["أَحْمَر","aḥmar","red"],
+        ["أَزْرَق","azraq","blue"],
+        ["أَخْضَر","akhḍar","green"],
+        ["أَصْفَر","aṣfar","yellow"],
+        ["أَبْيَض","abyaḍ","white"],
+        ["أَسْوَد","aswad","black"],
+        ["كَبِير","kabīr","big"],
+        ["صَغِير","ṣaghīr","small"],
+        ["جَمِيل","jamīl","beautiful"]],
+ gram:{h:"The describing word comes second",
+  p:"In English we say <i>a red book</i>. In Arabic it is the other way round — the noun first, then the description: <b>kitābun aḥmar</b>, literally <i>a book red</i>.",
+  ex:[["كِتَابٌ أَحْمَر","a red book"],
+      ["بَيْتٌ كَبِير","a big house"],
+      ["حَقِيبَةٌ جَمِيلَة","a beautiful bag — note the ة on both words"]]},
+ sents:[["هٰذَا كِتَابٌ أَزْرَق","hādhā kitābun azraq","This is a blue book."],
+        ["بَيْتِي صَغِير","baytī ṣaghīr","My house is small."],
+        ["الْبَابُ أَخْضَر","al-bābu akhḍar","The door is green."],
+        ["مَا لَوْنُ حَقِيبَتِكَ؟","mā lawnu ḥaqībatika?","What colour is your bag?"],
+        ["حَقِيبَتِي بَيْضَاء","ḥaqībatī bayḍā'","My bag is white."]],
+ q:{p:"<b>Abyaḍ</b> — white — appears when the Qur'an describes the dawn:",
+    a:"الْخَيْطُ الْأَبْيَضُ مِنَ الْخَيْطِ الْأَسْوَدِ",r:"Sūrah Al-Baqarah 2:187"},
+ task:{h:"Colour hunt",
+  steps:["Find one object of each colour you learned.","Write the Arabic for each — noun first, then colour.","Read your six phrases aloud."],
+  send:"Send your six phrases."}
+},
+{
+ em:"🔢", t:"Numbers", ar:"الأَرْقَام",
+ intro:"One to twenty, and counting things around you.",
+ img:{f:"arb-06-numbers.jpeg",cap:"Arabic numerals ١ to ١٠ with matching groups of objects.",
+  p:"Cartoon illustration for a children's Arabic textbook. Flat bright colours, thick outlines. Eastern Arabic numerals ١ ٢ ٣ ٤ ٥ ٦ ٧ ٨ ٩ ١٠ each beside a matching group of simple objects — one apple, two pens, three books. Plain cream background. 16:9."},
+ vocab:[["وَاحِد ١","wāḥid","one"],
+        ["اثْنَان ٢","ithnān","two"],
+        ["ثَلَاثَة ٣","thalāthah","three"],
+        ["أَرْبَعَة ٤","arbaʿah","four"],
+        ["خَمْسَة ٥","khamsah","five"],
+        ["سِتَّة ٦","sittah","six"],
+        ["سَبْعَة ٧","sabʿah","seven"],
+        ["ثَمَانِيَة ٨","thamāniyah","eight"],
+        ["تِسْعَة ٩","tisʿah","nine"],
+        ["عَشَرَة ١٠","ʿasharah","ten"]],
+ gram:{h:"Arabic numerals are written left to right",
+  p:"Arabic words run right to left, but numbers do not. ١٢٣ is read <b>one hundred and twenty-three</b>, exactly as in English. Only the shapes are different.",
+  ex:[["٥ صَلَوَات","five prayers"],["١٢ شَهْرًا","twelve months"]]},
+ sents:[["كَمْ كِتَابًا عِنْدَكَ؟","kam kitāban ʿindaka?","How many books do you have?"],
+        ["عِنْدِي خَمْسَةُ كُتُب","ʿindī khamsatu kutub","I have five books."],
+        ["فِي الْأُسْبُوعِ سَبْعَةُ أَيَّام","fi l-usbūʿi sabʿatu ayyām","There are seven days in a week."],
+        ["نُصَلِّي خَمْسَ صَلَوَات","nuṣallī khamsa ṣalawāt","We pray five prayers."],
+        ["عُمْرِي عَشَرُ سَنَوَات","ʿumrī ʿasharu sanawāt","I am ten years old."]],
+ q:{p:"The number <b>seven</b> appears often. The heavens are described as seven:",
+    a:"سَبْعَ سَمَاوَاتٍ طِبَاقًا",r:"Sūrah Nūḥ 71:15"},
+ task:{h:"Count your day",
+  steps:["Count five different things at home and write the number in Arabic numerals.","Write the number word beside each in Arabic letters.","Say your age in Arabic to someone."],
+  send:"Send your list of five."}
+},
+{
+ em:"❓", t:"Asking Questions", ar:"أَدَوَاتُ الاسْتِفْهَام",
+ intro:"Five small words that unlock every conversation.",
+ img:{f:"arb-07-questions.jpeg",cap:"A child raising a hand in class, with question marks and small icons for who, what, where, when.",
+  p:"Cartoon illustration for a children's Arabic textbook. Flat bright colours, thick outlines. A child raising a hand in a classroom, a teacher beside a board, floating question marks and small simple icons for a person, an object, a map pin and a clock. Plain cream background. 16:9."},
+ vocab:[["مَا","mā","what (for things)"],
+        ["مَنْ","man","who (for people)"],
+        ["أَيْنَ","ayna","where"],
+        ["كَيْفَ","kayfa","how"],
+        ["كَمْ","kam","how many"],
+        ["مَتَى","matā","when"],
+        ["لِمَاذَا","limādhā","why"],
+        ["هَلْ","hal","is / does — yes-no question"],
+        ["نَعَمْ","naʿam","yes"],
+        ["لَا","lā","no"]],
+ gram:{h:"Two ways to ask",
+  p:"For a yes-or-no question, put <b>hal</b> at the front and nothing else changes. For everything else, start with the question word.",
+  ex:[["هَلْ عِنْدَكَ قَلَم؟","Do you have a pen?"],
+      ["أَيْنَ الْقَلَم؟","Where is the pen?"]]},
+ sents:[["مَنْ هٰذَا؟","man hādhā?","Who is this?"],
+        ["أَيْنَ بَيْتُكَ؟","ayna baytuka?","Where is your house?"],
+        ["كَيْفَ حَالُكِ؟","kayfa ḥāluki?","How are you? (to a girl)"],
+        ["مَتَى الصَّلَاة؟","matā ṣ-ṣalāh?","When is the prayer?"],
+        ["هَلْ أَنْتَ طَالِب؟","hal anta ṭālib?","Are you a student?"]],
+ q:{p:"<b>Mā</b> — what — begins one of the most famous phrases you already say:",
+    a:"مَا شَاءَ اللَّهُ",r:"mā shā' Allāh — what Allah has willed"},
+ task:{h:"Five questions",
+  steps:["Write one question using each of mā, man, ayna, kayfa and kam.","Ask a family member each question and note the answer.","Read the questions aloud in Arabic."],
+  send:"Send your five questions."}
+},
+{
+ em:"🏃", t:"What I Do Every Day", ar:"مَاذَا أَفْعَلُ كُلَّ يَوْم",
+ intro:"Your first Arabic verbs — I read, I write, I go.",
+ img:{f:"arb-08-daily.jpeg",cap:"A day in pictures — waking, praying, eating, going to school, reading, sleeping.",
+  p:"Cartoon illustration for a children's Arabic textbook. Flat bright colours, thick outlines. Six small panels showing a daily routine: waking up, praying on a mat, eating breakfast, walking to school, reading a book, sleeping. Plain cream background, no text. 16:9."},
+ vocab:[["أَذْهَبُ","adhhabu","I go"],
+        ["أَقْرَأُ","aqra'u","I read"],
+        ["أَكْتُبُ","aktubu","I write"],
+        ["آكُلُ","ākulu","I eat"],
+        ["أَشْرَبُ","ashrabu","I drink"],
+        ["أُصَلِّي","uṣallī","I pray"],
+        ["أَدْرُسُ","adrusu","I study"],
+        ["أَلْعَبُ","alʿabu","I play"],
+        ["مَدْرَسَة","madrasah","school"],
+        ["مَسْجِد","masjid","masjid"]],
+ gram:{h:"The letter أ means <i>I</i>",
+  p:"Arabic verbs do not need a separate word for <i>I</i>. The letter <b>أ</b> at the front already means it. Change that first letter and you change who is doing it.",
+  ex:[["أَقْرَأُ","I read"],["تَقْرَأُ","you read"],["يَقْرَأُ","he reads"],["نَقْرَأُ","we read"]]},
+ sents:[["أَذْهَبُ إِلَى الْمَدْرَسَة","adhhabu ila l-madrasah","I go to school."],
+        ["أَقْرَأُ الْقُرْآن","aqra'u l-qur'ān","I read the Qur'an."],
+        ["أُصَلِّي فِي الْمَسْجِد","uṣallī fi l-masjid","I pray in the masjid."],
+        ["آكُلُ مَعَ أُسْرَتِي","ākulu maʿa usratī","I eat with my family."],
+        ["أَلْعَبُ بَعْدَ الْمَدْرَسَة","alʿabu baʿda l-madrasah","I play after school."]],
+ q:{p:"<b>Iqra'</b> — read — was the very first word revealed of the Qur'an:",
+    a:"اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ",r:"Sūrah Al-ʿAlaq 96:1"},
+ task:{h:"My day in Arabic",
+  steps:["Write five sentences about your day, each starting with a verb.","Use at least three different verbs from this lesson.","Read them aloud to your teacher next class."],
+  send:"Send your five sentences."}
+},
+{
+ em:"🕌", t:"School and Masjid", ar:"الْمَدْرَسَةُ وَالْمَسْجِد",
+ intro:"The two places you go most — and putting sentences together.",
+ img:{f:"arb-09-places.jpeg",cap:"A street with a school on one side and a masjid on the other.",
+  p:"Cartoon illustration for a children's Arabic textbook. Flat bright colours, thick outlines. A calm street scene with a school building on one side and a masjid with a minaret on the other, palm trees, children walking between them. Plain cream background. 16:9."},
+ vocab:[["مُعَلِّم","muʿallim","teacher (m)"],
+        ["مُعَلِّمَة","muʿallimah","teacher (f)"],
+        ["طَالِب","ṭālib","student (m)"],
+        ["طَالِبَة","ṭālibah","student (f)"],
+        ["دَرْس","dars","lesson"],
+        ["صَفّ","ṣaff","class / row"],
+        ["إِمَام","imām","imām"],
+        ["قِبْلَة","qiblah","qiblah"],
+        ["سَجَّادَة","sajjādah","prayer mat"],
+        ["وَقْت","waqt","time"]],
+ gram:{h:"Making a word feminine",
+  p:"Add <b>ة</b> to the end and a masculine word becomes feminine. This one rule covers most jobs and roles in Arabic.",
+  ex:[["مُعَلِّم ← مُعَلِّمَة","male teacher → female teacher"],
+      ["طَالِب ← طَالِبَة","male student → female student"],
+      ["مُسْلِم ← مُسْلِمَة","Muslim man → Muslim woman"]]},
+ sents:[["أَنَا طَالِبٌ فِي الْمَدْرَسَة","anā ṭālibun fi l-madrasah","I am a student at the school."],
+        ["مُعَلِّمَتِي فِي الصَّفّ","muʿallimatī fi ṣ-ṣaff","My teacher is in the class."],
+        ["الدَّرْسُ جَمِيل","ad-darsu jamīl","The lesson is beautiful."],
+        ["سَجَّادَتِي فِي الْبَيْت","sajjādatī fi l-bayt","My prayer mat is at home."],
+        ["مَا وَقْتُ الصَّلَاة؟","mā waqtu ṣ-ṣalāh?","What is the time of the prayer?"]],
+ q:{p:"<b>Waqt</b> — time — is the root of the word used for the fixed prayer times:",
+    a:"كِتَابًا مَوْقُوتًا",r:"Sūrah An-Nisā' 4:103"},
+ task:{h:"Label your school bag",
+  steps:["Write the Arabic word for six things you use daily on small paper labels.","Stick each label on the object.","Leave them there for a week and read them each morning."],
+  send:"Send a photo of three labelled objects."}
+},
+{
+ em:"💬", t:"Talking Together", ar:"نَتَحَدَّثُ مَعًا",
+ intro:"Everything from the first nine lessons, in one conversation.",
+ img:{f:"arb-10-talking.jpeg",cap:"Two children sitting together talking, with speech bubbles containing simple Arabic words.",
+  p:"Cartoon illustration for a children's Arabic textbook. Flat bright colours, thick outlines. Two children sitting on a low wall talking happily, with empty rounded speech bubbles above them. Plain cream background. 16:9."},
+ vocab:[["أَهْلًا","ahlan","welcome / hi"],
+        ["تَفَضَّلْ","tafaḍḍal","please, go ahead"],
+        ["عَفْوًا","ʿafwan","you're welcome / excuse me"],
+        ["آسِف","āsif","sorry (m)"],
+        ["آسِفَة","āsifah","sorry (f)"],
+        ["مَعَ السَّلَامَة","maʿa s-salāmah","goodbye"],
+        ["صَدِيق","ṣadīq","friend (m)"],
+        ["صَدِيقَة","ṣadīqah","friend (f)"],
+        ["الْيَوْم","al-yawm","today"],
+        ["غَدًا","ghadan","tomorrow"]],
+ gram:{h:"Putting it all together",
+  p:"You now have the four pieces of an Arabic sentence: a naming word, a describing word, a place word and a verb. Every sentence below uses something from an earlier lesson.",
+  ex:[["أَنَا طَالِبٌ صَغِير","I am a small student. — noun + adjective"],
+      ["أَذْهَبُ إِلَى الْمَسْجِدِ الْيَوْم","I go to the masjid today. — verb + place + time"]]},
+ sents:[["أَهْلًا! كَيْفَ حَالُكَ؟","ahlan! kayfa ḥāluka?","Hi! How are you?"],
+        ["أَنَا بِخَيْر، شُكْرًا. وَأَنْتَ؟","anā bi-khayr, shukran. wa anta?","I am well, thank you. And you?"],
+        ["مَا اسْمُ صَدِيقِكَ؟","mā smu ṣadīqika?","What is your friend's name?"],
+        ["اسْمُهُ يُوسُف، هُوَ طَالِبٌ فِي مَدْرَسَتِي","ismuhu Yūsuf, huwa ṭālibun fī madrasatī","His name is Yusuf, he is a student at my school."],
+        ["إِلَى اللِّقَاءِ غَدًا، مَعَ السَّلَامَة","ila l-liqā'i ghadan, maʿa s-salāmah","See you tomorrow, goodbye."]],
+ q:{p:"You have learned about a hundred words. Keep asking for more — the Qur'an teaches this duʿā:",
+    a:"وَقُل رَّبِّ زِدْنِي عِلْمًا",r:"Sūrah Ṭā-Hā 20:114"},
+ task:{h:"A real conversation",
+  steps:["Find a partner — a classmate, a sibling or a parent.","Have a conversation of at least six lines, all in Arabic.","Record it as a voice note."],
+  send:"Send the recording to your teacher as your final task."}
+}
+];
+
+/* ================= RENDER ================= */
+function el(h){const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;}
+const host=document.getElementById('lessons'), bn=document.getElementById('bn');
+
+function plateHTML(im){
+  const media = IMG_STATUS==="ready"
+    ? `<img src="assets/img/${im.f}" alt="${im.cap}" loading="lazy">`
+    : `<div class="ph"><div class="i">🖼️</div><div class="c">${im.f}</div></div>`;
+  return `<div class="plate">${media}<div class="cap">${im.cap}</div></div>`;
+}
+
+LESSONS.forEach((L,i)=>{
+  const n=i+1;
+  const vc=L.vocab.map(v=>`<div class="vc"><div class="a">${v[0]}</div><div class="t">${v[1]}</div><div class="e">${v[2]}</div></div>`).join('');
+  const gx=L.gram.ex.map(e=>`<div class="ex"><div class="a">${e[0]}</div><div class="m">${e[1]}</div></div>`).join('');
+  const st=L.sents.map(s=>`<div class="sent"><div class="a">${s[0]}</div><div class="t">${s[1]}</div><div class="m">${s[2]}</div></div>`).join('');
+  const tk=L.task.steps.map(s=>`<li>${s}</li>`).join('');
+
+  host.appendChild(el(`<section class="lesson" id="lesson${n}">
+    <div class="l-head">
+      <span class="l-badge">LESSON ${n} OF ${LESSONS.length}</span>
+      <div class="l-em">${L.em}</div>
+      <h2>${L.t}</h2>
+      <div class="l-ar">${L.ar}</div>
+    </div>
+    <p class="l-intro">${L.intro}</p>
+    ${plateHTML(L.img)}
+    <div class="vocab">
+      <div class="sec-tag">📚 NEW WORDS</div>
+      <div class="vgrid">${vc}</div>
+      <div class="vhint">Tap a card to show or hide the English.</div>
+    </div>
+    <div class="gram">
+      <div class="sec-tag">🧩 GRAMMAR</div>
+      <h4>${L.gram.h}</h4>
+      <p>${L.gram.p}</p>
+      ${gx}
+    </div>
+    <div class="sents">
+      <div class="sec-tag">🗣️ SAY IT OUT LOUD</div>
+      ${st}
+    </div>
+    <div class="qlink">
+      <div class="sec-tag">✦ YOU ALREADY KNOW THIS FROM THE QUR'AN</div>
+      <p>${L.q.p}</p>
+      <div class="a">${L.q.a}</div>
+      <div class="r">${L.q.r}</div>
+    </div>
+    <div class="task">
+      <div class="sec-tag">🏠 THIS WEEK'S TASK</div>
+      <h4>${L.task.h}</h4>
+      <ol>${tk}</ol>
+      <div class="send">📤 ${L.task.send}</div>
+    </div>
+  </section>`));
+
+  bn.appendChild(el(`<a class="bn" href="#lesson${n}"><span class="n">${n}</span>${L.t}</a>`));
+});
+bn.appendChild(el(`<a class="bn" href="#done"><span class="n">★</span>Finish</a>`));
+
+/* behaviour */
+const $$=s=>Array.from(document.querySelectorAll(s));
+const drawer=document.getElementById('drawer'), scrim=document.getElementById('scrim');
+function shut(){drawer.classList.remove('on');scrim.classList.remove('on');}
+document.getElementById('menuBtn').addEventListener('click',()=>{drawer.classList.add('on');scrim.classList.add('on');});
+scrim.addEventListener('click',shut);
+bn.addEventListener('click',e=>{if(e.target.closest('.bn'))shut();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')shut();});
+$$('.vc').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('on')));
+
+const bar=document.getElementById('progress');
+function onScroll(){const h=document.documentElement,m=h.scrollHeight-h.clientHeight;
+  bar.style.width=(m>0?(h.scrollTop/m)*100:0)+'%';}
+window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+</script>
+</body>
+</html>
