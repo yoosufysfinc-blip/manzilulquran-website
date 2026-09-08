@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The Last Journey · الرِّحْلَةُ الأَخِيرَة — ManzilulQuran</title>
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Nunito:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0A101C; --deep:#101A2B; --star:#EAF0F8; --dim:#8FA1B9;
+  --gold:#D9B463; --gold-d:#9C7A2C; --gold-soft:#EFDCAB;
+  --em:#59B096; --em-soft:#C4E5D9;
+  --ui:'Nunito',system-ui,-apple-system,sans-serif;
+  --disp:'Fraunces',Georgia,serif;
+  --ar:'Amiri',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+body{font-family:var(--ui);color:var(--star);background:var(--void);
+  display:flex;flex-direction:column;touch-action:pan-y}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.45;z-index:0;
+  background-image:
+    radial-gradient(circle at 12% 18%,rgba(255,255,255,.65) 0 1.2px,transparent 2px),
+    radial-gradient(circle at 68% 8%,rgba(255,255,255,.45) 0 1.5px,transparent 2.3px),
+    radial-gradient(circle at 34% 66%,rgba(255,255,255,.4) 0 1px,transparent 1.9px),
+    radial-gradient(circle at 86% 48%,rgba(255,255,255,.5) 0 1.3px,transparent 2.1px);
+  background-size:440px 440px}
+
+/* ---------- chrome ---------- */
+.bar{position:relative;z-index:6;display:flex;align-items:center;gap:9px;
+  padding:calc(8px + env(safe-area-inset-top)) 14px 8px;flex:0 0 auto;
+  background:linear-gradient(180deg,rgba(10,16,28,.97),rgba(10,16,28,.55))}
+.bar .logo{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1px solid var(--gold-d)}
+.bar h1{font-family:var(--ar);font-size:15.5px;font-weight:700;color:var(--gold);line-height:1.1;white-space:nowrap}
+.bar .en{font-family:var(--disp);font-size:9.5px;color:var(--dim);letter-spacing:1.5px}
+.bar .sp{flex:1}
+.bar .no{font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums}
+.menu-btn{width:36px;height:36px;border:1px solid rgba(217,180,99,.3);border-radius:9px;
+  background:transparent;color:var(--gold);font-size:15px;cursor:pointer;display:grid;place-items:center}
+.rail{position:relative;z-index:6;display:flex;gap:2px;padding:0 14px 8px;flex:0 0 auto}
+.rail i{flex:1;height:2px;border-radius:2px;background:rgba(143,161,185,.22);transition:.3s}
+.rail i.done{background:var(--gold-d)} .rail i.now{background:var(--gold)}
+
+/* ---------- the book ---------- */
+.book{flex:1;position:relative;overflow:hidden;z-index:2}
+.strip{display:flex;height:100%;will-change:transform;
+  transition:transform .38s cubic-bezier(.22,.75,.25,1)}
+.strip.drag{transition:none}
+.page{flex:0 0 100%;width:100%;height:100%;overflow:hidden;
+  padding:22px 24px calc(58px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;justify-content:center}
+.inner{width:100%;max-width:600px;margin:0 auto}
+
+/* typography — document first */
+.kicker{font-size:10px;font-weight:700;letter-spacing:2.4px;text-transform:uppercase;
+  color:var(--gold);opacity:.75;margin-bottom:12px}
+h2{font-family:var(--disp);font-size:clamp(1.5rem,5.4vw,2rem);font-weight:600;line-height:1.18;color:var(--star)}
+.t-ar{font-family:var(--ar);font-size:clamp(1.15rem,4.4vw,1.5rem);font-weight:700;color:var(--gold);direction:rtl;margin-top:3px}
+.lede{font-family:var(--disp);font-size:clamp(.95rem,3.6vw,1.05rem);font-style:italic;
+  color:var(--gold-soft);opacity:.9;line-height:1.7;margin-top:14px}
+.hr{width:38px;height:1px;background:var(--gold-d);margin:16px 0;opacity:.8}
+p{font-size:clamp(.94rem,3.5vw,1.02rem);line-height:1.9;opacity:.94;margin-bottom:12px}
+p:last-child{margin-bottom:0}
+mark{background:linear-gradient(transparent 62%,rgba(217,180,99,.32) 62%);
+  color:var(--gold-soft);font-weight:700;padding:0 1px}
+b{color:var(--gold-soft);font-weight:700}
+.small{font-size:12.5px;color:var(--dim);line-height:1.75}
+
+/* hadith — a pull quote, not a card */
+.hq{border-left:2px solid var(--gold-d);padding-left:18px;margin:6px 0 4px}
+.hq .q{font-family:var(--disp);font-size:clamp(1rem,4vw,1.18rem);font-style:italic;
+  line-height:1.85;color:var(--star)}
+.hq .s{font-size:11.5px;font-weight:700;color:var(--gold);margin-top:10px;letter-spacing:.3px}
+.hq .g{font-size:9px;font-weight:800;letter-spacing:1.1px;border:1px solid currentColor;
+  border-radius:100px;padding:1px 7px;margin-left:6px;color:var(--em)}
+
+/* ayah — centred, no box */
+.ay{text-align:center;margin-top:22px;padding-top:20px;border-top:1px solid rgba(217,180,99,.2)}
+.ay .a{font-family:var(--ar);font-size:clamp(1.2rem,5vw,1.55rem);font-weight:700;
+  color:var(--em-soft);direction:rtl;line-height:2.1}
+.ay .m{font-size:13.5px;font-style:italic;color:var(--star);opacity:.85;margin-top:8px}
+.ay .r{font-size:11px;font-weight:700;color:var(--em);margin-top:5px;letter-spacing:.4px}
+
+/* the one box we keep */
+.note{border:1px solid rgba(217,180,99,.28);border-radius:12px;padding:15px 17px;margin-top:18px;
+  background:rgba(217,180,99,.05)}
+.note .l{font-size:9.5px;font-weight:800;letter-spacing:1.7px;color:var(--gold);opacity:.8;margin-bottom:6px}
+.note p{font-size:13.5px;line-height:1.8;margin:0;opacity:.9}
+
+/* image plate */
+.plate{margin:0 -24px 18px}
+.plate img{width:100%;display:block}
+.plate .ph{aspect-ratio:16/10;background:linear-gradient(160deg,#0E1726,#131F33);
+  border-top:1px solid rgba(217,180,99,.18);border-bottom:1px solid rgba(217,180,99,.18);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  text-align:center;padding:18px 26px}
+.plate .ph .m{display:flex;gap:9px;align-items:center;flex-wrap:wrap;justify-content:center}
+.plate .ph .fn{font-family:monospace;font-size:10.5px;color:var(--gold);opacity:.5}
+.plate .ph .rt{font-family:monospace;font-size:9.5px;color:var(--em);opacity:.45;
+  border:1px solid currentColor;border-radius:100px;padding:1px 7px}
+.plate .ph .pr{font-size:10.5px;line-height:1.6;color:var(--dim);opacity:.35;font-style:italic;max-width:56ch}
+.plate .cap{font-size:12px;color:var(--dim);text-align:center;margin-top:9px;padding:0 24px}
+
+/* cover + end */
+.mid{justify-content:center;text-align:center}
+.mid .crest{width:70px;height:70px;border-radius:50%;object-fit:cover;border:1px solid var(--gold-d);
+  box-shadow:0 0 0 7px rgba(217,180,99,.07);margin:0 auto 20px}
+.mid .car{font-family:var(--ar);font-size:clamp(1.9rem,8.5vw,2.7rem);font-weight:700;color:var(--gold);line-height:1.45}
+.mid .cen{font-family:var(--disp);font-size:clamp(1rem,4.2vw,1.3rem);font-weight:500;
+  color:var(--star);letter-spacing:3px;margin-top:4px}
+.mid .meta{font-size:12.5px;color:var(--dim);margin-top:20px;line-height:2}
+.mid .fin{font-family:var(--ar);font-size:clamp(1.2rem,5vw,1.6rem);color:var(--gold);line-height:2.1;margin:18px 0}
+
+/* footer */
+.foot{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;align-items:center;gap:12px;
+  padding:9px 16px calc(9px + env(safe-area-inset-bottom));
+  background:linear-gradient(0deg,var(--void) 60%,transparent)}
+.foot .lbl{flex:1;font-size:11.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.foot button{width:38px;height:38px;border:1px solid rgba(217,180,99,.3);background:transparent;
+  color:var(--gold);border-radius:9px;font-size:15px;cursor:pointer}
+.foot button:disabled{opacity:.22}
+.hint{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);z-index:6;
+  font-size:11px;color:var(--dim);opacity:.7;pointer-events:none;transition:opacity .6s}
+.hint.gone{opacity:0}
+
+/* index */
+.scrim{position:fixed;inset:0;background:rgba(3,7,14,.78);z-index:20;opacity:0;pointer-events:none;transition:.25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(320px,86vw);z-index:30;overflow-y:auto;
+  background:linear-gradient(180deg,var(--deep),var(--void));border-right:1px solid rgba(217,180,99,.22);
+  padding:calc(18px + env(safe-area-inset-top)) 13px 20px;transform:translateX(-105%);
+  transition:transform .3s cubic-bezier(.3,.85,.3,1)}
+.drawer.on{transform:none}
+.drawer h3{font-family:var(--disp);font-size:17px;color:var(--gold);padding:2px 10px 3px}
+.drawer .sub{font-size:11px;color:var(--dim);padding:0 10px 12px;border-bottom:1px solid rgba(217,180,99,.18);margin-bottom:9px}
+.dn{display:flex;gap:10px;align-items:center;padding:10px;min-height:42px;border-radius:9px;
+  color:var(--star);font-size:13px;font-weight:600;cursor:pointer;opacity:.82}
+.dn:hover{background:rgba(217,180,99,.1);opacity:1}
+.dn .n{width:24px;height:24px;flex:0 0 auto;border-radius:7px;display:grid;place-items:center;
+  border:1px solid rgba(217,180,99,.35);color:var(--gold);font-size:10.5px;font-weight:800}
+
+@media(min-height:760px){ .page{padding:34px 28px calc(64px + env(safe-area-inset-bottom))} }
+@media (prefers-reduced-motion:reduce){ .strip{transition:none} }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <button class="menu-btn" id="menuBtn" aria-label="Contents">☰</button>
+  <img class="logo" src="/logo.png" alt="">
+  <div><h1>الرِّحْلَةُ الأَخِيرَة</h1><div class="en">THE LAST JOURNEY</div></div>
+  <div class="sp"></div>
+  <div class="no" id="no"></div>
+</div>
+<div class="rail" id="rail"></div>
+
+<div class="book" id="book"><div class="strip" id="strip"></div></div>
+
+<div class="hint" id="hint">drag the page →</div>
+<div class="foot">
+  <button id="prev" aria-label="Previous">‹</button>
+  <div class="lbl" id="lbl"></div>
+  <button id="next" aria-label="Next">›</button>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<nav class="drawer" id="drawer">
+  <h3>Contents</h3>
+  <div class="sub">Sixteen stations · four pages each</div>
+  <div id="dlist"></div>
+</nav>
+
+<script>
+/* ==========================================================================
+   ⚠️ VERIFY every ḥadīth, wording, number and grading before publishing.
+   Ḥadīth marked ṢAḤĪḤ are from Ṣaḥīḥ al-Bukhārī or Ṣaḥīḥ Muslim. Those
+   marked SUNAN are not graded here — have a scholar confirm them.
+
+   16 images, 16:10. No figures, no angels, nothing of the unseen depicted.
+   Flip IMG to "ready" once assets/img/ holds all sixteen. Export .jpeg.
+   ========================================================================== */
+
+const IMG="placeholder", RATIO="16:10";
+const ART="Quiet night-toned illustration for a serious Islamic book. Deep navy and warm gold, soft painted texture, restrained and still. No people, no figures, no angels, and nothing of the unseen depicted literally. ";
+
+const S=[
+{
+ t:"The Moment Itself", ar:"سَكَرَاتُ الْمَوْت",
+ lede:"Every soul will taste it. Not read about it — taste it.",
+ img:{f:"akh-01-lamp.jpeg",cap:"A lamp burning down to its last light.",
+  p:ART+"A small oil lamp on a bare windowsill, its flame almost out, the room beyond in darkness, a faint blue pre-dawn sky through the glass."},
+ p1:"Death is the only appointment any of us certainly has. We do not know the date, the place or the manner — only that it is coming, and that it has never once been postponed for anybody.",
+ p2:"The Prophet ﷺ described the soul of a believer drawn out gently, <mark>like a drop of water from the mouth of a waterskin</mark>, with angels bringing shrouds and fragrance from Jannah. He described the soul of the wrongdoer dragged out like a skewer through wet wool.",
+ p3:"ʿĀ'ishah watched him die with a vessel of water beside him. He kept dipping his hand and wiping his face. Even he was not spared it.",
+ had:{q:"There are agonies in death.",s:"Ṣaḥīḥ al-Bukhārī 4449",g:"ṢAḤĪḤ"},
+ ay:{a:"وَجَاءَتْ سَكْرَةُ الْمَوْتِ بِالْحَقِّ",m:"And the intoxication of death comes with the truth.",r:"Sūrah Qāf 50:19"},
+ know:"He told us to remember death often, calling it <b>the destroyer of pleasures</b>, and he encouraged visiting graves — not to frighten people, but because a person who remembers the end argues less about the middle.",
+ you:"You have been to funerals. One day the funeral is yours, and the people carrying you will go home and eat dinner. That is not morbid. It is simply true, and it should change what you do this afternoon."
+},
+{
+ t:"The Barzakh", ar:"الْبَرْزَخ",
+ lede:"A barrier between two worlds, and nobody has come back through it.",
+ img:{f:"akh-02-barrier.jpeg",cap:"A wall of mist across a road at night.",
+  p:ART+"An empty stone road running toward a wall of pale mist under a starry sky, the road disappearing into it, low hills either side."},
+ p1:"Between death and the resurrection lies the <b>barzakh</b> — a partition. The body returns to the earth. The soul enters a life we cannot see, measure or photograph.",
+ p2:"Time there does not work as it does here. A person may feel they stayed a day, or part of a day, and be told they stayed a hundred years.",
+ p3:"Every human being who has ever lived is in the barzakh right now — every prophet, every companion, every one of your great-grandparents. It is by far the most populated place there is, and the only one none of them can send word from.",
+ had:{q:"The grave is the first stage of the stages of the hereafter. Whoever is saved from it, what comes after is easier — and whoever is not, what comes after is harder.",s:"Sunan at-Tirmidhī 2308",g:"SUNAN"},
+ ay:{a:"وَمِن وَرَائِهِم بَرْزَخٌ إِلَىٰ يَوْمِ يُبْعَثُونَ",m:"And behind them is a barrier until the Day they are resurrected.",r:"Sūrah Al-Mu'minūn 23:100"},
+ know:"The barzakh is not a pause in which nothing happens. It is where the results begin — which is why the Prophet ﷺ called it the first stage rather than the gap before the stages.",
+ you:"Everyone you will ever miss is already there. Everyone who will ever miss you will follow. The only thing that travels between the two is duʿā."
+},
+{
+ t:"The Two Questioners", ar:"سُؤَالُ الْقَبْر",
+ lede:"Three questions. Everyone is asked exactly the same three.",
+ img:{f:"akh-03-footsteps.jpeg",cap:"The last footprints leaving a fresh grave.",
+  p:ART+"Fresh footprints in soft earth leading away from a plain unmarked grave mound at dusk, a low stone at its head, empty ground beyond."},
+ p1:"When the burial is finished and the last footsteps walk away — the Prophet ﷺ said the dead person hears their sandals — two angels come and sit the soul up.",
+ p2:"They ask: <mark>Who is your Lord? What is your religion? Who is this man who was sent among you?</mark> The believer answers. The heedless one says: <i>ah, ah — I do not know. I heard people saying something, so I said it too.</i>",
+ p3:"Notice that these answers cannot be learned in that moment. They are not information. They are the result of how a person actually lived.",
+ had:{q:"When the servant is placed in his grave and his companions turn away — and he hears the sound of their sandals — two angels come to him.",s:"Ṣaḥīḥ al-Bukhārī 1338 · Muslim 2870",g:"ṢAḤĪḤ"},
+ ay:{a:"يُثَبِّتُ اللَّهُ الَّذِينَ آمَنُوا بِالْقَوْلِ الثَّابِتِ",m:"Allah keeps firm those who believe, with the firm word.",r:"Sūrah Ibrāhīm 14:27"},
+ know:"The companions understood that āyah to refer to this questioning. It is why he ﷺ would stand at a fresh grave after the burial and say: <b>ask Allah to keep him firm, for he is being questioned now.</b>",
+ you:"You cannot revise for this. The third question is about a man you claim to follow — and the answer will come out sounding exactly like the way you lived, not the way you described yourself."
+},
+{
+ t:"A Garden or a Pit", ar:"رَوْضَةٌ أَوْ حُفْرَة",
+ lede:"The grave is not a waiting room. Something is already happening in it.",
+ img:{f:"akh-04-two-doors.jpeg",cap:"Two doorways in one dark wall.",
+  p:ART+"Two plain stone doorways side by side in a dark wall; warm green light spills from one, faint red glow from the other, nothing visible beyond either."},
+ p1:"For the one who answers well, the grave is widened as far as the eye can see, a door to Jannah is opened, and its air reaches him. He says: <i>my Lord, establish the Hour, so I may return to my family.</i>",
+ p2:"For the one who does not, the earth presses in until his ribs interlock. He says: <i>my Lord, do not establish the Hour.</i>",
+ p3:"He ﷺ once passed two graves and said their occupants were being punished — and not for something enormous. <mark>One was careless about keeping clean of urine; the other spread gossip between people.</mark>",
+ had:{q:"His place is shown to him morning and evening — if of the people of Jannah, then of the people of Jannah; and if of the people of the Fire, then of the people of the Fire.",s:"Ṣaḥīḥ al-Bukhārī 1379 · Muslim 2866",g:"ṢAḤĪḤ"},
+ ay:{a:"النَّارُ يُعْرَضُونَ عَلَيْهَا غُدُوًّا وَعَشِيًّا",m:"The Fire — they are exposed to it morning and evening.",r:"Sūrah Ghāfir 40:46"},
+ know:"Those two graves are a warning about small things. Gossip and carelessness in purity are not the sins people expect to be punished for, which is exactly why he mentioned them.",
+ you:"The thing that harms you may not be the dramatic sin you are guarding against. It may be your tongue, and the way you talk about people when they are not in the room."
+},
+{
+ t:"The Horn", ar:"النَّفْخَةُ الأُولَى",
+ lede:"One sound, and everything that exists stops existing.",
+ img:{f:"akh-05-market.jpeg",cap:"A market stopped mid-morning.",
+  p:ART+"An empty open-air market at first light: scales left tipped, a cloth half folded, fruit spilled across a mat, a cup on its side. Everything abandoned mid-task. No people."},
+ p1:"Isrāfīl has held the horn to his lips since he was created, waiting for the command, his eyes on the Throne.",
+ p2:"When it is blown, everyone in the heavens and the earth falls dead except whom Allah wills. Not a nation, not a species — <mark>everything</mark>.",
+ p3:"The Qur'an describes people caught in ordinary life: one arguing in the market, one with food raised to his mouth, one repairing his roof. Nobody gets to finish what they were doing.",
+ had:{q:"How can I be at ease when the owner of the horn has taken it up, lowered his brow and is listening, waiting to be permitted to blow?",s:"Sunan at-Tirmidhī 2431",g:"SUNAN"},
+ ay:{a:"وَنُفِخَ فِي الصُّورِ فَصَعِقَ مَن فِي السَّمَاوَاتِ وَمَن فِي الْأَرْضِ",m:"And the horn will be blown, and whoever is in the heavens and the earth will fall dead.",r:"Sūrah Az-Zumar 39:68"},
+ know:"When the companions heard that ḥadīth they asked what they should say. He told them to say: <b>ḥasbunallāhu wa niʿma l-wakīl</b> — Allah is enough for us, and He is the best Trustee.",
+ you:"Whatever you are anxious about right now — an exam, an argument, what somebody said about you — will end in the middle of a sentence."
+},
+{
+ t:"Standing Again", ar:"النَّفْخَةُ الثَّانِيَة",
+ lede:"Barefoot. Uncovered. Exactly as you first arrived.",
+ img:{f:"akh-06-plain.jpeg",cap:"An endless plain at first light.",
+  p:ART+"An immense flat empty plain stretching to the horizon under a pale enormous sky at first light, the ground smooth and featureless, one faint band of gold along the edge."},
+ p1:"After a period known only to Allah, the horn is blown a second time, and the whole of humanity stands up from the earth and looks about.",
+ p2:"He ﷺ said we will be gathered <mark>barefoot, naked and uncircumcised</mark>, exactly as we were first created. ʿĀ'ishah asked whether men and women would look at one another. He answered: <i>the matter is far too serious for that.</i>",
+ p3:"Nobody will be thinking about anyone else. The first to be clothed will be Ibrāhīm.",
+ had:{q:"You will be gathered barefoot, naked and uncircumcised.",s:"Ṣaḥīḥ al-Bukhārī 6527 · Muslim 2860",g:"ṢAḤĪḤ"},
+ ay:{a:"كَمَا بَدَأْنَا أَوَّلَ خَلْقٍ نُّعِيدُهُ",m:"As We began the first creation, We will repeat it.",r:"Sūrah Al-Anbiyā' 21:104"},
+ know:"Everything a person spent a life acquiring — clothes, wealth, position, followers, the phone in their hand — stays in the earth. Only the record is carried across.",
+ you:"Every single thing you own, you will one day leave in a room. Ask what you are actually building."
+},
+{
+ t:"The Gathering", ar:"الْمَحْشَر",
+ lede:"The sun brought near, and shade for exactly seven kinds of people.",
+ img:{f:"akh-07-shade.jpeg",cap:"One patch of shade on burning ground.",
+  p:ART+"A vast sunbaked cracked plain under a huge low white sun, with a single cool patch of deep shade in the foreground and nothing casting it. Heat haze on the horizon. No people."},
+ p1:"All of creation is gathered on one plain. The sun is brought near, and people stand in their own sweat — some to the ankles, some to the waist, some drowning in it, each according to their deeds.",
+ p2:"There is no shade at all that day except the shade of Allah's Throne, and he ﷺ named exactly who will be under it.",
+ p3:"Read the list carefully. Not one of the seven is a scholar, a leader or a rich man as such. They are ordinary people doing hidden, difficult, unglamorous things — including <mark>a young person who grew up worshipping Allah</mark>.",
+ had:{q:"Seven whom Allah will shade in His shade on a day when there is no shade but His: a just ruler; a young person who grew up in the worship of Allah; a man whose heart is attached to the masjid; two who love one another for Allah's sake; a man who refuses temptation saying <i>I fear Allah</i>; one who gives so secretly his left hand does not know what his right gave; and one who remembers Allah alone and his eyes overflow.",s:"Ṣaḥīḥ al-Bukhārī 660 · Muslim 1031",g:"ṢAḤĪḤ"},
+ ay:{a:"يَوْمَ يَقُومُ النَّاسُ لِرَبِّ الْعَالَمِينَ",m:"The Day when mankind will stand before the Lord of the worlds.",r:"Sūrah Al-Muṭaffifīn 83:6"},
+ know:"The second of the seven is the one directly available to a student. Growing up in worship is not a dramatic act — it is fifteen years of ordinary Fajr prayers that nobody praises you for.",
+ you:"One of the seven places under the Throne is kept for someone your age who kept worshipping when nobody was watching. That place is open right now."
+},
+{
+ t:"The Long Wait", ar:"طُولُ الْمَوْقِف",
+ lede:"Humanity goes from prophet to prophet, and every one says: not me.",
+ img:{f:"akh-08-doors.jpeg",cap:"A long corridor of closed doors.",
+  p:ART+"A long dim corridor lined with tall closed wooden doors receding into distance, one faint warm light at the very far end, worn stone floor. No people."},
+ p1:"The standing goes on so long that people can bear no more, and they look for someone to intercede so that the judgement can simply begin.",
+ p2:"They go to Ādam, who says: go to Nūḥ. To Nūḥ: go to Ibrāhīm. To Ibrāhīm: go to Mūsā. To Mūsā: go to ʿĪsā. To ʿĪsā, who says: <mark>go to Muḥammad</mark>.",
+ p3:"Each of these is a prophet of the highest rank, and each remembers one moment of his own life and says <i>nafsī nafsī</i> — myself, myself. On that day nobody is thinking of anybody else.",
+ had:{q:"They will come to me and I will say: I am for it, I am for it. Then I will go and ask permission of my Lord, and permission will be granted.",s:"Ṣaḥīḥ al-Bukhārī 4712 · Muslim 194",g:"ṢAḤĪḤ"},
+ ay:{a:"يَوْمَ يَفِرُّ الْمَرْءُ مِنْ أَخِيهِ",m:"The Day a man will flee from his brother.",r:"Sūrah ʿAbasa 80:34"},
+ know:"This is the ḥadīth of intercession, one of the longest in Bukhārī and Muslim. The Muslim understanding of his ﷺ rank comes from it — not from praise, but from a scene in which every other prophet steps back.",
+ you:"On the one day you will most need someone in your corner, your parents cannot help you and your friends will not know your name. Choose now who you are attaching yourself to."
+},
+{
+ t:"The Great Intercession", ar:"الشَّفَاعَةُ الْعُظْمَىٰ",
+ lede:"He falls into sujūd and is told: raise your head, and ask.",
+ img:{f:"akh-09-throne-light.jpeg",cap:"Light falling on an empty place of prostration.",
+  p:ART+"A single shaft of warm gold light falling onto a bare stone floor from an unseen source high above, everything else in deep shadow. Reverent and still. No people."},
+ p1:"When they come to him, he does not refuse. He says: <mark>anā lahā</mark> — I am for it.",
+ p2:"He goes beneath the Throne and falls into prostration, and Allah opens for him praises he was never taught before. He stays there until he is told: <i>raise your head; ask, and you will be given; intercede, and your intercession will be accepted.</i>",
+ p3:"This is the Maqām Maḥmūd — the praised station — that we ask for him by name in the duʿā after every adhān, five times a day, our whole lives.",
+ had:{q:"I will fall in prostration before my Lord, and He will inspire me with praises I do not know now. Then it will be said: raise your head, ask and you will be given, intercede and your intercession will be accepted.",s:"Ṣaḥīḥ al-Bukhārī 7510 · Muslim 193",g:"ṢAḤĪḤ"},
+ ay:{a:"عَسَىٰ أَن يَبْعَثَكَ رَبُّكَ مَقَامًا مَّحْمُودًا",m:"It may be that your Lord will raise you to a praised station.",r:"Sūrah Al-Isrā' 17:79"},
+ know:"Every prophet was given one duʿā that is certainly answered, and every one of them used it in this life. He kept his — and said he saved it as intercession for his ummah on the Day of Resurrection.",
+ you:"He is holding one guaranteed request in reserve, for you. Send ṣalawāt on him tonight. It is the least you can do for a man who kept his one wish for a stranger."
+},
+{
+ t:"The Ḥawḍ", ar:"الْحَوْض",
+ lede:"He will be standing at a pool, watching for people he never met.",
+ img:{f:"akh-10-hawd.jpeg",cap:"A still pool under a sky full of stars.",
+  p:ART+"A vast perfectly still pool of luminous pale water under a sky crowded with stars, countless small silver cups arranged along the far edge, faint light on the horizon. No people."},
+ p1:"Before the bridge he ﷺ stands at his Ḥawḍ — a pool whose water is <mark>whiter than milk, sweeter than honey</mark>, its scent better than musk, its cups as many as the stars. Whoever drinks will never thirst again.",
+ p2:"He said he will recognise his ummah by the light on their limbs from wudu, the way a man knows his own horses among another's.",
+ p3:"But he also said some who claim to belong to him will be driven away, and he will say <i>my companions, my companions</i> — and be told: you do not know what they did after you.",
+ had:{q:"My Ḥawḍ is a month's journey across. Its water is whiter than milk, its scent better than musk, its cups like the stars of the sky. Whoever drinks from it will never thirst again.",s:"Ṣaḥīḥ al-Bukhārī 6579 · Muslim 2292",g:"ṢAḤĪḤ"},
+ ay:{a:"إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ",m:"Indeed We have given you Al-Kawthar.",r:"Sūrah Al-Kawthar 108:1"},
+ know:"Al-Kawthar is a river in Jannah that feeds the Ḥawḍ. The shortest sūrah in the Qur'an is about it — revealed to comfort him when his enemies mocked him for having no surviving son.",
+ you:"He is waiting at that pool for people he has never seen. The question is not whether he will be there. It is whether he will recognise you when you arrive."
+},
+{
+ t:"The Books Given Out", ar:"إِعْطَاءُ الصُّحُف",
+ lede:"Every word. Every message. Nothing rounded down.",
+ img:{f:"akh-11-record.jpeg",cap:"An open ledger, every line filled.",
+  p:ART+"A large open book on a plain surface, both pages completely filled with fine writing edge to edge, a single point of gold light falling across it, darkness around. No readable text."},
+ p1:"Each person is handed the record of their life — in the right hand, or in the left, or from behind the back.",
+ p2:"The one who takes it in his right hand calls out to everyone around him: <i>here, read my record!</i> The other says: I wish I had never been given it.",
+ p3:"The Qur'an describes a person opening it: <mark>what kind of book is this — it has left out nothing, small or large, but has counted it.</mark> The whispered comment. The unread message. The thing done when the door was closed.",
+ had:{q:"Allah will bring a believer close and cover him, and say: do you know this sin? do you know this sin? Until he admits them all and thinks he is ruined. Then Allah says: I concealed them for you in the world, and I forgive them for you today.",s:"Ṣaḥīḥ al-Bukhārī 2441 · Muslim 2768",g:"ṢAḤĪḤ"},
+ ay:{a:"وَوُضِعَ الْكِتَابُ فَتَرَى الْمُجْرِمِينَ مُشْفِقِينَ مِمَّا فِيهِ",m:"And the record will be placed, and you will see the criminals fearful of what is in it.",r:"Sūrah Al-Kahf 18:49"},
+ know:"Two angels write continuously. Scholars note the one on the right writes immediately, while the one on the left waits — in case the person repents. There is a delay built in, deliberately.",
+ you:"There is a pause built into the record on your left, to give you time to take it back. Use it."
+},
+{
+ t:"The Reckoning", ar:"الْحِسَاب",
+ lede:"First the prayer. Then four questions covering a whole life.",
+ img:{f:"akh-12-questions.jpeg",cap:"Four marks cut into stone.",
+  p:ART+"Four simple deep vertical marks carved into a weathered stone slab, low raking gold light across the surface picking out the grooves, dark ground around."},
+ p1:"The judgement begins, and the very first matter a servant is questioned about is the <mark>ṣalāh</mark>. If it is sound, the rest is looked at. If it is ruined, the rest is ruined.",
+ p2:"Then four questions: <b>your lifetime — how you spent it. Your youth — how you used it. Your wealth — where you got it and where it went. Your knowledge — what you did with it.</b>",
+ p3:"Youth is asked about separately, even though it is already inside the lifetime. It is counted twice because it is the part most easily wasted.",
+ had:{q:"The feet of a servant will not move on the Day of Resurrection until he is asked about four things: his life and how he spent it, his youth and how he used it, his wealth — how he earned it and where he spent it — and his knowledge and what he did with it.",s:"Sunan at-Tirmidhī 2417",g:"SUNAN"},
+ ay:{a:"فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ",m:"So whoever does an atom's weight of good will see it.",r:"Sūrah Az-Zalzalah 99:7"},
+ know:"There is also a reckoning between people. He ﷺ described the bankrupt one — arriving with prayer, fasting and zakāh, but having insulted, struck and cheated others, and whose good deeds are handed to them until none are left.",
+ you:"You are being asked twice about the exact years you are living right now. Nobody gets asked twice about their forties."
+},
+{
+ t:"The Scales", ar:"الْمِيزَان",
+ lede:"Two words light on the tongue, heavy on the balance.",
+ img:{f:"akh-13-scales.jpeg",cap:"A balance, one pan lower than the other.",
+  p:ART+"A simple ancient two-pan brass balance against a dark background, one pan hanging clearly lower than the other, both empty, warm gold light along the beam."},
+ p1:"A real balance is set up, and deeds are weighed with perfect justice — <i>so no soul will be treated unjustly at all.</i>",
+ p2:"He ﷺ said <mark>good character is the heaviest thing placed on the scale</mark>, and he named two phrases light on the tongue but heavy on the balance and beloved to the Most Merciful.",
+ p3:"There is a ḥadīth of a man whose record of sins stretches as far as the eye can see, and who is given one card carrying the shahādah. The card outweighs all of it.",
+ had:{q:"Two words, light on the tongue, heavy on the scale, beloved to the Most Merciful: subḥānallāhi wa bi-ḥamdih, subḥānallāhi l-ʿaẓīm.",s:"Ṣaḥīḥ al-Bukhārī 6682 · Muslim 2694",g:"ṢAḤĪḤ"},
+ ay:{a:"وَنَضَعُ الْمَوَازِينَ الْقِسْطَ لِيَوْمِ الْقِيَامَةِ",m:"And We place the scales of justice for the Day of Resurrection.",r:"Sūrah Al-Anbiyā' 21:47"},
+ know:"He also said nothing is heavier on the believer's scale than good character. The way you treat people weighs more than most people assume.",
+ you:"Two sentences, ten seconds, weightier than things you will work years for. You could say them now, before you turn the page."
+},
+{
+ t:"The Bridge", ar:"الصِّرَاط",
+ lede:"Everyone crosses. Not everyone crosses at the same speed.",
+ img:{f:"akh-14-bridge.jpeg",cap:"A narrow bridge over darkness.",
+  p:ART+"A very narrow stone causeway crossing an immense dark chasm, faint red glow far below, a distant gold light on the far side, star field above. No people."},
+ p1:"The Ṣirāṭ is laid over Jahannam, and every single person passes over it. On its sides are hooks, and people are seized according to their deeds.",
+ p2:"He ﷺ described people crossing <mark>like the blink of an eye, like lightning, like the wind, like a fast horse, like a running man</mark> — and some crawling, and the last dragged across.",
+ p3:"Through all of it the prophets stand saying one duʿā, only one: <i>Allāhumma sallim, sallim</i> — O Allah, grant safety, grant safety.",
+ had:{q:"The bridge will be placed over Hellfire, and I will be the first of the messengers to cross with his ummah. Nobody will speak that day except the messengers, and their words will be: O Allah, grant safety, grant safety.",s:"Ṣaḥīḥ al-Bukhārī 806 · Muslim 182",g:"ṢAḤĪḤ"},
+ ay:{a:"وَإِن مِّنكُمْ إِلَّا وَارِدُهَا",m:"And there is none of you but will pass over it.",r:"Sūrah Maryam 19:71"},
+ know:"A person crosses by the light of their deeds — some with light like a mountain ahead of them, some with only as much as their big toe, flickering. He gave glad tidings of <b>perfect light</b> to those who walk to the masjid in the dark.",
+ you:"The speed you cross at is being decided now, in ordinary weeks like this one. Nobody gets faster on the day itself."
+},
+{
+ t:"The Fire", ar:"النَّار",
+ lede:"He described it, and then he wept — so that we would not have to see it.",
+ img:{f:"akh-15-ember.jpeg",cap:"A single ember in a bed of ash.",
+  p:ART+"One small glowing orange ember lying in a wide bed of grey ash, everything else cold and dark, thin smoke rising. Restrained, not violent. No figures."},
+ p1:"Jahannam is real, and he ﷺ spoke about it not to terrify people but to steer them. He described its heat as <mark>seventy times</mark> the fire we know.",
+ p2:"He warned about the small doorways in: the tongue, arrogance, cutting off relatives, taking what is not yours, and neglecting the prayer.",
+ p3:"But every ḥadīth about the Fire is paired with a way out. Those who entered with any faith at all are eventually brought out, restored by the water of life, and called <b>al-jahannamiyyūn</b> — until Allah removes even that name from them.",
+ had:{q:"Your fire, which the son of Ādam kindles, is one part of seventy parts of the fire of Jahannam.",s:"Ṣaḥīḥ al-Bukhārī 3265 · Muslim 2843",g:"ṢAḤĪḤ"},
+ ay:{a:"يَا أَيُّهَا الَّذِينَ آمَنُوا قُوا أَنفُسَكُمْ وَأَهْلِيكُمْ نَارًا",m:"O you who believe, protect yourselves and your families from a Fire.",r:"Sūrah At-Taḥrīm 66:6"},
+ know:"He said whoever asks Allah for Jannah three times, Jannah says: O Allah, admit him into me. And whoever seeks refuge from the Fire three times, the Fire says: O Allah, save him from me. The asking itself is recorded.",
+ you:"The verse says protect <i>yourselves and your families</i>. That includes the younger sibling watching how seriously you take this."
+},
+{
+ t:"The Garden, and What Is Better", ar:"الْجَنَّةُ وَالزِّيَادَة",
+ lede:"A hundred levels — and then something they love more than all of it.",
+ img:{f:"akh-16-garden.jpeg",cap:"A gate standing open at dawn.",
+  p:ART+"A tall arched gateway standing wide open at dawn, warm gold light pouring through it from beyond, green foliage just visible at the edges, the path leading in. Nothing of what lies beyond shown."},
+ p1:"Jannah has a hundred levels, and between two of them is like the distance between the heaven and the earth. He ﷺ said: when you ask Allah, ask for <mark>al-Firdaws</mark> — the highest, from which the rivers of Jannah spring.",
+ p2:"Nothing in it has been seen or imagined. No illness, no ageing, no fear, no argument, no boredom, and no death — death itself is brought and slaughtered, and it is announced: <i>eternity, and no more dying.</i>",
+ p3:"And then, after all of it, the covering is lifted and they look at the Face of their Lord. He ﷺ said nothing they were given is more beloved to them than that. That is <b>az-ziyādah</b> — the increase.",
+ had:{q:"Allah says: I have prepared for My righteous servants what no eye has seen, no ear has heard, and what has never occurred to a human heart.",s:"Ṣaḥīḥ al-Bukhārī 3244 · Muslim 2824",g:"ṢAḤĪḤ"},
+ ay:{a:"لِّلَّذِينَ أَحْسَنُوا الْحُسْنَىٰ وَزِيَادَةٌ",m:"For those who do good is the best reward — and more.",r:"Sūrah Yūnus 10:26"},
+ know:"He ﷺ explained the <i>ziyādah</i> in that āyah as looking at the Face of Allah. Everything else in Jannah is the reward; this is the increase on top of the reward.",
+ you:"Ask for al-Firdaws by name. He told us to. Not the edge of it, not enough of it — the highest of it. You lose nothing by asking properly."
+}
+];
+
+/* ================= BUILD ================= */
+const strip=document.getElementById('strip'), rail=document.getElementById('rail'),
+      dlist=document.getElementById('dlist'), noEl=document.getElementById('no'),
+      lbl=document.getElementById('lbl'), prev=document.getElementById('prev'),
+      next=document.getElementById('next'), hint=document.getElementById('hint'),
+      book=document.getElementById('book');
+function el(h){const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;}
+const plate=im=> IMG==="ready"
+  ? `<div class="plate"><img src="assets/img/${im.f}" alt="${im.cap}"><div class="cap">${im.cap}</div></div>`
+  : `<div class="plate"><div class="ph">
+       <div class="m"><span class="fn">${im.f}</span><span class="rt">${RATIO}</span></div>
+       <div class="pr">${im.p}</div></div><div class="cap">${im.cap}</div></div>`;
+
+const meta=[];   /* station index per page, for the rail and label */
+
+strip.appendChild(el(`<section class="page mid"><div class="inner">
+  <img class="crest" src="/logo.png" alt="">
+  <div class="car">الرِّحْلَةُ الأَخِيرَة</div>
+  <div class="cen">THE LAST JOURNEY</div>
+  <div class="meta">Sixteen stations, from the last breath to the Garden<br>
+    Every ḥadīth referenced · Thazkiya · Level 3<br>ManzilulQuran E-learning Academy</div>
+</div></section>`));
+meta.push({s:0,l:"Cover"});
+
+S.forEach((x,i)=>{
+  const n=i+1;
+  strip.appendChild(el(`<section class="page"><div class="inner">
+    <div class="kicker">Station ${n} of ${S.length}</div>
+    ${plate(x.img)}
+    <h2>${x.t}</h2><div class="t-ar">${x.ar}</div>
+    <div class="lede">${x.lede}</div>
+  </div></section>`));
+  strip.appendChild(el(`<section class="page"><div class="inner">
+    <div class="kicker">${x.t}</div><div class="hr"></div>
+    <p>${x.p1}</p><p>${x.p2}</p>
+  </div></section>`));
+  strip.appendChild(el(`<section class="page"><div class="inner">
+    <div class="kicker">${x.t} — the evidence</div><div class="hr"></div>
+    <p>${x.p3}</p>
+    <div class="hq"><div class="q">“${x.had.q}”</div>
+      <div class="s">${x.had.s}<span class="g">${x.had.g}</span></div></div>
+    <div class="ay"><div class="a">${x.ay.a}</div><div class="m">${x.ay.m}</div><div class="r">${x.ay.r}</div></div>
+  </div></section>`));
+  strip.appendChild(el(`<section class="page"><div class="inner">
+    <div class="kicker">${x.t} — and you</div><div class="hr"></div>
+    <p class="small">${x.know}</p>
+    <div class="note"><div class="l">CARRY THIS WITH YOU</div><p>${x.you}</p></div>
+  </div></section>`));
+  for(let k=0;k<4;k++) meta.push({s:n,l:x.t});
+  rail.appendChild(el(`<i></i>`));
+  dlist.appendChild(el(`<div class="dn" data-p="${1+i*4}"><span class="n">${n}</span>${x.t}</div>`));
+});
+
+strip.appendChild(el(`<section class="page mid"><div class="inner">
+  <div class="kicker">The end of the journey</div>
+  <h2>Now go back and live</h2>
+  <div class="fin">اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ<br>وَأَعُوذُ بِكَ مِنَ النَّارِ</div>
+  <p class="small">Nothing on this journey is decided on the journey. All of it is decided here — in ordinary weeks, in prayers nobody sees you pray, and in how you speak about people who are not in the room.</p>
+</div></section>`));
+meta.push({s:S.length,l:"The end"});
+
+/* ================= PAGING ================= */
+const pages=strip.children, LAST=pages.length-1;
+let cur=0, x0=0, dx=0, dragging=false, W=book.clientWidth;
+function place(off){ strip.style.transform=`translate3d(${-cur*W+(off||0)}px,0,0)`; }
+function paint(){
+  const m=meta[cur];
+  noEl.textContent = m.s? m.s+" / "+S.length : "";
+  lbl.textContent  = m.l;
+  prev.disabled=cur===0; next.disabled=cur===LAST;
+  Array.from(rail.children).forEach((r,k)=>{
+    r.className = (k+1<m.s?"done":(k+1===m.s?"now":""));
+  });
+}
+function go(i){ cur=Math.max(0,Math.min(LAST,i)); strip.classList.remove('drag'); place(); paint(); }
+
+book.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='mouse'&&e.button!==0) return;
+  dragging=true; x0=e.clientX; dx=0; W=book.clientWidth;
+  strip.classList.add('drag'); book.setPointerCapture(e.pointerId);
+});
+book.addEventListener('pointermove',e=>{
+  if(!dragging) return;
+  dx=e.clientX-x0;
+  if((cur===0&&dx>0)||(cur===LAST&&dx<0)) dx*=.32;   /* resistance at the ends */
+  place(dx); hint.classList.add('gone');
+});
+function release(){
+  if(!dragging) return;
+  dragging=false; strip.classList.remove('drag');
+  if(dx<-W*0.18) cur=Math.min(LAST,cur+1);
+  else if(dx>W*0.18) cur=Math.max(0,cur-1);
+  dx=0; place(); paint();
+}
+book.addEventListener('pointerup',release);
+book.addEventListener('pointercancel',release);
+book.addEventListener('pointerleave',release);
+
+prev.addEventListener('click',()=>go(cur-1));
+next.addEventListener('click',()=>go(cur+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')go(cur+1);
+  if(e.key==='ArrowLeft')go(cur-1);
+});
+window.addEventListener('resize',()=>{W=book.clientWidth;place();});
+
+const drawer=document.getElementById('drawer'), scrim=document.getElementById('scrim');
+function shut(){drawer.classList.remove('on');scrim.classList.remove('on');}
+document.getElementById('menuBtn').addEventListener('click',()=>{drawer.classList.add('on');scrim.classList.add('on');});
+scrim.addEventListener('click',shut);
+dlist.addEventListener('click',e=>{const t=e.target.closest('.dn');if(t){go(+t.dataset.p);shut();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')shut();});
+
+setTimeout(()=>hint.classList.add('gone'),6000);
+place(); paint();
+</script>
+</body>
+</html>
