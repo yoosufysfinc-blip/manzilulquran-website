@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>As-Sīrah an-Nabawiyyah · السِّيرَةُ النَّبَوِيَّة — ManzilulQuran</title>
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700;800&family=Amiri:wght@400;700&family=Anek+Malayalam:wght@400;500;600;700&family=Baloo+Chettan+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#123024; --green:#1B6B4A; --green-d:#0E4A32; --green-l:#CBE7DA; --green-bg:#EDF7F2;
+  --gold:#C79A3E; --gold-d:#8E6A1C; --gold-l:#F5E7C4; --gold-bg:#FEFAF0;
+  --rose:#B05563; --rose-bg:#FBEFF1;
+  --sky:#3A6E8F; --sky-bg:#EAF2F7;
+  --ink:#1F3329; --ink-soft:#5D7A6C;
+  --ui:'Nunito',system-ui,-apple-system,sans-serif;
+  --disp:'Fredoka','Nunito',system-ui,sans-serif;
+  --ar:'Amiri',serif;
+  --ml:'Anek Malayalam','Noto Sans Malayalam',sans-serif;
+  --ml-disp:'Baloo Chettan 2','Anek Malayalam',sans-serif;
+  --r:22px;
+  --shadow:0 18px 44px -22px rgba(18,48,36,.5);
+  --shadow-sm:0 8px 22px -14px rgba(18,48,36,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:var(--ui);color:var(--ink);line-height:1.75;min-height:100vh;overflow-x:hidden;
+  background:
+    radial-gradient(900px 420px at 104% -6%,rgba(199,154,62,.26),transparent 62%),
+    radial-gradient(760px 400px at -12% 16%,rgba(203,231,218,.6),transparent 58%),
+    linear-gradient(178deg,#FBFCF9 0%,#F1F7F3 46%,#FCFAF3 100%);
+  background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
+  background-image:
+    radial-gradient(circle at 14% 22%,rgba(255,255,255,.95) 0 2px,transparent 3px),
+    radial-gradient(circle at 74% 10%,rgba(255,255,255,.8) 0 3px,transparent 4px),
+    radial-gradient(circle at 36% 72%,rgba(255,255,255,.75) 0 2px,transparent 3px);
+  background-size:380px 380px;animation:drift 32s linear infinite}
+@keyframes drift{from{background-position:0 0,0 0,0 0}to{background-position:0 -380px,0 -380px,0 -380px}}
+body.lang-ml{font-family:var(--ml)}
+body.lang-ml .l-head h2,body.lang-ml .cover h2,body.lang-ml .cp-head h2,body.lang-ml .done h2,
+body.lang-ml .plate .cap,body.lang-ml .howto h3{font-family:var(--ml-disp);font-weight:700}
+body.lang-ml .scene p,body.lang-ml .plate .info,body.lang-ml .why-box p,body.lang-ml .him p,
+body.lang-ml .him .hq .q,body.lang-ml .discuss li,body.lang-ml .hook p,body.lang-ml .ayah-mean,
+body.lang-ml .remind p,body.lang-ml .kp-list li{font-weight:500;line-height:1.95}
+body.lang-ml .ayah-mean{font-style:normal}
+.lang-btn{min-height:44px;border:2px solid var(--gold);color:#6a4f10;background:var(--gold-bg);
+  font-family:var(--ui);font-weight:800;font-size:13px;border-radius:100px;padding:9px 15px;
+  cursor:pointer;white-space:nowrap;transition:.2s;flex:0 0 auto}
+.lang-btn:hover{background:var(--gold);color:#2b2005}
+.rv{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+#progress{position:fixed;top:0;left:0;height:5px;width:0;z-index:120;
+  background:linear-gradient(90deg,var(--green-l),var(--green),var(--gold));background-size:220% 100%;
+  animation:flow 4s linear infinite;transition:width .1s}
+@keyframes flow{from{background-position:0 0}to{background-position:220% 0}}
+
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px;padding:11px 16px;
+  backdrop-filter:blur(14px);background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(241,247,243,.7));
+  border-bottom:1px solid rgba(27,107,74,.16)}
+.menu-btn{width:46px;height:46px;min-height:44px;border:0;border-radius:15px;cursor:pointer;flex:0 0 auto;color:#fff;font-size:19px;
+  background:linear-gradient(140deg,var(--green),var(--night));display:grid;place-items:center;transition:.2s}
+.menu-btn:hover{transform:translateY(-2px) scale(1.05)}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand-logo{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--gold-l);flex:0 0 auto}
+.brand-txt h1{font-family:var(--ar);font-size:20px;font-weight:700;color:var(--green);line-height:1.15;white-space:nowrap}
+.brand-txt .en{font-family:var(--disp);font-size:11.5px;color:var(--gold-d);font-weight:600;letter-spacing:1.1px}
+.spring{flex:1}
+.pagepill{font-size:12px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--green),var(--night));
+  border-radius:100px;padding:6px 13px;white-space:nowrap}
+
+.scrim{position:fixed;inset:0;background:rgba(18,48,36,.55);z-index:130;opacity:0;pointer-events:none;transition:.25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(320px,84vw);z-index:140;overflow-y:auto;padding:22px 16px;
+  background:linear-gradient(180deg,#fff,var(--green-bg) 62%,var(--gold-bg));
+  border-right:1px solid rgba(27,107,74,.18);transform:translateX(-105%);
+  transition:transform .32s cubic-bezier(.3,.85,.3,1)}
+.drawer.on{transform:none}
+.drawer-h{font-family:var(--disp);font-size:21px;color:var(--green);font-weight:600;padding:4px 12px}
+.drawer-h .ar{font-family:var(--ar);color:var(--gold-d);font-size:17px;display:block;margin-top:2px}
+.drawer-sub{font-size:12px;color:var(--ink-soft);padding:0 12px 16px;border-bottom:2px dotted rgba(27,107,74,.28);margin-bottom:12px}
+.bn-a{display:flex;align-items:center;gap:12px;padding:12px;min-height:44px;border-radius:14px;text-decoration:none;
+  color:var(--ink);font-weight:700;font-size:14px;transition:.16s;margin-bottom:3px}
+.bn-a:hover{background:#fff;transform:translateX(3px)}
+.bn-a .bn-n{width:30px;height:30px;flex:0 0 auto;border-radius:10px;display:grid;place-items:center;
+  background:linear-gradient(140deg,var(--green),var(--night));color:#fff;font-size:13px;font-weight:800}
+
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:26px 18px 80px}
+
+.cover{text-align:center;padding:40px 24px 44px;border-radius:var(--r);overflow:hidden;margin-bottom:26px;
+  background:linear-gradient(165deg,#fff 0%,var(--green-bg) 55%,var(--gold-bg) 100%);
+  border:1px solid rgba(27,107,74,.18);box-shadow:var(--shadow)}
+.cover-logo{width:92px;height:92px;border-radius:50%;object-fit:cover;margin:0 auto 18px;border:3px solid var(--gold-l);
+  box-shadow:0 0 0 7px rgba(199,154,62,.18)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.cover .ar-title{font-family:var(--ar);font-size:clamp(1.8rem,7vw,2.7rem);font-weight:700;line-height:1.35;
+  background:linear-gradient(120deg,var(--night),var(--green),var(--gold-d));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.cover .en-title{font-family:var(--disp);font-size:clamp(1.05rem,3.8vw,1.35rem);font-weight:600;color:var(--green);letter-spacing:1.6px}
+.cover .tag{display:inline-block;margin-top:12px;font-size:13px;font-weight:800;color:#6a4f10;background:var(--gold-l);
+  border:1px solid rgba(142,106,28,.32);border-radius:100px;padding:7px 17px}
+.cover h2{font-family:var(--disp);font-size:22px;color:var(--ink);margin:20px 0 8px;font-weight:600}
+.cover p{color:var(--ink-soft);font-size:15px;max-width:56ch;margin:0 auto}
+.start-btn{margin-top:22px;display:inline-block;text-decoration:none;
+  background:linear-gradient(135deg,var(--gold),var(--gold-d));color:#2b2005;font-family:var(--disp);font-weight:600;font-size:16px;
+  padding:14px 32px;border-radius:100px;transition:.22s}
+.start-btn:hover{transform:translateY(-3px) scale(1.03)}
+
+.howto{background:var(--sky-bg);border:1px solid rgba(58,110,143,.25);border-left:5px solid var(--sky);
+  border-radius:16px;padding:18px 20px;margin-bottom:26px}
+.howto h3{font-family:var(--disp);color:var(--sky);font-size:17px;font-weight:600;margin-bottom:6px}
+.howto ol{margin:8px 0 0 18px;font-size:14.5px;color:var(--ink-soft)}
+.howto li{margin-bottom:5px}
+
+.lesson{background:rgba(255,255,255,.95);border:1px solid rgba(27,107,74,.14);border-radius:var(--r);
+  padding:0 0 26px;margin-bottom:26px;box-shadow:var(--shadow);scroll-margin-top:82px;position:relative;overflow:hidden}
+.lesson::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;z-index:2;
+  background:linear-gradient(90deg,var(--green),var(--gold),var(--rose))}
+.pad{padding:0 22px}
+.l-head{text-align:center;padding:28px 22px 0}
+.l-badge{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:1.6px;color:#fff;
+  background:linear-gradient(135deg,var(--green),var(--night));border-radius:100px;padding:6px 16px}
+.l-head h2{font-family:var(--disp);font-size:26px;color:var(--ink);font-weight:600;line-height:1.25}
+.l-head .l-ar{font-family:var(--ar);font-size:21px;color:var(--green);font-weight:700;direction:rtl}
+.l-intro{font-size:15.5px;color:var(--ink-soft);margin-bottom:16px;text-align:center}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin:16px 0 4px}
+.fact{background:var(--green-bg);border-radius:14px;padding:10px 13px}
+.fact .fl{font-size:10.5px;font-weight:800;letter-spacing:.9px;color:var(--green);text-transform:uppercase}
+.fact .fv{font-size:14px;font-weight:700;color:var(--ink);line-height:1.4}
+
+.hook{background:var(--rose-bg);border:2px dashed var(--rose);border-radius:16px;padding:16px 18px;margin:18px 0}
+.hook .tag{font-size:12px;font-weight:800;color:var(--rose);letter-spacing:.5px;display:block;margin-bottom:4px}
+.hook p{font-size:15.5px;color:var(--ink);font-weight:600}
+
+/* ---------- plates: prompt shown faintly inside the placeholder ---------- */
+.plates{margin:22px 0}
+.plates-tag{font-size:12px;font-weight:800;letter-spacing:.6px;color:var(--green);margin:0 22px 10px}
+.plate{margin-bottom:20px}
+.plate figure{margin:0}
+.plate img{width:100%;display:block}
+.plate .ph{position:relative;aspect-ratio:16/9;border-top:1px solid var(--green-l);border-bottom:1px solid var(--green-l);
+  background:linear-gradient(160deg,#FAFCFA,#F6FAF7);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:20px 26px;gap:7px;overflow:hidden}
+.plate .ph .meta{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.plate .ph .fn{font-family:monospace;font-size:11px;color:var(--green);opacity:.55;letter-spacing:.3px}
+.plate .ph .rt{font-family:monospace;font-size:10.5px;color:var(--gold-d);opacity:.5;
+  border:1px solid currentColor;border-radius:100px;padding:1px 8px}
+.plate .ph .pr{font-size:11.5px;line-height:1.65;color:var(--ink-soft);opacity:.4;max-width:62ch;font-style:italic}
+.plate figcaption{padding:12px 22px 0}
+.plate .cap{font-family:var(--disp);font-size:17px;font-weight:600;color:var(--green-d)}
+.plate .info{font-size:14.5px;color:var(--ink-soft);margin-top:2px}
+
+.story-card{background:linear-gradient(165deg,#fff,var(--gold-bg));border:1px solid rgba(142,106,28,.22);
+  border-radius:20px;padding:22px 20px;margin-bottom:16px}
+.story-card .card-tag{font-size:12px;font-weight:800;letter-spacing:.6px;color:var(--gold-d);margin-bottom:10px}
+.scene{margin-bottom:16px}
+.scene:last-child{margin-bottom:0}
+.scene .sn{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1px;color:#fff;
+  background:var(--gold-d);border-radius:100px;padding:3px 11px;margin-bottom:6px}
+.scene p{font-size:15.5px;color:var(--ink);line-height:1.95}
+
+/* what he was like — the love-building block */
+.him{background:linear-gradient(160deg,#fff,var(--rose-bg));border:2px solid rgba(176,85,99,.35);
+  border-radius:18px;padding:20px;margin-bottom:16px}
+.him .card-tag{font-size:12px;font-weight:800;color:var(--rose);letter-spacing:.6px;margin-bottom:8px}
+.him p{font-size:15px;color:var(--ink);margin-bottom:10px}
+.him .hq{background:#fff;border-left:4px solid var(--rose);border-radius:0 12px 12px 0;padding:12px 15px}
+.him .hq .q{font-size:15px;color:var(--ink);font-style:italic;line-height:1.8}
+.him .hq .s{font-size:12px;font-weight:800;color:var(--rose);margin-top:5px}
+
+.ayah-card{background:linear-gradient(160deg,var(--green-bg),#fff);border:1px solid rgba(27,107,74,.28);
+  border-radius:18px;padding:22px;margin-bottom:16px;text-align:center;box-shadow:var(--shadow-sm)}
+.ayah-card .card-tag{font-size:12px;font-weight:800;color:var(--green);letter-spacing:.6px;margin-bottom:8px}
+.ayah-ar{font-family:var(--ar);font-size:26px;line-height:2.1;color:var(--night);font-weight:700;direction:rtl;margin-bottom:8px}
+.ayah-mean{font-size:15.5px;color:var(--ink);font-style:italic}
+.ayah-ref{font-size:12.5px;font-weight:800;color:var(--green);margin-top:8px}
+
+.discuss{background:#fff;border:2px solid var(--green-l);border-radius:18px;padding:18px 20px;margin-bottom:16px}
+.discuss .card-tag{font-size:12px;font-weight:800;color:var(--green);letter-spacing:.6px;margin-bottom:4px}
+.discuss .sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px}
+.discuss ol{margin-left:18px;display:flex;flex-direction:column;gap:9px}
+.discuss li{font-size:14.5px;color:var(--ink);font-weight:600;line-height:1.65}
+.discuss .how{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  background:var(--green-bg);color:var(--green);border-radius:100px;padding:2px 9px;margin-left:6px;vertical-align:1px}
+
+.why-box{background:linear-gradient(160deg,#fff,var(--sky-bg));border:1px solid rgba(58,110,143,.26);
+  border-left:5px solid var(--sky);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.why-tag{font-size:12.5px;font-weight:800;color:var(--sky);margin-bottom:8px}
+.why-box p{font-size:15px;color:var(--ink-soft);margin-bottom:12px}
+.kp-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+.kp-list li{display:flex;align-items:flex-start;gap:10px;font-size:14.5px;color:var(--ink);font-weight:700}
+.kp-dot{color:var(--sky);font-size:14px;flex:0 0 auto;margin-top:2px}
+
+
+.remind{background:linear-gradient(160deg,var(--night),var(--green-d));color:#fff;
+  border-radius:18px;padding:22px 24px;text-align:center;position:relative;overflow:hidden}
+.remind::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.28;
+  background:radial-gradient(circle at 20% 25%,rgba(255,255,255,.5) 0 2px,transparent 3px),
+    radial-gradient(circle at 78% 60%,rgba(255,255,255,.4) 0 3px,transparent 4px);
+  background-size:220px 220px}
+.remind .rtag{font-size:11px;font-weight:800;letter-spacing:1.6px;color:var(--gold-l);
+  opacity:.9;margin-bottom:8px;position:relative}
+.remind p{font-family:var(--disp);font-size:17px;font-weight:500;line-height:1.85;
+  max-width:52ch;margin:0 auto;position:relative}
+
+.checkpoint{background:linear-gradient(165deg,#fff,var(--gold-bg));border:1px solid rgba(142,106,28,.28);border-radius:var(--r);
+  padding:28px 22px;margin-bottom:26px;box-shadow:var(--shadow);scroll-margin-top:82px;position:relative;overflow:hidden}
+.checkpoint::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,var(--gold),var(--gold-d),var(--green))}
+.cp-head{text-align:center;margin-bottom:18px}
+.cp-badge{display:inline-block;font-size:12px;font-weight:800;letter-spacing:1.2px;color:#4a3708;
+  background:linear-gradient(135deg,var(--gold-l),var(--gold));border:1px solid rgba(142,106,28,.35);border-radius:100px;padding:6px 16px}
+.cp-head h2{font-family:var(--disp);font-size:24px;color:var(--ink);margin-top:12px;font-weight:600}
+.cp-head p{font-size:13.5px;color:var(--ink-soft);margin-top:4px}
+.cp-cards{display:flex;flex-direction:column;gap:12px}
+.cp-card{text-align:left;width:100%;min-height:44px;background:#fff;border:2px solid rgba(27,107,74,.18);border-radius:16px;
+  padding:16px 18px;cursor:pointer;transition:.2s;font-family:inherit;display:flex;flex-direction:column;gap:6px}
+.cp-card:hover{border-color:var(--green);transform:translateY(-2px)}
+.cp-card.open{border-color:var(--gold);background:linear-gradient(160deg,#fff,var(--gold-bg))}
+.cp-q{font-weight:800;font-size:15px;color:var(--ink)}
+.cp-hint{font-size:12px;color:var(--green);font-weight:700}
+.cp-a{font-size:14.5px;color:var(--green);font-weight:700;max-height:0;overflow:hidden;opacity:0;transition:.3s}
+.cp-card.open .cp-a{max-height:260px;opacity:1}
+.cp-card.open .cp-hint{display:none}
+
+.done{text-align:center;padding:44px 26px;border-radius:var(--r);color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  background:linear-gradient(160deg,var(--green),var(--night))}
+.done h2{font-family:var(--disp);font-size:28px;margin:10px 0 8px;font-weight:600}
+.done p{font-size:15px;opacity:.95;max-width:50ch;margin:0 auto}
+.done .sal{font-family:var(--ar);font-size:22px;margin-top:14px;direction:rtl}
+
+.foot{text-align:center;color:var(--ink-soft);font-size:12.5px;margin-top:34px;padding-top:20px;border-top:2px dotted rgba(27,107,74,.3)}
+.foot .ar{font-family:var(--ar);font-size:17px;color:var(--green);display:block;margin-bottom:4px}
+
+@media(max-width:520px){
+  .brand-txt .en{display:none}
+  .cover{padding:32px 18px 38px}
+  .wrap{padding:18px 13px 60px}
+  .pad,.plate figcaption,.plates-tag{padding-left:16px;padding-right:16px}
+  .l-head{padding:24px 16px 0}
+  .checkpoint{padding:24px 16px}
+  .l-head h2{font-size:22px}
+  .ayah-ar{font-size:22px}
+  .plate .ph{aspect-ratio:4/3;padding:16px}
+  .plate .ph .pr{font-size:10.5px;-webkit-line-clamp:6}
+}
+@media(max-width:380px){ .facts{grid-template-columns:1fr} .l-head h2{font-size:20px} }
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open lesson menu">☰</button>
+  <div class="brand">
+    <img class="brand-logo" src="/logo.png" alt="ManzilulQuran">
+    <div class="brand-txt">
+      <h1>السِّيرَةُ النَّبَوِيَّة</h1>
+      <div class="en">AS-SĪRAH AN-NABAWIYYAH</div>
+    </div>
+  </div>
+  <div class="spring"></div>
+  <button class="lang-btn" id="langBtn">മലയാളം</button>
+  <div class="pagepill">Tharbiya · L2</div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-h">As-Sīrah<span class="ar">السِّيرَةُ النَّبَوِيَّة</span></div>
+  <div class="drawer-sub" data-i18n="drawerSub">The life of the Prophet ﷺ · 15 lessons</div>
+  <div id="bnList"></div>
+</nav>
+
+<div class="wrap">
+  <section class="cover" id="top">
+    <img class="cover-logo" src="/logo.png" alt="">
+    <div class="ar-title">السِّيرَةُ النَّبَوِيَّة</div>
+    <div class="en-title">THE LIFE OF THE PROPHET ﷺ</div>
+    <span class="tag" data-i18n="coverTag">Tharbiya · Level 2 · Ages 10–14</span>
+    <h2 data-i18n="coverH">The one life worth knowing by heart</h2>
+    <p data-i18n="coverP">From an orphan in Makkah to the mercy sent for all the worlds — and he is still ahead of us. Fifteen lessons, each one written so that by the end you do not only know him. You love him.</p>
+    <a class="start-btn" href="#lesson1" data-i18n="startBtn">Begin →</a>
+  </section>
+
+  <div class="howto">
+    <h3 data-i18n="howtoH">How each online lesson runs</h3>
+    <ol>
+      <li data-i18n="howto1"><b>Before class</b> — read the Opening Question and look at the two picture plates.</li>
+      <li data-i18n="howto2"><b>In class</b> — your teacher reads the three scenes with you, then <i>What He Was Like</i>, then opens the discussion. Answer in the chat or unmute.</li>
+      <li data-i18n="howto3"><b>After class</b> — do This Week's Task and send it to your teacher.</li>
+    </ol>
+  </div>
+
+  <main id="lessons"></main>
+
+  <section class="done" id="done">
+    <h2 data-i18n="doneH">And we are not finished</h2>
+    <p data-i18n="doneP">You have read his whole life — and he is still waiting for us at the Ḥawḍ. Send ṣalawāt on him today. He hears it, and he answers.</p>
+    <div class="sal">اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّد</div>
+  </section>
+
+  <div class="foot">
+    <span class="ar">لَقَدْ كَانَ لَكُمْ فِي رَسُولِ اللَّهِ أُسْوَةٌ حَسَنَةٌ</span>
+    As-Sīrah an-Nabawiyyah · ManzilulQuran E-learning Academy
+  </div>
+</div>
+
+<script>
+/* ==========================================================================
+   ⚠️ VERIFY every ḥadīth, āyah reference, name and date before publishing.
+   NO IMAGE MAY DEPICT THE PROPHET ﷺ — every prompt below states this, and
+   the generated art must be checked against it.
+
+   Images: 2 plates per lesson, 30 total, 16:9. Flip IMG_STATUS to "ready"
+   once assets/img/ holds all thirty. Export .jpeg.
+
+   Malayalam later: renders from LESSONS, so add ml:{} per lesson.
+   ========================================================================== */
+
+const IMG_STATUS="placeholder";
+const RATIO="16:9";
+const NOFACE="No depiction of the Prophet ﷺ and no human faces anywhere in the image.";
+const STYLE="Warm storybook illustration for a children's Seerah book. Deep green, warm gold and soft sand palette, gentle painted texture, reverent and calm. ";
+
+const P=(f,cap,info,prompt)=>({f,cap,info,prompt:STYLE+prompt+" "+NOFACE});
+
+const LESSONS=[
+{
+ t:"Before the Light", ar:"مَا قَبْلَ الْبِعْثَة",
+ facts:{when:"570 CE — the Year of the Elephant",where:"Makkah",age:"—",src:"Sūrah Al-Fīl · Ibn Isḥāq"},
+ hook:"What would a world look like if nobody remembered what was right any more?",
+ plates:[
+  P("srh-01a-jahiliyyah.jpeg","The age of ignorance",
+    "Makkah before him: three hundred and sixty idols around the Kaʿbah, tribes at war over a camel, daughters buried alive, the weak owned by the strong.",
+    "A dusty Makkan valley at dusk seen from a distance, the Kaʿbah surrounded by many small stone idols, scattered tents, an empty market, long shadows."),
+  P("srh-01b-elephant.jpeg","The year of the elephant",
+    "Abrahah marched from Yemen with an elephant to destroy the Kaʿbah. Birds came from the sea carrying small stones, and the army was destroyed before it arrived.",
+    "A vast desert plain at dawn, a flock of small birds in formation high above an abandoned war camp, scattered shields and drums on the sand, the Kaʿbah untouched far behind.")],
+ scenes:[
+  ["A world in the dark","Arabia in those days had poetry and courage and almost nothing else. Three hundred and sixty idols stood around the Kaʿbah — the very house Ibrāhīm had built for Allah alone. Tribes fought for forty years over the killing of a camel. A man could own another man. A father could bury his newborn daughter in the sand and be praised for his honour."],
+  ["The house still stood","Yet the Kaʿbah remained, and every year the people circled it, half remembering a religion they had lost. A few men — the ḥunafā' — refused the idols and searched for the God of Ibrāhīm without finding Him. The world was waiting, and did not know what it was waiting for."],
+  ["The elephant","That year Abrahah came from Yemen with an army and an elephant to pull the Kaʿbah down. ʿAbd al-Muṭṭalib went to him for his stolen camels, and when Abrahah asked why he did not plead for the House, he said: I am the owner of the camels; the House has an Owner who will protect it. And He did. Birds came from the sea and the army was broken. In that same year, a child was born."]],
+ him:{p:"Before he was anything else, he was awaited. Allah had already promised him through Ibrāhīm and announced him through ʿĪsā.",
+   q:"I am the answer to the duʿā of Ibrāhīm and the good news of ʿĪsā.",s:"Aḥmad · Ibn Ḥibbān"},
+ ayahAr:"أَلَمْ تَرَ كَيْفَ فَعَلَ رَبُّكَ بِأَصْحَابِ الْفِيلِ",
+ ayahEn:"Have you not seen how your Lord dealt with the companions of the elephant?",
+ ayahRef:"Sūrah Al-Fīl 105:1",
+ discuss:[["ʿAbd al-Muṭṭalib said the House has an Owner who will protect it. What kind of faith is that?","unmute"],
+          ["Name one thing people around you do only because everyone else does it.","chat"],
+          ["Why do you think Allah let the world get so dark before sending him?","unmute"]],
+ why:"You cannot see how bright a lamp is until you have seen the dark. Everything he changed only makes sense against the world he changed it from.",
+ points:["The Kaʿbah was built for Allah alone, and had been filled with idols","Allah protected His House before the Prophet ﷺ was even born","He was promised long before he arrived"]
+},
+{
+ t:"The Orphan of Makkah", ar:"الْيَتِيم",
+ facts:{when:"570–578 CE",where:"Makkah and Banū Saʿd",age:"Birth to 8",src:"Bukhārī · Ibn Hishām"},
+ hook:"He lost his father, his mother and his grandfather before he was nine. What does that do to a person?",
+ plates:[
+  P("srh-02a-desert-home.jpeg","Growing up in the desert",
+    "Ḥalīmah of Banū Saʿd took him to the open desert, where the air was clean and the Arabic was pure. She said blessing entered her home the day he arrived.",
+    "A simple Bedouin camp among low desert hills at golden hour, goats grazing, a woven tent, a well, healthy green scrub around it while the land beyond is dry."),
+  P("srh-02b-grave.jpeg","The road to Abwā'",
+    "At six he travelled with his mother to visit his father's grave. On the way home she died at Abwā', and he returned alone with a servant.",
+    "An empty desert road between low hills at dusk, a single stone marker beside it, a small caravan continuing far in the distance, a wide quiet sky.")],
+ scenes:[
+  ["Born already fatherless","His father ʿAbdullāh died before he was born. His mother Āminah named him Muḥammad — the praised one — a name nobody in Arabia carried. His grandfather ʿAbd al-Muṭṭalib carried him into the Kaʿbah and thanked Allah for him."],
+  ["The desert years","Makkan families sent their babies to the desert for clean air and pure Arabic. No wet-nurse wanted an orphan — there would be no rich father to pay. Ḥalīmah took him only because she had found no one else. She later said her thin camel gave milk that night, her flock grew fat, and everything in her home was blessed from the day he came."],
+  ["Losing them one by one","At six his mother took him to see his father's grave. She died on the road home at Abwā'. He was brought back to his grandfather, who loved him openly and let him sit on his own cushion when the chiefs of Quraysh had to sit on the ground. Two years later his grandfather died too. He was eight, and his uncle Abū Ṭālib took him in."]],
+ him:{p:"He never forgot what it was to be the child nobody had to take in. It shaped how he treated orphans for the rest of his life.",
+   q:"I and the one who cares for an orphan will be in Jannah like this — and he held up his two fingers together.",s:"Ṣaḥīḥ al-Bukhārī"},
+ ayahAr:"أَلَمْ يَجِدْكَ يَتِيمًا فَآوَىٰ",
+ ayahEn:"Did He not find you an orphan and give you shelter?",
+ ayahRef:"Sūrah Aḍ-Ḍuḥā 93:6",
+ discuss:[["Allah could have given him an easy childhood. Why do you think He did not?","unmute"],
+          ["Type one thing you would find hardest about being alone at eight years old.","chat"],
+          ["Ḥalīmah took him because nobody else would. What did she gain?","unmute"]],
+ why:"The man who would carry the whole world's grief was first taught to carry his own. Nothing Allah gave him was wasted, including the pain.",
+ points:["He was an orphan before he was a prophet","Caring for an orphan puts you beside him in Jannah","Allah shelters those who have no one"]
+},
+{
+ t:"Al-Amīn", ar:"الأَمِين",
+ facts:{when:"578–595 CE",where:"Makkah and Shām",age:"8 to 25",src:"Bukhārī · Ibn Hishām"},
+ hook:"A whole city decides to trust one young man with everything they own. How does someone earn that?",
+ plates:[
+  P("srh-03a-shepherd.jpeg","The shepherd years",
+    "He worked as a shepherd in the hills for a few qīrāṭ. Every prophet, he later said, herded sheep — it teaches patience, watchfulness and care for the weak.",
+    "A boy's staff and a woven bag resting on a rock among rolling stony hills at sunrise, a flock of sheep scattered across the slope below, no person visible."),
+  P("srh-03b-kaaba-cloak.jpeg","The cloak and the stone",
+    "When the Kaʿbah was rebuilt, the tribes nearly went to war over who would place the Black Stone. He laid it on a cloak and had every chief lift a corner.",
+    "A spread cloak on the ground with a dark stone in its centre, several hands gripping the edges from all sides, the Kaʿbah wall rising behind, warm dust in the air.")],
+ scenes:[
+  ["Working with his hands","He grew up poor and worked. He herded sheep for the people of Makkah for a small wage. Later he said: <i>Allah sent no prophet who did not herd sheep.</i> His companions asked, even you? He said: yes — I herded them for the people of Makkah."],
+  ["The name they gave him","He never lied. He never cheated in trade. He never took part in the drinking and gambling of the young men of Quraysh. Long before revelation the whole city had a name for him — Al-Amīn, the trustworthy — and they left their gold with him for safekeeping, including the men who would later try to kill him."],
+  ["The cloak","When the Kaʿbah was rebuilt after a flood, the tribes came to blows over who would have the honour of setting the Black Stone in place. They agreed to accept the judgement of the next man to enter. It was him. He spread his cloak, placed the stone in the middle, and asked one chief from every tribe to take an edge and lift together. Then he set it in place with his own hands. Nobody lost, and nobody died."]],
+ him:{p:"Trust was not a policy he adopted. It was simply what he was, before anyone had a reason to praise him for it.",
+   q:"ʿĀ'ishah was asked about his character and said: his character was the Qur'an.",s:"Ṣaḥīḥ Muslim"},
+ ayahAr:"وَإِنَّكَ لَعَلَىٰ خُلُقٍ عَظِيمٍ",
+ ayahEn:"And indeed you are of a great and noble character.",
+ ayahRef:"Sūrah Al-Qalam 68:4",
+ discuss:[["He was trusted before he was believed. Why does that order matter?","unmute"],
+          ["The cloak solved it so nobody lost face. Type one argument you could solve that way.","chat"],
+          ["Would the people who know you call you al-amīn? What would need to change?","unmute"]],
+ why:"He was given the name Al-Amīn by people who did not follow his religion, because character is visible before belief is. Your reputation is built long before your test comes.",
+ points:["He worked with his hands and was not ashamed of it","Character comes before preaching, not after","Solve a quarrel so that nobody has to lose"]
+},
+{
+ t:"Read", ar:"اقْرَأْ",
+ facts:{when:"610 CE",where:"Cave of Ḥirā'",age:"40",src:"Bukhārī · Muslim"},
+ hook:"What would you do if something enormous and unexplainable happened to you, and you had to tell someone?",
+ plates:[
+  P("srh-04a-hira.jpeg","The cave of Ḥirā'",
+    "He would climb Jabal an-Nūr and stay alone in the cave for nights, thinking about the world he could not accept and the God he could not name.",
+    "A narrow cave opening high on a steep dark mountain at night, the lights of Makkah tiny far below, an immense field of stars overhead, one soft glow at the cave mouth."),
+  P("srh-04b-khadijah.jpeg","He came home shaking",
+    "He came down trembling and said: cover me. Khadījah wrapped him, listened, and told him Allah would never disgrace him — because of how he treated people.",
+    "A simple Makkan room by lamplight, a folded woollen cloak laid over a low cushion, a cup of water beside it, a doorway open to the night.")],
+ scenes:[
+  ["Alone on the mountain","By forty he could no longer bear what his people had become. He began taking food and water up Jabal an-Nūr and staying in the cave of Ḥirā' for nights at a time, alone, thinking. He did not know what he was looking for. He only knew that idols were not it."],
+  ["Read","Then the angel came, and held him, and said: <b>Read.</b> He answered: I am not one who reads. Three times the angel pressed him until he could bear no more, and then said: <i>Read in the name of your Lord who created — created man from a clinging clot. Read, and your Lord is the Most Generous.</i> The first word of the Qur'an was a command to learn."],
+  ["The first believer","He ran down the mountain with his heart pounding and said to his wife: cover me, cover me. She covered him. He told her he feared for himself. Khadījah — the first person on earth to believe him — said: <i>Never. By Allah, Allah will never disgrace you. You keep ties of kinship, you carry the burden of the weak, you give to the poor, you honour the guest, and you help others in calamity.</i> She listed his character back to him as proof."]],
+ him:{p:"The first person to believe in him was the woman who lived with him. Nobody knew him better, and nobody was more certain.",
+   q:"He said of her: she believed in me when the people disbelieved, and she gave me her wealth when the people withheld from me.",s:"Aḥmad"},
+ ayahAr:"اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ",
+ ayahEn:"Read in the name of your Lord who created.",
+ ayahRef:"Sūrah Al-ʿAlaq 96:1",
+ discuss:[["The very first word revealed was <i>read</i>. To a man who could not read. Why?","unmute"],
+          ["Khadījah proved he was safe by listing his character. Type one thing about you someone could list.","chat"],
+          ["He was frightened, not proud. What does that tell you about him?","unmute"]],
+ why:"Islam began with the word <i>read</i> and with a woman who believed. Neither of those is an accident, and both are worth remembering.",
+ points:["The first command of the Qur'an was to learn","Khadījah was the first Muslim","Good character is evidence people can see"]
+},
+{
+ t:"The First Believers", ar:"السَّابِقُونَ",
+ facts:{when:"610–613 CE",where:"Makkah — the house of Al-Arqam",age:"40–43",src:"Bukhārī · Ibn Hishām"},
+ hook:"Who would believe you first — and who would you be afraid to tell?",
+ plates:[
+  P("srh-05a-arqam.jpeg","The house of Al-Arqam",
+    "For three years they met in secret in a house at the foot of Ṣafā — the first classroom in the history of Islam.",
+    "A small stone house at the base of a hill in old Makkah, a single lamp glowing behind a doorway at night, a narrow lane outside, empty and quiet."),
+  P("srh-05b-bilal.jpeg","Aḥad, aḥad",
+    "Bilāl was pinned under a rock on the burning sand and told to name another god. He said only one word: One. One.",
+    "A wide stretch of white desert under a fierce midday sun, a large flat rock resting on hot sand, the horizon shimmering, no people visible.")],
+ scenes:[
+  ["The first four","Khadījah believed first. Then ʿAlī, a boy of about ten living in his house. Then Zayd ibn Ḥārithah, a freed slave who chose him over his own family. Then Abū Bakr, who believed without asking for a single proof, and who brought five more men with him within days."],
+  ["The secret years","For three years they met quietly in the house of Al-Arqam at the foot of Ṣafā. They learned the Qur'an as it came down, verse by verse, and prayed in the valleys where nobody would see. The religion grew one person at a time, in a room."],
+  ["Bilāl","Then came the ones with no tribe to protect them. Bilāl, an Abyssinian slave, was dragged into the desert at midday, laid on the burning sand with a rock on his chest, and ordered to name al-Lāt and al-ʿUzzā. All he said was: <i>Aḥad. Aḥad.</i> One. One. Abū Bakr bought him and set him free. Years later Bilāl stood on the roof of the Kaʿbah and called the adhān over the city that had tortured him."]],
+ him:{p:"He did not choose the strong. The first community was a wife, a boy, a freed slave and a merchant — and then the people nobody else valued at all.",
+   q:"He said: the people of Jannah are every weak one considered lowly, who, if he swore by Allah, Allah would fulfil his oath.",s:"Ṣaḥīḥ al-Bukhārī"},
+ ayahAr:"وَالسَّابِقُونَ الْأَوَّلُونَ مِنَ الْمُهَاجِرِينَ وَالْأَنصَارِ",
+ ayahEn:"And the first forerunners among the Muhājirīn and the Anṣār…",
+ ayahRef:"Sūrah At-Tawbah 9:100",
+ discuss:[["Abū Bakr believed without asking for proof. What kind of friendship is that?","unmute"],
+          ["Bilāl had one word left and used it. Type what you think gave him that strength.","chat"],
+          ["Why do you think the first Muslims were mostly poor and weak?","unmute"]],
+ why:"Islam was not carried first by the powerful. It was carried by a wife, a child, a slave and a friend — which means it was never about status, and still is not.",
+ points:["The first Muslims had no power and no protection","Abū Bakr believed immediately and without conditions","Allah raises those the world looks down on"]
+},
+{
+ t:"The Years of Pain", ar:"سَنَوَاتُ الابْتِلَاء",
+ facts:{when:"613–619 CE",where:"Makkah · Abyssinia",age:"43–49",src:"Bukhārī · Ibn Hishām"},
+ hook:"How long could you keep going if the people hurting you were your own neighbours?",
+ plates:[
+  P("srh-06a-boycott.jpeg","Three years in the valley",
+    "Quraysh hung a document on the Kaʿbah banning all trade and marriage with his clan. For three years they lived in a valley, eating leaves.",
+    "A narrow rocky ravine between steep cliffs at dusk, a few rough shelters against the rock face, a small dead fire, the sky a thin strip above."),
+  P("srh-06b-abyssinia.jpeg","Across the sea",
+    "He sent the weakest of his followers to Abyssinia, to a Christian king he described as a ruler under whom no one is wronged.",
+    "A wooden sailing boat pulling away from a rocky shore at dawn, the coast of Africa faint on the horizon, calm sea, a few bundles of belongings on the deck.")],
+ scenes:[
+  ["When it turned","He climbed Ṣafā and called his people openly for the first time. From that day the city turned. They threw filth at his door. They put thorns in his path. They mocked him in the street. Sumayyah, an old woman with no tribe, was killed for refusing to leave Islam — the first shahīdah."],
+  ["The sea crossing","He could not protect the weakest of them, so he sent them away. A small group crossed to Abyssinia, where the Negus heard Jaʿfar recite Sūrah Maryam and wept until his beard was wet. He drew a line on the ground and said: what is between us and you is no thicker than this line."],
+  ["The valley","Then Quraysh wrote a document and hung it inside the Kaʿbah: no trade, no marriage, no dealings with Banū Hāshim until they surrendered him. For three years his whole clan — believers and not — lived in a rocky valley. Children cried from hunger. They ate leaves. And when the document was finally taken down, it had been eaten by ants, with only the words <i>In Your name, O Allah</i> left untouched."]],
+ him:{p:"He never once retaliated in kind, and never once asked his followers to.",
+   q:"ʿĀ'ishah said he never struck anything with his hand — not a servant, not a woman — and never took revenge for himself, unless the limits of Allah were violated.",s:"Ṣaḥīḥ Muslim"},
+ ayahAr:"فَاصْبِرْ كَمَا صَبَرَ أُولُو الْعَزْمِ مِنَ الرُّسُلِ",
+ ayahEn:"So be patient, as the messengers of firm resolve were patient.",
+ ayahRef:"Sūrah Al-Aḥqāf 46:35",
+ discuss:[["He sent the weak away instead of asking them to endure. What does that show?","unmute"],
+          ["The Negus wept at Sūrah Maryam. Why did that sūrah reach him?","unmute"],
+          ["Type one thing that would make you want to give up on something good.","chat"]],
+ why:"Everything he built was built by people who were beaten for it first. Nothing important has ever been cheap.",
+ points:["Sumayyah was the first to die for Islam","He protected the weak even at cost to himself","Patience is not passive — it is holding a position"]
+},
+{
+ t:"The Year of Sorrow", ar:"عَامُ الْحُزْن",
+ facts:{when:"619 CE",where:"Makkah and Ṭā'if",age:"49–50",src:"Bukhārī · Muslim"},
+ hook:"You lose the two people who protected you, in the same year. Then you go somewhere new and they set children on you. What do you pray?",
+ plates:[
+  P("srh-07a-loss.jpeg","Two graves in one year",
+    "Khadījah died, and Abū Ṭālib died. In months he lost the wife who believed first and the uncle who had shielded him for forty years.",
+    "Two simple stone grave markers on a quiet Makkan hillside at dusk, a single olive tree, the valley below in shadow, a soft last light on the horizon."),
+  P("srh-07b-taif.jpeg","The grapes at Ṭā'if",
+    "Driven out of Ṭā'if with blood in his sandals, he sat in a garden. A servant brought grapes and became Muslim on the spot.",
+    "A green walled garden with heavy grape vines and a low stone bench, cool shade, a small dish of grapes on the bench, dusty road visible beyond the gate.")],
+ scenes:[
+  ["The year everything went","Khadījah died — twenty-five years of marriage, the first to believe, the one who covered him when he was shaking. Then Abū Ṭālib died, the uncle who had raised him from eight and protected him from Quraysh without ever accepting Islam. Within weeks Quraysh grew bolder than they had ever been. He called that year ʿĀm al-Ḥuzn."],
+  ["Ṭā'if","He walked sixty miles to Ṭā'if to look for one town that would listen. The chiefs mocked him and set the street children on him. They stoned him out of the town until his sandals filled with blood. He sat exhausted in a garden and made the duʿā that is still recited today: <i>O Allah, to You I complain of my weakness… if You are not angry with me, I do not care.</i>"],
+  ["The mountains","Then Jibrīl came with the angel of the mountains, who offered to crush Ṭā'if between the two hills. On the worst day of his life, with blood in his shoes, he said no. <i>Perhaps Allah will bring from their descendants those who worship Him alone.</i> Years later, Ṭā'if became Muslim."]],
+ him:{p:"This is the moment to measure him by. Given power, on his worst day, against the people who had just humiliated him — he chose their grandchildren over his own revenge.",
+   q:"He was asked to curse the idolaters and said: I was not sent as a curser. I was sent as a mercy.",s:"Ṣaḥīḥ Muslim"},
+ ayahAr:"وَمَا أَرْسَلْنَاكَ إِلَّا رَحْمَةً لِّلْعَالَمِينَ",
+ ayahEn:"And We have not sent you except as a mercy to all the worlds.",
+ ayahRef:"Sūrah Al-Anbiyā' 21:107",
+ discuss:[["He said <i>if You are not angry with me, I do not care</i>. What was he most afraid of?","unmute"],
+          ["He refused to destroy Ṭā'if. Would you have refused? Answer honestly.","unmute"],
+          ["Type the name of one person you find it hard to forgive. You do not have to explain.","chat"]],
+ why:"Anyone can be merciful when they are winning. He was merciful with blood in his sandals, and that is why we love him.",
+ points:["He grieved openly — the year has a name","He complained to Allah, not about Allah","He chose mercy at the exact moment revenge was offered"]
+},
+{
+ t:"The Night Journey", ar:"الإِسْرَاءُ وَالْمِعْرَاج",
+ facts:{when:"c. 620 CE",where:"Makkah → Jerusalem → the heavens",age:"c. 51",src:"Bukhārī · Muslim · Sūrah Al-Isrā'"},
+ hook:"Allah answers the worst year of his life. Not with rest — with a journey. Why?",
+ plates:[
+  P("srh-08a-buraq.jpeg","In one night",
+    "He was taken from the Sacred Masjid in Makkah to the Farthest Masjid in Jerusalem, and led all the prophets in prayer there.",
+    "A night sky full of stars over a desert horizon, a faint trail of light arcing from one distant walled city toward another far away, deep blue and gold."),
+  P("srh-08b-miraj.jpeg","Above the seven heavens",
+    "He was raised through the heavens, met the prophets, reached the Lote Tree — and was given the five prayers, handed down directly, with no messenger between.",
+    "A vast tree of light at the edge of a starfield, glowing leaves drifting outward, seven soft luminous layers receding into the distance, awe and stillness.")],
+ scenes:[
+  ["The journey by night","In the year after Ṭā'if, when he had nothing left, Allah took him by night from the Kaʿbah to Bayt al-Maqdis in Jerusalem. There he led every prophet who had ever been sent in a single prayer — Ādam behind him, Nūḥ behind him, Ibrāhīm, Mūsā, ʿĪsā, all of them behind him. The whole line of prophecy stood in one row and he stood in front."],
+  ["Through the heavens","Then he was raised. At each heaven a gate opened and a prophet greeted him. He saw Mūsā, who wept — not from envy, but because a young man sent after him would bring more people into Jannah. He reached Sidrat al-Muntahā, the Lote Tree of the farthest boundary, beyond which no creature passes."],
+  ["Fifty, then five","There he was given the ṣalāh. Fifty prayers a day. On the way down Mūsā told him his people would not manage it and sent him back to ask for relief — again and again, until they were five. Five in number, fifty in reward. Every other command came down to earth; this one he was called up to receive. When he told Makkah in the morning they laughed. Abū Bakr said: if he said it, it is true. From that day he was Aṣ-Ṣiddīq."]],
+ him:{p:"He was offered the whole heavens and came back for us — carrying a gift we perform five times a day and often rush through in four minutes.",
+   q:"He said: the ṣalāh is the coolness of my eyes.",s:"Nasā'ī · Aḥmad"},
+ ayahAr:"سُبْحَانَ الَّذِي أَسْرَىٰ بِعَبْدِهِ لَيْلًا",
+ ayahEn:"Glory to the One who took His servant by night…",
+ ayahRef:"Sūrah Al-Isrā' 17:1",
+ discuss:[["Allah calls him <i>His servant</i> at the highest moment of his life. Why that word?","unmute"],
+          ["Abū Bakr believed instantly. Type what you would have said if you had been in Makkah that morning.","chat"],
+          ["Ṣalāh was brought down by hand from above the heavens. Does that change how you will pray today?","unmute"]],
+ why:"The prayer you perform five times a day was not sent down. He was brought up to receive it. Treat it like the gift it is.",
+ points:["He led every prophet in prayer","Ṣalāh was given directly, above the seven heavens","Fifty in reward, five in number — mercy is built into the count"]
+},
+{
+ t:"The Hijrah", ar:"الْهِجْرَة",
+ facts:{when:"622 CE",where:"Makkah → Madinah",age:"53",src:"Bukhārī · Sūrah At-Tawbah"},
+ hook:"Assassins are outside your door. You have one night. Who do you make sure gets paid first?",
+ plates:[
+  P("srh-09a-thawr.jpeg","The cave of Thawr",
+    "They hid three nights in a cave. Pursuers stood at the mouth. A spider had woven across it and a dove had nested there.",
+    "A low cave opening on a rocky hillside at dawn, a delicate spider web stretched across the entrance catching the light, a bird's nest on the ledge, feet-worn stone outside."),
+  P("srh-09b-madinah.jpeg","They came out singing",
+    "The people of Madinah went out to meet him with drums and singing. Ṭalaʿa al-badru ʿalaynā — the full moon has risen over us.",
+    "Date palms lining a road into a low-walled town at sunset, a crowd of lanterns and banners gathered at the edge of the settlement, warm golden light, seen from a distance.")],
+ scenes:[
+  ["The night they came","Quraysh chose one young man from every clan so that no single tribe could be blamed, and surrounded his house to kill him at dawn. He left ʿAlī in his bed — and told him to stay behind afterwards to return the deposits people had entrusted to him. Even that night, the trusts came first. Even from the men who wanted him dead."],
+  ["Three nights in the cave","He and Abū Bakr hid in the cave of Thawr. The search party came so close that Abū Bakr whispered: if one of them looks down, he will see us. He answered: <i>What do you think of two, when Allah is the third?</i> A spider's web and a nesting dove across the mouth of the cave were enough. The men turned away."],
+  ["Madinah","On the road Surāqah chased them for the reward, and his horse sank into the sand three times. He asked for safety, and was promised the bracelets of the emperor of Persia — a promise fulfilled years after the Prophet ﷺ had died. And when they finally reached Madinah, the whole town came out to meet them, children on the rooftops singing, and a city changed its name from Yathrib to the City of the Prophet."]],
+ him:{p:"Hunted, homeless, with a price on his head — and his first instruction was to make sure other people got their property back.",
+   q:"He said: return the trust to the one who entrusted you, and do not betray the one who betrayed you.",s:"Abū Dāwūd · Tirmidhī"},
+ ayahAr:"لَا تَحْزَنْ إِنَّ اللَّهَ مَعَنَا",
+ ayahEn:"Do not grieve — indeed Allah is with us.",
+ ayahRef:"Sūrah At-Tawbah 9:40",
+ discuss:[["He returned the deposits of the men trying to kill him. What does that cost?","unmute"],
+          ["<i>What do you think of two, when Allah is the third?</i> Type what that sentence means to you.","chat"],
+          ["The Islamic calendar counts from the Hijrah, not from his birth. Why that event?","unmute"]],
+ why:"Our calendar begins not with his birth, not with the first revelation, but with the day a community left everything to keep its faith. That tells you what Islam counts as the beginning.",
+ points:["Trusts were returned even to enemies","Allah's help came through a spider and a bird","The Hijrah is the start of the Muslim calendar"]
+},
+{
+ t:"Building Madinah", ar:"بِنَاءُ الْمَدِينَة",
+ facts:{when:"622–624 CE",where:"Madinah",age:"53–55",src:"Bukhārī · Ibn Hishām"},
+ hook:"Two groups of strangers, one poor and one settled. How do you make them into one family in six months?",
+ plates:[
+  P("srh-10a-masjid.jpeg","He carried the bricks himself",
+    "The first thing he built was the masjid — palm trunks for pillars, palm leaves for a roof, a floor of sand. He carried bricks with everyone else.",
+    "A simple open courtyard mosque under construction: palm-trunk pillars, a partial palm-frond roof, stacked mud bricks, a sandy floor, warm afternoon light."),
+  P("srh-10b-brotherhood.jpeg","One for one",
+    "He paired each emigrant with a helper of Madinah. The Anṣār offered to split their homes, their land and their wealth in half.",
+    "Two date palms grown side by side from the same patch of earth, roots visibly joined beneath the surface, a low wall and a shared well between them, evening light.")],
+ scenes:[
+  ["The masjid first","Before a house, before a market, before anything — he built the masjid. Simple: palm trunks holding up a roof of palm leaves, a sand floor, no decoration at all. He carried the bricks himself with the others, and when they made poetry about it, he joined in. Part of it was set aside for the poor with no home — the people of the Ṣuffah."],
+  ["Brotherhood","The Muhājirūn arrived with nothing — no houses, no land, no work. He paired each of them with an Anṣārī brother. The Anṣār offered to divide their property in half. ʿAbd ar-Raḥmān ibn ʿAwf refused the gift and asked instead: just show me the market. Within days he was trading. The dignity was part of the deal."],
+  ["One community","Then he wrote a document — the first constitution of Madinah — setting out the rights and duties of the Muslims, the Jewish tribes and the other clans, and making them one community with shared defence. In two years a city of feuding tribes had become a single body. He said: <i>the believers are like one body — when one part hurts, the whole body stays awake with fever.</i>"]],
+ him:{p:"He never had a throne, a guard or a palace. Visitors to Madinah had to ask which one of the men sitting on the floor was him.",
+   q:"He said: I sit as a servant sits, and I eat as a servant eats — for I am only a servant.",s:"Ibn Saʿd · Bayhaqī"},
+ ayahAr:"وَأَلَّفَ بَيْنَ قُلُوبِهِمْ",
+ ayahEn:"And He brought their hearts together.",
+ ayahRef:"Sūrah Al-Anfāl 8:63",
+ discuss:[["The Anṣār offered half of everything they owned. Could you?","unmute"],
+          ["ʿAbd ar-Raḥmān asked for the market, not for money. Why is that important?","unmute"],
+          ["Type one person in your class or masjid who is on the edge of things.","chat"]],
+ why:"He did not build a state first. He built a masjid and then a brotherhood, and the state grew out of those two. The order was not accidental.",
+ points:["The masjid came before everything else","Brotherhood was assigned, not left to chance","Giving with dignity matters as much as giving"]
+},
+{
+ t:"Badr", ar:"يَوْمُ الْفُرْقَان",
+ facts:{when:"2 AH · 624 CE",where:"Badr",age:"55",src:"Bukhārī · Sūrah Āl ʿImrān"},
+ hook:"Three hundred against a thousand. What do you say to Allah the night before?",
+ plates:[
+  P("srh-11a-badr-night.jpeg","The night before",
+    "He stood in prayer all night with his hands raised, asking Allah so long that his cloak slipped from his shoulders.",
+    "A small canopy shelter alone on a dark plain under heavy stars, a lamp inside casting one long shadow, an army camp asleep in the far distance."),
+  P("srh-11b-badr-wells.jpeg","The wells of Badr",
+    "He took control of the water first. When it was over he ordered that the prisoners be fed better than the Muslims ate themselves.",
+    "Old desert wells with worn stone rims at first light, water skins and empty vessels stacked beside them, tracks in the sand, a wide empty valley beyond.")],
+ scenes:[
+  ["Outnumbered","The Muslims went out expecting a caravan and found an army — a thousand men, well armed, against just over three hundred with two horses between them. He consulted his companions. The Anṣār, who had only promised to defend Madinah, said: go ahead, we will not say what Mūsā's people said. We will fight in front of you and behind you."],
+  ["All night in duʿā","That night he stood in prayer with his hands raised until his cloak fell from his shoulders, saying: <i>O Allah, if this band perishes, You will not be worshipped on earth.</i> Abū Bakr came and put the cloak back on him and said: enough, O Messenger of Allah — Allah will fulfil what He promised you."],
+  ["The day of criterion","The battle lasted part of a morning. Seventy of Quraysh were killed and seventy taken prisoner, among them his own uncle and relatives of his companions. He ordered that the captives be treated well — some Muslims gave the prisoners bread and ate dates themselves. Prisoners who could read bought their freedom by teaching ten children of Madinah to write. The Qur'an calls that day <i>Yawm al-Furqān</i>, the day of criterion."]],
+ him:{p:"He fought when he had to and never enjoyed it. He is the only commander in history who set his prisoners free in exchange for literacy.",
+   q:"He said: do not wish to meet the enemy, and ask Allah for well-being.",s:"Ṣaḥīḥ al-Bukhārī"},
+ ayahAr:"وَلَقَدْ نَصَرَكُمُ اللَّهُ بِبَدْرٍ وَأَنتُمْ أَذِلَّةٌ",
+ ayahEn:"And Allah had already given you victory at Badr while you were weak.",
+ ayahRef:"Sūrah Āl ʿImrān 3:123",
+ discuss:[["He asked the Anṣār first instead of ordering them. What kind of leader does that?","unmute"],
+          ["Prisoners bought freedom by teaching children to write. What does that say about Islam?","unmute"],
+          ["Type what you think he feared most that night.","chat"]],
+ why:"He prayed as though everything depended on Allah, and prepared as though everything depended on him. Both, not one.",
+ points:["He consulted before deciding","Prisoners were fed better than the soldiers","Reading and writing were treated as a ransom worth more than gold"]
+},
+{
+ t:"Uḥud and the Trench", ar:"أُحُدٌ وَالْخَنْدَق",
+ facts:{when:"3–5 AH",where:"Uḥud · Madinah",age:"56–58",src:"Bukhārī · Sūrah Āl ʿImrān"},
+ hook:"You gave a clear instruction. People disobeyed it, and it cost seventy lives. What do you say to them afterwards?",
+ plates:[
+  P("srh-12a-uhud.jpeg","The archers' hill",
+    "He placed fifty archers on a hill and told them not to move whatever happened. When they saw victory, most came down. The battle turned in minutes.",
+    "A low rocky hill overlooking a wide valley at midday, scattered arrows in the ground on its slope, the mountain of Uḥud rising red-brown behind, empty of people."),
+  P("srh-12b-khandaq.jpeg","The trench",
+    "Ten thousand came to finish Madinah. Salmān suggested a trench. They dug for weeks in winter, hungry, and the city was never reached.",
+    "A long deep trench cut across open ground before a town of date palms, spades and baskets of earth along its edge, cold grey winter sky, no figures.")],
+ scenes:[
+  ["Uḥud","At Uḥud he gave the archers one order: hold this hill whatever happens, even if you see birds carrying us away. When the enemy broke and the Muslims began collecting spoils, most of the archers came down. Cavalry swept around the hill and the victory became a disaster. Seventy were killed, among them his uncle Ḥamzah. His own tooth was broken and his face cut."],
+  ["What he said after","He did not blame them in public. The Qur'an came down: <i>had you been harsh and hard-hearted, they would have scattered from around you… so pardon them, ask forgiveness for them, and consult them in the matter.</i> Allah told him to consult the very people whose mistake had just cost him his uncle."],
+  ["The trench","Two years later ten thousand came to end Madinah for good. Salmān the Persian suggested something Arabia had never seen — a trench. They dug for weeks in bitter cold, tying stones to their stomachs against hunger, singing while they worked, and he dug alongside them. The confederates camped for a month, could not cross, and a storm scattered their tents. They never came again."]],
+ him:{p:"He was wounded, he lost his uncle, his instruction had been ignored — and he was told to pardon them and consult them anyway.",
+   q:"He said: the strong man is not the one who overcomes people by his strength, but the one who controls himself when he is angry.",s:"Ṣaḥīḥ al-Bukhārī"},
+ ayahAr:"فَاعْفُ عَنْهُمْ وَاسْتَغْفِرْ لَهُمْ وَشَاوِرْهُمْ فِي الْأَمْرِ",
+ ayahEn:"So pardon them, ask forgiveness for them, and consult them in the matter.",
+ ayahRef:"Sūrah Āl ʿImrān 3:159",
+ discuss:[["Allah told him to consult the same people who had just disobeyed. Why?","unmute"],
+          ["Salmān was Persian and his idea saved the city. What does that say about listening?","unmute"],
+          ["Type one time you were blamed for a mistake. Did it help you?","chat"]],
+ why:"He lost a battle and did not lose his people. Anyone can lead when it is going well.",
+ points:["Discipline matters more than enthusiasm","He was commanded to pardon and consult after being let down","Good ideas are taken from wherever they come"]
+},
+{
+ t:"The Treaty and the Opening", ar:"الْحُدَيْبِيَةُ وَالْفَتْح",
+ facts:{when:"6–8 AH · 628–630 CE",where:"Ḥudaybiyah · Makkah",age:"59–61",src:"Bukhārī · Sūrah Al-Fatḥ"},
+ hook:"You sign an agreement that looks like a defeat and your closest friends are angry with you. Do you explain, or do you wait?",
+ plates:[
+  P("srh-13a-hudaybiyah.jpeg","The tree",
+    "Fourteen hundred pledged themselves to him under a tree at Ḥudaybiyah. The Qur'an calls it the pledge Allah was pleased with.",
+    "A single broad acacia tree standing alone on open ground, worn earth beneath it where many have stood, a wide plain and low hills behind, soft late light."),
+  P("srh-13b-fath.jpeg","Ten thousand, and no revenge",
+    "He entered Makkah with his head lowered on his camel until his beard nearly touched the saddle, and pardoned the whole city.",
+    "The gates and rooftops of Makkah at dawn seen from a rise, the Kaʿbah at the centre of the valley, thousands of small lanterns approaching along the road, peaceful.")],
+ scenes:[
+  ["A treaty that looked like defeat","He set out for ʿumrah and was stopped at Ḥudaybiyah. The terms Quraysh forced on him looked humiliating: go home this year, come back next; anyone leaving Makkah for you must be sent back, but anyone leaving you for Makkah stays. Even the words <i>Messenger of Allah</i> had to be erased from the document. ʿUmar came to him in distress: are we not upon the truth? He said only: I am the Messenger of Allah and He will not abandon me."],
+  ["The opening","Within two years the number of Muslims had more than trebled — because peace let people hear the Qur'an without a war in the way. The Qur'an called that treaty <i>a clear victory</i>. Quraysh broke it, and he marched on Makkah with ten thousand men."],
+  ["Go — you are free","He entered the city that had starved his family, killed his companions and driven him out, and he entered with his head bowed so low on his camel that his beard almost touched the saddle. They stood waiting for their sentence. He said: <i>Go — you are free.</i> Then he cleared the idols from the Kaʿbah and had Bilāl, once tortured on the sand, climb to its roof and call the adhān."]],
+ him:{p:"He had complete power over the people who had hurt him most, in front of everyone, and used it to let them go.",
+   q:"He said: Allah has revealed to me that you should be humble, so that no one boasts over another and no one oppresses another.",s:"Ṣaḥīḥ Muslim"},
+ ayahAr:"إِنَّا فَتَحْنَا لَكَ فَتْحًا مُّبِينًا",
+ ayahEn:"Indeed We have granted you a clear victory.",
+ ayahRef:"Sūrah Al-Fatḥ 48:1",
+ discuss:[["The treaty looked like a loss and was called a victory. What did his companions not see yet?","unmute"],
+          ["He entered Makkah with his head lowered, not raised. Why?","unmute"],
+          ["Type what you would have said standing in front of the people of Makkah that day.","chat"]],
+ why:"Peace spread Islam faster than any battle did. And the day he could finally take revenge is the day we remember him for mercy.",
+ points:["A short-term loss can be a long-term victory","Peace let people hear the message","Power was answered with pardon"]
+},
+{
+ t:"The Farewell", ar:"حَجَّةُ الْوَدَاع",
+ facts:{when:"10–11 AH · 632 CE",where:"ʿArafah · Madinah",age:"63",src:"Bukhārī · Muslim"},
+ hook:"You have one speech left and a hundred thousand people listening. What do you make sure they hear?",
+ plates:[
+  P("srh-14a-arafah.jpeg","On ʿArafah",
+    "A hundred thousand stood in the valley. He spoke about blood, property, women, and race — and told them not to return to disbelief after him.",
+    "A vast valley filled with white tents beneath a rocky hill at midday, an immense crowd rendered as small pale shapes far below, blazing sky, no faces visible."),
+  P("srh-14b-window.jpeg","The last time they saw him",
+    "Too weak to lead, he lifted the curtain of his room during Fajr and saw them in rows behind Abū Bakr. He smiled. That was the last time.",
+    "A doorway curtain half lifted from inside a simple room, warm morning light beyond it falling across empty prayer rows on a sandy floor, a date-palm pillar.")],
+ scenes:[
+  ["The sermon on ʿArafah","On his only ḥajj, in the valley of ʿArafah, he addressed a hundred thousand people. <i>Your blood and your property are sacred to one another. An Arab has no superiority over a non-Arab, nor a white over a black, except by taqwā. Fear Allah regarding women. I have left among you what will not let you go astray: the Book of Allah.</i> Then he asked: have I conveyed the message? They said yes. He raised his finger to the sky: <i>O Allah, bear witness.</i>"],
+  ["Growing weak","Back in Madinah the headaches began. He kept leading prayers as long as he could, then asked Abū Bakr to lead. During his last illness he freed his servants, gave away the last coins in his house, and asked whether he owed anyone anything — telling them to take it from him now rather than on the Day of Judgement."],
+  ["Ṣalāh, ṣalāh","On the last morning he lifted the curtain of ʿĀ'ishah's room during Fajr and saw the rows of his companions praying behind Abū Bakr. He smiled — Anas said they were nearly overcome with joy at the sight of him. They thought he was recovering. He let the curtain fall. His last words were about the prayer and about those under their care, and then: <i>with the highest companions.</i> He died with his head on ʿĀ'ishah's lap, on the twelfth of Rabīʿ al-Awwal."]],
+ him:{p:"His final concerns were the prayer, the people who worked for others, and whether he owed anyone a single coin.",
+   q:"His last instruction: the prayer, the prayer — and those whom your right hands possess.",s:"Abū Dāwūd · Ibn Mājah"},
+ ayahAr:"الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ",
+ ayahEn:"This day I have perfected your religion for you.",
+ ayahRef:"Sūrah Al-Mā'idah 5:3",
+ discuss:[["Of everything he could have said last, he said <i>the prayer</i>. Why that?","unmute"],
+          ["He asked people to claim any debt from him before he died. What does that show?","unmute"],
+          ["Type the one line from the farewell sermon that struck you most.","chat"]],
+ why:"He spent his last strength making sure nobody was owed anything and that the prayer would continue. That is what he wanted to leave behind.",
+ points:["No race is above another except by taqwā","He settled every debt before dying","His last instruction was the prayer"]
+},
+{
+ t:"Until We Meet Him", ar:"حَتَّىٰ نَلْقَاه",
+ facts:{when:"From then until the Ḥawḍ",where:"Madinah → al-Qiyāmah",age:"—",src:"Bukhārī · Muslim · Tirmidhī"},
+ hook:"He is not only a man from history. He is waiting for you. Do you want him to recognise you?",
+ plates:[
+  P("srh-15a-rawdah.jpeg","He is still greeted",
+    "Every ṣalawāt sent on him is carried to him by angels. He is greeted by name, by strangers, in every language, every second of every day.",
+    "A softly lit green-carpeted space within an old mosque at night, lanterns hanging above, an empty pathway leading forward, calm and reverent, no people."),
+  P("srh-15b-hawd.jpeg","The Ḥawḍ",
+    "He described a pool whiter than milk, sweeter than honey, with cups as many as the stars — and said he will be waiting there for his ummah.",
+    "A vast still pool of luminous white water under a sky full of stars, countless small silver cups arranged along its edge, soft light on the horizon, utterly peaceful.")],
+ scenes:[
+  ["He knows us","He said one day, sitting with his companions: <i>I wish I could see my brothers.</i> They said: are we not your brothers? He said: you are my companions — my brothers are those who come after me and have not seen me and believe in me. They asked how he would recognise them. He said he would know them by the light on their faces from wudu, as a man knows his own horses among others."],
+  ["Every ṣalawāt reaches him","He said Allah has angels who travel the earth carrying the ṣalawāt of his ummah to him. He said: <i>whoever sends blessings on me once, Allah sends blessings on him ten times.</i> He is greeted by name in every time zone on earth, without a pause, in every hour of every day since he died."],
+  ["At the Ḥawḍ","He described a pool he will stand at on the Day of Judgement — whiter than milk, sweeter than honey, its cups as numerous as the stars — and said: <i>I will be your predecessor at the Ḥawḍ.</i> He will see people he recognises pushed away, and will say: my companions, my companions. So the question is not whether he will be there. It is whether he will know you."]],
+ him:{p:"He is the only person in history you can love, obey and be answered by, without ever having met him.",
+   q:"He said: none of you truly believes until I am more beloved to him than his child, his father, and all people.",s:"Ṣaḥīḥ al-Bukhārī"},
+ ayahAr:"إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ",
+ ayahEn:"Indeed Allah and His angels send blessings upon the Prophet.",
+ ayahRef:"Sūrah Al-Aḥzāb 33:56",
+ discuss:[["He called us his <i>brothers</i> and said he wished to see us. How does that land with you?","unmute"],
+          ["He will recognise us by the light of wudu. What are you doing today that he would recognise?","unmute"],
+          ["Type one sunnah of his you will start this week and keep.","chat"]],
+ why:"You have now read his whole life. The only fitting response is not to close the book but to live so that when you meet him at the Ḥawḍ, he knows you.",
+ points:["He called those who never saw him his brothers","Every ṣalawāt is carried to him by angels","He will be waiting at the Ḥawḍ — be recognisable"]
+}
+];
+
+const CHECKPOINTS={
+ 5:{n:1,qs:[
+  ["What did ʿAbd al-Muṭṭalib say when Abrahah asked why he did not plead for the Kaʿbah?","The House has an Owner who will protect it."],
+  ["Who was the first person to believe in him?","His wife Khadījah (raḍiyallāhu ʿanhā)."],
+  ["What name did Makkah give him before prophethood?","Al-Amīn — the trustworthy."],
+  ["What was the first word of the Qur'an revealed?","Iqra' — Read."],
+  ["What one word did Bilāl repeat under the rock?","Aḥad — One."]]},
+ 10:{n:2,qs:[
+  ["What did he say when the angel offered to destroy Ṭā'if?","Perhaps Allah will bring from their descendants those who worship Him alone."],
+  ["Where was ṣalāh given, and how many at first?","Above the seven heavens on the Miʿrāj — fifty, then five."],
+  ["Who slept in his bed on the night of the Hijrah?","ʿAlī ibn Abī Ṭālib (raḍiyallāhu ʿanhu)."],
+  ["What did he say to Abū Bakr in the cave of Thawr?","What do you think of two, when Allah is the third?"],
+  ["What was the first thing he built in Madinah?","The masjid."]]},
+ 15:{n:3,qs:[
+  ["How did prisoners of Badr buy their freedom?","By teaching ten children of Madinah to read and write."],
+  ["What did Allah command him to do after Uḥud?","Pardon them, ask forgiveness for them, and consult them."],
+  ["What did he say to the people of Makkah on the day of the opening?","Go — you are free."],
+  ["What were among his final instructions?","The prayer, the prayer — and those under your care."],
+  ["Who did he call his <i>brothers</i>?","Those who come after him, who never saw him, and believe in him."]]}
+};
+
+
+/* Extra scenes appended to each lesson, and the closing reminder. */
+const EXTRA=[
+{s:[["The house of Ibrāhīm","The Kaʿbah itself was the proof of what had been lost. Ibrāhīm and Ismāʿīl had raised those walls for the worship of Allah alone, and prayed that their descendants would keep it pure. Centuries later their descendants circled it naked, hung idols inside it, and could not remember the God it had been built for. The building stood; the meaning had gone."],
+ ["Waiting without knowing","A few men would not bow to stone. They were called the ḥunafā', and they searched. One of them, Zayd ibn ʿAmr, stood with his back against the Kaʿbah and said: O Allah, if I knew the most beloved way to worship You, I would worship You by it — but I do not know. He died before the revelation came. The world was thirsty and could not find the well."]],
+ r:"When you were born, the truth was already waiting for you, complete, in a book you can open tonight. Zayd would have given everything for what you have and do not always open."},
+
+{s:[["A name nobody had","His mother named him Muḥammad — the praised one. It was not a name used in Arabia. When people asked why, she said she had been told to. His grandfather took him into the Kaʿbah, held him, and thanked Allah for the child. Two names, from two directions, for one boy nobody yet knew."],
+ ["The years of listening","In the desert with Ḥalīmah he learned the purest Arabic in Arabia, and he learned silence. There were no crowds, no market, no noise — only sheep, sky and long hours. The man who would later be listened to by the whole world first spent years listening to almost nothing at all."]],
+ r:"Allah shaped him before He sent him. The quiet years, the losses, the poverty — none of it was empty time. Nothing in your own life is empty time either."},
+
+{s:[["The pact of the virtuous","While still young he joined a group of Makkan men who swore to stand by anyone wronged in the city, whoever they were — Ḥilf al-Fuḍūl. Years later, as a prophet, he said: I witnessed a pact in the house of ʿAbdullāh ibn Judʿān that I would not exchange for red camels, and if I were called to it in Islam I would answer."],
+ ["Khadījah","She was a merchant who hired him for a trade journey to Shām, and her servant came back astonished at how he had behaved. She was forty and he was twenty-five when she proposed marriage. For twenty-five years he married no one else. Long after she died he would send meat to her friends, and once, when her sister's voice at the door sounded like hers, he trembled."]],
+ r:"He kept a promise made before Islam, honoured it after Islam, and loved one woman so long that her voice in another mouth could shake him. Loyalty was not a rule he followed. It was who he was."},
+
+{s:[["Waraqah","Khadījah took him to her cousin Waraqah, an old blind man who had read the earlier scriptures. Waraqah listened and said: this is the same Nāmūs that came to Mūsā. Then he said something strange: I wish I were young when your people drive you out. He answered: will they drive me out? Waraqah said: no man has ever brought what you bring without being fought."],
+ ["The pause","Then the revelation stopped. Weeks passed with nothing, and the silence hurt more than the fear had. The people of Makkah began to mock him — his Lord has abandoned him. Then came Sūrah aḍ-Ḍuḥā: <i>Your Lord has not left you, nor is He displeased. And the next life is better for you than this one. And soon your Lord will give, and you will be satisfied.</i>"]],
+ r:"There will be times when your duʿā seems to reach nothing and your worship feels empty. He went through that too, at the very beginning. The silence was not abandonment. It was preparation."},
+
+{s:[["ʿAmmār and his family","Yāsir, Sumayyah and their son ʿAmmār were tortured in the open sand because they had no tribe to defend them. He could do nothing but pass by them and say: <i>Patience, family of Yāsir — your appointment is Jannah.</i> He did not promise them rescue. He promised them something better, and they believed him."],
+ ["The ones who came looking","ʿUmar ibn al-Khaṭṭāb set out one day with a sword to kill him, and was told to look at his own sister first. He found her reciting Sūrah Ṭā-Hā, struck her, saw her blood, and then read the page. He walked to the house of Al-Arqam still carrying the sword — and knocked as a Muslim. The strongest enemy became the second Khalīfah."]],
+ r:"Do not write anybody off. The man who came to kill him became the man who spread his religion across three continents. Allah changes hearts, including the ones you have given up on."},
+
+{s:[["The one who threw filth","A woman used to throw rubbish in his path every day. One day there was none, and he asked after her. He was told she was ill, so he went to visit her. She had spent years insulting him and he came to her sickbed because nobody else had. She became Muslim."],
+ ["Inside the valley","In the boycott years the children's crying could be heard outside the ravine, and men in Makkah heard it and did nothing. Some sent food in secretly at night. Ḥakīm ibn Ḥizām was caught carrying flour to his aunt Khadījah and was nearly beaten for it. Three years is not a moment. It is a childhood."]],
+ r:"He answered years of insult with a visit. Ask yourself honestly what you do to the person who is unkind to you once."},
+
+{s:[["What he actually asked for","In the garden at Ṭā'if, bleeding, rejected by two cities, the duʿā he made had no request for revenge and no request for relief. He said: <i>O Allah, to You I complain of the weakness of my strength and my helplessness before people. O Most Merciful of the merciful… if You are not angry with me, I do not care.</i> His only fear was Allah's displeasure. Nothing else counted."],
+ ["ʿAddās","A servant in the garden brought him a plate of grapes. He said bismillāh before eating, and the servant stopped — nobody here says that. They spoke, and it turned out the servant was a Christian from Nineveh. He said: the town of my brother Yūnus, son of Mattā. The servant kissed his head and hands. On the day he lost two cities, he gained one man."]],
+ r:"On the worst day of his life he was still teaching, still gentle, still gaining a soul. Your worst day does not excuse you from being who you are."},
+
+{s:[["Why then","Notice the timing. The Miʿrāj did not come in a year of victory. It came immediately after the year he lost his wife, lost his protector, and was stoned out of Ṭā'if. When there was nothing left on earth to comfort him, he was taken above the earth entirely."],
+ ["What he saw","He was shown things he later described to his companions — people whose lips were cut for spreading lies, people who ate rotten meat while good meat sat beside them, a man who could not lift his own bundle yet kept adding to it. He was shown Jannah and Jahannam. He came back knowing exactly what was at stake, and spent the rest of his life warning people gently."]],
+ r:"Allah does not always take the difficulty away. Sometimes He raises you above it and shows you why it was worth carrying."},
+
+{s:[["Suraqah","Suraqah rode after them for a hundred camels. Three times his horse's legs sank into firm sand. He understood, asked for safety, and asked for it in writing. He was told: <i>How will you feel, Suraqah, when you wear the bracelets of Kisrā?</i> Years later, in the reign of ʿUmar, the treasure of Persia was brought to Madinah — and ʿUmar put the bracelets of the emperor on Suraqah's arms."],
+ ["Umm Maʿbad's tent","On the road they stopped at the tent of an old woman with one thin goat too weak to graze. He asked permission, wiped its udder, said bismillāh — and it gave milk enough for everyone, and more left over. When her husband came home and saw the milk he said: this is the man of Quraysh they are looking for. Describe him to me. Her description of him is one of the most beautiful we have."]],
+ r:"He was a fugitive with a price on his head, and he still asked permission before touching a poor woman's goat. Greatness does not excuse anyone from manners."},
+
+{s:[["The people of the Ṣuffah","Part of the masjid was a raised platform for those with no home at all. They slept there, learned there, and were often hungry. He fed them from whatever came to him, and when little came, he went hungry with them. Abū Hurayrah was one of them, and became the greatest narrator of ḥadīth in Islam."],
+ ["Everyone had access","There was no door, no guard, no appointment. A Bedouin could grab his cloak and pull it hard enough to leave a mark on his neck and demand a share of the wealth — and he laughed and ordered that the man be given something. A child could stop him in the street. A slave woman could take him by the hand and lead him wherever she wished until her need was met."]],
+ r:"The most important man alive had no gatekeeper. Think about who you make time for, and who you do not."},
+
+{s:[["He asked their opinion","Before the battle a companion, Al-Ḥubāb ibn al-Mundhir, asked him: is this position something Allah revealed, or is it strategy? He said: it is strategy. Al-Ḥubāb said: then this is not the place — move to the wells. And he moved the whole army on the advice of one man who knew the ground better."],
+ ["Two prisoners","Among the captives was his own uncle ʿAbbās, and his son-in-law Abū al-ʿĀṣ. Zaynab, his daughter, sent her necklace from Makkah as ransom for her husband — a necklace that had been Khadījah's. When he saw it he was visibly moved, and asked the companions if they would release the prisoner and return the necklace. They did."]],
+ r:"He asked for advice from people who knew more than him about a thing, and he let a necklace from his dead wife move him in front of an army. Strength and softness are not opposites."},
+
+{s:[["Standing over Ḥamzah","When he found the body of his uncle Ḥamzah, mutilated on the field, the companions had never seen him in such grief. He said: I will never be struck by anything harder than this. Then the Qur'an came: <i>if you punish, punish as you were punished — but if you are patient, it is better for the patient.</i> He forbade mutilation and swore never to answer it in kind."],
+ ["Digging with them","At the Trench he did not supervise. He carried earth until his stomach was covered in dust, and when a rock would not break, they called him and he struck it three times, and with each strike he told them of victories to come — Shām, Persia, Yemen — while they were hungry and surrounded and digging a ditch in the cold."]],
+ r:"He gave people hope while they were still in the ditch, not after they climbed out. That is the difference between comfort and leadership."},
+
+{s:[["Abū Jandal","At Ḥudaybiyah, while the ink was still wet, a young Muslim named Abū Jandal escaped from Makkah in chains and threw himself before them. Under the treaty he had to be sent back. He cried out to the Muslims — will you return me to be tortured? It broke their hearts. He said to him: <i>Be patient, Abū Jandal. Allah will make a way out for you.</i> And he kept the treaty."],
+ ["The key of the Kaʿbah","On the day of the opening he took the key of the Kaʿbah from ʿUthmān ibn Ṭalḥah, a man who had once refused him entry and insulted him. His uncle asked for the key to stay in the family, with the honour of watering the pilgrims. The Qur'an came down: <i>Allah commands you to return trusts to their owners.</i> He gave the key back to the same man, and said: take it, forever."]],
+ r:"He kept an agreement that cost him a suffering man, and returned a key to someone who had humiliated him. Principles are only real when they are expensive."},
+
+{s:[["Do you know what day this is","On ʿArafah he asked them: what month is this? What city is this? What day is this? They answered each time. Then he said: <i>your blood, your property and your honour are as sacred to one another as this day, in this city, in this month.</i> He built the greatest human-rights statement in their history out of three questions they already knew the answers to."],
+ ["Take from me now","In his last illness he came out with his head wrapped, sat on the minbar, and said: whoever I have struck, here is my back — strike it. Whoever I have taken wealth from, here is my wealth. Whoever I have insulted, let him take it back from me now. A man stood and claimed three dirhams. They were paid on the spot."]],
+ r:"He settled his accounts with people before meeting Allah. You will not get a warning to do the same."},
+
+{s:[["He wept for us","One night he stood in prayer repeating a single āyah until dawn — the words of ʿĪsā: <i>if You punish them, they are Your servants; if You forgive them, You are the Mighty, the Wise.</i> Then he raised his hands and said: <i>O Allah, my ummah, my ummah</i> — and wept. Allah sent Jibrīl to tell him: <i>We will please you concerning your ummah, and We will not grieve you.</i>"],
+ ["The duʿā he saved","Every prophet was given one duʿā that is certainly answered. Every one of them used it in this world. He kept his. He said: <i>I have saved my supplication as intercession for my ummah on the Day of Resurrection</i> — and it will reach whoever died believing in Allah alone. He is holding it right now, for people he never met."]],
+ r:"He wept for you before you existed and kept his one guaranteed duʿā for the day you will need it most. Send ṣalawāt on him today. He is the only person in history who is already waiting for you."}
+];
+
+
+/* ===================== MALAYALAM ===================== */
+const UI_ML={
+ coverH:"ഹൃദിസ്ഥമാക്കാൻ അർഹതയുള്ള ഒരേയൊരു ജീവിതം",
+ coverP:"മക്കയിലെ ഒരു അനാഥനിൽ നിന്ന് ലോകർക്കാകെ കാരുണ്യമായി മാറിയ ജീവിതം — അവിടുന്ന് ഇപ്പോഴും നമ്മുടെ മുന്നിലുണ്ട്. പതിനഞ്ച് പാഠങ്ങൾ. ഇത് വായിച്ചു കഴിയുമ്പോൾ നീ അവിടുത്തെ അറിയുക മാത്രമല്ല ചെയ്യുക — സ്നേഹിക്കുകയും ചെയ്യും.",
+ coverTag:"തർബിയ · ലെവൽ 2 · 10–14 വയസ്സ്",
+ startBtn:"തുടങ്ങാം →",
+ howtoH:"ഓരോ ഓൺലൈൻ ക്ലാസും എങ്ങനെ നടക്കുന്നു",
+ howto1:"<b>ക്ലാസിന് മുമ്പ്</b> — ആമുഖ ചോദ്യം വായിക്കൂ, രണ്ട് ചിത്രങ്ങളും നോക്കൂ.",
+ howto2:"<b>ക്ലാസിൽ</b> — അധ്യാപകൻ രംഗങ്ങൾ നിങ്ങളോടൊപ്പം വായിക്കും, പിന്നെ <i>അവിടുന്ന് എങ്ങനെയായിരുന്നു</i> എന്ന ഭാഗം, പിന്നെ ചർച്ച. ചാറ്റിൽ എഴുതി അല്ലെങ്കിൽ മൈക്ക് തുറന്ന് ഉത്തരം പറയൂ.",
+ howto3:"<b>ക്ലാസിന് ശേഷം</b> — പാഠത്തിന്റെ അവസാനത്തെ ഓർമ്മപ്പെടുത്തലാണ് കൂടെ കൊണ്ടുപോകേണ്ടത്.",
+ doneH:"നമ്മൾ ഇവിടെ അവസാനിക്കുന്നില്ല",
+ doneP:"അവിടുത്തെ ജീവിതം മുഴുവൻ നീ വായിച്ചു — എന്നിട്ടും അവിടുന്ന് ഹൗളിൽ നമ്മെ കാത്തുനിൽക്കുന്നു. ഇന്ന് അവിടുത്തേക്ക് സ്വലാത്ത് ചൊല്ലൂ. അവിടുന്ന് അത് കേൾക്കുന്നു, മറുപടിയും നൽകുന്നു.",
+ drawerSub:"നബി ﷺ യുടെ ജീവിതം · 15 പാഠങ്ങൾ",
+ lesson:"പാഠം", of:"/",
+ tagPics:"ചിത്രങ്ങൾ — ആദ്യം ഇവ നോക്കൂ",
+ tagHook:"ആമുഖ ചോദ്യം — ക്ലാസിന് മുമ്പ് ചിന്തിക്കൂ",
+ tagStory:"ചരിത്രം", tagScene:"രംഗം",
+ tagHim:"അവിടുന്ന് ﷺ എങ്ങനെയായിരുന്നു",
+ tagAyah:"ഖുർആനിൽ നിന്ന്",
+ tagDiscuss:"ചർച്ച ചെയ്യാം — ലൈവ് ക്ലാസിൽ",
+ discussSub:"അധ്യാപകൻ ഈ ചോദ്യങ്ങൾ ചോദിക്കും. പറഞ്ഞിരിക്കുന്ന രീതിയിൽ ഉത്തരം നൽകൂ.",
+ chat:"ചാറ്റിൽ", unmute:"മൈക്ക് തുറന്ന്",
+ tagWhy:"എന്തുകൊണ്ട് പ്രധാനം",
+ tagRem:"ഈ പാഠം അടയ്ക്കുന്നതിന് മുമ്പ് ഒരു ഓർമ്മപ്പെടുത്തൽ",
+ fWhen:"എപ്പോൾ", fWhere:"എവിടെ", fAge:"അവിടുത്തെ പ്രായം", fSrc:"സ്രോതസ്സ്",
+ cpBadge:"ചെക്ക്‌പോയിന്റ്", cpH:"നിനക്ക് എന്തൊക്കെ ഓർമ്മയുണ്ട്?",
+ cpP:"അധ്യാപകൻ ഇവ ലൈവിൽ ചോദിച്ചേക്കാം. ആദ്യം സ്വയം പരിശോധിക്കാൻ ഓരോ കാർഡിലും അമർത്തൂ.",
+ cpTap:"കാണാൻ അമർത്തൂ ▾", finish:"പൂർത്തിയാക്കുക"
+};
+
+const ML_L=[
+{
+ t:"വെളിച്ചത്തിന് മുമ്പ്", ar:"مَا قَبْلَ الْبِعْثَة",
+ facts:{when:"ക്രി. 570 — ആനക്കലഹത്തിന്റെ വർഷം",where:"മക്ക",age:"—",src:"സൂറത്തുൽ ഫീൽ · ഇബ്നു ഇസ്ഹാഖ്"},
+ hook:"ശരി എന്താണെന്ന് ആരും ഓർക്കാത്ത ഒരു ലോകം എങ്ങനെയിരിക്കും?",
+ plates:[["അജ്ഞതയുടെ കാലം",
+   "അവിടുത്തേക്ക് മുമ്പുള്ള മക്ക: കഅ്ബയ്ക്ക് ചുറ്റും മുന്നൂറ്റി അറുപത് വിഗ്രഹങ്ങൾ, ഒരു ഒട്ടകത്തിന്റെ പേരിൽ യുദ്ധം ചെയ്യുന്ന ഗോത്രങ്ങൾ, ജീവനോടെ കുഴിച്ചുമൂടപ്പെടുന്ന പെൺകുഞ്ഞുങ്ങൾ, ശക്തന്റെ കൈയിലുള്ള ദുർബലർ."],
+  ["ആനയുടെ വർഷം",
+   "കഅ്ബ തകർക്കാൻ അബ്രഹ ഒരു ആനയുമായി യമനിൽ നിന്ന് പുറപ്പെട്ടു. കടലിൽ നിന്ന് ചെറിയ കല്ലുകളുമായി പക്ഷികൾ വന്നു; സൈന്യം എത്തുന്നതിന് മുമ്പേ നശിച്ചു."]],
+ scenes:[["ഇരുട്ടിലായ ഒരു ലോകം","അക്കാലത്തെ അറേബ്യയിൽ കവിതയും ധൈര്യവുമുണ്ടായിരുന്നു, മറ്റൊന്നും ഉണ്ടായിരുന്നില്ല. ഇബ്രാഹീം (അ) അല്ലാഹുവിന് വേണ്ടി മാത്രം പണിത അതേ ഭവനത്തിന് ചുറ്റും മുന്നൂറ്റി അറുപത് വിഗ്രഹങ്ങൾ നിന്നു. ഒരു ഒട്ടകത്തെ കൊന്നതിന്റെ പേരിൽ ഗോത്രങ്ങൾ നാൽപ്പത് വർഷം യുദ്ധം ചെയ്തു. ഒരു മനുഷ്യന് മറ്റൊരു മനുഷ്യനെ സ്വന്തമാക്കാമായിരുന്നു. ഒരു പിതാവിന് തന്റെ നവജാത പെൺകുഞ്ഞിനെ മണ്ണിൽ കുഴിച്ചിടാമായിരുന്നു, അതിന് അഭിമാനത്തിന്റെ പേരിൽ പ്രശംസയും കിട്ടുമായിരുന്നു."],
+  ["ഭവനം അപ്പോഴും നിന്നു","എന്നിട്ടും കഅ്ബ ബാക്കിനിന്നു. എല്ലാ വർഷവും ആളുകൾ അതിന് ചുറ്റും ത്വവാഫ് ചെയ്തു — തങ്ങൾക്ക് നഷ്ടപ്പെട്ട ഒരു മതത്തെ പാതി ഓർത്തുകൊണ്ട്. ഏതാനും പേർ — ഹുനഫാഅ് — വിഗ്രഹങ്ങളെ നിരാകരിച്ച് ഇബ്രാഹീമിന്റെ ദൈവത്തെ തിരഞ്ഞു, പക്ഷേ കണ്ടെത്തിയില്ല. ലോകം കാത്തിരിക്കുകയായിരുന്നു, എന്തിനാണെന്ന് അറിയാതെ."],
+  ["ആന","ആ വർഷം അബ്രഹ യമനിൽ നിന്ന് ഒരു സൈന്യവും ആനയുമായി കഅ്ബ പൊളിക്കാൻ വന്നു. അബ്ദുൽ മുത്വലിബ് തന്റെ മോഷ്ടിക്കപ്പെട്ട ഒട്ടകങ്ങൾ ചോദിക്കാൻ ചെന്നു. ഭവനത്തിന് വേണ്ടി എന്തുകൊണ്ട് അപേക്ഷിക്കുന്നില്ല എന്ന് അബ്രഹ ചോദിച്ചപ്പോൾ അദ്ദേഹം പറഞ്ഞു: ഞാൻ ഒട്ടകങ്ങളുടെ ഉടമയാണ്; ഭവനത്തിന് അതിന്റേതായ ഒരു ഉടമയുണ്ട്, അവൻ അതിനെ സംരക്ഷിക്കും. അങ്ങനെ സംഭവിച്ചു. കടലിൽ നിന്ന് പക്ഷികൾ വന്നു, സൈന്യം തകർന്നു. അതേ വർഷം ഒരു കുഞ്ഞ് ജനിച്ചു."],
+  ["ഇബ്രാഹീമിന്റെ ഭവനം","നഷ്ടപ്പെട്ടത് എന്താണെന്നതിന്റെ തെളിവായിരുന്നു കഅ്ബ തന്നെ. ഇബ്രാഹീമും ഇസ്മാഈലും അല്ലാഹുവിന് മാത്രം ആരാധിക്കാൻ വേണ്ടി ആ ചുമരുകൾ ഉയർത്തി, തങ്ങളുടെ സന്തതികൾ അത് ശുദ്ധമായി സൂക്ഷിക്കാൻ പ്രാർത്ഥിച്ചു. നൂറ്റാണ്ടുകൾക്ക് ശേഷം അവരുടെ സന്തതികൾ അതിന് ചുറ്റും നഗ്നരായി ത്വവാഫ് ചെയ്തു, അതിനുള്ളിൽ വിഗ്രഹങ്ങൾ തൂക്കി, അത് ആർക്ക് വേണ്ടിയാണ് പണിതതെന്ന് ഓർക്കാൻ കഴിഞ്ഞില്ല. കെട്ടിടം നിന്നു; അർത്ഥം പോയി."],
+  ["അറിയാതെയുള്ള കാത്തിരിപ്പ്","ഏതാനും പേർ കല്ലിന് മുന്നിൽ കുനിഞ്ഞില്ല. അവരെ ഹുനഫാഅ് എന്ന് വിളിച്ചു, അവർ തിരഞ്ഞു. അവരിലൊരാളായ സൈദ് ബ്നു അംറ് കഅ്ബയിൽ മുതുക് ചാരിനിന്ന് പറഞ്ഞു: അല്ലാഹുവേ, നിന്നെ ആരാധിക്കാനുള്ള ഏറ്റവും പ്രിയപ്പെട്ട വഴി എനിക്കറിയാമായിരുന്നെങ്കിൽ ഞാൻ അതിലൂടെ ആരാധിക്കുമായിരുന്നു — പക്ഷേ എനിക്കറിയില്ല. വഹ്‌യ് വരുന്നതിന് മുമ്പ് അദ്ദേഹം മരിച്ചു. ലോകത്തിന് ദാഹമുണ്ടായിരുന്നു, കിണർ കണ്ടെത്താനായില്ല."]],
+ him:{p:"മറ്റെല്ലാറ്റിനും മുമ്പ് അവിടുന്ന് കാത്തിരിക്കപ്പെട്ടിരുന്നു. ഇബ്രാഹീം (അ) വഴി അല്ലാഹു വാഗ്ദാനം ചെയ്യുകയും ഈസാ (അ) വഴി അറിയിക്കുകയും ചെയ്തിരുന്നു.",
+  q:"ഞാൻ ഇബ്രാഹീമിന്റെ പ്രാർത്ഥനയുടെ ഉത്തരവും ഈസായുടെ സുവാർത്തയുമാണ്."},
+ ayahEn:"ആനക്കാരോട് നിന്റെ റബ്ബ് എന്ത് ചെയ്തുവെന്ന് നീ കണ്ടില്ലേ?",
+ discuss:["ഭവനത്തിന് അതിനെ സംരക്ഷിക്കുന്ന ഒരു ഉടമയുണ്ടെന്ന് അബ്ദുൽ മുത്വലിബ് പറഞ്ഞു. ഇത് എങ്ങനെയുള്ള വിശ്വാസമാണ്?",
+  "മറ്റെല്ലാവരും ചെയ്യുന്നു എന്നതുകൊണ്ട് മാത്രം ചുറ്റുമുള്ളവർ ചെയ്യുന്ന ഒരു കാര്യം എഴുതൂ.",
+  "അവിടുത്തെ അയക്കുന്നതിന് മുമ്പ് ലോകം ഇത്ര ഇരുട്ടിലാകാൻ അല്ലാഹു അനുവദിച്ചത് എന്തുകൊണ്ടാവാം?"],
+ why:"ഇരുട്ട് കണ്ടിട്ടില്ലെങ്കിൽ ഒരു വിളക്ക് എത്ര പ്രകാശമുള്ളതാണെന്ന് അറിയാനാവില്ല. അവിടുന്ന് മാറ്റിയതെല്ലാം അർത്ഥവത്താകുന്നത് അവിടുന്ന് ഏത് ലോകത്തെയാണ് മാറ്റിയത് എന്ന് അറിയുമ്പോൾ മാത്രമാണ്.",
+ points:["കഅ്ബ അല്ലാഹുവിന് മാത്രമായി പണിതതായിരുന്നു, അത് വിഗ്രഹങ്ങൾ കൊണ്ട് നിറഞ്ഞു","നബി ﷺ ജനിക്കുന്നതിന് മുമ്പേ അല്ലാഹു തന്റെ ഭവനം സംരക്ഷിച്ചു","അവിടുന്ന് വരുന്നതിന് വളരെ മുമ്പേ വാഗ്ദാനം ചെയ്യപ്പെട്ടിരുന്നു"],
+ rem:"നീ ജനിച്ചപ്പോൾ സത്യം പൂർണരൂപത്തിൽ, ഇന്ന് രാത്രി തുറക്കാവുന്ന ഒരു ഗ്രന്ഥത്തിൽ, നിന്നെ കാത്തിരിക്കുകയായിരുന്നു. നിനക്കുള്ളതും നീ എപ്പോഴും തുറക്കാത്തതുമായ ആ ഗ്രന്ഥത്തിന് വേണ്ടി സൈദ് എല്ലാം നൽകുമായിരുന്നു."
+},
+{
+ t:"മക്കയിലെ അനാഥൻ", ar:"الْيَتِيم",
+ facts:{when:"ക്രി. 570–578",where:"മക്കയും ബനൂ സഅ്ദും",age:"ജനനം മുതൽ 8 വരെ",src:"ബുഖാരി · ഇബ്നു ഹിശാം"},
+ hook:"ഒമ്പത് വയസ്സാകുന്നതിന് മുമ്പ് അവിടുത്തേക്ക് പിതാവും മാതാവും പിതാമഹനും നഷ്ടപ്പെട്ടു. അത് ഒരാളെ എന്ത് ചെയ്യും?",
+ plates:[["മരുഭൂമിയിലെ വളർച്ച",
+   "ബനൂ സഅ്ദിലെ ഹലീമ അവിടുത്തെ തുറന്ന മരുഭൂമിയിലേക്ക് കൊണ്ടുപോയി — ശുദ്ധവായുവും ശുദ്ധമായ അറബിയുമുള്ളിടത്തേക്ക്. അവിടുന്ന് വന്ന ദിവസം മുതൽ തന്റെ വീട്ടിൽ ബറകത്ത് കയറിയെന്ന് അവർ പറഞ്ഞു."],
+  ["അബ്‌വാഇലേക്കുള്ള വഴി",
+   "ആറാം വയസ്സിൽ പിതാവിന്റെ ഖബ്ർ സന്ദർശിക്കാൻ മാതാവിനൊപ്പം യാത്ര ചെയ്തു. മടക്കയാത്രയിൽ അബ്‌വാഇൽ വെച്ച് അവർ മരിച്ചു; അവിടുന്ന് ഒരു ഭൃത്യയോടൊപ്പം തനിച്ച് മടങ്ങി."]],
+ scenes:[["ജനിക്കുമ്പോൾ തന്നെ പിതാവില്ലാതെ","ജനിക്കുന്നതിന് മുമ്പേ പിതാവ് അബ്ദുല്ല മരിച്ചു. മാതാവ് ആമിന അവിടുത്തേക്ക് മുഹമ്മദ് എന്ന് പേരിട്ടു — സ്തുതിക്കപ്പെട്ടവൻ — അറേബ്യയിൽ ആരും ഉപയോഗിക്കാത്ത ഒരു പേര്. പിതാമഹൻ അബ്ദുൽ മുത്വലിബ് അവിടുത്തെ കഅ്ബയിലേക്ക് എടുത്തുകൊണ്ടുപോയി അല്ലാഹുവിന് നന്ദി പറഞ്ഞു."],
+  ["മരുഭൂമിയിലെ വർഷങ്ങൾ","ശുദ്ധവായുവിനും ശുദ്ധമായ അറബിക്കും വേണ്ടി മക്കയിലെ കുടുംബങ്ങൾ കുഞ്ഞുങ്ങളെ മരുഭൂമിയിലേക്ക് അയച്ചിരുന്നു. ഒരു മുലയൂട്ടുകാരിക്കും ഒരു അനാഥനെ വേണ്ടായിരുന്നു — കൂലി തരാൻ ധനികനായ പിതാവുണ്ടാകില്ലല്ലോ. മറ്റാരെയും കിട്ടാഞ്ഞതുകൊണ്ട് മാത്രമാണ് ഹലീമ അവിടുത്തെ എടുത്തത്. തന്റെ മെലിഞ്ഞ ഒട്ടകം അന്ന് രാത്രി പാൽ തന്നുവെന്നും, ആടുകൾ തടിച്ചുവെന്നും, അവിടുന്ന് വന്ന ദിവസം മുതൽ വീട്ടിലെ എല്ലാം അനുഗൃഹീതമായെന്നും അവർ പിന്നീട് പറഞ്ഞു."],
+  ["ഓരോരുത്തരായി നഷ്ടപ്പെടുന്നു","ആറാം വയസ്സിൽ മാതാവ് അവിടുത്തെ പിതാവിന്റെ ഖബ്ർ കാണാൻ കൊണ്ടുപോയി. മടക്കയാത്രയിൽ അബ്‌വാഇൽ വെച്ച് അവർ മരിച്ചു. അവിടുന്ന് പിതാമഹന്റെ അടുത്തേക്ക് മടങ്ങി. അദ്ദേഹം അവിടുത്തെ പരസ്യമായി സ്നേഹിക്കുകയും, ഖുറൈശ് നേതാക്കൾ നിലത്തിരിക്കേണ്ടിവരുമ്പോൾ അവിടുത്തെ സ്വന്തം മെത്തയിൽ ഇരുത്തുകയും ചെയ്തു. രണ്ട് വർഷം കഴിഞ്ഞ് പിതാമഹനും മരിച്ചു. അപ്പോൾ എട്ട് വയസ്സ്; പിതൃവ്യൻ അബൂത്വാലിബ് അവിടുത്തെ ഏറ്റെടുത്തു."],
+  ["ആരും ഏറ്റെടുക്കാത്ത കുഞ്ഞ്","ആരും ഏറ്റെടുക്കാൻ തയ്യാറില്ലാത്ത കുട്ടിയായിരിക്കുക എന്നത് എന്താണെന്ന് അവിടുന്ന് ഒരിക്കലും മറന്നില്ല. ജീവിതകാലം മുഴുവൻ അനാഥരോട് അവിടുന്ന് പെരുമാറിയ രീതി അതിൽ നിന്ന് രൂപപ്പെട്ടതാണ്."],
+  ["പേരും കേൾവിയും","മാതാവ് അവിടുത്തേക്ക് മുഹമ്മദ് എന്ന് പേരിട്ടു. അതെന്തുകൊണ്ട് എന്ന് ചോദിച്ചപ്പോൾ, അങ്ങനെ പറയപ്പെട്ടു എന്ന് അവർ മറുപടി പറഞ്ഞു. മരുഭൂമിയിൽ ഹലീമയോടൊപ്പം അവിടുന്ന് അറേബ്യയിലെ ഏറ്റവും ശുദ്ധമായ അറബി പഠിച്ചു, ഒപ്പം മൗനവും. ജനക്കൂട്ടമില്ല, ചന്തയില്ല, ബഹളമില്ല — ആടുകളും ആകാശവും നീണ്ട മണിക്കൂറുകളും മാത്രം. പിന്നീട് ലോകം മുഴുവൻ ചെവിയോർത്ത മനുഷ്യൻ ആദ്യം വർഷങ്ങളോളം ഏതാണ്ട് ഒന്നും കേൾക്കാതെ ചെവിയോർത്തു."]],
+ him:{p:"അവിടുന്ന് പ്രവാചകനാകുന്നതിന് മുമ്പേ അനാഥനായിരുന്നു. ആ അനുഭവം അവിടുന്ന് ഒരിക്കലും മറന്നില്ല.",
+  q:"ഞാനും അനാഥനെ സംരക്ഷിക്കുന്നവനും സ്വർഗത്തിൽ ഇങ്ങനെയായിരിക്കും — എന്ന് പറഞ്ഞ് അവിടുന്ന് രണ്ട് വിരലുകൾ ചേർത്തുപിടിച്ചു."},
+ ayahEn:"അവൻ നിന്നെ ഒരു അനാഥനായി കണ്ടെത്തി അഭയം നൽകിയില്ലേ?",
+ discuss:["അല്ലാഹുവിന് അവിടുത്തേക്ക് എളുപ്പമുള്ള ഒരു ബാല്യം നൽകാമായിരുന്നു. അത് ചെയ്യാതിരുന്നത് എന്തുകൊണ്ടാവാം?",
+  "എട്ട് വയസ്സിൽ ഒറ്റയ്ക്കാവുക — അതിൽ ഏറ്റവും പ്രയാസകരമെന്ന് നിനക്ക് തോന്നുന്നത് എഴുതൂ.",
+  "മറ്റാരും ഏറ്റെടുക്കാഞ്ഞതുകൊണ്ടാണ് ഹലീമ അവിടുത്തെ എടുത്തത്. അവർക്ക് എന്ത് കിട്ടി?"],
+ why:"ലോകത്തിന്റെ മുഴുവൻ ദുഃഖവും ചുമക്കാൻ പോകുന്ന മനുഷ്യൻ ആദ്യം സ്വന്തം ദുഃഖം ചുമക്കാൻ പഠിച്ചു. അല്ലാഹു അവിടുത്തേക്ക് നൽകിയ ഒന്നും വൃഥാവിലായില്ല — വേദന ഉൾപ്പെടെ.",
+ points:["പ്രവാചകനാകുന്നതിന് മുമ്പ് അവിടുന്ന് ഒരു അനാഥനായിരുന്നു","അനാഥനെ സംരക്ഷിക്കുന്നത് സ്വർഗത്തിൽ അവിടുത്തെ അരികിലെത്തിക്കും","ആരുമില്ലാത്തവർക്ക് അല്ലാഹു അഭയം നൽകുന്നു"],
+ rem:"അല്ലാഹു അവിടുത്തെ അയക്കുന്നതിന് മുമ്പ് രൂപപ്പെടുത്തി. നിശ്ശബ്ദമായ വർഷങ്ങൾ, നഷ്ടങ്ങൾ, ദാരിദ്ര്യം — ഒന്നും വെറും ഒഴിഞ്ഞ സമയമായിരുന്നില്ല. നിന്റെ ജീവിതത്തിലും ഒഴിഞ്ഞ സമയമില്ല."
+}
+,{
+ t:"അൽ-അമീൻ", ar:"الأَمِين",
+ facts:{when:"ക്രി. 578–595",where:"മക്കയും ശാമും",age:"8 മുതൽ 25 വരെ",src:"ബുഖാരി · ഇബ്നു ഹിശാം"},
+ hook:"ഒരു നഗരം മുഴുവൻ ഒരു ചെറുപ്പക്കാരനെ തങ്ങളുടെ എല്ലാം ഏൽപ്പിക്കാൻ തീരുമാനിക്കുന്നു. അത് എങ്ങനെ നേടിയെടുക്കും?",
+ plates:[["ആട് മേച്ച വർഷങ്ങൾ","കുറച്ച് ഖീറാത്തിന് അവിടുന്ന് മലകളിൽ ആട് മേച്ചു. എല്ലാ പ്രവാചകന്മാരും ആട് മേച്ചിട്ടുണ്ടെന്ന് പിന്നീട് അവിടുന്ന് പറഞ്ഞു — അത് ക്ഷമയും ജാഗ്രതയും ദുർബലരോടുള്ള കരുതലും പഠിപ്പിക്കുന്നു."],
+  ["പുതപ്പും കല്ലും","കഅ്ബ പുതുക്കിപ്പണിതപ്പോൾ ഹജറുൽ അസ്‌വദ് ആര് വെക്കും എന്നതിൽ ഗോത്രങ്ങൾ യുദ്ധത്തിന്റെ വക്കിലെത്തി. അവിടുന്ന് അത് ഒരു പുതപ്പിൽ വെച്ച് ഓരോ നേതാവിനെയും ഒരു അറ്റം പിടിപ്പിച്ചു."]],
+ scenes:[["സ്വന്തം കൈകൊണ്ട് അധ്വാനിച്ചു","അവിടുന്ന് ദരിദ്രനായി വളർന്നു, അധ്വാനിച്ചു. മക്കക്കാർക്ക് വേണ്ടി ചെറിയ കൂലിക്ക് ആട് മേച്ചു. പിന്നീട് പറഞ്ഞു: <i>ആട് മേക്കാത്ത ഒരു പ്രവാചകനെയും അല്ലാഹു അയച്ചിട്ടില്ല.</i> അനുചരന്മാർ ചോദിച്ചു, അങ്ങും? അവിടുന്ന് പറഞ്ഞു: അതെ, ഞാൻ മക്കക്കാർക്ക് വേണ്ടി മേച്ചിരുന്നു."],
+  ["അവർ നൽകിയ പേര്","അവിടുന്ന് ഒരിക്കലും കളവ് പറഞ്ഞില്ല. കച്ചവടത്തിൽ വഞ്ചിച്ചില്ല. ഖുറൈശിലെ ചെറുപ്പക്കാരുടെ മദ്യത്തിലും ചൂതാട്ടത്തിലും പങ്കെടുത്തില്ല. വഹ്‌യ് വരുന്നതിന് വളരെ മുമ്പേ നഗരം മുഴുവൻ അവിടുത്തേക്ക് ഒരു പേര് നൽകി — അൽ-അമീൻ, വിശ്വസ്തൻ. അവർ തങ്ങളുടെ സ്വർണം അവിടുത്തെ പക്കൽ സൂക്ഷിക്കാൻ ഏൽപ്പിച്ചു — പിന്നീട് അവിടുത്തെ കൊല്ലാൻ ശ്രമിച്ചവർ ഉൾപ്പെടെ."],
+  ["പുതപ്പ്","വെള്ളപ്പൊക്കത്തിന് ശേഷം കഅ്ബ പുതുക്കിപ്പണിതപ്പോൾ ഹജറുൽ അസ്‌വദ് വെക്കാനുള്ള ബഹുമതിക്ക് വേണ്ടി ഗോത്രങ്ങൾ ഏറ്റുമുട്ടലിന്റെ വക്കിലെത്തി. അടുത്ത് കടന്നുവരുന്നയാളുടെ വിധി സ്വീകരിക്കാമെന്ന് അവർ സമ്മതിച്ചു. അത് അവിടുന്നായിരുന്നു. അവിടുന്ന് പുതപ്പ് വിരിച്ച്, കല്ല് നടുവിൽ വെച്ച്, ഓരോ ഗോത്രത്തിലെയും ഒരു നേതാവിനോട് ഓരോ അറ്റം പിടിച്ച് ഒരുമിച്ച് ഉയർത്താൻ പറഞ്ഞു. പിന്നെ സ്വന്തം കൈകൊണ്ട് അത് സ്ഥാനത്ത് വെച്ചു. ആരും തോറ്റില്ല, ആരും മരിച്ചില്ല."],
+  ["ഹിൽഫുൽ ഫുളൂൽ","ചെറുപ്പത്തിൽ തന്നെ, നഗരത്തിൽ അക്രമിക്കപ്പെടുന്ന ആർക്കും വേണ്ടി — അവർ ആരായാലും — നിലകൊള്ളുമെന്ന് ശപഥം ചെയ്ത ഒരു സംഘത്തിൽ അവിടുന്ന് ചേർന്നു. വർഷങ്ങൾക്ക് ശേഷം പ്രവാചകനായപ്പോൾ അവിടുന്ന് പറഞ്ഞു: അബ്ദുല്ലാഹി ബ്നു ജുദ്ആന്റെ വീട്ടിൽ വെച്ചുള്ള ആ കരാറിന് സാക്ഷിയായി; ചുവന്ന ഒട്ടകങ്ങൾ കിട്ടിയാലും അത് ഞാൻ വിട്ടുകൊടുക്കില്ല, ഇസ്‌ലാമിലും അതിലേക്ക് വിളിക്കപ്പെട്ടാൽ ഞാൻ ഉത്തരം നൽകും."],
+  ["ഖദീജ (റ)","അവർ ഒരു കച്ചവടക്കാരിയായിരുന്നു, ശാമിലേക്കുള്ള ഒരു യാത്രയ്ക്ക് അവിടുത്തെ നിയോഗിച്ചു. അവിടുത്തെ പെരുമാറ്റം കണ്ട് അവരുടെ ഭൃത്യൻ അത്ഭുതപ്പെട്ട് മടങ്ങിയെത്തി. അവർക്ക് നാൽപ്പതും അവിടുത്തേക്ക് ഇരുപത്തിയഞ്ചും വയസ്സുള്ളപ്പോൾ അവർ വിവാഹാഭ്യർഥന നടത്തി. ഇരുപത്തിയഞ്ച് വർഷം അവിടുന്ന് മറ്റാരെയും വിവാഹം ചെയ്തില്ല. അവർ മരിച്ച് ഏറെക്കാലം കഴിഞ്ഞും അവിടുന്ന് അവരുടെ കൂട്ടുകാരികൾക്ക് മാംസം കൊടുത്തയച്ചു; ഒരിക്കൽ അവരുടെ സഹോദരിയുടെ ശബ്ദം വാതിൽക്കൽ കേട്ടപ്പോൾ അവിടുന്ന് വിറച്ചു."]],
+ him:{p:"വിശ്വസ്തത അവിടുന്ന് സ്വീകരിച്ച ഒരു നയമായിരുന്നില്ല. ആരും അതിന്റെ പേരിൽ പ്രശംസിക്കുന്നതിന് മുമ്പേ അവിടുന്ന് അങ്ങനെയായിരുന്നു.",
+  q:"ആഇശ (റ) യോട് അവിടുത്തെ സ്വഭാവത്തെക്കുറിച്ച് ചോദിച്ചപ്പോൾ അവർ പറഞ്ഞു: അവിടുത്തെ സ്വഭാവം ഖുർആനായിരുന്നു."},
+ ayahEn:"തീർച്ചയായും നീ മഹത്തായ സ്വഭാവത്തിലാണ്.",
+ discuss:["വിശ്വസിക്കപ്പെടുന്നതിന് മുമ്പേ അവിടുന്ന് വിശ്വസ്തനായിരുന്നു. ഈ ക്രമം എന്തുകൊണ്ട് പ്രധാനമാണ്?",
+  "പുതപ്പ് ആരും തോൽക്കാത്ത രീതിയിൽ പ്രശ്നം പരിഹരിച്ചു. അങ്ങനെ പരിഹരിക്കാവുന്ന ഒരു തർക്കം എഴുതൂ.",
+  "നിന്നെ അറിയുന്നവർ നിന്നെ അൽ-അമീൻ എന്ന് വിളിക്കുമോ? എന്ത് മാറേണ്ടതുണ്ട്?"],
+ why:"അവിടുത്തെ മതം പിന്തുടരാത്ത ആളുകളാണ് അവിടുത്തേക്ക് അൽ-അമീൻ എന്ന പേര് നൽകിയത് — കാരണം സ്വഭാവം വിശ്വാസത്തിന് മുമ്പേ കാണാം. നിന്റെ പരീക്ഷ വരുന്നതിന് വളരെ മുമ്പേ നിന്റെ പേര് പണിതുയരുന്നു.",
+ points:["അവിടുന്ന് സ്വന്തം കൈകൊണ്ട് അധ്വാനിച്ചു, ലജ്ജിച്ചില്ല","സ്വഭാവം പ്രസംഗത്തിന് മുമ്പാണ്, ശേഷമല്ല","ആരും തോൽക്കാത്ത വിധം തർക്കം പരിഹരിക്കൂ"],
+ rem:"ഇസ്‌ലാമിന് മുമ്പ് ചെയ്ത ഒരു കരാർ അവിടുന്ന് പാലിച്ചു, ഇസ്‌ലാമിന് ശേഷവും അതിനെ ആദരിച്ചു, ഒരു സ്ത്രീയെ ഇത്രയും കാലം സ്നേഹിച്ചു — മറ്റൊരാളുടെ വായിൽ അവരുടെ ശബ്ദം കേട്ടാൽ വിറയ്ക്കുന്നത്ര. കൂറ് അവിടുന്ന് പിന്തുടർന്ന ഒരു നിയമമായിരുന്നില്ല. അതായിരുന്നു അവിടുന്ന്."
+},
+{
+ t:"വായിക്കുക", ar:"اقْرَأْ",
+ facts:{when:"ക്രി. 610",where:"ഹിറാ ഗുഹ",age:"40",src:"ബുഖാരി · മുസ്‌ലിം"},
+ hook:"വിശദീകരിക്കാനാവാത്ത ഒരു വലിയ കാര്യം നിനക്ക് സംഭവിച്ചു, അത് ആരോടെങ്കിലും പറയണം. നീ എന്ത് ചെയ്യും?",
+ plates:[["ഹിറാ ഗുഹ","അവിടുന്ന് ജബലുന്നൂറിൽ കയറി ഗുഹയിൽ രാത്രികൾ ഒറ്റയ്ക്ക് കഴിഞ്ഞു — അംഗീകരിക്കാനാവാത്ത ലോകത്തെക്കുറിച്ചും പേര് അറിയാത്ത ദൈവത്തെക്കുറിച്ചും ചിന്തിച്ചുകൊണ്ട്."],
+  ["വിറച്ചുകൊണ്ട് വീട്ടിലെത്തി","അവിടുന്ന് വിറച്ചുകൊണ്ട് ഇറങ്ങിവന്ന് പറഞ്ഞു: എന്നെ പുതപ്പിക്കൂ. ഖദീജ (റ) പുതപ്പിച്ചു, കേട്ടു, പിന്നെ പറഞ്ഞു: അല്ലാഹു ഒരിക്കലും അങ്ങയെ അപമാനിക്കില്ല — ആളുകളോട് അങ്ങ് പെരുമാറുന്ന രീതി കാരണം."]],
+ scenes:[["മലയിൽ ഒറ്റയ്ക്ക്","നാൽപ്പത് വയസ്സായപ്പോൾ തന്റെ ജനത എന്തായിത്തീർന്നു എന്നത് അവിടുത്തേക്ക് സഹിക്കാനായില്ല. ഭക്ഷണവും വെള്ളവുമായി ജബലുന്നൂറിൽ കയറി ഹിറാ ഗുഹയിൽ രാത്രികളോളം ഒറ്റയ്ക്ക് കഴിയാൻ തുടങ്ങി. താൻ എന്താണ് തിരയുന്നതെന്ന് അവിടുത്തേക്ക് അറിയില്ലായിരുന്നു. വിഗ്രഹങ്ങൾ അതല്ല എന്ന് മാത്രം അറിയാമായിരുന്നു."],
+  ["വായിക്കുക","പിന്നെ മലക്ക് വന്നു, അവിടുത്തെ ചേർത്തുപിടിച്ച് പറഞ്ഞു: <b>വായിക്കുക.</b> അവിടുന്ന് മറുപടി പറഞ്ഞു: ഞാൻ വായിക്കുന്നവനല്ല. മൂന്ന് തവണ മലക്ക് അവിടുത്തെ ഞെരുക്കി, പിന്നെ പറഞ്ഞു: <i>സൃഷ്ടിച്ച നിന്റെ റബ്ബിന്റെ നാമത്തിൽ വായിക്കുക — അവൻ മനുഷ്യനെ ഒരു രക്തപിണ്ഡത്തിൽ നിന്ന് സൃഷ്ടിച്ചു. വായിക്കുക, നിന്റെ റബ്ബ് ഏറ്റവും ഉദാരനാണ്.</i> ഖുർആനിലെ ആദ്യ വാക്ക് പഠിക്കാനുള്ള കൽപ്പനയായിരുന്നു."],
+  ["ആദ്യത്തെ വിശ്വാസി","ഹൃദയമിടിപ്പോടെ അവിടുന്ന് മലയിറങ്ങി ഭാര്യയോട് പറഞ്ഞു: എന്നെ പുതപ്പിക്കൂ, എന്നെ പുതപ്പിക്കൂ. അവർ പുതപ്പിച്ചു. തനിക്ക് വേണ്ടി താൻ ഭയപ്പെടുന്നു എന്ന് അവിടുന്ന് പറഞ്ഞു. ഭൂമിയിൽ ആദ്യമായി അവിടുത്തെ വിശ്വസിച്ച ഖദീജ (റ) പറഞ്ഞു: <i>ഒരിക്കലുമില്ല. അല്ലാഹുവാണ, അല്ലാഹു ഒരിക്കലും അങ്ങയെ അപമാനിക്കില്ല. അങ്ങ് കുടുംബബന്ധം ചേർക്കുന്നു, ദുർബലരുടെ ഭാരം ചുമക്കുന്നു, ദരിദ്രർക്ക് നൽകുന്നു, അതിഥിയെ ആദരിക്കുന്നു, വിപത്തിൽ മറ്റുള്ളവരെ സഹായിക്കുന്നു.</i> അവിടുത്തെ സ്വഭാവം അവർ തെളിവായി എണ്ണിപ്പറഞ്ഞു."],
+  ["വറഖ","ഖദീജ (റ) അവിടുത്തെ തന്റെ പിതൃവ്യപുത്രൻ വറഖയുടെ അടുത്തേക്ക് കൊണ്ടുപോയി — പഴയ വേദങ്ങൾ വായിച്ചിട്ടുള്ള ഒരു അന്ധനായ വൃദ്ധൻ. അദ്ദേഹം കേട്ടിട്ട് പറഞ്ഞു: മൂസായുടെ അടുത്ത് വന്ന അതേ നാമൂസാണിത്. പിന്നെ വിചിത്രമായ ഒന്ന് പറഞ്ഞു: നിന്റെ ജനം നിന്നെ പുറത്താക്കുമ്പോൾ ഞാൻ ചെറുപ്പമായിരുന്നെങ്കിൽ. അവിടുന്ന് ചോദിച്ചു: അവർ എന്നെ പുറത്താക്കുമോ? വറഖ പറഞ്ഞു: നീ കൊണ്ടുവരുന്നത് കൊണ്ടുവന്ന ഒരാളും എതിർക്കപ്പെടാതിരുന്നിട്ടില്ല."],
+  ["ഇടവേള","പിന്നെ വഹ്‌യ് നിന്നു. ആഴ്ചകൾ ഒന്നുമില്ലാതെ കടന്നുപോയി; ഭയത്തെക്കാൾ ആ മൗനം വേദനിപ്പിച്ചു. മക്കക്കാർ പരിഹസിക്കാൻ തുടങ്ങി — അവന്റെ റബ്ബ് അവനെ ഉപേക്ഷിച്ചു. അപ്പോൾ സൂറത്തുള്ളുഹാ ഇറങ്ങി: <i>നിന്റെ റബ്ബ് നിന്നെ ഉപേക്ഷിച്ചിട്ടില്ല, വെറുത്തിട്ടുമില്ല. പരലോകം നിനക്ക് ഇഹലോകത്തെക്കാൾ ഉത്തമമാണ്. വൈകാതെ നിന്റെ റബ്ബ് നിനക്ക് നൽകും, നീ തൃപ്തിപ്പെടും.</i>"]],
+ him:{p:"അവിടുത്തെ ആദ്യമായി വിശ്വസിച്ചത് അവിടുത്തോടൊപ്പം ജീവിച്ച സ്ത്രീയാണ്. അവിടുത്തെ അവരെക്കാൾ നന്നായി ആർക്കും അറിയില്ലായിരുന്നു, അവരെക്കാൾ ഉറപ്പ് ആർക്കുമില്ലായിരുന്നു.",
+  q:"അവരെക്കുറിച്ച് അവിടുന്ന് പറഞ്ഞു: ആളുകൾ അവിശ്വസിച്ചപ്പോൾ അവർ എന്നിൽ വിശ്വസിച്ചു; ആളുകൾ തടഞ്ഞുവെച്ചപ്പോൾ അവർ എനിക്ക് തന്റെ സമ്പത്ത് നൽകി."},
+ ayahEn:"സൃഷ്ടിച്ച നിന്റെ റബ്ബിന്റെ നാമത്തിൽ വായിക്കുക.",
+ discuss:["അവതരിച്ച ആദ്യ വാക്ക് <i>വായിക്കുക</i> ആയിരുന്നു — വായിക്കാനറിയാത്ത ഒരാളോട്. എന്തുകൊണ്ട്?",
+  "അവിടുത്തെ സ്വഭാവം എണ്ണിപ്പറഞ്ഞാണ് ഖദീജ (റ) അവിടുന്ന് സുരക്ഷിതനാണെന്ന് തെളിയിച്ചത്. നിന്നെക്കുറിച്ച് ആർക്കെങ്കിലും എണ്ണിപ്പറയാവുന്ന ഒരു കാര്യം എഴുതൂ.",
+  "അവിടുന്ന് ഭയപ്പെട്ടു, അഭിമാനിച്ചില്ല. അത് അവിടുത്തെക്കുറിച്ച് എന്ത് പറയുന്നു?"],
+ why:"ഇസ്‌ലാം തുടങ്ങിയത് <i>വായിക്കുക</i> എന്ന വാക്കിലും വിശ്വസിച്ച ഒരു സ്ത്രീയിലുമാണ്. രണ്ടും യാദൃച്ഛികമല്ല, രണ്ടും ഓർക്കാൻ അർഹതയുള്ളതുമാണ്.",
+ points:["ഖുർആനിലെ ആദ്യ കൽപ്പന പഠിക്കാനായിരുന്നു","ഖദീജ (റ) ആയിരുന്നു ആദ്യത്തെ മുസ്‌ലിം","നല്ല സ്വഭാവം ആളുകൾക്ക് കാണാവുന്ന തെളിവാണ്"],
+ rem:"നിന്റെ ദുആ ഒന്നിലേക്കും എത്താത്തതുപോലെയും ആരാധന ശൂന്യമായതുപോലെയും തോന്നുന്ന സമയങ്ങളുണ്ടാകും. അവിടുന്നും അതിലൂടെ കടന്നുപോയി — അതും തുടക്കത്തിൽ തന്നെ. ആ മൗനം ഉപേക്ഷിക്കലായിരുന്നില്ല. അത് ഒരുക്കമായിരുന്നു."
+},
+{
+ t:"ആദ്യ വിശ്വാസികൾ", ar:"السَّابِقُونَ",
+ facts:{when:"ക്രി. 610–613",where:"മക്ക — അർഖമിന്റെ വീട്",age:"40–43",src:"ബുഖാരി · ഇബ്നു ഹിശാം"},
+ hook:"ആരാണ് നിന്നെ ആദ്യം വിശ്വസിക്കുക — ആരോട് പറയാൻ നീ ഭയപ്പെടും?",
+ plates:[["അർഖമിന്റെ വീട്","മൂന്ന് വർഷം അവർ സ്വഫാ കുന്നിന്റെ ചുവട്ടിലെ ഒരു വീട്ടിൽ രഹസ്യമായി ഒത്തുകൂടി — ഇസ്‌ലാമിന്റെ ചരിത്രത്തിലെ ആദ്യത്തെ ക്ലാസ്‌മുറി."],
+  ["അഹദ്, അഹദ്","കത്തുന്ന മണലിൽ ബിലാലിന്റെ നെഞ്ചിൽ പാറ വെച്ച് മറ്റൊരു ദൈവത്തിന്റെ പേര് പറയാൻ ആവശ്യപ്പെട്ടു. അദ്ദേഹം ഒരൊറ്റ വാക്ക് മാത്രം പറഞ്ഞു: ഏകൻ. ഏകൻ."]],
+ scenes:[["ആദ്യത്തെ നാല്","ഖദീജ (റ) ആദ്യം വിശ്വസിച്ചു. പിന്നെ അവിടുത്തെ വീട്ടിൽ താമസിച്ചിരുന്ന പത്ത് വയസ്സുകാരൻ അലി (റ). പിന്നെ സ്വന്തം കുടുംബത്തെക്കാൾ അവിടുത്തെ തിരഞ്ഞെടുത്ത, മോചിപ്പിക്കപ്പെട്ട അടിമ സൈദ് ബ്നു ഹാരിസ (റ). പിന്നെ ഒരു തെളിവും ചോദിക്കാതെ വിശ്വസിച്ച അബൂബക്കർ (റ) — ദിവസങ്ങൾക്കകം അഞ്ച് പേരെക്കൂടി കൊണ്ടുവന്നു."],
+  ["രഹസ്യ വർഷങ്ങൾ","മൂന്ന് വർഷം അവർ സ്വഫായുടെ ചുവട്ടിലെ അർഖമിന്റെ വീട്ടിൽ നിശ്ശബ്ദമായി ഒത്തുകൂടി. ഇറങ്ങിവരുന്ന ഖുർആൻ ആയത്ത് ആയത്തായി പഠിച്ചു, ആരും കാണാത്ത താഴ്‌വരകളിൽ നിസ്കരിച്ചു. ഒരു മുറിയിൽ, ഒരാൾ വീതം, മതം വളർന്നു."],
+  ["ബിലാൽ (റ)","പിന്നെ വന്നത് സംരക്ഷിക്കാൻ ഗോത്രമില്ലാത്തവരാണ്. അബ്സീനിയക്കാരനായ അടിമ ബിലാലിനെ ഉച്ചവെയിലിൽ മരുഭൂമിയിലേക്ക് വലിച്ചിഴച്ച്, കത്തുന്ന മണലിൽ കിടത്തി നെഞ്ചിൽ പാറ വെച്ച്, ലാത്തയുടെയും ഉസ്സയുടെയും പേര് പറയാൻ കൽപ്പിച്ചു. അദ്ദേഹം പറഞ്ഞത് ഇത്രമാത്രം: <i>അഹദ്. അഹദ്.</i> ഏകൻ. ഏകൻ. അബൂബക്കർ (റ) അദ്ദേഹത്തെ വിലയ്ക്ക് വാങ്ങി മോചിപ്പിച്ചു. വർഷങ്ങൾക്ക് ശേഷം ബിലാൽ (റ) കഅ്ബയുടെ മുകളിൽ കയറി, തന്നെ പീഡിപ്പിച്ച നഗരത്തിന് മുകളിൽ ബാങ്ക് വിളിച്ചു."],
+  ["യാസിറിന്റെ കുടുംബം","യാസിറും സുമയ്യയും മകൻ അമ്മാറും (റ) തുറന്ന മണലിൽ പീഡിപ്പിക്കപ്പെട്ടു — അവരെ സംരക്ഷിക്കാൻ ഗോത്രമില്ലായിരുന്നു. അവരുടെ അരികിലൂടെ കടന്നുപോകുമ്പോൾ <i>യാസിറിന്റെ കുടുംബമേ, ക്ഷമിക്കൂ — നിങ്ങളുടെ വാഗ്ദാനം സ്വർഗമാണ്</i> എന്ന് പറയാനല്ലാതെ അവിടുത്തേക്ക് ഒന്നും ചെയ്യാനായില്ല. അവിടുന്ന് രക്ഷ വാഗ്ദാനം ചെയ്തില്ല. അതിനെക്കാൾ നല്ലത് വാഗ്ദാനം ചെയ്തു, അവർ വിശ്വസിക്കുകയും ചെയ്തു."],
+  ["തേടിവന്നവർ","ഒരു ദിവസം ഉമർ ബ്നുൽ ഖത്താബ് (റ) അവിടുത്തെ കൊല്ലാൻ വാളുമായി പുറപ്പെട്ടു; ആദ്യം സ്വന്തം സഹോദരിയെ നോക്കാൻ ആരോ പറഞ്ഞു. അവർ സൂറത്ത് ത്വാഹാ ഓതുന്നത് അദ്ദേഹം കണ്ടു, അവരെ അടിച്ചു, രക്തം കണ്ടു, പിന്നെ ആ താൾ വായിച്ചു. വാളുമായി തന്നെ അദ്ദേഹം അർഖമിന്റെ വീട്ടിലേക്ക് നടന്നു — ഒരു മുസ്‌ലിമായി വാതിലിൽ മുട്ടി. ഏറ്റവും വലിയ ശത്രു രണ്ടാമത്തെ ഖലീഫയായി."]],
+ him:{p:"അവിടുന്ന് ശക്തരെയല്ല തിരഞ്ഞെടുത്തത്. ആദ്യ സമൂഹം ഒരു ഭാര്യയും ഒരു കുട്ടിയും മോചിപ്പിക്കപ്പെട്ട ഒരു അടിമയും ഒരു കച്ചവടക്കാരനുമായിരുന്നു — പിന്നെ മറ്റാരും വിലമതിക്കാത്തവരും.",
+  q:"അവിടുന്ന് പറഞ്ഞു: സ്വർഗക്കാർ, നിസ്സാരരായി കണക്കാക്കപ്പെടുന്ന ദുർബലരാണ് — അല്ലാഹുവിനെക്കൊണ്ട് സത്യം ചെയ്താൽ അല്ലാഹു അത് പൂർത്തീകരിക്കുന്നവർ."},
+ ayahEn:"മുഹാജിറുകളിലും അൻസ്വാറുകളിലുമുള്ള മുൻഗാമികളായ ആദ്യത്തെ ആളുകൾ…",
+ discuss:["അബൂബക്കർ (റ) ഒരു തെളിവും ചോദിക്കാതെ വിശ്വസിച്ചു. അത് എങ്ങനെയുള്ള സൗഹൃദമാണ്?",
+  "ബിലാലിന്റെ (റ) കൈയിൽ ഒരു വാക്ക് മാത്രമേ ബാക്കിയുണ്ടായിരുന്നുള്ളൂ, അത് അദ്ദേഹം ഉപയോഗിച്ചു. അതിന് ശക്തി നൽകിയത് എന്താണെന്ന് നിനക്ക് തോന്നുന്നു?",
+  "ആദ്യ മുസ്‌ലിംകൾ കൂടുതലും ദരിദ്രരും ദുർബലരുമായിരുന്നത് എന്തുകൊണ്ടാവാം?"],
+ why:"ഇസ്‌ലാമിനെ ആദ്യം ചുമന്നത് ശക്തരല്ല. ഒരു ഭാര്യയും ഒരു കുട്ടിയും ഒരു അടിമയും ഒരു സുഹൃത്തുമാണ് — അതിനർത്ഥം ഇത് ഒരിക്കലും പദവിയെക്കുറിച്ചായിരുന്നില്ല, ഇപ്പോഴും അല്ല.",
+ points:["ആദ്യ മുസ്‌ലിംകൾക്ക് അധികാരമോ സംരക്ഷണമോ ഉണ്ടായിരുന്നില്ല","അബൂബക്കർ (റ) ഉടനെ, ഉപാധികളില്ലാതെ വിശ്വസിച്ചു","ലോകം താഴ്ത്തിക്കാണുന്നവരെ അല്ലാഹു ഉയർത്തുന്നു"],
+ rem:"ആരെയും എഴുതിത്തള്ളരുത്. അവിടുത്തെ കൊല്ലാൻ വന്ന മനുഷ്യൻ അവിടുത്തെ മതം മൂന്ന് ഭൂഖണ്ഡങ്ങളിൽ എത്തിച്ച മനുഷ്യനായി. അല്ലാഹു ഹൃദയങ്ങളെ മാറ്റുന്നു — നീ ഉപേക്ഷിച്ചവയും ഉൾപ്പെടെ."
+}
+,{
+ t:"വേദനയുടെ വർഷങ്ങൾ", ar:"سَنَوَاتُ الابْتِلَاء",
+ facts:{when:"ക്രി. 613–619",where:"മക്ക · അബ്സീനിയ",age:"43–49",src:"ബുഖാരി · ഇബ്നു ഹിശാം"},
+ hook:"നിന്നെ വേദനിപ്പിക്കുന്നത് സ്വന്തം അയൽക്കാരാണെങ്കിൽ എത്ര കാലം നിനക്ക് പിടിച്ചുനിൽക്കാനാവും?",
+ plates:[["താഴ്‌വരയിലെ മൂന്ന് വർഷം","അവിടുത്തെ കുടുംബവുമായുള്ള എല്ലാ കച്ചവടവും വിവാഹവും വിലക്കുന്ന ഒരു രേഖ ഖുറൈശ് കഅ്ബയിൽ തൂക്കി. മൂന്ന് വർഷം അവർ ഒരു താഴ്‌വരയിൽ, ഇലകൾ തിന്ന് കഴിഞ്ഞു."],
+  ["കടലിനക്കരെ","ഏറ്റവും ദുർബലരായ അനുയായികളെ അവിടുന്ന് അബ്സീനിയയിലേക്ക് അയച്ചു — ആരും അക്രമിക്കപ്പെടാത്ത ഒരു രാജാവിന്റെ അടുത്തേക്ക്."]],
+ scenes:[["മാറ്റം വന്ന ദിവസം","അവിടുന്ന് സ്വഫായിൽ കയറി ആദ്യമായി പരസ്യമായി ജനതയെ വിളിച്ചു. അന്നുമുതൽ നഗരം തിരിഞ്ഞു. അവർ അവിടുത്തെ വാതിൽക്കൽ മാലിന്യം എറിഞ്ഞു. വഴിയിൽ മുള്ള് വിതറി. തെരുവിൽ പരിഹസിച്ചു. ഗോത്രമില്ലാത്ത വൃദ്ധയായ സുമയ്യ (റ) ഇസ്‌ലാം ഉപേക്ഷിക്കാൻ വിസമ്മതിച്ചതിന് കൊല്ലപ്പെട്ടു — ആദ്യത്തെ ശഹീദ."],
+  ["കടൽ കടക്കൽ","ഏറ്റവും ദുർബലരെ സംരക്ഷിക്കാൻ കഴിയാഞ്ഞതിനാൽ അവിടുന്ന് അവരെ അയച്ചു. ഒരു ചെറിയ സംഘം അബ്സീനിയയിലേക്ക് കടന്നു. അവിടെ ജഅ്ഫർ (റ) സൂറത്ത് മർയം ഓതിക്കേൾപ്പിച്ചപ്പോൾ നജ്ജാശി രാജാവ് താടി നനയുന്നതുവരെ കരഞ്ഞു. അദ്ദേഹം നിലത്ത് ഒരു വര വരച്ച് പറഞ്ഞു: നമുക്കിടയിലുള്ളത് ഈ വരയെക്കാൾ കട്ടിയുള്ളതല്ല."],
+  ["താഴ്‌വര","പിന്നെ ഖുറൈശ് ഒരു രേഖ എഴുതി കഅ്ബയ്ക്കുള്ളിൽ തൂക്കി: അവിടുത്തെ വിട്ടുതരുന്നതുവരെ ബനൂ ഹാശിമുമായി കച്ചവടമില്ല, വിവാഹമില്ല, ഇടപാടില്ല. മൂന്ന് വർഷം അവിടുത്തെ കുടുംബം മുഴുവൻ — വിശ്വസിച്ചവരും അല്ലാത്തവരും — ഒരു പാറക്കെട്ടുള്ള താഴ്‌വരയിൽ കഴിഞ്ഞു. കുട്ടികൾ വിശന്ന് കരഞ്ഞു. അവർ ഇലകൾ തിന്നു. ഒടുവിൽ ആ രേഖ ഇറക്കിയപ്പോൾ ഉറുമ്പുകൾ അത് തിന്നുതീർത്തിരുന്നു — <i>അല്ലാഹുവേ, നിന്റെ നാമത്തിൽ</i> എന്ന വാക്കുകൾ മാത്രം ബാക്കിയായി."],
+  ["മാലിന്യം എറിഞ്ഞ സ്ത്രീ","ഒരു സ്ത്രീ ദിവസവും അവിടുത്തെ വഴിയിൽ ചപ്പുചവറുകൾ എറിയുമായിരുന്നു. ഒരു ദിവസം അത് ഉണ്ടായില്ല; അവിടുന്ന് അവരെക്കുറിച്ച് അന്വേഷിച്ചു. രോഗിയാണെന്ന് അറിഞ്ഞപ്പോൾ അവിടുന്ന് അവരെ കാണാൻ പോയി. വർഷങ്ങളോളം അവിടുത്തെ അപമാനിച്ച ആ സ്ത്രീയുടെ കിടക്കയ്ക്കരികിൽ അവിടുന്ന് ചെന്നു — മറ്റാരും ചെല്ലാഞ്ഞതുകൊണ്ട്. അവർ മുസ്‌ലിമായി."],
+  ["താഴ്‌വരയ്ക്കുള്ളിൽ","ഉപരോധ വർഷങ്ങളിൽ കുട്ടികളുടെ കരച്ചിൽ താഴ്‌വരയ്ക്ക് പുറത്ത് കേൾക്കാമായിരുന്നു; മക്കയിലുള്ളവർ അത് കേട്ടിട്ടും ഒന്നും ചെയ്തില്ല. ചിലർ രാത്രിയിൽ രഹസ്യമായി ഭക്ഷണം എത്തിച്ചു. തന്റെ അമ്മായി ഖദീജ (റ) ക്ക് മാവ് കൊണ്ടുപോകുന്നതിനിടെ പിടിക്കപ്പെട്ട ഹകീം ബ്നു ഹിസാം ഏതാണ്ട് അടിയേറ്റു. മൂന്ന് വർഷം ഒരു നിമിഷമല്ല. അത് ഒരു ബാല്യമാണ്."]],
+ him:{p:"അവിടുന്ന് ഒരിക്കലും അതേ നാണയത്തിൽ തിരിച്ചടിച്ചില്ല, അനുയായികളോട് അങ്ങനെ ചെയ്യാൻ പറഞ്ഞതുമില്ല.",
+  q:"ആഇശ (റ) പറഞ്ഞു: അവിടുന്ന് ഒരിക്കലും കൈകൊണ്ട് ഒന്നിനെയും അടിച്ചിട്ടില്ല — ഭൃത്യനെയോ സ്ത്രീയെയോ — അല്ലാഹുവിന്റെ അതിരുകൾ ലംഘിക്കപ്പെട്ടാലല്ലാതെ സ്വന്തം കാര്യത്തിന് പ്രതികാരം ചെയ്തിട്ടുമില്ല."},
+ ayahEn:"ദൃഢനിശ്ചയമുള്ള ദൂതന്മാർ ക്ഷമിച്ചതുപോലെ നീയും ക്ഷമിക്കുക.",
+ discuss:["ദുർബലരോട് സഹിക്കാൻ പറയാതെ അവിടുന്ന് അവരെ അയച്ചു. അത് എന്ത് കാണിക്കുന്നു?",
+  "സൂറത്ത് മർയം കേട്ട് നജ്ജാശി കരഞ്ഞു. ആ സൂറ അദ്ദേഹത്തിലേക്ക് എത്തിയത് എന്തുകൊണ്ട്?",
+  "ഒരു നല്ല കാര്യം ഉപേക്ഷിക്കാൻ നിന്നെ പ്രേരിപ്പിക്കുന്ന ഒരു കാര്യം എഴുതൂ."],
+ why:"അവിടുന്ന് പണിതുയർത്തിയതെല്ലാം ആദ്യം അതിന്റെ പേരിൽ അടിയേറ്റ ആളുകളാണ് പണിതത്. പ്രധാനപ്പെട്ട ഒന്നും ഒരിക്കലും വിലകുറഞ്ഞതായിരുന്നിട്ടില്ല.",
+ points:["ഇസ്‌ലാമിന് വേണ്ടി ആദ്യം മരിച്ചത് സുമയ്യ (റ) ആണ്","സ്വന്തം നഷ്ടം സഹിച്ചും അവിടുന്ന് ദുർബലരെ സംരക്ഷിച്ചു","ക്ഷമ നിഷ്ക്രിയത്വമല്ല — ഒരു നിലപാടിൽ ഉറച്ചുനിൽക്കലാണ്"],
+ rem:"വർഷങ്ങളുടെ അപമാനത്തിന് അവിടുന്ന് ഒരു സന്ദർശനം കൊണ്ട് മറുപടി നൽകി. ഒരു തവണ നിന്നോട് മോശമായി പെരുമാറുന്നയാളോട് നീ എന്ത് ചെയ്യുന്നു എന്ന് സ്വയം സത്യസന്ധമായി ചോദിക്കൂ."
+},
+{
+ t:"ദുഃഖവർഷം", ar:"عَامُ الْحُزْن",
+ facts:{when:"ക്രി. 619",where:"മക്കയും ത്വാഇഫും",age:"49–50",src:"ബുഖാരി · മുസ്‌ലിം"},
+ hook:"ഒരേ വർഷം നിന്നെ സംരക്ഷിച്ച രണ്ട് പേരും നഷ്ടപ്പെടുന്നു. പിന്നെ പുതിയൊരിടത്ത് ചെല്ലുമ്പോൾ അവർ കുട്ടികളെക്കൊണ്ട് കല്ലെറിയിക്കുന്നു. നീ എന്ത് പ്രാർത്ഥിക്കും?",
+ plates:[["ഒരു വർഷം രണ്ട് ഖബ്‌റുകൾ","ഖദീജ (റ) മരിച്ചു, അബൂത്വാലിബും മരിച്ചു. മാസങ്ങൾക്കുള്ളിൽ ആദ്യം വിശ്വസിച്ച ഭാര്യയും നാൽപ്പത് വർഷം സംരക്ഷിച്ച പിതൃവ്യനും നഷ്ടപ്പെട്ടു."],
+  ["ത്വാഇഫിലെ മുന്തിരി","ചെരിപ്പിൽ ചോരയുമായി ത്വാഇഫിൽ നിന്ന് പുറത്താക്കപ്പെട്ട അവിടുന്ന് ഒരു തോട്ടത്തിലിരുന്നു. ഒരു ഭൃത്യൻ മുന്തിരി കൊണ്ടുവന്നു, അവിടെ വെച്ചുതന്നെ മുസ്‌ലിമായി."]],
+ scenes:[["എല്ലാം പോയ വർഷം","ഖദീജ (റ) മരിച്ചു — ഇരുപത്തിയഞ്ച് വർഷത്തെ ദാമ്പത്യം, ആദ്യം വിശ്വസിച്ചവർ, വിറച്ചപ്പോൾ പുതപ്പിച്ചവർ. പിന്നെ അബൂത്വാലിബ് മരിച്ചു — എട്ടാം വയസ്സ് മുതൽ അവിടുത്തെ വളർത്തുകയും ഇസ്‌ലാം സ്വീകരിക്കാതെ തന്നെ ഖുറൈശിൽ നിന്ന് സംരക്ഷിക്കുകയും ചെയ്ത പിതൃവ്യൻ. ആഴ്ചകൾക്കകം ഖുറൈശ് മുമ്പെന്നത്തെക്കാളും ധൈര്യപ്പെട്ടു. അവിടുന്ന് ആ വർഷത്തെ ആമുൽ ഹുസ്ൻ എന്ന് വിളിച്ചു."],
+  ["ത്വാഇഫ്","കേൾക്കാൻ തയ്യാറുള്ള ഒരു നാട് തേടി അവിടുന്ന് അറുപത് മൈൽ നടന്ന് ത്വാഇഫിലെത്തി. നേതാക്കൾ പരിഹസിച്ച് തെരുവിലെ കുട്ടികളെ അവിടുത്തേക്ക് നേരെ അയച്ചു. ചെരിപ്പുകൾ ചോരകൊണ്ട് നിറയുന്നതുവരെ അവർ കല്ലെറിഞ്ഞ് പുറത്താക്കി. ക്ഷീണിതനായി ഒരു തോട്ടത്തിലിരുന്ന് അവിടുന്ന് ഇന്നും ചൊല്ലപ്പെടുന്ന ആ ദുആ ചെയ്തു: <i>അല്ലാഹുവേ, എന്റെ ദുർബലതയെക്കുറിച്ച് ഞാൻ നിന്നോട് ആവലാതിപ്പെടുന്നു… നീ എന്നോട് കോപിച്ചിട്ടില്ലെങ്കിൽ എനിക്ക് ഒന്നും പ്രശ്നമല്ല.</i>"],
+  ["മലകൾ","പിന്നെ ജിബ്‌രീൽ മലകളുടെ മലക്കുമായി വന്നു — ത്വാഇഫിനെ രണ്ട് മലകൾക്കിടയിൽ ഞെരിക്കാമെന്ന് അദ്ദേഹം പറഞ്ഞു. ജീവിതത്തിലെ ഏറ്റവും മോശം ദിവസം, ചെരിപ്പിൽ ചോരയുമായി, അവിടുന്ന് വേണ്ടെന്ന് പറഞ്ഞു. <i>ഒരുപക്ഷേ അവരുടെ സന്തതികളിൽ നിന്ന് അല്ലാഹുവിനെ മാത്രം ആരാധിക്കുന്നവരെ അല്ലാഹു കൊണ്ടുവന്നേക്കാം.</i> വർഷങ്ങൾക്ക് ശേഷം ത്വാഇഫ് മുസ്‌ലിമായി."],
+  ["അവിടുന്ന് ശരിക്കും ചോദിച്ചത്","ത്വാഇഫിലെ ആ തോട്ടത്തിൽ, ചോരയൊലിപ്പിച്ച്, രണ്ട് നഗരങ്ങളാൽ നിരാകരിക്കപ്പെട്ട്, അവിടുന്ന് ചെയ്ത ദുആയിൽ പ്രതികാരത്തിനുള്ള ഒരു അപേക്ഷയുമില്ല, ആശ്വാസത്തിനുള്ള അപേക്ഷയുമില്ല. അവിടുത്തെ ഒരേയൊരു ഭയം അല്ലാഹുവിന്റെ അതൃപ്തിയായിരുന്നു. മറ്റൊന്നും കണക്കിലില്ലായിരുന്നു."],
+  ["അദ്ദാസ്","തോട്ടത്തിലെ ഒരു ഭൃത്യൻ ഒരു തളിക മുന്തിരി കൊണ്ടുവന്നു. കഴിക്കുന്നതിന് മുമ്പ് അവിടുന്ന് ബിസ്മില്ലാഹ് പറഞ്ഞു, ഭൃത്യൻ നിന്നു — ഇവിടെ ആരും അങ്ങനെ പറയാറില്ല. അവർ സംസാരിച്ചു; അയാൾ നീനവയിൽ നിന്നുള്ള ഒരു ക്രിസ്ത്യാനിയായിരുന്നു. അവിടുന്ന് പറഞ്ഞു: എന്റെ സഹോദരൻ യൂനുസ് ബ്നു മത്തായുടെ നാട്. ആ ഭൃത്യൻ അവിടുത്തെ തലയിലും കൈകളിലും ചുംബിച്ചു. രണ്ട് നഗരങ്ങൾ നഷ്ടപ്പെട്ട ദിവസം അവിടുത്തേക്ക് ഒരു മനുഷ്യനെ കിട്ടി."]],
+ him:{p:"ഇവിടെയാണ് അവിടുത്തെ അളക്കേണ്ടത്. അധികാരം നൽകപ്പെട്ടപ്പോൾ, ഏറ്റവും മോശം ദിവസം, തന്നെ അപമാനിച്ചവർക്കെതിരെ — അവിടുന്ന് സ്വന്തം പ്രതികാരത്തിന് പകരം അവരുടെ പേരക്കുട്ടികളെ തിരഞ്ഞെടുത്തു.",
+  q:"ബഹുദൈവാരാധകരെ ശപിക്കാൻ ആവശ്യപ്പെട്ടപ്പോൾ അവിടുന്ന് പറഞ്ഞു: ഞാൻ ശപിക്കുന്നവനായി അയക്കപ്പെട്ടിട്ടില്ല. ഞാൻ കാരുണ്യമായാണ് അയക്കപ്പെട്ടത്."},
+ ayahEn:"ലോകർക്ക് കാരുണ്യമായിക്കൊണ്ടല്ലാതെ നിന്നെ നാം അയച്ചിട്ടില്ല.",
+ discuss:["<i>നീ എന്നോട് കോപിച്ചിട്ടില്ലെങ്കിൽ എനിക്ക് ഒന്നും പ്രശ്നമല്ല</i> — അവിടുന്ന് ഏറ്റവും ഭയപ്പെട്ടത് എന്തായിരുന്നു?",
+  "ത്വാഇഫ് നശിപ്പിക്കാൻ അവിടുന്ന് വിസമ്മതിച്ചു. നീ വിസമ്മതിക്കുമായിരുന്നോ? സത്യസന്ധമായി ഉത്തരം പറയൂ.",
+  "പൊറുക്കാൻ പ്രയാസമുള്ള ഒരാളുടെ പേര് എഴുതൂ. വിശദീകരിക്കേണ്ടതില്ല."],
+ why:"ജയിക്കുമ്പോൾ ആർക്കും കരുണ കാണിക്കാം. ചെരിപ്പിൽ ചോരയുമായി അവിടുന്ന് കരുണ കാണിച്ചു — അതുകൊണ്ടാണ് നാം അവിടുത്തെ സ്നേഹിക്കുന്നത്.",
+ points:["അവിടുന്ന് പരസ്യമായി ദുഃഖിച്ചു — ആ വർഷത്തിന് ഒരു പേരുണ്ട്","അല്ലാഹുവിനെക്കുറിച്ചല്ല, അല്ലാഹുവിനോടാണ് അവിടുന്ന് ആവലാതിപ്പെട്ടത്","പ്രതികാരം വാഗ്ദാനം ചെയ്യപ്പെട്ട അതേ നിമിഷത്തിൽ അവിടുന്ന് കാരുണ്യം തിരഞ്ഞെടുത്തു"],
+ rem:"ജീവിതത്തിലെ ഏറ്റവും മോശം ദിവസവും അവിടുന്ന് പഠിപ്പിക്കുകയായിരുന്നു, സൗമ്യനായിരുന്നു, ഒരു ഹൃദയം നേടുകയുമായിരുന്നു. നിന്റെ ഏറ്റവും മോശം ദിവസം നീ ആരാണോ അതായിരിക്കാതിരിക്കാനുള്ള ഒഴികഴിവല്ല."
+},
+{
+ t:"രാത്രിയാത്ര", ar:"الإِسْرَاءُ وَالْمِعْرَاج",
+ facts:{when:"ഏകദേശം ക്രി. 620",where:"മക്ക → ബൈത്തുൽ മഖ്ദിസ് → ആകാശങ്ങൾ",age:"ഏകദേശം 51",src:"ബുഖാരി · മുസ്‌ലിം · സൂറത്തുൽ ഇസ്റാഅ്"},
+ hook:"ജീവിതത്തിലെ ഏറ്റവും മോശം വർഷത്തിന് അല്ലാഹു മറുപടി നൽകുന്നു. വിശ്രമം കൊണ്ടല്ല — ഒരു യാത്ര കൊണ്ട്. എന്തുകൊണ്ട്?",
+ plates:[["ഒരൊറ്റ രാത്രിയിൽ","മക്കയിലെ മസ്ജിദുൽ ഹറാമിൽ നിന്ന് ബൈത്തുൽ മഖ്ദിസിലേക്ക് അവിടുന്ന് കൊണ്ടുപോകപ്പെട്ടു, അവിടെ എല്ലാ പ്രവാചകന്മാർക്കും ഇമാമായി നിസ്കരിച്ചു."],
+  ["ഏഴ് ആകാശങ്ങൾക്ക് മുകളിൽ","അവിടുന്ന് ആകാശങ്ങളിലൂടെ ഉയർത്തപ്പെട്ടു, പ്രവാചകന്മാരെ കണ്ടു, സിദ്‌റത്തുൽ മുൻതഹായിൽ എത്തി — അഞ്ച് നേരത്തെ നിസ്കാരം ഇടയിൽ ഒരു ദൂതനുമില്ലാതെ നേരിട്ട് നൽകപ്പെട്ടു."]],
+ scenes:[["രാത്രിയാത്ര","ത്വാഇഫിന് ശേഷമുള്ള വർഷം, ഒന്നും ബാക്കിയില്ലാതിരുന്നപ്പോൾ, അല്ലാഹു അവിടുത്തെ രാത്രിയിൽ കഅ്ബയിൽ നിന്ന് ബൈത്തുൽ മഖ്ദിസിലേക്ക് കൊണ്ടുപോയി. അവിടെ അയക്കപ്പെട്ട എല്ലാ പ്രവാചകന്മാർക്കും ഒരൊറ്റ നിസ്കാരത്തിൽ അവിടുന്ന് ഇമാമായി — ആദം പിന്നിൽ, നൂഹ് പിന്നിൽ, ഇബ്രാഹീം, മൂസാ, ഈസാ, എല്ലാവരും പിന്നിൽ. പ്രവാചകത്വത്തിന്റെ മുഴുവൻ നിരയും ഒരു സ്വഫ്ഫിൽ, അവിടുന്ന് മുന്നിൽ."],
+  ["ആകാശങ്ങളിലൂടെ","പിന്നെ അവിടുന്ന് ഉയർത്തപ്പെട്ടു. ഓരോ ആകാശത്തിലും ഒരു വാതിൽ തുറന്നു, ഒരു പ്രവാചകൻ അഭിവാദ്യം ചെയ്തു. മൂസായെ (അ) കണ്ടു, അദ്ദേഹം കരഞ്ഞു — അസൂയകൊണ്ടല്ല, തനിക്ക് ശേഷം അയക്കപ്പെട്ട ഒരു ചെറുപ്പക്കാരൻ കൂടുതൽ ആളുകളെ സ്വർഗത്തിലെത്തിക്കുമല്ലോ എന്ന് ഓർത്ത്. ഒരു സൃഷ്ടിയും കടക്കാത്ത അതിർത്തിയായ സിദ്‌റത്തുൽ മുൻതഹായിൽ അവിടുന്ന് എത്തി."],
+  ["അമ്പത്, പിന്നെ അഞ്ച്","അവിടെ വെച്ചാണ് നിസ്കാരം നൽകപ്പെട്ടത്. ദിവസം അമ്പത് നിസ്കാരം. മടങ്ങുമ്പോൾ മൂസാ (അ) പറഞ്ഞു നിന്റെ ജനതയ്ക്ക് അത് കഴിയില്ല, ലഘൂകരണം ചോദിക്കാൻ തിരിച്ചയച്ചു — വീണ്ടും വീണ്ടും, ഒടുവിൽ അഞ്ചായി. എണ്ണത്തിൽ അഞ്ച്, പ്രതിഫലത്തിൽ അമ്പത്. മറ്റെല്ലാ കൽപ്പനയും ഭൂമിയിലേക്ക് ഇറങ്ങിവന്നു; ഇത് സ്വീകരിക്കാൻ അവിടുന്ന് മുകളിലേക്ക് വിളിക്കപ്പെട്ടു. രാവിലെ മക്കയോട് പറഞ്ഞപ്പോൾ അവർ ചിരിച്ചു. അബൂബക്കർ (റ) പറഞ്ഞു: അവിടുന്ന് പറഞ്ഞെങ്കിൽ അത് സത്യമാണ്. അന്നുമുതൽ അദ്ദേഹം അസ്സിദ്ദീഖായി."],
+  ["എന്തുകൊണ്ട് അപ്പോൾ","സമയം ശ്രദ്ധിക്കൂ. വിജയത്തിന്റെ ഒരു വർഷത്തിലല്ല മിഅ്റാജ് വന്നത്. ഭാര്യയെയും സംരക്ഷകനെയും നഷ്ടപ്പെട്ട്, ത്വാഇഫിൽ നിന്ന് കല്ലെറിഞ്ഞ് പുറത്താക്കപ്പെട്ട വർഷത്തിന് തൊട്ടുപിന്നാലെയാണ്. ഭൂമിയിൽ ആശ്വസിപ്പിക്കാൻ ഒന്നും ബാക്കിയില്ലാതിരുന്നപ്പോൾ അവിടുന്ന് ഭൂമിക്ക് മുകളിലേക്ക് തന്നെ കൊണ്ടുപോകപ്പെട്ടു."],
+  ["അവിടുന്ന് കണ്ടത്","അവിടുന്ന് പിന്നീട് അനുചരന്മാരോട് പറഞ്ഞ ചില കാഴ്ചകളുണ്ട് — കളവ് പരത്തിയതിന് ചുണ്ടുകൾ കീറപ്പെടുന്നവർ, നല്ല മാംസം അരികിലിരിക്കെ ചീഞ്ഞ മാംസം തിന്നുന്നവർ, സ്വന്തം ഭാരം ഉയർത്താനാവാതിരുന്നിട്ടും അതിലേക്ക് കൂട്ടിക്കൊണ്ടിരിക്കുന്നവൻ. സ്വർഗവും നരകവും അവിടുന്ന് കണ്ടു. എന്താണ് അപകടത്തിലുള്ളത് എന്ന് കൃത്യമായി അറിഞ്ഞുകൊണ്ട് അവിടുന്ന് മടങ്ങി, ബാക്കി ജീവിതം സൗമ്യമായി ആളുകൾക്ക് താക്കീത് നൽകി."]],
+ him:{p:"ആകാശങ്ങൾ മുഴുവൻ വാഗ്ദാനം ചെയ്യപ്പെട്ട അവിടുന്ന് നമുക്ക് വേണ്ടി മടങ്ങിവന്നു — ദിവസം അഞ്ച് നേരം നാം ചെയ്യുകയും പലപ്പോഴും നാല് മിനിറ്റിൽ തിടുക്കത്തിൽ തീർക്കുകയും ചെയ്യുന്ന ഒരു സമ്മാനവുമായി.",
+  q:"അവിടുന്ന് പറഞ്ഞു: നിസ്കാരമാണ് എന്റെ കണ്ണിന്റെ കുളിർമ."},
+ ayahEn:"തന്റെ ദാസനെ രാത്രിയിൽ കൊണ്ടുപോയവൻ എത്ര പരിശുദ്ധൻ.",
+ discuss:["ജീവിതത്തിലെ ഏറ്റവും ഉന്നതമായ നിമിഷത്തിൽ അല്ലാഹു അവിടുത്തെ <i>തന്റെ ദാസൻ</i> എന്ന് വിളിക്കുന്നു. എന്തുകൊണ്ട് ആ വാക്ക്?",
+  "അബൂബക്കർ (റ) ഉടനെ വിശ്വസിച്ചു. ആ പ്രഭാതത്തിൽ മക്കയിലായിരുന്നെങ്കിൽ നീ എന്ത് പറയുമായിരുന്നു?",
+  "നിസ്കാരം ആകാശങ്ങൾക്ക് മുകളിൽ നിന്ന് നേരിട്ട് കൊണ്ടുവരപ്പെട്ടതാണ്. ഇന്ന് നീ നിസ്കരിക്കുന്ന രീതി ഇത് മാറ്റുമോ?"],
+ why:"ദിവസം അഞ്ച് നേരം നീ ചെയ്യുന്ന നിസ്കാരം ഇറക്കപ്പെട്ടതല്ല. അത് സ്വീകരിക്കാൻ അവിടുന്ന് മുകളിലേക്ക് കൊണ്ടുപോകപ്പെട്ടു. അതിനെ ഒരു സമ്മാനമായി തന്നെ കാണൂ.",
+ points:["എല്ലാ പ്രവാചകന്മാർക്കും അവിടുന്ന് ഇമാമായി","നിസ്കാരം ഏഴ് ആകാശങ്ങൾക്ക് മുകളിൽ നേരിട്ട് നൽകപ്പെട്ടു","പ്രതിഫലത്തിൽ അമ്പത്, എണ്ണത്തിൽ അഞ്ച് — എണ്ണത്തിൽ തന്നെ കാരുണ്യമുണ്ട്"],
+ rem:"അല്ലാഹു എപ്പോഴും പ്രയാസം നീക്കിക്കളയുന്നില്ല. ചിലപ്പോൾ അവൻ നിന്നെ അതിന് മുകളിലേക്ക് ഉയർത്തി, അത് ചുമക്കാൻ അർഹതയുണ്ടായിരുന്നത് എന്തുകൊണ്ടെന്ന് കാണിച്ചുതരും."
+}
+,{
+ t:"ഹിജ്‌റ", ar:"الْهِجْرَة",
+ facts:{when:"ക്രി. 622",where:"മക്ക → മദീന",age:"53",src:"ബുഖാരി · സൂറത്തുത്തൗബ"},
+ hook:"കൊലയാളികൾ വാതിൽക്കൽ നിൽക്കുന്നു. നിനക്ക് ഒരു രാത്രിയേയുള്ളൂ. ആർക്കാണ് ആദ്യം കടം വീട്ടുക?",
+ plates:[["ഥൗർ ഗുഹ","അവർ മൂന്ന് രാത്രി ഒരു ഗുഹയിൽ ഒളിച്ചു. തിരയുന്നവർ വായ്ക്കൽ വന്നുനിന്നു. ഒരു ചിലന്തി വല നെയ്തിരുന്നു, ഒരു പ്രാവ് കൂടുവെച്ചിരുന്നു."],
+  ["അവർ പാടിക്കൊണ്ട് പുറത്തുവന്നു","മദീനക്കാർ ദഫ്ഫുകളും പാട്ടുമായി അവിടുത്തെ എതിരേറ്റു. ത്വലഅൽ ബദ്‌റു അലൈനാ — പൂർണചന്ദ്രൻ നമ്മുടെ മേൽ ഉദിച്ചു."]],
+ scenes:[["അവർ വന്ന രാത്രി","ഒരു ഗോത്രത്തെയും കുറ്റപ്പെടുത്താൻ കഴിയാത്ത വിധം ഓരോ ഗോത്രത്തിൽ നിന്നും ഒരു യുവാവിനെ ഖുറൈശ് തിരഞ്ഞെടുത്ത്, പ്രഭാതത്തിൽ അവിടുത്തെ കൊല്ലാൻ വീട് വളഞ്ഞു. അവിടുന്ന് അലി (റ) യെ കിടക്കയിൽ കിടത്തി — പിന്നെ ആളുകൾ അവിടുത്തെ ഏൽപ്പിച്ച അമാനത്തുകൾ തിരിച്ചുകൊടുക്കാൻ അദ്ദേഹത്തോട് പിന്നിൽ തങ്ങാൻ പറഞ്ഞു. ആ രാത്രിയിലും അമാനത്തുകളാണ് ആദ്യം. അവിടുത്തെ കൊല്ലാൻ ആഗ്രഹിച്ചവരുടേത് പോലും."],
+  ["ഗുഹയിലെ മൂന്ന് രാത്രി","അവിടുന്നും അബൂബക്കറും (റ) ഥൗർ ഗുഹയിൽ ഒളിച്ചു. തിരച്ചിൽ സംഘം അത്രയും അടുത്തെത്തിയപ്പോൾ അബൂബക്കർ (റ) മന്ത്രിച്ചു: അവരിൽ ഒരാൾ താഴേക്ക് നോക്കിയാൽ നമ്മെ കാണും. അവിടുന്ന് മറുപടി പറഞ്ഞു: <i>അല്ലാഹു മൂന്നാമനായുള്ള രണ്ടുപേരെക്കുറിച്ച് നീ എന്ത് വിചാരിക്കുന്നു?</i> ഗുഹാമുഖത്തെ ഒരു ചിലന്തിവലയും കൂടുവെച്ച ഒരു പ്രാവും മതിയായിരുന്നു. അവർ തിരിഞ്ഞുപോയി."],
+  ["മദീന","വഴിയിൽ സുറാഖ പ്രതിഫലത്തിനായി പിന്തുടർന്നു; അയാളുടെ കുതിരയുടെ കാലുകൾ മൂന്ന് തവണ മണലിൽ പൂണ്ടു. അയാൾ സുരക്ഷ ചോദിച്ചു, പേർഷ്യൻ ചക്രവർത്തിയുടെ വളകൾ വാഗ്ദാനം ചെയ്യപ്പെട്ടു — നബി ﷺ മരിച്ച് വർഷങ്ങൾക്ക് ശേഷം പൂർത്തിയായ ഒരു വാഗ്ദാനം. ഒടുവിൽ മദീനയിൽ എത്തിയപ്പോൾ നാട് മുഴുവൻ എതിരേൽക്കാൻ ഇറങ്ങിവന്നു, കുട്ടികൾ മേൽക്കൂരകളിൽ നിന്ന് പാടി, ഒരു നഗരം യഥ്‌രിബ് എന്ന പേര് മാറ്റി നബിയുടെ നഗരമായി."],
+  ["സുറാഖയുടെ വളകൾ","സുറാഖ നൂറ് ഒട്ടകങ്ങൾക്ക് വേണ്ടി പിന്നാലെ കുതിച്ചു. മൂന്ന് തവണ കുതിരയുടെ കാലുകൾ ഉറച്ച മണലിൽ താണു. അയാൾക്ക് കാര്യം മനസ്സിലായി, സുരക്ഷ ചോദിച്ചു, അത് എഴുതി വാങ്ങുകയും ചെയ്തു. അയാളോട് പറഞ്ഞു: <i>സുറാഖാ, കിസ്‌റയുടെ വളകൾ നീ ധരിക്കുമ്പോൾ നിനക്ക് എങ്ങനെ തോന്നും?</i> വർഷങ്ങൾക്ക് ശേഷം ഉമറിന്റെ (റ) കാലത്ത് പേർഷ്യയുടെ ഖജനാവ് മദീനയിൽ എത്തിയപ്പോൾ ഉമർ (റ) ചക്രവർത്തിയുടെ വളകൾ സുറാഖയുടെ കൈയിൽ അണിയിച്ചു."],
+  ["ഉമ്മു മഅ്ബദിന്റെ കൂടാരം","വഴിയിൽ അവർ ഒരു വൃദ്ധയുടെ കൂടാരത്തിൽ നിന്നു; അവർക്ക് മേയാൻ പോലും ശേഷിയില്ലാത്ത ഒരു മെലിഞ്ഞ ആടേ ഉണ്ടായിരുന്നുള്ളൂ. അവിടുന്ന് അനുവാദം ചോദിച്ച്, അതിന്റെ അകിടിൽ തടവി, ബിസ്മില്ലാഹ് പറഞ്ഞു — എല്ലാവർക്കും മതിയാകുന്നത്ര പാൽ കിട്ടി, ബാക്കിയും വന്നു. ഭർത്താവ് വന്ന് പാൽ കണ്ടപ്പോൾ പറഞ്ഞു: ഖുറൈശ് തിരയുന്ന ആ മനുഷ്യനാണിത്. അദ്ദേഹത്തെ വർണിച്ചുതരൂ. അവർ നൽകിയ ആ വർണന നമുക്കുള്ള ഏറ്റവും മനോഹരമായ ഒന്നാണ്."]],
+ him:{p:"തലയ്ക്ക് വിലയിട്ട്, വീടില്ലാതെ, വേട്ടയാടപ്പെട്ടുകൊണ്ട് — എന്നിട്ടും അവിടുത്തെ ആദ്യ നിർദേശം മറ്റുള്ളവരുടെ സാധനങ്ങൾ തിരികെ കിട്ടണം എന്നതായിരുന്നു.",
+  q:"അവിടുന്ന് പറഞ്ഞു: നിന്നെ ഏൽപ്പിച്ചവന് അമാനത്ത് തിരികെ നൽകുക; നിന്നെ വഞ്ചിച്ചവനെ നീ വഞ്ചിക്കരുത്."},
+ ayahEn:"ദുഃഖിക്കേണ്ട — തീർച്ചയായും അല്ലാഹു നമ്മോടൊപ്പമുണ്ട്.",
+ discuss:["തന്നെ കൊല്ലാൻ ശ്രമിച്ചവരുടെ അമാനത്തുകൾ അവിടുന്ന് തിരികെ നൽകി. അതിന് എന്ത് വിലയുണ്ട്?",
+  "<i>അല്ലാഹു മൂന്നാമനായുള്ള രണ്ടുപേർ</i> — ഈ വാക്യം നിനക്ക് എന്താണ് അർത്ഥമാക്കുന്നത്?",
+  "ഇസ്‌ലാമിക കലണ്ടർ തുടങ്ങുന്നത് ജനനത്തിൽ നിന്നല്ല, ഹിജ്‌റയിൽ നിന്നാണ്. എന്തുകൊണ്ട് ആ സംഭവം?"],
+ why:"നമ്മുടെ കലണ്ടർ തുടങ്ങുന്നത് അവിടുത്തെ ജനനത്തിലോ ആദ്യ വഹ്‌യിലോ അല്ല, വിശ്വാസം സൂക്ഷിക്കാൻ ഒരു സമൂഹം എല്ലാം ഉപേക്ഷിച്ച ദിവസത്തിലാണ്. ഇസ്‌ലാം എന്തിനെ തുടക്കമായി കണക്കാക്കുന്നു എന്ന് അത് പറയുന്നു.",
+ points:["ശത്രുക്കളുടേത് പോലും അമാനത്തുകൾ തിരികെ നൽകി","ഒരു ചിലന്തിയിലൂടെയും പ്രാവിലൂടെയും അല്ലാഹുവിന്റെ സഹായം വന്നു","മുസ്‌ലിം കലണ്ടറിന്റെ തുടക്കം ഹിജ്‌റയാണ്"],
+ rem:"തലയ്ക്ക് വിലയിട്ട ഒരു ഒളിവുകാരനായിരിക്കെയും ഒരു ദരിദ്ര സ്ത്രീയുടെ ആടിനെ തൊടുന്നതിന് മുമ്പ് അവിടുന്ന് അനുവാദം ചോദിച്ചു. മഹത്വം ആരെയും മര്യാദയിൽ നിന്ന് ഒഴിവാക്കുന്നില്ല."
+},
+{
+ t:"മദീന പണിയുന്നു", ar:"بِنَاءُ الْمَدِينَة",
+ facts:{when:"ക്രി. 622–624",where:"മദീന",age:"53–55",src:"ബുഖാരി · ഇബ്നു ഹിശാം"},
+ hook:"രണ്ട് കൂട്ടം അപരിചിതർ — ഒരു കൂട്ടം ദരിദ്രർ, മറ്റേത് സ്ഥിരതാമസക്കാർ. ആറ് മാസം കൊണ്ട് അവരെ ഒരു കുടുംബമാക്കുന്നത് എങ്ങനെ?",
+ plates:[["അവിടുന്ന് സ്വയം ഇഷ്ടിക ചുമന്നു","അവിടുന്ന് ആദ്യം പണിതത് പള്ളിയാണ് — തൂണുകൾക്ക് ഈന്തപ്പനത്തടി, മേൽക്കൂരയ്ക്ക് ഈന്തപ്പന ഓല, തറ മണൽ. എല്ലാവരോടുമൊപ്പം അവിടുന്നും ഇഷ്ടിക ചുമന്നു."],
+  ["ഒന്നിനൊന്ന്","ഓരോ മുഹാജിറിനെയും ഒരു അൻസ്വാരിയോട് ചേർത്തു. അൻസ്വാർ തങ്ങളുടെ വീടും ഭൂമിയും സമ്പത്തും പകുതി വീതം നൽകാൻ തയ്യാറായി."]],
+ scenes:[["ആദ്യം പള്ളി","ഒരു വീടിന് മുമ്പ്, ഒരു ചന്തയ്ക്ക് മുമ്പ്, മറ്റെന്തിനും മുമ്പ് — അവിടുന്ന് പള്ളി പണിതു. ലളിതം: ഈന്തപ്പന ഓലയുടെ മേൽക്കൂര താങ്ങുന്ന ഈന്തപ്പനത്തടികൾ, മണൽ തറ, ഒരു അലങ്കാരവുമില്ല. മറ്റുള്ളവരോടൊപ്പം അവിടുന്ന് സ്വയം ഇഷ്ടിക ചുമന്നു, അവർ അതിനെക്കുറിച്ച് കവിത ചൊല്ലിയപ്പോൾ അവിടുന്നും കൂടെ ചേർന്നു. വീടില്ലാത്ത ദരിദ്രർക്ക് വേണ്ടി ഒരു ഭാഗം മാറ്റിവെച്ചു — അഹ്‌ലുസ്സുഫ്ഫ."],
+  ["സാഹോദര്യം","മുഹാജിറുകൾ ഒന്നുമില്ലാതെയാണ് എത്തിയത് — വീടില്ല, ഭൂമിയില്ല, ജോലിയില്ല. അവിടുന്ന് ഓരോരുത്തരെയും ഓരോ അൻസ്വാരി സഹോദരനോട് ചേർത്തു. അൻസ്വാർ തങ്ങളുടെ സ്വത്ത് പകുതി വീതം വെക്കാൻ തയ്യാറായി. അബ്ദുർറഹ്‌മാൻ ബ്നു ഔഫ് (റ) ആ ദാനം നിരസിച്ച് ചോദിച്ചു: എനിക്ക് ചന്ത കാണിച്ചുതരൂ. ദിവസങ്ങൾക്കകം അദ്ദേഹം കച്ചവടം തുടങ്ങി. അഭിമാനവും ആ കരാറിന്റെ ഭാഗമായിരുന്നു."],
+  ["ഒരൊറ്റ സമൂഹം","പിന്നെ അവിടുന്ന് ഒരു രേഖ എഴുതി — മദീനയുടെ ആദ്യ ഭരണഘടന — മുസ്‌ലിംകളുടെയും ജൂതഗോത്രങ്ങളുടെയും മറ്റ് കുലങ്ങളുടെയും അവകാശങ്ങളും കടമകളും നിശ്ചയിച്ച്, പൊതുവായ പ്രതിരോധത്തോടെ അവരെ ഒരൊറ്റ സമൂഹമാക്കി. രണ്ട് വർഷം കൊണ്ട് കലഹിക്കുന്ന ഗോത്രങ്ങളുടെ ഒരു നഗരം ഒരൊറ്റ ശരീരമായി. അവിടുന്ന് പറഞ്ഞു: <i>വിശ്വാസികൾ ഒരു ശരീരം പോലെയാണ് — ഒരു അവയവം വേദനിച്ചാൽ ശരീരം മുഴുവൻ പനിച്ച് ഉറങ്ങാതിരിക്കും.</i>"],
+  ["അഹ്‌ലുസ്സുഫ്ഫ","പള്ളിയുടെ ഒരു ഭാഗം വീടില്ലാത്തവർക്കുള്ള ഒരു തിണ്ണയായിരുന്നു. അവർ അവിടെ ഉറങ്ങി, പഠിച്ചു, പലപ്പോഴും വിശന്നിരുന്നു. അവിടുത്തേക്ക് കിട്ടുന്നത് കൊണ്ട് അവിടുന്ന് അവർക്ക് ഭക്ഷണം നൽകി; കുറവായപ്പോൾ അവരോടൊപ്പം വിശന്നിരുന്നു. അബൂഹുറൈറ (റ) അവരിലൊരാളായിരുന്നു — ഇസ്‌ലാമിലെ ഏറ്റവും വലിയ ഹദീസ് നിവേദകനായി."],
+  ["എല്ലാവർക്കും വാതിൽ തുറന്നിരുന്നു","വാതിലില്ല, കാവൽക്കാരനില്ല, മുൻകൂർ അനുവാദമില്ല. ഒരു ഗ്രാമീണന് അവിടുത്തെ പുതപ്പ് കഴുത്തിൽ പാട് വീഴുന്നത്ര ശക്തിയായി വലിച്ച് സമ്പത്തിൽ ഒരു വിഹിതം ചോദിക്കാമായിരുന്നു — അവിടുന്ന് ചിരിച്ച് അയാൾക്ക് കൊടുക്കാൻ കൽപ്പിച്ചു. ഒരു കുട്ടിക്ക് തെരുവിൽ അവിടുത്തെ തടയാമായിരുന്നു. ഒരു അടിമസ്ത്രീക്ക് അവിടുത്തെ കൈപിടിച്ച് ആവശ്യം തീരുന്നതുവരെ എവിടേക്ക് വേണമെങ്കിലും കൊണ്ടുപോകാമായിരുന്നു."]],
+ him:{p:"അവിടുത്തേക്ക് ഒരു സിംഹാസനമോ കാവൽക്കാരനോ കൊട്ടാരമോ ഉണ്ടായിരുന്നില്ല. മദീനയിലേക്ക് വരുന്നവർക്ക് നിലത്തിരിക്കുന്നവരിൽ ആരാണ് അവിടുന്ന് എന്ന് ചോദിക്കേണ്ടിവന്നു.",
+  q:"അവിടുന്ന് പറഞ്ഞു: ഒരു ദാസൻ ഇരിക്കുന്നതുപോലെ ഞാൻ ഇരിക്കുന്നു, ഒരു ദാസൻ കഴിക്കുന്നതുപോലെ ഞാൻ കഴിക്കുന്നു — ഞാൻ ഒരു ദാസൻ മാത്രമാണ്."},
+ ayahEn:"അവൻ അവരുടെ ഹൃദയങ്ങളെ കൂട്ടിയിണക്കി.",
+ discuss:["അൻസ്വാർ തങ്ങളുടെ എല്ലാറ്റിന്റെയും പകുതി വാഗ്ദാനം ചെയ്തു. നിനക്ക് കഴിയുമോ?",
+  "അബ്ദുർറഹ്‌മാൻ (റ) പണമല്ല, ചന്തയാണ് ചോദിച്ചത്. അത് എന്തുകൊണ്ട് പ്രധാനമാണ്?",
+  "നിന്റെ ക്ലാസിലോ പള്ളിയിലോ ഒറ്റപ്പെട്ടുനിൽക്കുന്ന ഒരാളുടെ പേര് എഴുതൂ."],
+ why:"അവിടുന്ന് ആദ്യം ഒരു ഭരണകൂടം പണിതില്ല. ഒരു പള്ളിയും പിന്നെ ഒരു സാഹോദര്യവും പണിതു; ആ രണ്ടിൽ നിന്നാണ് ഭരണകൂടം വളർന്നത്. ആ ക്രമം യാദൃച്ഛികമായിരുന്നില്ല.",
+ points:["മറ്റെല്ലാറ്റിനും മുമ്പ് പള്ളി വന്നു","സാഹോദര്യം യാദൃച്ഛികതയ്ക്ക് വിട്ടില്ല, ഏൽപ്പിച്ചുകൊടുത്തു","അഭിമാനത്തോടെ നൽകുന്നത് നൽകുന്നത്ര തന്നെ പ്രധാനമാണ്"],
+ rem:"ജീവിച്ചിരിക്കുന്ന ഏറ്റവും പ്രധാനപ്പെട്ട മനുഷ്യന് ഒരു കാവൽക്കാരനുമുണ്ടായിരുന്നില്ല. നീ ആർക്കൊക്കെ സമയം കൊടുക്കുന്നു, ആർക്കൊക്കെ കൊടുക്കുന്നില്ല എന്ന് ഒന്ന് ആലോചിക്കൂ."
+},
+{
+ t:"ബദ്ർ", ar:"يَوْمُ الْفُرْقَان",
+ facts:{when:"ഹി. 2 · ക്രി. 624",where:"ബദ്ർ",age:"55",src:"ബുഖാരി · സൂറ ആലു ഇംറാൻ"},
+ hook:"ആയിരത്തിനെതിരെ മുന്നൂറ്. തലേ രാത്രി നീ അല്ലാഹുവോട് എന്ത് പറയും?",
+ plates:[["തലേ രാത്രി","പുതപ്പ് ചുമലിൽ നിന്ന് ഊർന്നുവീഴുന്നത്ര നേരം കൈകൾ ഉയർത്തി അവിടുന്ന് രാത്രി മുഴുവൻ നിസ്കാരത്തിൽ നിന്നു."],
+  ["ബദ്‌റിലെ കിണറുകൾ","അവിടുന്ന് ആദ്യം വെള്ളം കൈവശപ്പെടുത്തി. യുദ്ധം കഴിഞ്ഞപ്പോൾ മുസ്‌ലിംകൾ കഴിക്കുന്നതിനെക്കാൾ നന്നായി തടവുകാർക്ക് ഭക്ഷണം നൽകാൻ കൽപ്പിച്ചു."]],
+ scenes:[["എണ്ണത്തിൽ കുറവ്","ഒരു കച്ചവടസംഘത്തെ പ്രതീക്ഷിച്ച് പുറപ്പെട്ട മുസ്‌ലിംകൾ കണ്ടത് ഒരു സൈന്യത്തെയാണ് — നന്നായി ആയുധമണിഞ്ഞ ആയിരം പേർ, മുന്നൂറിലധികം വരുന്ന, രണ്ട് കുതിരകൾ മാത്രമുള്ള സംഘത്തിനെതിരെ. അവിടുന്ന് അനുചരന്മാരോട് ആലോചിച്ചു. മദീന സംരക്ഷിക്കാമെന്ന് മാത്രം വാഗ്ദാനം ചെയ്തിരുന്ന അൻസ്വാർ പറഞ്ഞു: മുന്നോട്ട് പോകൂ, മൂസായുടെ ജനത പറഞ്ഞത് ഞങ്ങൾ പറയില്ല. അങ്ങയുടെ മുന്നിലും പിന്നിലും ഞങ്ങൾ യുദ്ധം ചെയ്യും."],
+  ["രാത്രി മുഴുവൻ ദുആയിൽ","ആ രാത്രി അവിടുന്ന് കൈകൾ ഉയർത്തി, പുതപ്പ് ചുമലിൽ നിന്ന് വീഴുന്നതുവരെ നിന്ന് പ്രാർത്ഥിച്ചു: <i>അല്ലാഹുവേ, ഈ സംഘം നശിച്ചാൽ ഭൂമിയിൽ നീ ആരാധിക്കപ്പെടുകയില്ല.</i> അബൂബക്കർ (റ) വന്ന് പുതപ്പ് തിരികെ ഇട്ടുകൊടുത്ത് പറഞ്ഞു: മതി, അല്ലാഹുവിന്റെ ദൂതരേ — അല്ലാഹു അങ്ങയോട് വാഗ്ദാനം ചെയ്തത് പൂർത്തിയാക്കും."],
+  ["വേർതിരിവിന്റെ ദിവസം","യുദ്ധം ഒരു പ്രഭാതത്തിന്റെ ഭാഗം മാത്രം നീണ്ടു. ഖുറൈശിലെ എഴുപത് പേർ കൊല്ലപ്പെട്ടു, എഴുപത് പേർ തടവുകാരായി — അവരിൽ അവിടുത്തെ സ്വന്തം പിതൃവ്യനും അനുചരന്മാരുടെ ബന്ധുക്കളുമുണ്ടായിരുന്നു. തടവുകാരോട് നന്നായി പെരുമാറാൻ അവിടുന്ന് കൽപ്പിച്ചു — ചില മുസ്‌ലിംകൾ തടവുകാർക്ക് റൊട്ടി നൽകി സ്വയം ഈത്തപ്പഴം കഴിച്ചു. എഴുതാൻ അറിയാവുന്ന തടവുകാർ മദീനയിലെ പത്ത് കുട്ടികളെ എഴുതാൻ പഠിപ്പിച്ച് സ്വാതന്ത്ര്യം വാങ്ങി. ആ ദിവസത്തെ ഖുർആൻ <i>യൗമുൽ ഫുർഖാൻ</i> എന്ന് വിളിക്കുന്നു."],
+  ["അവിടുന്ന് അഭിപ്രായം ചോദിച്ചു","യുദ്ധത്തിന് മുമ്പ് ഹുബാബ് ബ്നുൽ മുൻദിർ (റ) ചോദിച്ചു: ഈ സ്ഥാനം അല്ലാഹു അറിയിച്ചതാണോ അതോ യുദ്ധതന്ത്രമാണോ? അവിടുന്ന് പറഞ്ഞു: തന്ത്രമാണ്. ഹുബാബ് (റ) പറഞ്ഞു: എങ്കിൽ ഇതല്ല സ്ഥാനം — കിണറുകളുടെ അടുത്തേക്ക് നീങ്ങണം. നിലം നന്നായി അറിയാവുന്ന ഒരാളുടെ അഭിപ്രായം കേട്ട് അവിടുന്ന് സൈന്യം മുഴുവൻ നീക്കി."],
+  ["രണ്ട് തടവുകാർ","തടവുകാരിൽ അവിടുത്തെ പിതൃവ്യൻ അബ്ബാസും (റ) മരുമകൻ അബുൽ ആസ്വും ഉണ്ടായിരുന്നു. അവിടുത്തെ മകൾ സൈനബ് (റ) ഭർത്താവിന്റെ മോചനദ്രവ്യമായി മക്കയിൽ നിന്ന് തന്റെ മാല അയച്ചു — ഖദീജ (റ) യുടേതായിരുന്ന മാല. അത് കണ്ടപ്പോൾ അവിടുന്ന് പ്രകടമായി വികാരാധീനനായി, തടവുകാരനെ വിട്ടയച്ച് മാല തിരികെ നൽകുമോ എന്ന് അനുചരന്മാരോട് ചോദിച്ചു. അവർ അങ്ങനെ ചെയ്തു."]],
+ him:{p:"വേണ്ടിവന്നപ്പോൾ അവിടുന്ന് യുദ്ധം ചെയ്തു, ഒരിക്കലും അത് ആസ്വദിച്ചില്ല. തടവുകാരെ അക്ഷരാഭ്യാസത്തിന് പകരം മോചിപ്പിച്ച ചരിത്രത്തിലെ ഒരേയൊരു സേനാനായകൻ അവിടുന്നാണ്.",
+  q:"അവിടുന്ന് പറഞ്ഞു: ശത്രുവിനെ കണ്ടുമുട്ടാൻ ആഗ്രഹിക്കരുത്, അല്ലാഹുവോട് സൗഖ്യം ചോദിക്കൂ."},
+ ayahEn:"നിങ്ങൾ ദുർബലരായിരിക്കെ ബദ്‌റിൽ അല്ലാഹു നിങ്ങളെ സഹായിച്ചിട്ടുണ്ട്.",
+ discuss:["അൻസ്വാറിനോട് കൽപ്പിക്കുന്നതിന് പകരം അവിടുന്ന് അഭിപ്രായം ചോദിച്ചു. അതെങ്ങനെയുള്ള നേതൃത്വമാണ്?",
+  "കുട്ടികളെ എഴുതാൻ പഠിപ്പിച്ച് തടവുകാർ സ്വാതന്ത്ര്യം വാങ്ങി. അത് ഇസ്‌ലാമിനെക്കുറിച്ച് എന്ത് പറയുന്നു?",
+  "ആ രാത്രി അവിടുന്ന് ഏറ്റവും ഭയപ്പെട്ടത് എന്തായിരിക്കുമെന്ന് എഴുതൂ."],
+ why:"എല്ലാം അല്ലാഹുവിനെ ആശ്രയിച്ചിരിക്കുന്നു എന്നപോലെ അവിടുന്ന് പ്രാർത്ഥിച്ചു, എല്ലാം തന്നെ ആശ്രയിച്ചിരിക്കുന്നു എന്നപോലെ ഒരുങ്ങുകയും ചെയ്തു. രണ്ടും, ഒന്നല്ല.",
+ points:["തീരുമാനിക്കുന്നതിന് മുമ്പ് അവിടുന്ന് ആലോചിച്ചു","പടയാളികളെക്കാൾ നന്നായി തടവുകാർക്ക് ഭക്ഷണം നൽകി","സ്വർണത്തെക്കാൾ വിലയുള്ള മോചനദ്രവ്യമായി എഴുത്തും വായനയും കണക്കാക്കി"],
+ rem:"വരാനിരിക്കുന്ന ഒരു പ്രയാസകരമായ കാര്യം എടുക്കൂ. ഈ ആഴ്ച ദിവസവും അതിന് വേണ്ടി ദുആ ചെയ്യൂ — ദിവസവും അതിന് വേണ്ടി ശരിക്ക് ഒരുങ്ങുകയും ചെയ്യൂ. രണ്ടും."
+}
+,{
+ t:"ഉഹുദും ഖന്ദഖും", ar:"أُحُدٌ وَالْخَنْدَق",
+ facts:{when:"ഹി. 3–5",where:"ഉഹുദ് · മദീന",age:"56–58",src:"ബുഖാരി · സൂറ ആലു ഇംറാൻ"},
+ hook:"നീ വ്യക്തമായ ഒരു നിർദേശം നൽകി. ആളുകൾ അത് അനുസരിച്ചില്ല, എഴുപത് ജീവൻ നഷ്ടപ്പെട്ടു. പിന്നീട് നീ അവരോട് എന്ത് പറയും?",
+ plates:[["അമ്പെയ്ത്തുകാരുടെ കുന്ന്","അമ്പത് അമ്പെയ്ത്തുകാരെ ഒരു കുന്നിൽ നിർത്തി, എന്ത് സംഭവിച്ചാലും മാറരുതെന്ന് പറഞ്ഞു. വിജയം കണ്ടപ്പോൾ അധികവും ഇറങ്ങിവന്നു. മിനിറ്റുകൾക്കകം യുദ്ധം തിരിഞ്ഞു."],
+  ["കിടങ്ങ്","മദീനയെ തീർക്കാൻ പതിനായിരം പേർ വന്നു. സൽമാൻ (റ) ഒരു കിടങ്ങ് നിർദേശിച്ചു. തണുപ്പിൽ, വിശന്ന്, ആഴ്ചകളോളം അവർ കുഴിച്ചു — നഗരത്തിൽ ആരും എത്തിയില്ല."]],
+ scenes:[["ഉഹുദ്","ഉഹുദിൽ അമ്പെയ്ത്തുകാർക്ക് അവിടുന്ന് ഒരൊറ്റ കൽപ്പന നൽകി: എന്ത് സംഭവിച്ചാലും ഈ കുന്നിൽ ഉറച്ചുനിൽക്കുക — പക്ഷികൾ ഞങ്ങളെ ചുമന്നുകൊണ്ടുപോകുന്നത് കണ്ടാലും. ശത്രു തകർന്നോടി മുസ്‌ലിംകൾ യുദ്ധമുതൽ പെറുക്കാൻ തുടങ്ങിയപ്പോൾ അമ്പെയ്ത്തുകാരിൽ അധികവും ഇറങ്ങിവന്നു. കുതിരപ്പട കുന്ന് ചുറ്റിവന്നു, വിജയം ദുരന്തമായി. എഴുപത് പേർ കൊല്ലപ്പെട്ടു, അവരിൽ അവിടുത്തെ പിതൃവ്യൻ ഹംസ (റ) യും. അവിടുത്തെ പല്ല് പൊട്ടി, മുഖം മുറിഞ്ഞു."],
+  ["പിന്നീട് അവിടുന്ന് പറഞ്ഞത്","അവിടുന്ന് അവരെ പരസ്യമായി കുറ്റപ്പെടുത്തിയില്ല. ഖുർആൻ ഇറങ്ങി: <i>നീ പരുഷനും കഠിനഹൃദയനുമായിരുന്നെങ്കിൽ അവർ നിന്റെ ചുറ്റിൽ നിന്ന് പിരിഞ്ഞുപോകുമായിരുന്നു… അതിനാൽ അവർക്ക് മാപ്പ് നൽകുക, അവർക്ക് വേണ്ടി പൊറുക്കലിനെ തേടുക, കാര്യങ്ങളിൽ അവരോട് കൂടിയാലോചിക്കുക.</i> അവരുടെ തെറ്റ് പിതൃവ്യന്റെ ജീവൻ കവർന്ന ശേഷം, അതേ ആളുകളോട് കൂടിയാലോചിക്കാൻ അല്ലാഹു അവിടുത്തോട് പറഞ്ഞു."],
+  ["കിടങ്ങ്","രണ്ട് വർഷം കഴിഞ്ഞ് മദീനയെ എന്നന്നേക്കുമായി തീർക്കാൻ പതിനായിരം പേർ വന്നു. അറേബ്യ കണ്ടിട്ടില്ലാത്ത ഒന്ന് സൽമാൻ ഫാരിസി (റ) നിർദേശിച്ചു — ഒരു കിടങ്ങ്. കൊടും തണുപ്പിൽ ആഴ്ചകളോളം അവർ കുഴിച്ചു, വിശപ്പിനെതിരെ വയറിൽ കല്ല് കെട്ടി, പാടിക്കൊണ്ട് ജോലി ചെയ്തു; അവിടുന്നും അവരോടൊപ്പം കുഴിച്ചു. സഖ്യസേന ഒരു മാസം കാത്തുകിടന്നു, കടക്കാനായില്ല, ഒരു കാറ്റ് അവരുടെ കൂടാരങ്ങൾ ചിതറിച്ചു. അവർ പിന്നീട് വന്നില്ല."],
+  ["ഹംസയുടെ (റ) മുന്നിൽ","പിതൃവ്യൻ ഹംസയുടെ (റ) ശരീരം വികൃതമാക്കപ്പെട്ട നിലയിൽ കണ്ടപ്പോൾ അനുചരന്മാർ അതുവരെ കണ്ടിട്ടില്ലാത്ത ദുഃഖത്തിലായിരുന്നു അവിടുന്ന്. അവിടുന്ന് പറഞ്ഞു: ഇതിനെക്കാൾ കഠിനമായ ഒന്നും എനിക്ക് ഒരിക്കലും വരില്ല. പിന്നെ ഖുർആൻ ഇറങ്ങി: <i>നിങ്ങൾ ശിക്ഷിക്കുന്നെങ്കിൽ നിങ്ങൾ ശിക്ഷിക്കപ്പെട്ടതുപോലെ ശിക്ഷിക്കുക — പക്ഷേ ക്ഷമിക്കുന്നതാണ് ക്ഷമാശീലർക്ക് ഉത്തമം.</i> അവിടുന്ന് ശരീരം വികൃതമാക്കുന്നത് വിലക്കി, ഒരിക്കലും അതേ നാണയത്തിൽ മറുപടി നൽകില്ലെന്ന് ശപഥം ചെയ്തു."],
+  ["അവരോടൊപ്പം കുഴിച്ചു","ഖന്ദഖിൽ അവിടുന്ന് മേൽനോട്ടം വഹിക്കുകയായിരുന്നില്ല. വയറ് മുഴുവൻ പൊടിയാകുന്നതുവരെ അവിടുന്ന് മണ്ണ് ചുമന്നു; ഒരു പാറ പൊട്ടാതെ വന്നപ്പോൾ അവർ അവിടുത്തെ വിളിച്ചു, അവിടുന്ന് മൂന്ന് തവണ അടിച്ചു — ഓരോ അടിയിലും വരാനിരിക്കുന്ന വിജയങ്ങളെക്കുറിച്ച് പറഞ്ഞു: ശാം, പേർഷ്യ, യമൻ — അവർ വിശന്ന്, വളയപ്പെട്ട്, തണുപ്പിൽ ഒരു കിടങ്ങ് കുഴിക്കുമ്പോൾ."]],
+ him:{p:"അവിടുത്തേക്ക് മുറിവേറ്റു, പിതൃവ്യനെ നഷ്ടപ്പെട്ടു, അവിടുത്തെ നിർദേശം അവഗണിക്കപ്പെട്ടു — എന്നിട്ടും അവർക്ക് മാപ്പ് നൽകാനും അവരോട് കൂടിയാലോചിക്കാനും അവിടുത്തോട് കൽപ്പിക്കപ്പെട്ടു.",
+  q:"അവിടുന്ന് പറഞ്ഞു: ശക്തൻ ആളുകളെ മല്ലിട്ട് തോൽപ്പിക്കുന്നവനല്ല, ദേഷ്യം വരുമ്പോൾ സ്വയം നിയന്ത്രിക്കുന്നവനാണ്."},
+ ayahEn:"അതിനാൽ അവർക്ക് മാപ്പ് നൽകുക, അവർക്ക് വേണ്ടി പൊറുക്കലിനെ തേടുക, കാര്യങ്ങളിൽ അവരോട് കൂടിയാലോചിക്കുക.",
+ discuss:["അനുസരിക്കാതിരുന്ന അതേ ആളുകളോട് കൂടിയാലോചിക്കാൻ അല്ലാഹു പറഞ്ഞു. എന്തുകൊണ്ട്?",
+  "സൽമാൻ (റ) പേർഷ്യക്കാരനായിരുന്നു, അദ്ദേഹത്തിന്റെ ആശയം നഗരത്തെ രക്ഷിച്ചു. കേൾക്കുന്നതിനെക്കുറിച്ച് അത് എന്ത് പറയുന്നു?",
+  "ഒരു തെറ്റിന്റെ പേരിൽ നീ കുറ്റപ്പെടുത്തപ്പെട്ട ഒരു സന്ദർഭം എഴുതൂ. അത് ഗുണം ചെയ്തോ?"],
+ why:"അവിടുത്തേക്ക് ഒരു യുദ്ധം നഷ്ടപ്പെട്ടു, പക്ഷേ ജനത നഷ്ടപ്പെട്ടില്ല. കാര്യങ്ങൾ നന്നായി പോകുമ്പോൾ ആർക്കും നയിക്കാം.",
+ points:["ആവേശത്തെക്കാൾ പ്രധാനം അച്ചടക്കമാണ്","നിരാശപ്പെടുത്തിയവരോട് മാപ്പ് നൽകാനും കൂടിയാലോചിക്കാനും കൽപ്പിക്കപ്പെട്ടു","നല്ല ആശയങ്ങൾ എവിടെ നിന്ന് വന്നാലും സ്വീകരിക്കൂ"],
+ rem:"കിടങ്ങിൽ നിന്ന് കയറിയ ശേഷമല്ല, കിടങ്ങിൽ ആയിരിക്കുമ്പോൾ തന്നെ അവിടുന്ന് അവർക്ക് പ്രതീക്ഷ നൽകി. ആശ്വാസവും നേതൃത്വവും തമ്മിലുള്ള വ്യത്യാസം അതാണ്."
+},
+{
+ t:"സന്ധിയും വിജയവും", ar:"الْحُدَيْبِيَةُ وَالْفَتْح",
+ facts:{when:"ഹി. 6–8 · ക്രി. 628–630",where:"ഹുദൈബിയ · മക്ക",age:"59–61",src:"ബുഖാരി · സൂറത്തുൽ ഫത്ഹ്"},
+ hook:"തോൽവി പോലെ തോന്നിക്കുന്ന ഒരു കരാർ നീ ഒപ്പിടുന്നു, ഉറ്റ സുഹൃത്തുക്കൾ നിന്നോട് കോപിക്കുന്നു. നീ വിശദീകരിക്കുമോ അതോ കാത്തിരിക്കുമോ?",
+ plates:[["ആ മരം","ഹുദൈബിയയിൽ ഒരു മരത്തിന് താഴെ ആയിരത്തി നാനൂറ് പേർ അവിടുത്തേക്ക് ബൈഅത്ത് ചെയ്തു. അല്ലാഹു തൃപ്തിപ്പെട്ട ബൈഅത്ത് എന്ന് ഖുർആൻ അതിനെ വിളിക്കുന്നു."],
+  ["പതിനായിരം പേർ, പ്രതികാരമില്ലാതെ","താടി ഏതാണ്ട് സഡിലിൽ തൊടുന്നത്ര തല കുനിച്ച് ഒട്ടകപ്പുറത്ത് അവിടുന്ന് മക്കയിൽ പ്രവേശിച്ചു, നഗരത്തിന് മുഴുവൻ മാപ്പ് നൽകി."]],
+ scenes:[["തോൽവി പോലെ തോന്നിയ ഒരു കരാർ","ഉംറയ്ക്ക് പുറപ്പെട്ട അവിടുത്തെ ഹുദൈബിയയിൽ തടഞ്ഞു. ഖുറൈശ് അടിച്ചേൽപ്പിച്ച വ്യവസ്ഥകൾ അപമാനകരമായി തോന്നി: ഈ വർഷം മടങ്ങുക, അടുത്ത വർഷം വരിക; മക്കയിൽ നിന്ന് നിങ്ങളിലേക്ക് വരുന്നവരെ തിരിച്ചയക്കണം, നിങ്ങളിൽ നിന്ന് മക്കയിലേക്ക് പോകുന്നവർ അവിടെ നിൽക്കും. <i>അല്ലാഹുവിന്റെ ദൂതൻ</i> എന്ന വാക്കുകൾ പോലും രേഖയിൽ നിന്ന് മായ്ക്കേണ്ടിവന്നു. ഉമർ (റ) വിഷമത്തോടെ വന്നു: നമ്മൾ സത്യത്തിലല്ലേ? അവിടുന്ന് ഇത്രമാത്രം പറഞ്ഞു: ഞാൻ അല്ലാഹുവിന്റെ ദൂതനാണ്, അവൻ എന്നെ ഉപേക്ഷിക്കില്ല."],
+  ["വിജയം","രണ്ട് വർഷത്തിനുള്ളിൽ മുസ്‌ലിംകളുടെ എണ്ണം മൂന്നിരട്ടിയിലേറെയായി — സമാധാനം ആളുകൾക്ക് യുദ്ധം തടസ്സമാകാതെ ഖുർആൻ കേൾക്കാൻ അവസരം നൽകിയതുകൊണ്ട്. ആ സന്ധിയെ ഖുർആൻ <i>വ്യക്തമായ വിജയം</i> എന്ന് വിളിച്ചു. ഖുറൈശ് അത് ലംഘിച്ചു, അവിടുന്ന് പതിനായിരം പേരുമായി മക്കയിലേക്ക് നീങ്ങി."],
+  ["പോകൂ — നിങ്ങൾ സ്വതന്ത്രരാണ്","അവിടുത്തെ കുടുംബത്തെ പട്ടിണിക്കിട്ട, അനുചരന്മാരെ കൊന്ന, അവിടുത്തെ പുറത്താക്കിയ നഗരത്തിൽ അവിടുന്ന് പ്രവേശിച്ചു — ഒട്ടകപ്പുറത്ത് താടി ഏതാണ്ട് സഡിലിൽ തൊടുന്നത്ര തല കുനിച്ചുകൊണ്ട്. അവർ തങ്ങളുടെ വിധി കേൾക്കാൻ കാത്തുനിന്നു. അവിടുന്ന് പറഞ്ഞു: <i>പോകൂ — നിങ്ങൾ സ്വതന്ത്രരാണ്.</i> പിന്നെ കഅ്ബയിലെ വിഗ്രഹങ്ങൾ നീക്കി, ഒരിക്കൽ മണലിൽ പീഡിപ്പിക്കപ്പെട്ട ബിലാലിനെ (റ) അതിന്റെ മുകളിൽ കയറ്റി ബാങ്ക് വിളിപ്പിച്ചു."],
+  ["അബൂജൻദൽ","ഹുദൈബിയയിൽ മഷി ഉണങ്ങുന്നതിന് മുമ്പ് അബൂജൻദൽ എന്ന ചെറുപ്പക്കാരൻ ചങ്ങലയോടെ മക്കയിൽ നിന്ന് ഓടിവന്ന് അവരുടെ മുന്നിൽ വീണു. കരാർ പ്രകാരം അദ്ദേഹത്തെ തിരിച്ചയക്കണം. അദ്ദേഹം മുസ്‌ലിംകളോട് വിളിച്ചുപറഞ്ഞു — പീഡിപ്പിക്കപ്പെടാൻ നിങ്ങൾ എന്നെ തിരിച്ചയക്കുമോ? അവരുടെ ഹൃദയം തകർന്നു. അവിടുന്ന് അദ്ദേഹത്തോട് പറഞ്ഞു: <i>ക്ഷമിക്കൂ, അബൂജൻദൽ. അല്ലാഹു നിനക്ക് ഒരു വഴി ഉണ്ടാക്കിത്തരും.</i> അവിടുന്ന് കരാർ പാലിച്ചു."],
+  ["കഅ്ബയുടെ താക്കോൽ","വിജയദിനത്തിൽ ഒരിക്കൽ അവിടുത്തെ പ്രവേശനം തടയുകയും അപമാനിക്കുകയും ചെയ്ത ഉസ്മാൻ ബ്നു ത്വൽഹയിൽ നിന്ന് അവിടുന്ന് കഅ്ബയുടെ താക്കോൽ വാങ്ങി. താക്കോൽ കുടുംബത്തിൽ തന്നെ നിൽക്കണമെന്ന് പിതൃവ്യൻ ആവശ്യപ്പെട്ടു. ഖുർആൻ ഇറങ്ങി: <i>അമാനത്തുകൾ അവയുടെ അവകാശികൾക്ക് തിരിച്ചേൽപ്പിക്കാൻ അല്ലാഹു നിങ്ങളോട് കൽപ്പിക്കുന്നു.</i> അവിടുന്ന് അതേ മനുഷ്യന് താക്കോൽ തിരികെ നൽകി പറഞ്ഞു: എടുത്തുകൊള്ളൂ, എന്നന്നേക്കും."]],
+ him:{p:"തന്നെ ഏറ്റവും വേദനിപ്പിച്ചവരുടെ മേൽ പൂർണ അധികാരം കിട്ടിയപ്പോൾ, എല്ലാവരുടെയും മുന്നിൽ വെച്ച്, അവിടുന്ന് അവരെ വിട്ടയച്ചു.",
+  q:"അവിടുന്ന് പറഞ്ഞു: വിനയം കാണിക്കാൻ അല്ലാഹു എനിക്ക് വഹ്‌യ് നൽകി — ആരും മറ്റൊരാളുടെ മേൽ അഹങ്കരിക്കാതിരിക്കാനും ആരും മറ്റൊരാളെ അക്രമിക്കാതിരിക്കാനും."},
+ ayahEn:"തീർച്ചയായും നാം നിനക്ക് വ്യക്തമായ ഒരു വിജയം നൽകിയിരിക്കുന്നു.",
+ discuss:["ആ സന്ധി തോൽവി പോലെ തോന്നി, പക്ഷേ അതിനെ വിജയം എന്ന് വിളിച്ചു. അനുചരന്മാർ അപ്പോൾ കാണാതിരുന്നത് എന്താണ്?",
+  "അവിടുന്ന് തല ഉയർത്തിയല്ല, കുനിച്ചാണ് മക്കയിൽ പ്രവേശിച്ചത്. എന്തുകൊണ്ട്?",
+  "അന്ന് മക്കക്കാരുടെ മുന്നിൽ നിന്നിരുന്നെങ്കിൽ നീ എന്ത് പറയുമായിരുന്നു?"],
+ why:"ഏത് യുദ്ധത്തെക്കാളും വേഗത്തിൽ സമാധാനം ഇസ്‌ലാമിനെ പരത്തി. ഒടുവിൽ പ്രതികാരം ചെയ്യാമായിരുന്ന ദിവസമാണ് നാം അവിടുത്തെ കാരുണ്യത്തിന്റെ പേരിൽ ഓർക്കുന്നത്.",
+ points:["ഹ്രസ്വകാല നഷ്ടം ദീർഘകാല വിജയമാകാം","സമാധാനം ആളുകൾക്ക് സന്ദേശം കേൾക്കാൻ അവസരം നൽകി","അധികാരത്തിന് മാപ്പ് കൊണ്ട് മറുപടി നൽകി"],
+ rem:"ഒരു കരാർ പാലിക്കാൻ അവിടുന്ന് ഒരു മനുഷ്യന്റെ വേദന സഹിച്ചു, തന്നെ അപമാനിച്ചവന് താക്കോൽ തിരികെ നൽകി. തത്ത്വങ്ങൾ യഥാർത്ഥമാകുന്നത് അവ വിലയേറിയതാകുമ്പോൾ മാത്രമാണ്."
+},
+{
+ t:"വിടവാങ്ങൽ", ar:"حَجَّةُ الْوَدَاع",
+ facts:{when:"ഹി. 10–11 · ക്രി. 632",where:"അറഫയും മദീനയും",age:"63",src:"ബുഖാരി · മുസ്‌ലിം"},
+ hook:"നിനക്ക് ഒരു പ്രസംഗം മാത്രം ബാക്കി, ഒരു ലക്ഷം പേർ കേൾക്കുന്നു. അവർ തീർച്ചയായും കേൾക്കണമെന്ന് നീ ആഗ്രഹിക്കുന്നത് എന്താണ്?",
+ plates:[["അറഫയിൽ","താഴ്‌വരയിൽ ഒരു ലക്ഷം പേർ നിന്നു. രക്തം, സ്വത്ത്, സ്ത്രീകൾ, വർഗം — ഇവയെക്കുറിച്ച് അവിടുന്ന് സംസാരിച്ചു, തനിക്ക് ശേഷം അവിശ്വാസത്തിലേക്ക് മടങ്ങരുതെന്ന് പറഞ്ഞു."],
+  ["അവർ അവിടുത്തെ അവസാനമായി കണ്ടത്","നിസ്കാരത്തിന് നേതൃത്വം നൽകാൻ ശേഷിയില്ലാതെ, സുബ്ഹിക്ക് അവിടുന്ന് മുറിയുടെ മറ തെല്ലുയർത്തി അബൂബക്കറിന്റെ (റ) പിന്നിലെ സ്വഫ്ഫുകൾ കണ്ടു. അവിടുന്ന് പുഞ്ചിരിച്ചു. അതായിരുന്നു അവസാനം."]],
+ scenes:[["അറഫയിലെ പ്രസംഗം","തന്റെ ഒരേയൊരു ഹജ്ജിൽ, അറഫാ താഴ്‌വരയിൽ, ഒരു ലക്ഷം പേരോട് അവിടുന്ന് സംസാരിച്ചു. <i>നിങ്ങളുടെ രക്തവും സ്വത്തും പരസ്പരം പവിത്രമാണ്. അറബിക്ക് അനറബിയെക്കാളോ വെളുത്തവന് കറുത്തവനെക്കാളോ ശ്രേഷ്ഠതയില്ല, തഖ്‌വ കൊണ്ടല്ലാതെ. സ്ത്രീകളുടെ കാര്യത്തിൽ അല്ലാഹുവിനെ സൂക്ഷിക്കുക. നിങ്ങളെ വഴിതെറ്റിക്കാത്ത ഒന്ന് ഞാൻ നിങ്ങൾക്കിടയിൽ വിട്ടേച്ചുപോകുന്നു: അല്ലാഹുവിന്റെ ഗ്രന്ഥം.</i> പിന്നെ ചോദിച്ചു: ഞാൻ സന്ദേശം എത്തിച്ചുവോ? അവർ പറഞ്ഞു: അതെ. അവിടുന്ന് വിരൽ ആകാശത്തേക്ക് ഉയർത്തി: <i>അല്ലാഹുവേ, നീ സാക്ഷി.</i>"],
+  ["ക്ഷീണിക്കുന്നു","മദീനയിൽ തിരിച്ചെത്തിയപ്പോൾ തലവേദന തുടങ്ങി. കഴിയുന്നിടത്തോളം അവിടുന്ന് നിസ്കാരത്തിന് നേതൃത്വം നൽകി, പിന്നെ അബൂബക്കറിനോട് (റ) നേതൃത്വം നൽകാൻ പറഞ്ഞു. അവസാന രോഗകാലത്ത് അവിടുന്ന് തന്റെ ഭൃത്യരെ മോചിപ്പിച്ചു, വീട്ടിലെ അവസാന നാണയങ്ങളും ദാനം ചെയ്തു, താൻ ആർക്കെങ്കിലും കടപ്പെട്ടിട്ടുണ്ടോ എന്ന് ചോദിച്ചു — അന്ത്യദിനത്തിലല്ല, ഇപ്പോൾ തന്നെ വാങ്ങിക്കൊള്ളാൻ പറഞ്ഞു."],
+  ["നിസ്കാരം, നിസ്കാരം","അവസാന പ്രഭാതത്തിൽ സുബ്ഹിക്ക് അവിടുന്ന് ആഇശയുടെ (റ) മുറിയുടെ മറ ഉയർത്തി, അബൂബക്കറിന്റെ (റ) പിന്നിൽ അനുചരന്മാരുടെ സ്വഫ്ഫുകൾ നിസ്കരിക്കുന്നത് കണ്ടു. അവിടുന്ന് പുഞ്ചിരിച്ചു — ആ കാഴ്ചയിൽ അവർ സന്തോഷം കൊണ്ട് ഏതാണ്ട് പതറിപ്പോയെന്ന് അനസ് (റ) പറഞ്ഞു. അവിടുന്ന് സുഖം പ്രാപിക്കുകയാണെന്ന് അവർ കരുതി. അവിടുന്ന് മറ താഴ്ത്തി. അവസാന വാക്കുകൾ നിസ്കാരത്തെക്കുറിച്ചും തങ്ങളുടെ കീഴിലുള്ളവരെക്കുറിച്ചുമായിരുന്നു, പിന്നെ: <i>അത്യുന്നത സഖാക്കളോടൊപ്പം.</i> റബീഉൽ അവ്വൽ പന്ത്രണ്ടിന്, ആഇശയുടെ (റ) മടിയിൽ തലവെച്ച് അവിടുന്ന് വിടപറഞ്ഞു."],
+  ["ഇത് ഏത് ദിവസമാണെന്ന് അറിയാമോ","അറഫയിൽ അവിടുന്ന് അവരോട് ചോദിച്ചു: ഇത് ഏത് മാസമാണ്? ഏത് നഗരമാണ്? ഏത് ദിവസമാണ്? ഓരോ തവണയും അവർ ഉത്തരം പറഞ്ഞു. പിന്നെ അവിടുന്ന് പറഞ്ഞു: <i>ഈ ദിവസം, ഈ നഗരത്തിൽ, ഈ മാസത്തിൽ എത്ര പവിത്രമാണോ അത്രയും പവിത്രമാണ് നിങ്ങളുടെ രക്തവും സ്വത്തും അഭിമാനവും പരസ്പരം.</i> അവർക്ക് ഉത്തരം അറിയാവുന്ന മൂന്ന് ചോദ്യങ്ങളിൽ നിന്ന് അവരുടെ ചരിത്രത്തിലെ ഏറ്റവും വലിയ മനുഷ്യാവകാശ പ്രഖ്യാപനം അവിടുന്ന് പണിതു."],
+  ["ഇപ്പോൾ എന്നിൽ നിന്ന് വാങ്ങിക്കൊള്ളൂ","അവസാന രോഗകാലത്ത് തല കെട്ടി അവിടുന്ന് പുറത്തുവന്ന് മിമ്പറിൽ ഇരുന്ന് പറഞ്ഞു: ഞാൻ ആരെയെങ്കിലും അടിച്ചിട്ടുണ്ടെങ്കിൽ ഇതാ എന്റെ മുതുക് — അടിച്ചുകൊള്ളൂ. ആരുടെയെങ്കിലും സ്വത്ത് എടുത്തിട്ടുണ്ടെങ്കിൽ ഇതാ എന്റെ സമ്പത്ത്. ആരെയെങ്കിലും അപമാനിച്ചിട്ടുണ്ടെങ്കിൽ ഇപ്പോൾ എന്നിൽ നിന്ന് അത് തിരിച്ചെടുക്കട്ടെ. ഒരാൾ എഴുന്നേറ്റ് മൂന്ന് ദിർഹം അവകാശപ്പെട്ടു. അത് അപ്പോൾത്തന്നെ കൊടുത്തു."]],
+ him:{p:"അവിടുത്തെ അവസാന ചിന്തകൾ നിസ്കാരവും മറ്റുള്ളവർക്ക് വേണ്ടി ജോലി ചെയ്യുന്നവരും ഒരു നാണയമെങ്കിലും ആർക്കെങ്കിലും കടപ്പെട്ടിട്ടുണ്ടോ എന്നതുമായിരുന്നു.",
+  q:"അവിടുത്തെ അവസാന നിർദേശം: നിസ്കാരം, നിസ്കാരം — പിന്നെ നിങ്ങളുടെ വലതുകൈകൾ ഉടമപ്പെടുത്തിയവർ."},
+ ayahEn:"ഇന്ന് ഞാൻ നിങ്ങൾക്ക് നിങ്ങളുടെ ദീൻ പൂർത്തിയാക്കിത്തന്നിരിക്കുന്നു.",
+ discuss:["പറയാവുന്നതെല്ലാം ഉണ്ടായിരുന്നിട്ടും അവസാനം അവിടുന്ന് <i>നിസ്കാരം</i> എന്ന് പറഞ്ഞു. എന്തുകൊണ്ട്?",
+  "മരിക്കുന്നതിന് മുമ്പ് തന്നിൽ നിന്ന് കടം വാങ്ങാൻ അവിടുന്ന് ആവശ്യപ്പെട്ടു. അത് എന്ത് കാണിക്കുന്നു?",
+  "വിടവാങ്ങൽ പ്രസംഗത്തിൽ നിന്ന് നിന്നെ ഏറ്റവും സ്പർശിച്ച വരി എഴുതൂ."],
+ why:"ആർക്കും ഒന്നും കടപ്പെടാതിരിക്കാനും നിസ്കാരം തുടരാനും വേണ്ടിയാണ് അവിടുന്ന് അവസാന ശക്തി ചെലവഴിച്ചത്. അതാണ് അവിടുന്ന് വിട്ടേച്ചുപോകാൻ ആഗ്രഹിച്ചത്.",
+ points:["തഖ്‌വ കൊണ്ടല്ലാതെ ഒരു വർഗവും മറ്റൊന്നിന് മുകളിലല്ല","മരിക്കുന്നതിന് മുമ്പ് അവിടുന്ന് എല്ലാ കടവും തീർത്തു","അവിടുത്തെ അവസാന നിർദേശം നിസ്കാരമായിരുന്നു"],
+ rem:"അല്ലാഹുവിനെ കാണുന്നതിന് മുമ്പ് അവിടുന്ന് ആളുകളുമായുള്ള കണക്ക് തീർത്തു. അതുതന്നെ ചെയ്യാൻ നിനക്ക് ഒരു മുന്നറിയിപ്പും കിട്ടില്ല."
+},
+{
+ t:"അവിടുത്തെ കാണുന്നതുവരെ", ar:"حَتَّىٰ نَلْقَاه",
+ facts:{when:"അന്ന് മുതൽ ഹൗള് വരെ",where:"മദീന → അന്ത്യദിനം",age:"—",src:"ബുഖാരി · മുസ്‌ലിം · തിർമിദി"},
+ hook:"അവിടുന്ന് ചരിത്രത്തിലെ ഒരു മനുഷ്യൻ മാത്രമല്ല. അവിടുന്ന് നിന്നെ കാത്തിരിക്കുന്നു. അവിടുന്ന് നിന്നെ തിരിച്ചറിയണമെന്ന് നീ ആഗ്രഹിക്കുന്നുണ്ടോ?",
+ plates:[["ഇന്നും അവിടുത്തേക്ക് സലാം ചൊല്ലപ്പെടുന്നു","അവിടുത്തേക്ക് ചൊല്ലുന്ന ഓരോ സ്വലാത്തും മലക്കുകൾ അവിടുത്തേക്ക് എത്തിക്കുന്നു. എല്ലാ ഭാഷയിലും, എല്ലാ നിമിഷവും, അപരിചിതർ അവിടുത്തെ പേരെടുത്ത് അഭിവാദ്യം ചെയ്യുന്നു."],
+  ["ഹൗള്","പാലിനെക്കാൾ വെളുത്ത, തേനിനെക്കാൾ മധുരമുള്ള, നക്ഷത്രങ്ങളോളം പാത്രങ്ങളുള്ള ഒരു ഹൗളിനെക്കുറിച്ച് അവിടുന്ന് പറഞ്ഞു — അവിടെ തന്റെ ഉമ്മത്തിനെ കാത്തുനിൽക്കുമെന്നും."]],
+ scenes:[["അവിടുന്ന് നമ്മെ അറിയുന്നു","ഒരു ദിവസം അനുചരന്മാരോടൊപ്പം ഇരിക്കുമ്പോൾ അവിടുന്ന് പറഞ്ഞു: <i>എന്റെ സഹോദരന്മാരെ കാണാൻ ഞാൻ ആഗ്രഹിക്കുന്നു.</i> അവർ ചോദിച്ചു: ഞങ്ങൾ അങ്ങയുടെ സഹോദരന്മാരല്ലേ? അവിടുന്ന് പറഞ്ഞു: നിങ്ങൾ എന്റെ അനുചരന്മാരാണ് — എന്റെ സഹോദരന്മാർ എനിക്ക് ശേഷം വരുന്നവരും, എന്നെ കാണാതെ എന്നിൽ വിശ്വസിക്കുന്നവരുമാണ്. അവരെ എങ്ങനെ തിരിച്ചറിയുമെന്ന് അവർ ചോദിച്ചു. വുദൂ കാരണം അവരുടെ അവയവങ്ങളിലുള്ള പ്രകാശം കൊണ്ട് താൻ അവരെ അറിയുമെന്ന് അവിടുന്ന് പറഞ്ഞു — ഒരാൾ മറ്റുള്ളവയ്ക്കിടയിൽ സ്വന്തം കുതിരകളെ തിരിച്ചറിയുന്നതുപോലെ."],
+  ["ഓരോ സ്വലാത്തും അവിടുത്തേക്ക് എത്തുന്നു","തന്റെ ഉമ്മത്തിന്റെ സ്വലാത്ത് തനിക്ക് എത്തിക്കാൻ ഭൂമിയിൽ സഞ്ചരിക്കുന്ന മലക്കുകൾ അല്ലാഹുവിനുണ്ടെന്ന് അവിടുന്ന് പറഞ്ഞു. അവിടുന്ന് പറഞ്ഞു: <i>എന്റെ മേൽ ഒരു തവണ സ്വലാത്ത് ചൊല്ലുന്നവന് അല്ലാഹു പത്ത് തവണ അനുഗ്രഹം ചൊരിയും.</i> അവിടുന്ന് മരിച്ചതുമുതൽ ഓരോ മണിക്കൂറിലും, ഭൂമിയിലെ എല്ലാ സമയമേഖലയിലും, ഒരു നിമിഷം പോലും മുറിയാതെ അവിടുത്തെ പേരെടുത്ത് അഭിവാദ്യം ചെയ്യപ്പെടുന്നു."],
+  ["ഹൗളിനരികിൽ","അന്ത്യദിനത്തിൽ താൻ നിൽക്കുന്ന ഒരു ഹൗളിനെക്കുറിച്ച് അവിടുന്ന് വിവരിച്ചു — പാലിനെക്കാൾ വെളുത്തത്, തേനിനെക്കാൾ മധുരമുള്ളത്, നക്ഷത്രങ്ങളോളം പാത്രങ്ങളുള്ളത് — എന്നിട്ട് പറഞ്ഞു: <i>ഞാൻ ഹൗളിൽ നിങ്ങളുടെ മുന്നോടിയായിരിക്കും.</i> താൻ തിരിച്ചറിയുന്ന ചിലർ ആട്ടിയകറ്റപ്പെടുന്നത് അവിടുന്ന് കാണും, അപ്പോൾ പറയും: എന്റെ അനുചരന്മാർ, എന്റെ അനുചരന്മാർ. അതുകൊണ്ട് ചോദ്യം അവിടുന്ന് അവിടെ ഉണ്ടാകുമോ എന്നല്ല. അവിടുന്ന് നിന്നെ അറിയുമോ എന്നാണ്."],
+  ["അവിടുന്ന് നമുക്ക് വേണ്ടി കരഞ്ഞു","ഒരു രാത്രി അവിടുന്ന് ഒരൊറ്റ ആയത്ത് ആവർത്തിച്ചുകൊണ്ട് പ്രഭാതം വരെ നിസ്കാരത്തിൽ നിന്നു — ഈസായുടെ (അ) വാക്കുകൾ: <i>നീ അവരെ ശിക്ഷിക്കുന്നെങ്കിൽ അവർ നിന്റെ ദാസന്മാരാണ്; നീ പൊറുക്കുന്നെങ്കിൽ നീ പ്രതാപിയും യുക്തിമാനുമാണ്.</i> പിന്നെ കൈകൾ ഉയർത്തി പറഞ്ഞു: <i>അല്ലാഹുവേ, എന്റെ ഉമ്മത്ത്, എന്റെ ഉമ്മത്ത്</i> — എന്നിട്ട് കരഞ്ഞു. അല്ലാഹു ജിബ്‌രീലിനെ അയച്ച് അറിയിച്ചു: <i>നിന്റെ ഉമ്മത്തിന്റെ കാര്യത്തിൽ നാം നിന്നെ തൃപ്തിപ്പെടുത്തും, നിന്നെ ദുഃഖിപ്പിക്കുകയില്ല.</i>"],
+  ["അവിടുന്ന് കരുതിവെച്ച ദുആ","ഓരോ പ്രവാചകനും ഉത്തരം ലഭിക്കുമെന്ന് ഉറപ്പുള്ള ഒരു ദുആ നൽകപ്പെട്ടു. അവരിൽ ഓരോരുത്തരും അത് ഈ ലോകത്ത് ഉപയോഗിച്ചു. അവിടുന്ന് തന്റേത് കരുതിവെച്ചു. അവിടുന്ന് പറഞ്ഞു: <i>അന്ത്യദിനത്തിൽ എന്റെ ഉമ്മത്തിനുള്ള ശഫാഅത്തായി ഞാൻ എന്റെ പ്രാർത്ഥന കരുതിവെച്ചിരിക്കുന്നു</i> — അല്ലാഹുവിൽ മാത്രം വിശ്വസിച്ച് മരിച്ച എല്ലാവർക്കും അത് എത്തും. താൻ ഒരിക്കലും കണ്ടിട്ടില്ലാത്ത ആളുകൾക്ക് വേണ്ടി അവിടുന്ന് അത് ഇപ്പോൾ കൈയിൽ വെച്ചിരിക്കുന്നു."]],
+ him:{p:"ഒരിക്കലും കണ്ടുമുട്ടാതെ തന്നെ സ്നേഹിക്കാനും അനുസരിക്കാനും ഉത്തരം കിട്ടാനും കഴിയുന്ന ചരിത്രത്തിലെ ഒരേയൊരു വ്യക്തി അവിടുന്നാണ്.",
+  q:"അവിടുന്ന് പറഞ്ഞു: സ്വന്തം മകനെക്കാളും പിതാവിനെക്കാളും എല്ലാ മനുഷ്യരെക്കാളും ഞാൻ പ്രിയപ്പെട്ടവനാകുന്നതുവരെ നിങ്ങളിലാരും യഥാർത്ഥത്തിൽ വിശ്വസിച്ചിട്ടില്ല."},
+ ayahEn:"തീർച്ചയായും അല്ലാഹുവും അവന്റെ മലക്കുകളും നബിയുടെ മേൽ അനുഗ്രഹം ചൊരിയുന്നു.",
+ discuss:["ഒരിക്കലും കാണാത്ത നമ്മെ അവിടുന്ന് <i>സഹോദരന്മാർ</i> എന്ന് വിളിച്ചു, കാണാൻ ആഗ്രഹിക്കുന്നുവെന്നും പറഞ്ഞു. അത് നിന്നിൽ എന്ത് ഉണ്ടാക്കുന്നു?",
+  "വുദൂവിന്റെ പ്രകാശം കൊണ്ട് അവിടുന്ന് നമ്മെ തിരിച്ചറിയും. അവിടുന്ന് തിരിച്ചറിയാവുന്ന എന്താണ് നീ ഇന്ന് ചെയ്യുന്നത്?",
+  "ഈ ആഴ്ച തുടങ്ങി തുടർന്നുകൊണ്ടുപോകാൻ പോകുന്ന അവിടുത്തെ ഒരു സുന്നത്ത് എഴുതൂ."],
+ why:"അവിടുത്തെ ജീവിതം മുഴുവൻ നീ വായിച്ചു. ഇതിന് യോജിച്ച ഒരേയൊരു മറുപടി പുസ്തകം അടയ്ക്കലല്ല — ഹൗളിൽ അവിടുത്തെ കണ്ടുമുട്ടുമ്പോൾ അവിടുന്ന് നിന്നെ തിരിച്ചറിയുന്ന വിധം ജീവിക്കലാണ്.",
+ points:["കണ്ടിട്ടില്ലാത്തവരെ അവിടുന്ന് സഹോദരന്മാർ എന്ന് വിളിച്ചു","ഓരോ സ്വലാത്തും മലക്കുകൾ അവിടുത്തേക്ക് എത്തിക്കുന്നു","അവിടുന്ന് ഹൗളിൽ കാത്തുനിൽക്കും — തിരിച്ചറിയാവുന്നവനാകൂ"],
+ rem:"നീ ഉണ്ടാകുന്നതിന് മുമ്പേ അവിടുന്ന് നിനക്ക് വേണ്ടി കരഞ്ഞു, ഉത്തരം ഉറപ്പുള്ള തന്റെ ഒരേയൊരു ദുആ നിനക്ക് ഏറ്റവും ആവശ്യമുള്ള ദിവസത്തേക്ക് കരുതിവെച്ചു. ഇന്ന് അവിടുത്തേക്ക് സ്വലാത്ത് ചൊല്ലൂ. ഇതിനകം നിന്നെ കാത്തിരിക്കുന്ന ചരിത്രത്തിലെ ഒരേയൊരാൾ അവിടുന്നാണ്."
+}
+];
+
+const ML_CP={
+ 5:[["കഅ്ബയ്ക്ക് വേണ്ടി എന്തുകൊണ്ട് അപേക്ഷിക്കുന്നില്ല എന്ന് അബ്രഹ ചോദിച്ചപ്പോൾ അബ്ദുൽ മുത്വലിബ് എന്ത് പറഞ്ഞു?","ഭവനത്തിന് അതിന്റേതായ ഒരു ഉടമയുണ്ട്, അവൻ അതിനെ സംരക്ഷിക്കും."],
+  ["അവിടുത്തെ ആദ്യമായി വിശ്വസിച്ചത് ആരാണ്?","അവിടുത്തെ ഭാര്യ ഖദീജ (റ)."],
+  ["പ്രവാചകത്വത്തിന് മുമ്പ് മക്ക അവിടുത്തേക്ക് നൽകിയ പേര്?","അൽ-അമീൻ — വിശ്വസ്തൻ."],
+  ["ഖുർആനിൽ അവതരിച്ച ആദ്യ വാക്ക് ഏതാണ്?","ഇഖ്‌റഅ് — വായിക്കുക."],
+  ["പാറയ്ക്ക് കീഴിൽ ബിലാൽ (റ) ആവർത്തിച്ച ഒരൊറ്റ വാക്ക്?","അഹദ് — ഏകൻ."]],
+ 10:[["ത്വാഇഫ് നശിപ്പിക്കാമെന്ന് മലക്ക് പറഞ്ഞപ്പോൾ അവിടുന്ന് എന്ത് പറഞ്ഞു?","ഒരുപക്ഷേ അവരുടെ സന്തതികളിൽ നിന്ന് അല്ലാഹുവിനെ മാത്രം ആരാധിക്കുന്നവരെ അല്ലാഹു കൊണ്ടുവന്നേക്കാം."],
+  ["നിസ്കാരം എവിടെ വെച്ചാണ് നൽകപ്പെട്ടത്, ആദ്യം എത്ര?","മിഅ്റാജിൽ ഏഴ് ആകാശങ്ങൾക്ക് മുകളിൽ — അമ്പത്, പിന്നെ അഞ്ച്."],
+  ["ഹിജ്‌റയുടെ രാത്രി അവിടുത്തെ കിടക്കയിൽ ഉറങ്ങിയത് ആരാണ്?","അലി ബ്നു അബീത്വാലിബ് (റ)."],
+  ["ഥൗർ ഗുഹയിൽ അബൂബക്കറിനോട് (റ) അവിടുന്ന് എന്ത് പറഞ്ഞു?","അല്ലാഹു മൂന്നാമനായുള്ള രണ്ടുപേരെക്കുറിച്ച് നീ എന്ത് വിചാരിക്കുന്നു?"],
+  ["മദീനയിൽ അവിടുന്ന് ആദ്യം പണിതത് എന്താണ്?","പള്ളി."]],
+ 15:[["ബദ്‌റിലെ തടവുകാർ എങ്ങനെയാണ് സ്വാതന്ത്ര്യം വാങ്ങിയത്?","മദീനയിലെ പത്ത് കുട്ടികളെ എഴുതാനും വായിക്കാനും പഠിപ്പിച്ചുകൊണ്ട്."],
+  ["ഉഹുദിന് ശേഷം അല്ലാഹു അവിടുത്തോട് എന്ത് കൽപ്പിച്ചു?","അവർക്ക് മാപ്പ് നൽകാനും അവർക്ക് വേണ്ടി പൊറുക്കൽ തേടാനും അവരോട് കൂടിയാലോചിക്കാനും."],
+  ["വിജയദിനത്തിൽ മക്കക്കാരോട് അവിടുന്ന് എന്ത് പറഞ്ഞു?","പോകൂ — നിങ്ങൾ സ്വതന്ത്രരാണ്."],
+  ["അവിടുത്തെ അവസാന നിർദേശങ്ങളിൽ ഉണ്ടായിരുന്നത് എന്താണ്?","നിസ്കാരം, നിസ്കാരം — പിന്നെ നിങ്ങളുടെ കീഴിലുള്ളവർ."],
+  ["ആരെയാണ് അവിടുന്ന് <i>സഹോദരന്മാർ</i> എന്ന് വിളിച്ചത്?","തനിക്ക് ശേഷം വരുന്നവരെ, തന്നെ കാണാതെ തന്നിൽ വിശ്വസിക്കുന്നവരെ."]]
+};
+
+/* ================= RENDER ================= */
+function el(h){const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;}
+const host=document.getElementById('lessons'), bnList=document.getElementById('bnList');
+
+function plateHTML(pl){
+  const media = IMG_STATUS==="ready"
+    ? `<img src="assets/img/${pl.f}" alt="${pl.cap}" loading="lazy">`
+    : `<div class="ph">
+         <div class="meta"><span class="fn">${pl.f}</span><span class="rt">${RATIO}</span></div>
+         <div class="pr">${pl.prompt}</div>
+       </div>`;
+  return `<div class="plate"><figure>${media}<figcaption>
+      <div class="cap">${pl.cap}</div><div class="info">${pl.info}</div>
+    </figcaption></figure></div>`;
+}
+
+function cpHTML(cp){
+  const cards=cp.qs.map(q=>`<button class="cp-card">
+    <span class="cp-q">${q[0]}</span><span class="cp-hint">Tap to reveal ▾</span>
+    <span class="cp-a">${q[1]}</span></button>`).join('');
+  return `<section class="checkpoint" id="check${cp.n}">
+    <div class="cp-head"><span class="cp-badge">CHECKPOINT ${cp.n}</span>
+      <h2>What do you remember?</h2>
+      <p>Your teacher may ask these live. Tap each card to check yourself first.</p></div>
+    <div class="cp-cards">${cards}</div></section>`;
+}
+
+const EN_UI={};document.querySelectorAll("[data-i18n]").forEach(e=>EN_UI[e.dataset.i18n]=e.innerHTML);
+const T={lang:"en"};
+const tx=(k,en)=>T.lang==="ml"&&UI_ML[k]!=null?UI_ML[k]:en;
+
+function merge(L,i){
+  if(T.lang!=="ml"||!ML_L[i]) return L;
+  const m=ML_L[i], E=EXTRA[i];
+  return {...L,
+    t:m.t, ar:m.ar, facts:m.facts, hook:m.hook,
+    plates:L.plates.map((pl,k)=> m.plates&&m.plates[k]
+      ? {...pl, cap:m.plates[k][0], info:m.plates[k][1]} : pl),
+    scenes:m.scenes||L.scenes,
+    him:{p:(m.him&&m.him.p)||L.him.p, q:(m.him&&m.him.q)||L.him.q, s:L.him.s},
+    ayahEn:m.ayahEn||L.ayahEn,
+    discuss:L.discuss.map((d,k)=> m.discuss&&m.discuss[k] ? [m.discuss[k],d[1]] : d),
+    why:m.why, points:m.points,
+    _rem:(m.rem)||((E&&E.r)||"")
+  };
+}
+
+function build(){
+  host.innerHTML=""; bnList.innerHTML="";
+  document.body.classList.toggle("lang-ml",T.lang==="ml");
+  document.documentElement.lang=T.lang;
+  document.querySelectorAll("[data-i18n]").forEach(e=>{e.innerHTML=tx(e.dataset.i18n,EN_UI[e.dataset.i18n]);});
+  langBtn.textContent = T.lang==="ml" ? "English" : "മലയാളം";
+
+  LESSONS.forEach((L0,i)=>{
+    const L=merge(L0,i), n=i+1, F=L.facts;
+    const facts=[[tx("fWhen","When"),F.when],[tx("fWhere","Where"),F.where],
+                 [tx("fAge","His age"),F.age],[tx("fSrc","Source"),F.src]]
+      .map(f=>`<div class="fact"><div class="fl">${f[0]}</div><div class="fv">${f[1]}</div></div>`).join('');
+    const plates=L.plates.map(plateHTML).join('');
+    const allScenes = T.lang==="ml" ? L.scenes : L0.scenes.concat((EXTRA[i]&&EXTRA[i].s)||[]);
+    const scenes=allScenes.map((sc,k)=>`<div class="scene"><span class="sn">${tx("tagScene","SCENE")} ${k+1} · ${sc[0]}</span><p>${sc[1]}</p></div>`).join('');
+    const disc=L.discuss.map(d=>`<li>${d[0]}<span class="how">${d[1]==='chat'?tx("chat","in the chat"):tx("unmute","unmute")}</span></li>`).join('');
+    const pts=L.points.map(x=>`<li><span class="kp-dot">◆</span>${x}</li>`).join('');
+    const rem = T.lang==="ml" ? L._rem : ((EXTRA[i]&&EXTRA[i].r)||'');
+
+    host.appendChild(el(`<section class="lesson" id="lesson${n}">
+      <div class="l-head">
+        <span class="l-badge">${tx("lesson","LESSON")} ${n} ${tx("of","OF")} ${LESSONS.length}</span>
+        <h2>${L.t}</h2><div class="l-ar">${L.ar}</div>
+      </div>
+      <div class="pad">
+        <div class="facts">${facts}</div>
+        <div class="hook"><span class="tag">${tx("tagHook","OPENING QUESTION — think before class")}</span><p>${L.hook}</p></div>
+      </div>
+      <div class="plates"><div class="plates-tag">${tx("tagPics","THE PICTURES — look at these first")}</div>${plates}</div>
+      <div class="pad">
+        <div class="story-card"><div class="card-tag">${tx("tagStory","THE STORY")}</div>${scenes}</div>
+        <div class="him">
+          <div class="card-tag">${tx("tagHim","WHAT HE ﷺ WAS LIKE")}</div>
+          <p>${L.him.p}</p>
+          <div class="hq"><div class="q">“${L.him.q}”</div><div class="s">${L.him.s}</div></div>
+        </div>
+        <div class="ayah-card">
+          <div class="card-tag">${tx("tagAyah","FROM THE QUR'AN")}</div>
+          <div class="ayah-ar">${L.ayahAr}</div>
+          <div class="ayah-mean">${L.ayahEn}</div>
+          <div class="ayah-ref">${L.ayahRef}</div>
+        </div>
+        <div class="discuss">
+          <div class="card-tag">${tx("tagDiscuss","TALK ABOUT IT — in the live class")}</div>
+          <div class="sub">${tx("discussSub","Your teacher will open these. Answer where it says.")}</div>
+          <ol>${disc}</ol>
+        </div>
+        <div class="why-box"><div class="why-tag">${tx("tagWhy","WHY IT MATTERS")}</div><p>${L.why}</p><ul class="kp-list">${pts}</ul></div>
+        <div class="remind">
+          <div class="rtag">${tx("tagRem","A REMINDER BEFORE YOU CLOSE THIS LESSON")}</div>
+          <p>${rem}</p>
+        </div>
+      </div>
+    </section>`));
+
+    bnList.appendChild(el(`<a class="bn-a" href="#lesson${n}"><span class="bn-n">${n}</span>${L.t}</a>`));
+
+    if(CHECKPOINTS[n]){
+      const cp=CHECKPOINTS[n];
+      const qs=(T.lang==="ml"&&ML_CP[n])?ML_CP[n]:cp.qs;
+      const cards=qs.map(q=>`<button class="cp-card"><span class="cp-q">${q[0]}</span>
+        <span class="cp-hint">${tx("cpTap","Tap to reveal ▾")}</span>
+        <span class="cp-a">${q[1]}</span></button>`).join('');
+      host.appendChild(el(`<section class="checkpoint" id="check${cp.n}">
+        <div class="cp-head"><span class="cp-badge">✦ ${tx("cpBadge","CHECKPOINT")} ${cp.n}</span>
+          <h2>${tx("cpH","What do you remember?")}</h2>
+          <p>${tx("cpP","Your teacher may ask these live. Tap each card to check yourself first.")}</p></div>
+        <div class="cp-cards">${cards}</div></section>`));
+      bnList.appendChild(el(`<a class="bn-a" href="#check${cp.n}"><span class="bn-n">✦</span>${tx("cpBadge","Checkpoint")} ${cp.n}</a>`));
+    }
+  });
+  bnList.appendChild(el(`<a class="bn-a" href="#done"><span class="bn-n">★</span>${tx("finish","Finish")}</a>`));
+  Array.from(document.querySelectorAll('.cp-card')).forEach(c=>c.addEventListener('click',()=>c.classList.toggle('open')));
+  Array.from(document.querySelectorAll('.lesson,.checkpoint')).forEach(x=>x.classList.add('rv','in'));
+}
+
+const langBtn=document.getElementById('langBtn');
+langBtn.addEventListener('click',()=>{
+  T.lang = T.lang==="ml" ? "en" : "ml";
+  try{localStorage.setItem('srh_lang',T.lang);}catch(e){}
+  build(); window.scrollTo({top:0});
+});
+try{T.lang=localStorage.getItem('srh_lang')||"en";}catch(e){}
+build();
+
+/* behaviour */
+const $$=s=>Array.from(document.querySelectorAll(s));
+const drawer=document.getElementById('drawer'), scrim=document.getElementById('scrim');
+function shut(){drawer.classList.remove('on');scrim.classList.remove('on');}
+document.getElementById('menuBtn').addEventListener('click',()=>{drawer.classList.add('on');scrim.classList.add('on');});
+scrim.addEventListener('click',shut);
+bnList.addEventListener('click',e=>{if(e.target.closest('.bn-a'))shut();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')shut();});
+
+const bar=document.getElementById('progress');
+function onScroll(){const h=document.documentElement,m=h.scrollHeight-h.clientHeight;
+  bar.style.width=(m>0?(h.scrollTop/m)*100:0)+'%';}
+window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+try{
+  const io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{rootMargin:'0px 0px -6% 0px',threshold:.05});
+  $$('.cover,.done').forEach(function(x){x.classList.add('rv');io.observe(x);});
+}catch(e){}
+</script>
+</body>
+</html>
