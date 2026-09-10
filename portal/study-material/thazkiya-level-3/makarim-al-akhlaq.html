@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Makārim al-Akhlāq · مَكَارِمُ الأَخْلَاق — ManzilulQuran</title>
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Nunito:wght@400;500;600;700;800&family=Amiri:wght@400;700&family=Anek+Malayalam:wght@400;500;600;700&family=Baloo+Chettan+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --plum:#4A2C46; --plum-d:#331D31; --plum-l:#E4D3E0; --plum-bg:#F7F0F5;
+  --amber:#C68A34; --amber-d:#8E5F1B; --amber-l:#F3E2C4; --amber-bg:#FEF9EF;
+  --sage:#4C7A63; --sage-bg:#EAF3EE;
+  --ink:#2E2230; --ink-soft:#6E5F6E;
+  --ui:'Nunito',system-ui,-apple-system,sans-serif;
+  --disp:'Fraunces',Georgia,serif;
+  --ar:'Amiri',serif;
+  --ml:'Anek Malayalam','Noto Sans Malayalam',sans-serif;
+  --ml-disp:'Baloo Chettan 2','Anek Malayalam',sans-serif;
+  --r:20px;
+  --shadow:0 18px 44px -24px rgba(74,44,70,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:var(--ui);color:var(--ink);line-height:1.8;min-height:100vh;overflow-x:hidden;
+  background:
+    radial-gradient(880px 400px at 104% -6%,rgba(198,138,52,.2),transparent 62%),
+    radial-gradient(740px 380px at -12% 16%,rgba(228,211,224,.6),transparent 58%),
+    linear-gradient(178deg,#FCFAFB 0%,#F6F1F5 46%,#FDFAF3 100%);
+  background-attachment:fixed}
+body.lang-ml{font-family:var(--ml)}
+body.lang-ml .l-head h2,body.lang-ml .cover h2,body.lang-ml .done h2,
+body.lang-ml .plate .cap,body.lang-ml .howto h3{font-family:var(--ml-disp);font-weight:700}
+body.lang-ml .body p,body.lang-ml .sc p,body.lang-ml .plate .info,body.lang-ml .why p,
+body.lang-ml .discuss li,body.lang-ml .hook p,body.lang-ml .ay .m,body.lang-ml .hq .q,
+body.lang-ml .remind p,body.lang-ml .kp li,body.lang-ml .l-intro{font-weight:500;line-height:1.95}
+body.lang-ml .ay .m,body.lang-ml .hq .q,body.lang-ml .l-intro{font-style:normal}
+.lang-btn{min-height:44px;border:2px solid var(--amber);color:#6a4a10;background:var(--amber-bg);
+  font-family:var(--ui);font-weight:800;font-size:13px;border-radius:100px;padding:9px 15px;
+  cursor:pointer;white-space:nowrap;transition:.2s;flex:0 0 auto}
+.lang-btn:hover{background:var(--amber);color:#fff}
+.rv{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+#progress{position:fixed;top:0;left:0;height:4px;width:0;z-index:120;
+  background:linear-gradient(90deg,var(--plum-l),var(--plum),var(--amber));transition:width .1s}
+
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px;padding:11px 16px;
+  backdrop-filter:blur(14px);background:linear-gradient(180deg,rgba(252,250,251,.95),rgba(246,241,245,.7));
+  border-bottom:1px solid rgba(74,44,70,.14)}
+.menu-btn{width:44px;height:44px;border:0;border-radius:13px;cursor:pointer;flex:0 0 auto;color:#fff;font-size:18px;
+  background:linear-gradient(140deg,var(--plum),var(--plum-d));display:grid;place-items:center;transition:.2s}
+.menu-btn:hover{transform:translateY(-2px)}
+.brand-logo{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--amber-l);flex:0 0 auto}
+.brand h1{font-family:var(--ar);font-size:19px;font-weight:700;color:var(--plum);line-height:1.15;white-space:nowrap}
+.brand .en{font-family:var(--disp);font-size:10.5px;color:var(--amber-d);font-weight:600;letter-spacing:1.2px}
+.sp{flex:1}
+.pill{font-size:11.5px;font-weight:800;color:#fff;background:var(--plum);border-radius:100px;padding:5px 12px;white-space:nowrap}
+
+.scrim{position:fixed;inset:0;background:rgba(51,29,49,.55);z-index:130;opacity:0;pointer-events:none;transition:.25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(320px,84vw);z-index:140;overflow-y:auto;padding:20px 14px;
+  background:linear-gradient(180deg,#fff,var(--plum-bg) 62%,var(--amber-bg));
+  border-right:1px solid rgba(74,44,70,.16);transform:translateX(-105%);
+  transition:transform .3s cubic-bezier(.3,.85,.3,1)}
+.drawer.on{transform:none}
+.drawer h2{font-family:var(--disp);font-size:20px;color:var(--plum);padding:2px 10px;font-weight:600}
+.drawer .ar{font-family:var(--ar);font-size:16px;color:var(--amber-d);display:block;margin-top:2px}
+.drawer .sub{font-size:11.5px;color:var(--ink-soft);padding:0 10px 14px;border-bottom:2px dotted rgba(74,44,70,.22);margin-bottom:10px}
+.bn{display:flex;align-items:center;gap:11px;padding:11px;min-height:44px;border-radius:12px;text-decoration:none;
+  color:var(--ink);font-weight:700;font-size:13.5px;transition:.15s;margin-bottom:2px}
+.bn:hover{background:#fff;transform:translateX(3px)}
+.bn .n{width:28px;height:28px;flex:0 0 auto;border-radius:9px;display:grid;place-items:center;
+  background:linear-gradient(140deg,var(--plum),var(--plum-d));color:#fff;font-size:12px;font-weight:800}
+
+.wrap{max-width:790px;margin:0 auto;padding:24px 18px 70px}
+
+.cover{text-align:center;padding:38px 24px 42px;border-radius:var(--r);margin-bottom:24px;
+  background:linear-gradient(165deg,#fff,var(--plum-bg) 58%,var(--amber-bg));
+  border:1px solid rgba(74,44,70,.15);box-shadow:var(--shadow)}
+.cover-logo{width:86px;height:86px;border-radius:50%;object-fit:cover;margin:0 auto 16px;border:3px solid var(--amber-l);
+  box-shadow:0 0 0 7px rgba(198,138,52,.13)}
+.cover .ar-t{font-family:var(--ar);font-size:clamp(1.8rem,7vw,2.6rem);font-weight:700;line-height:1.4;
+  background:linear-gradient(120deg,var(--plum-d),var(--plum),var(--amber-d));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.cover .en-t{font-family:var(--disp);font-size:clamp(1rem,3.6vw,1.3rem);font-weight:600;color:var(--plum);letter-spacing:1.8px}
+.cover .tag{display:inline-block;margin-top:11px;font-size:12.5px;font-weight:800;color:#6a4a10;
+  background:var(--amber-l);border:1px solid rgba(142,95,27,.3);border-radius:100px;padding:6px 16px}
+.cover h2{font-family:var(--disp);font-size:21px;color:var(--ink);margin:18px 0 8px;font-weight:600}
+.cover p{color:var(--ink-soft);font-size:14.5px;max-width:54ch;margin:0 auto}
+.cover a{display:inline-block;margin-top:20px;text-decoration:none;background:linear-gradient(135deg,var(--amber),var(--amber-d));
+  color:#fff;font-family:var(--disp);font-weight:600;font-size:15px;padding:13px 30px;border-radius:100px}
+
+.howto{background:var(--sage-bg);border-left:5px solid var(--sage);border-radius:14px;padding:16px 18px;margin-bottom:24px}
+.howto h3{font-family:var(--disp);color:var(--sage);font-size:16px;font-weight:600;margin-bottom:5px}
+.howto ol{margin:6px 0 0 17px;font-size:14px;color:var(--ink-soft)}
+
+.lesson{background:rgba(255,255,255,.95);border:1px solid rgba(74,44,70,.12);border-radius:var(--r);
+  padding:0 0 24px;margin-bottom:24px;box-shadow:var(--shadow);scroll-margin-top:76px;position:relative;overflow:hidden}
+.lesson::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;z-index:2;
+  background:linear-gradient(90deg,var(--plum),var(--amber),var(--sage))}
+.pad{padding:0 22px}
+.l-head{text-align:center;padding:26px 22px 0}
+.l-badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1.6px;color:#fff;
+  background:var(--plum);border-radius:100px;padding:5px 15px}
+.l-head h2{font-family:var(--disp);font-size:clamp(1.35rem,5vw,1.7rem);color:var(--ink);font-weight:600;line-height:1.25;margin-top:14px}
+.l-head .l-ar{font-family:var(--ar);font-size:21px;color:var(--plum);font-weight:700;direction:rtl}
+.l-intro{font-family:var(--disp);font-size:15px;font-style:italic;color:var(--ink-soft);text-align:center;margin:10px 0 14px}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(146px,1fr));gap:9px;margin:14px 0 4px}
+.fact{background:var(--plum-bg);border-radius:12px;padding:9px 12px}
+.fact .fl{font-size:10px;font-weight:800;letter-spacing:.9px;color:var(--plum);text-transform:uppercase}
+.fact .fv{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.4}
+
+.hook{background:var(--amber-bg);border:2px dashed var(--amber);border-radius:14px;padding:15px 17px;margin:16px 0}
+.hook .tag{font-size:11.5px;font-weight:800;color:var(--amber-d);letter-spacing:.5px;display:block;margin-bottom:3px}
+.hook p{font-size:15px;color:var(--ink);font-weight:600}
+
+.plates{margin:20px 0}
+.plates-tag{font-size:11.5px;font-weight:800;letter-spacing:.6px;color:var(--plum);margin:0 22px 9px}
+.plate{margin-bottom:18px}
+.plate img{width:100%;display:block}
+.plate .ph{aspect-ratio:16/9;border-top:1px solid var(--plum-l);border-bottom:1px solid var(--plum-l);
+  background:linear-gradient(160deg,#FCFAFB,#F8F4F7);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:6px;text-align:center;padding:18px 26px}
+.plate .ph .m{display:flex;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap}
+.plate .ph .fn{font-family:monospace;font-size:10.5px;color:var(--plum);opacity:.5}
+.plate .ph .rt{font-family:monospace;font-size:10px;color:var(--amber-d);opacity:.45;
+  border:1px solid currentColor;border-radius:100px;padding:1px 7px}
+.plate .ph .pr{font-size:11px;line-height:1.6;color:var(--ink-soft);opacity:.38;font-style:italic;max-width:58ch}
+.plate figcaption{padding:10px 22px 0}
+.plate .cap{font-family:var(--disp);font-size:16px;font-weight:600;color:var(--plum-d)}
+.plate .info{font-size:14px;color:var(--ink-soft);margin-top:2px}
+
+.body{margin-bottom:16px}
+.body .tag{font-size:11.5px;font-weight:800;letter-spacing:.6px;color:var(--plum);margin-bottom:8px}
+.body p{font-size:15.5px;line-height:1.95;margin-bottom:12px}
+.body p:last-child{margin-bottom:0}
+mark{background:linear-gradient(transparent 62%,rgba(198,138,52,.3) 62%);color:var(--amber-d);font-weight:700;padding:0 1px}
+
+.story{background:linear-gradient(165deg,#fff,var(--amber-bg));border:1px solid rgba(142,95,27,.2);
+  border-radius:16px;padding:20px;margin-bottom:16px}
+.story .tag{font-size:11.5px;font-weight:800;letter-spacing:.6px;color:var(--amber-d);margin-bottom:9px}
+.sc{margin-bottom:14px}.sc:last-child{margin-bottom:0}
+.sc .sn{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:1px;color:#fff;
+  background:var(--amber-d);border-radius:100px;padding:2px 10px;margin-bottom:5px}
+.sc p{font-size:15px;line-height:1.9}
+
+.hq{border-left:3px solid var(--plum);padding-left:18px;margin:18px 0}
+.hq .l{font-size:10px;font-weight:800;letter-spacing:1.6px;color:var(--plum);opacity:.75;margin-bottom:7px}
+.hq .q{font-family:var(--disp);font-size:16px;font-style:italic;line-height:1.85;color:var(--ink)}
+.hq .s{font-size:11.5px;font-weight:800;color:var(--plum);margin-top:8px}
+
+.ay{text-align:center;margin:18px 0;padding-top:16px;border-top:1px solid rgba(74,44,70,.15)}
+.ay .a{font-family:var(--ar);font-size:23px;font-weight:700;color:var(--plum-d);direction:rtl;line-height:2.1}
+.ay .m{font-size:14.5px;font-style:italic;color:var(--ink-soft);margin-top:6px}
+.ay .r{font-size:11.5px;font-weight:800;color:var(--amber-d);margin-top:5px}
+
+.discuss{border:1.5px solid var(--plum-l);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.discuss .tag{font-size:11.5px;font-weight:800;color:var(--plum);letter-spacing:.6px;margin-bottom:3px}
+.discuss .sub{font-size:12px;color:var(--ink-soft);margin-bottom:9px}
+.discuss ol{margin-left:17px;display:flex;flex-direction:column;gap:8px}
+.discuss li{font-size:14.5px;font-weight:600;line-height:1.65}
+.discuss .how{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  background:var(--plum-bg);color:var(--plum);border-radius:100px;padding:2px 8px;margin-left:6px;vertical-align:1px}
+
+.why{border-left:5px solid var(--sage);background:var(--sage-bg);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.why .tag{font-size:11.5px;font-weight:800;color:var(--sage);margin-bottom:7px}
+.why p{font-size:14.5px;color:var(--ink);margin-bottom:10px}
+.kp{list-style:none;display:flex;flex-direction:column;gap:8px}
+.kp li{display:flex;gap:9px;font-size:14px;font-weight:700}
+.kp .d{color:var(--sage);flex:0 0 auto}
+
+.remind{background:linear-gradient(160deg,var(--plum-d),var(--plum));color:#fff;border-radius:16px;
+  padding:20px 22px;text-align:center}
+.remind .l{font-size:10.5px;font-weight:800;letter-spacing:1.6px;color:var(--amber-l);opacity:.9;margin-bottom:7px}
+.remind p{font-family:var(--disp);font-size:16px;font-weight:500;line-height:1.85;max-width:50ch;margin:0 auto}
+
+.done{text-align:center;padding:40px 24px;border-radius:var(--r);color:#fff;
+  background:linear-gradient(160deg,var(--plum),var(--plum-d))}
+.done h2{font-family:var(--disp);font-size:26px;margin-bottom:8px;font-weight:600}
+.done p{font-size:14.5px;opacity:.95;max-width:48ch;margin:0 auto}
+.done .ar{font-family:var(--ar);font-size:20px;margin-top:14px;direction:rtl}
+.foot{text-align:center;color:var(--ink-soft);font-size:12px;margin-top:26px;padding-top:16px;border-top:2px dotted rgba(74,44,70,.2)}
+.foot .ar{font-family:var(--ar);font-size:16px;color:var(--plum);display:block;margin-bottom:3px}
+
+@media(max-width:520px){
+  .brand .en{display:none}
+  .wrap{padding:16px 12px 50px}
+  .pad,.plate figcaption,.plates-tag{padding-left:15px;padding-right:15px}
+  .l-head{padding:22px 15px 0}
+  .ay .a{font-size:20px}
+  .facts{grid-template-columns:1fr 1fr}
+}
+@media(max-width:380px){ .facts{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms!important} .rv{opacity:1;transform:none} }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Lessons">☰</button>
+  <img class="brand-logo" src="/logo.png" alt="">
+  <div class="brand">
+    <h1>مَكَارِمُ الأَخْلَاق</h1>
+    <div class="en">MAKĀRIM AL-AKHLĀQ</div>
+  </div>
+  <div class="sp"></div>
+  <button class="lang-btn" id="langBtn">മലയാളം</button>
+  <div class="pill">Thazkiya · L3</div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<nav class="drawer" id="drawer">
+  <h2>Makārim al-Akhlāq<span class="ar">مَكَارِمُ الأَخْلَاق</span></h2>
+  <div class="sub" data-i18n="drawerSub">Noble character · 12 lessons · after Noorul Hayah</div>
+  <div id="bn"></div>
+</nav>
+
+<div class="wrap">
+  <section class="cover">
+    <img class="cover-logo" src="/logo.png" alt="">
+    <div class="ar-t">مَكَارِمُ الأَخْلَاق</div>
+    <div class="en-t">NOBLE CHARACTER</div>
+    <span class="tag" data-i18n="coverTag">Thazkiya · Level 3 · Ages 11–15</span>
+    <h2 data-i18n="coverH">The second book of character</h2>
+    <p data-i18n="coverP">Noorul Hayah taught the habits you can see — telling the truth, helping, keeping clean. This book is about the ones nobody can see: why you did it, who you did it for, and what you do when it costs you something.</p>
+    <a href="#lesson1" data-i18n="startBtn">Begin →</a>
+  </section>
+
+  <div class="howto">
+    <h3 data-i18n="howtoH">How each online lesson runs</h3>
+    <ol>
+      <li data-i18n="howto1"><b>Before class</b> — read the opening question and look at the two plates.</li>
+      <li data-i18n="howto2"><b>In class</b> — your teacher reads the explanation and the two stories with you, then opens the discussion. Answer in the chat or unmute.</li>
+      <li data-i18n="howto3"><b>Afterwards</b> — the reminder at the end of the lesson is the part to carry with you.</li>
+    </ol>
+  </div>
+
+  <main id="lessons"></main>
+
+  <section class="done" id="done">
+    <h2 data-i18n="doneH">Mā shā' Allah</h2>
+    <p data-i18n="doneP">Twelve traits, and not one of them can be seen from outside. That is the point. Allah looks at the heart, and the heart is the only thing you truly control.</p>
+    <div class="ar">اللَّهُمَّ أَحْسِنْ خُلُقِي كَمَا أَحْسَنْتَ خَلْقِي</div>
+  </section>
+
+  <div class="foot">
+    <span class="ar">إِنَّمَا بُعِثْتُ لِأُتَمِّمَ مَكَارِمَ الأَخْلَاقِ</span>
+    Makārim al-Akhlāq · ManzilulQuran E-learning Academy
+  </div>
+</div>
+
+<script>
+/* ==========================================================================
+   ⚠️ VERIFY every ḥadīth, wording, source and āyah reference before publishing.
+   Sequel to noorul-hayah.html — none of its ten traits is repeated here.
+
+   Images: 2 plates per lesson, 24 total, 16:9. Flip IMG to "ready" once
+   thazkiya-level-3/assets/img/ holds all of them. Export .jpeg.
+   ========================================================================== */
+
+const IMG="placeholder", RATIO="16:9";
+const ART="Warm storybook illustration for a children's Islamic character book. Soft plum, warm amber and cream palette, gentle painted texture, calm and dignified. Human figures only from behind, in silhouette, at a distance or cropped — no faces, no facial features. ";
+const P=(f,cap,info,p)=>({f,cap,info,p:ART+p});
+
+const L=[
+{
+ t:"For Allah Alone", ar:"الإِخْلَاص",
+ sub:"The difference between doing good and doing good to be seen.",
+ facts:{term:"Ikhlāṣ — sincerity",against:"Riyā' — showing off",quran:"Al-Bayyinah 98:5",note:"The first deed judged"},
+ hook:"You did something good and nobody found out. Did it still feel worth it?",
+ plates:[
+  P("akh2-01a-alone.jpeg","The deed nobody saw",
+   "A good act done with no audience is worth more than the same act done with one, because only one of them was for Allah.",
+   "A dark street at night with a single doorstep, a covered basket of food left on it, nobody in sight, warm lamplight from a window above."),
+  P("akh2-01b-mirror.jpeg","Two hands, one act",
+   "Ṣadaqah given so secretly that the left hand does not know what the right hand gave is one of the seven shaded on the Day of Judgement.",
+   "A close view of one hand slipping a folded note into a cloth pouch beneath a table, the other hand resting on the tabletop above, unaware. No faces.")],
+ body:["Every act has two parts: the act, and the reason. People can only ever see the first. Allah sees both, and only judges by the second.",
+  "This is why two students can pray the same prayer, in the same row, at the same speed — and one is rewarded while the other gains nothing at all. <mark>The difference is invisible, and it is the only thing that counts.</mark>",
+  "Riyā' is doing an act of worship so that people will think well of you. The Prophet ﷺ called it <b>the lesser shirk</b>, and he feared it for his companions more than he feared the Dajjāl. Not because it is loud, but because it is quiet, and it hides inside good deeds rather than bad ones."],
+ story:[["The first three judged","The Prophet ﷺ described the first three people judged on the Day of Judgement: a martyr, a scholar, and a generous man. Each is asked what he did. Each answers truthfully — I fought, I taught, I gave. And each is told: <i>you lied. You did it so it would be said of you: he is brave, he is learned, he is generous. And it was said.</i> Then all three are dragged into the Fire. Their deeds were real. Their reasons were not."],
+  ["The quiet one in your class","There is someone in every class who does the work and never mentions it. They tidy without announcing it. They help without posting it. It is easy to overlook them and think they are doing less than the loud ones. Allah is not overlooking them, and on the Day of Judgement the order will look very different from the way it looks now."]],
+ had:{q:"Actions are only by intentions, and every person will have only what he intended.",s:"Ṣaḥīḥ al-Bukhārī 1 · Ṣaḥīḥ Muslim 1907"},
+ ay:{a:"وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+  m:"And they were commanded only to worship Allah, sincere to Him in religion.",r:"Sūrah Al-Bayyinah 98:5"},
+ discuss:[["Two people pray the same prayer and only one is rewarded. What separated them?","unmute"],
+  ["Type one good thing you have done that nobody knows about. You do not have to say what it was — just say yes or no.","chat"],
+  ["Is it wrong to feel happy when someone praises you? Where is the line?","unmute"]],
+ why:"You cannot control how much good you manage to do. You can control who you did it for — and that is the half Allah weighs.",
+ points:["Deeds are judged by intention, not by size","Riyā' hides inside good deeds, not bad ones","Do at least one good thing a week that nobody finds out about"],
+ rem:"Before you do something good today, ask one short question: who is this for? The answer takes a second and changes everything about it."
+},
+{
+ t:"Modesty", ar:"الْحَيَاء",
+ sub:"A guard on the eyes, the tongue, the clothes and the screen.",
+ facts:{term:"Ḥayā' — modesty",against:"Shamelessness",quran:"An-Nūr 24:30–31",note:"A branch of īmān"},
+ hook:"Would you do what you are doing right now if the person you respect most walked in?",
+ plates:[
+  P("akh2-02a-lowered.jpeg","Lowering the gaze",
+   "The first look is not counted against you. The second one is yours, and you chose it.",
+   "A quiet street corner seen from behind a walking figure whose head is turned down toward the path, dappled shade from a tree, a doorway ahead."),
+  P("akh2-02b-screen.jpeg","The private screen",
+   "Ḥayā' is not only about what others see. It is most tested when nobody can see at all.",
+   "A dim room at night, the faint glow of a phone screen face-down on a bedside table beside a closed book, curtains drawn. No people.")],
+ body:["Ḥayā' is often translated as shyness, but that is not it. It is a sense inside a person that stops them before they do something low — a kind of internal brake that works even when nobody is watching.",
+  "The Prophet ﷺ said <b>every religion has a character, and the character of Islam is ḥayā'</b>. He also said it is a branch of faith — which means when ḥayā' goes, something in the faith has gone with it.",
+  "It covers what you wear, how you speak, what you look at, what you scroll past, and what you laugh at. <mark>The hardest test of ḥayā' today is not in front of people. It is alone, at night, with a screen.</mark>"],
+ story:[["More shy than a veiled girl","Abū Saʿīd said the Prophet ﷺ had more ḥayā' than a young girl in her private quarters — and that when he disliked something, they could see it in his face. He never had to shame anybody publicly. He would say <i>what is the matter with people who do such-and-such</i> without naming a single person, and the one who had done it understood, and nobody else was humiliated."],
+  ["The look you did not take","ʿAlī was told by the Prophet ﷺ: do not follow a look with another look — the first is for you, the second is against you. Notice what that means. You are not blamed for what enters your eye by accident. You are responsible for what you choose to go back to. Everybody's phone is full of second looks."]],
+ had:{q:"Ḥayā' does not bring anything except good.",s:"Ṣaḥīḥ al-Bukhārī 6117 · Ṣaḥīḥ Muslim 37"},
+ ay:{a:"قُل لِّلْمُؤْمِنِينَ يَغُضُّوا مِنْ أَبْصَارِهِمْ وَيَحْفَظُوا فُرُوجَهُمْ",
+  m:"Tell the believing men to lower their gaze and guard their chastity.",r:"Sūrah An-Nūr 24:30"},
+ discuss:[["Ḥayā' is called a branch of faith. Why would modesty be part of belief?","unmute"],
+  ["Type one thing you would stop doing if your teacher could see your screen.","chat"],
+  ["He corrected people without naming them. Why is that better?","unmute"]],
+ why:"Ḥayā' is the alarm that goes off before the sin, not the regret that comes after it. Keep the alarm working and most of the rest looks after itself.",
+ points:["The first look is forgiven; the second is chosen","Correct people without humiliating them","The real test of ḥayā' is when you are alone"],
+ rem:"Allah is more deserving of your ḥayā' than any person. He is watching the private screen too, and He was never fooled by the locked door."
+},
+{
+ t:"Humility", ar:"التَّوَاضُع",
+ sub:"Arrogance was the very first sin. It has never gone out of fashion.",
+ facts:{term:"Tawāḍuʿ — humility",against:"Kibr — arrogance",quran:"Al-Furqān 25:63",note:"Iblīs's sin"},
+ hook:"Who do you secretly think you are better than? Answer honestly, to yourself.",
+ plates:[
+  P("akh2-03a-low-door.jpeg","The low doorway",
+   "Kibr is defined in two parts: rejecting the truth, and looking down on people. Both require bending to fix.",
+   "A very low arched stone doorway in a garden wall with warm light beyond it, a worn path leading through, forcing anyone entering to stoop."),
+  P("akh2-03b-sitting.jpeg","Sitting on the floor",
+   "Visitors to Madinah could not tell which man was the Prophet ﷺ, because he sat exactly as everyone else sat.",
+   "A simple room with a group of figures seated in a circle on a plain mat, seen from behind and above, no cushions or seat of honour among them, evening light.")],
+ body:["Kibr was the first sin ever committed. Iblīs did not deny Allah existed — he knew perfectly well. He simply thought he was better than the one he was told to bow to. Every act of arrogance since has had that same shape.",
+  "The Prophet ﷺ gave a precise definition, and it is worth memorising: <b>kibr is rejecting the truth and looking down on people</b>. Notice that neither part is about clothes or wealth. A man asked him about liking nice sandals, and he said that Allah is beautiful and loves beauty — the sin is in the heart, not the shoe.",
+  "<mark>Arrogance is not thinking well of yourself. It is thinking less of someone else.</mark>"],
+ story:[["The man who could not be told","ʿUmar, as Khalīfah, once gave an instruction from the minbar and a man in the crowd stood up and said: we will not obey you until you explain where your extra cloth came from. ʿUmar did not have him removed. He explained, publicly, that his son had given him his share. Then he said: praise be to Allah, who has put among us people who will correct ʿUmar when he errs. That is what it looks like when a leader has no kibr."],
+  ["The one everyone ignored","A woman who used to clean the masjid died and was buried at night without anyone telling him. When he found out, he was upset that they had thought her too unimportant to mention — and he went to her grave and prayed over it. Nobody in his community was too small to be noticed, and the ones the others overlooked were exactly the ones he asked about."]],
+ had:{q:"Kibr is rejecting the truth and looking down on people.",s:"Ṣaḥīḥ Muslim 91"},
+ ay:{a:"وَعِبَادُ الرَّحْمَٰنِ الَّذِينَ يَمْشُونَ عَلَى الْأَرْضِ هَوْنًا",
+  m:"And the servants of the Most Merciful are those who walk upon the earth in humility.",r:"Sūrah Al-Furqān 25:63"},
+ discuss:[["Iblīs knew Allah existed and still refused. So what exactly was his problem?","unmute"],
+  ["Type one kind of person you find it hard not to look down on.","chat"],
+  ["Can someone be confident and humble at the same time? How?","unmute"]],
+ why:"You did not choose your intelligence, your family, your health or your country. Everything you might feel superior about was given to you, and can be taken back this afternoon.",
+ points:["Kibr = rejecting truth + looking down on people","Take correction from anyone, including someone younger","Notice the people others overlook"],
+ rem:"The person you are least impressed by may be far ahead of you with Allah. You are not the one keeping the score."
+},
+{
+ t:"Keeping the Family Tie", ar:"صِلَةُ الرَّحِم",
+ sub:"Not just parents — the whole family, including the difficult ones.",
+ facts:{term:"Ṣilat ar-raḥim",against:"Qaṭīʿah — cutting off",quran:"An-Nisā' 4:1",note:"Tied to the Throne"},
+ hook:"Name a relative you have not spoken to in over a year. Why not?",
+ plates:[
+  P("akh2-04a-thread.jpeg","One long thread",
+   "The word raḥim comes from the same root as raḥmah — mercy. The family tie and Allah's mercy share a name.",
+   "An old family house with many windows lit at dusk, a single path connecting several doorways around a shared courtyard, date palms, warm light."),
+  P("akh2-04b-visit.jpeg","The visit nobody made",
+   "The one who keeps the tie is not the one who returns a favour. It is the one who keeps it when the other side has cut it.",
+   "A doorway with a small parcel and a folded note left on the step, a walking figure seen from behind moving away down the lane, morning light.")],
+ body:["Ṣilat ar-raḥim means keeping the connection with everyone Allah tied you to by blood — grandparents, uncles, aunts, cousins, and the relatives nobody enjoys visiting.",
+  "The Prophet ﷺ said the raḥim is attached to the Throne, saying: <i>whoever keeps me, Allah keeps him; whoever cuts me off, Allah cuts him off.</i> He also said <b>the one who cuts off family ties will not enter Jannah</b> — one of the very few sins he mentioned in those terms.",
+  "And he defined it in a way most people get wrong. <mark>Keeping the tie is not returning a visit. It is reaching out to the one who cut you off.</mark> Anybody can be good to a relative who is good to them."],
+ story:[["The man who kept getting nothing back","A man came and said: I have relatives whom I keep in touch with and they cut me off; I am good to them and they are bad to me; I am patient and they are ignorant with me. The Prophet ﷺ said: if it is as you say, it is as though you are feeding them hot ashes — and Allah will continue to support you against them as long as you continue."],
+  ["Three months and a message","There is usually one relative in every family who has been quietly dropped — someone who said something once, or whose parents fell out with yours before you were born. You have inherited a quarrel you did not start. A single message from the youngest person in the family often ends a silence that two adults could not."]],
+ had:{q:"Whoever would like his provision to be increased and his life extended, let him keep the ties of kinship.",s:"Ṣaḥīḥ al-Bukhārī 5986 · Ṣaḥīḥ Muslim 2557"},
+ ay:{a:"وَاتَّقُوا اللَّهَ الَّذِي تَسَاءَلُونَ بِهِ وَالْأَرْحَامَ",
+  m:"And fear Allah, through whom you ask one another, and the ties of kinship.",r:"Sūrah An-Nisā' 4:1"},
+ discuss:[["Keeping the tie means reaching the one who cut you off. Why is that the real test?","unmute"],
+  ["Type the name of a relative you could message this week. Just the relationship, not the name.","chat"],
+  ["What quarrels have you inherited without ever choosing them?","unmute"]],
+ why:"Allah tied you to these people without asking you, and He judges you on what you do with that tie. Nobody gets to choose their relatives — that is the whole test.",
+ points:["Ṣilah means reaching out first, not returning favours","Cutting off family is one of the gravest sins named","One message from the youngest can end a long silence"],
+ rem:"There is a relative right now who thinks nobody in your family remembers them. Being the one who remembers costs you thirty seconds."
+},
+{
+ t:"Charity Begins at Home", ar:"النَّفَقَةُ عَلَى الأَهْل",
+ sub:"The best money you will ever give is spent on the people you live with.",
+ facts:{term:"Nafaqah — spending on family",against:"Neglecting your own",quran:"Al-Baqarah 2:215",note:"The best dinar"},
+ hook:"You have one coin to give. A masjid appeal, a hungry stranger, or your own mother. Which is best?",
+ plates:[
+  P("akh2-05a-table.jpeg","The table at home",
+   "The Prophet ﷺ ranked four ways of spending, and the one spent on family came first — ahead of freeing a slave and ahead of giving to the poor.",
+   "A simple family meal laid on a mat — rice, bread, dates, a water jug — with two pairs of hands reaching in from opposite sides, seen from above. No faces."),
+  P("akh2-05b-mother.jpeg","Even a mouthful",
+   "He said even the food you lift to your wife's mouth is a ṣadaqah written for you.",
+   "An older woman's hands, seen from above, receiving a small covered dish from younger hands across a low table, worn wooden surface, warm light.")],
+ body:["Most people think of charity as money leaving the house. The Sunnah puts it the other way round: <mark>the very best charity is the money that stays in the house</mark>, spent on the people you are responsible for.",
+  "The Prophet ﷺ listed four dinars — one given to a poor person, one spent freeing a slave, one given in the path of Allah, and one <b>spent on your family</b> — and said the greatest in reward is the one spent on your family.",
+  "This is not a loophole for keeping your money. It is a correction of priorities. A person who donates generously to a distant appeal while his own mother needs medicine has not understood what charity is. Start with the people whose needs you are actually able to know."],
+ story:[["The dinar you carried home","Saʿd ibn Abī Waqqāṣ was ill and asked whether he could give away most of his wealth. He said no. Two thirds? No. Half? No. A third — and a third is a lot. Then he said: <i>it is better to leave your heirs wealthy than to leave them poor, begging from people.</i> And then the line that changes the whole subject: <b>you will not spend anything seeking the Face of Allah except that you are rewarded for it — even the morsel you lift to your wife's mouth.</b>"],
+  ["The pocket money test","You are given money for yourself. The easiest thing is to spend it on yourself, and the second easiest is to give it very publicly to a cause. The hardest — and the highest — is to quietly buy something your mother needs and not mention where it came from. That is the dinar the ḥadīth was talking about."]],
+ had:{q:"The best dinar a man spends is a dinar he spends on his family, a dinar he spends on his riding animal in the path of Allah, and a dinar he spends on his companions in the path of Allah.",s:"Ṣaḥīḥ Muslim 994"},
+ ay:{a:"قُلْ مَا أَنفَقْتُم مِّنْ خَيْرٍ فَلِلْوَالِدَيْنِ وَالْأَقْرَبِينَ",
+  m:"Say: whatever good you spend is for parents and relatives…",r:"Sūrah Al-Baqarah 2:215"},
+ discuss:[["Why would spending on your own family outrank giving to the poor?","unmute"],
+  ["Type one thing someone at home needs that you could pay for or help with.","chat"],
+  ["Is it still charity if you have to do it anyway? Explain your answer.","unmute"]],
+ why:"The āyah names parents and relatives first, before orphans and travellers. Allah ordered charity the way He ordered responsibility — nearest first.",
+ points:["The best dinar is the one spent on your family","Even food lifted to a family member's mouth is ṣadaqah","Do it quietly, at home, without announcing it"],
+ rem:"The people you eat with every day are the first people you are responsible for. Charity that skips over them has skipped the first step."
+},
+{
+ t:"And Charity Beyond It", ar:"الصَّدَقَة",
+ sub:"The neighbour, the orphan, the stranger — and the ṣadaqah that costs nothing.",
+ facts:{term:"Ṣadaqah",against:"Bukhl — stinginess",quran:"Al-Baqarah 2:261",note:"Wealth never decreases"},
+ hook:"You have no money at all today. Can you still give ṣadaqah?",
+ plates:[
+  P("akh2-06a-neighbour.jpeg","Over the wall",
+   "He ﷺ said Jibrīl kept advising him about the neighbour until he thought neighbours would be made heirs.",
+   "Two houses sharing a low garden wall at dusk, a covered dish being passed across the wall by two pairs of hands from either side, lamplight in both windows."),
+  P("akh2-06b-smile.jpeg","The charity with no cost",
+   "Removing something harmful from the road, a good word, even a smile — all of it is written as ṣadaqah.",
+   "A hand lifting a broken branch away from the middle of a dusty path, a small child's sandals visible walking safely past in the background, morning light.")],
+ body:["Once the people of your house are looked after, the circle widens: the neighbour, the orphan, the traveller, the one who asks and the one too proud to ask.",
+  "He ﷺ said <b>the one who eats his fill while his neighbour beside him goes hungry is not a believer</b>. He described the reward of caring for an orphan by holding up two fingers together and saying that is how close such a person is to him in Jannah.",
+  "And when a poor companion said he had nothing to give, the answer was a list: <mark>a good word is ṣadaqah, removing harm from the road is ṣadaqah, helping a man onto his mount is ṣadaqah, even smiling at your brother is ṣadaqah.</mark> Nobody is too poor to give."],
+ story:[["The dates in the dark","ʿAlī and Fāṭimah and their household gave away their food for three nights running — to a poor man, an orphan and a captive — and broke their own fast on water. The Qur'an recorded it: <i>they give food, despite loving it, to the needy, the orphan and the captive, saying: we feed you only for the Face of Allah, we want no reward from you and no thanks.</i> They said it out loud so the receiver would not feel he owed them anything."],
+  ["The one at the edge of the class","There is a student in every class who never gets picked, never gets invited, and eats alone by choice they did not really make. You have no money to give them. You have a seat next to you, thirty seconds of conversation, and a smile — and every one of those has been named ṣadaqah by the Prophet ﷺ himself."]],
+ had:{q:"Every act of kindness is charity. And your smiling in the face of your brother is charity.",s:"Ṣaḥīḥ al-Bukhārī 6021 · Sunan at-Tirmidhī 1956"},
+ ay:{a:"مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ أَنبَتَتْ سَبْعَ سَنَابِلَ",
+  m:"The example of those who spend their wealth in the way of Allah is like a seed that grows seven ears.",r:"Sūrah Al-Baqarah 2:261"},
+ discuss:[["Jibrīl advised him about neighbours so often he expected them to inherit. Why so much emphasis?","unmute"],
+  ["Type one ṣadaqah you could give today that costs no money at all.","chat"],
+  ["Why did ʿAlī's family say out loud that they wanted no thanks?","unmute"]],
+ why:"He said ṣadaqah does not decrease wealth. Not that it is replaced later — that it does not decrease it at all. Allah does the accounting differently from the way your calculator does.",
+ points:["The neighbour has a right over you, Muslim or not","Caring for an orphan puts you beside him in Jannah","A smile, a good word and clearing the road are all ṣadaqah"],
+ rem:"You will never be too poor to give ṣadaqah. That excuse was closed by the Prophet ﷺ himself, and he closed it with a smile."
+},
+{
+ t:"Thinking Well of People", ar:"حُسْنُ الظَّنّ",
+ sub:"Most of what you are certain about other people is guesswork.",
+ facts:{term:"Ḥusn aẓ-ẓann",against:"Sū' aẓ-ẓann — suspicion",quran:"Al-Ḥujurāt 49:12",note:"The falsest speech"},
+ hook:"Someone walked past you without saying salām. What is the first explanation your mind reached for?",
+ plates:[
+  P("akh2-07a-window.jpeg","What you did not see",
+   "You judged a whole person from one moment, and the moment before it was invisible to you.",
+   "A lit window seen from a dark street, only a corner of a room visible through it, most of the interior hidden by the wall and the curtain."),
+  P("akh2-07b-seventy.jpeg","Seventy excuses",
+   "ʿUmar said: do not think badly of a word that came from your brother while you can find a good explanation for it.",
+   "An open notebook on a desk with a short list written down its page, a pencil beside it, warm lamplight, the writing not readable.")],
+ body:["Suspicion is the mind filling in a gap with the worst available material. The Prophet ﷺ warned about it in unusually strong words: <b>beware of suspicion, for suspicion is the falsest of speech.</b>",
+  "The reason is simple. You almost never know why someone did what they did. You did not see their morning, their home, their illness or their fear. <mark>You are judging a whole person from one frame of a film you did not watch.</mark>",
+  "The early Muslims took this seriously enough to make a rule of it: if a brother says something that could be taken seventy ways, take it the best way. Not because the good explanation is always true — but because you are responsible for your guess, and you will be asked about it."],
+ story:[["The rumour and the āyah","When a false rumour was spread about ʿĀ'ishah, the Qur'an came down correcting the believers for repeating it — and the correction was not <i>you should have checked</i>. It was: <b>why, when you heard it, did the believing men and women not think well of their own people and say: this is a clear lie?</b> The expected reaction was not investigation. It was refusal."],
+  ["The message left on read","Someone does not reply to you for two days and your mind builds an entire story: they are annoyed, they have chosen someone else, they were always like this. Then you find out their phone was broken. Every one of those two days you spent being hurt was a story you wrote yourself, and you were the only one reading it."]],
+ had:{q:"Beware of suspicion, for suspicion is the falsest of speech.",s:"Ṣaḥīḥ al-Bukhārī 6064 · Ṣaḥīḥ Muslim 2563"},
+ ay:{a:"يَا أَيُّهَا الَّذِينَ آمَنُوا اجْتَنِبُوا كَثِيرًا مِّنَ الظَّنِّ إِنَّ بَعْضَ الظَّنِّ إِثْمٌ",
+  m:"O you who believe, avoid much suspicion — indeed some suspicion is sin.",r:"Sūrah Al-Ḥujurāt 49:12"},
+ discuss:[["The Qur'an expected refusal, not investigation. Why is that a higher standard?","unmute"],
+  ["Type one time you were sure about someone's motive and turned out to be wrong.","chat"],
+  ["Where is the line between thinking well of people and being naive?","unmute"]],
+ why:"You will be asked about your assumptions, not only your actions. A person can spend years quietly resenting someone over something that never happened.",
+ points:["Suspicion is called the falsest speech","Find the good explanation before you accept the bad one","You are responsible for the story you tell yourself"],
+ rem:"The next time someone lets you down, spend ten seconds looking for the innocent explanation. You will be right more often than you expect — and safe either way."
+},
+{
+ t:"Swallowing Anger", ar:"كَظْمُ الْغَيْظ",
+ sub:"The strong one is not the one who wins the fight.",
+ facts:{term:"Kaẓm al-ghayẓ",against:"Ghaḍab — rage",quran:"Āl ʿImrān 3:134",note:"He said it three times"},
+ hook:"What is the last thing you said in anger that you would take back if you could?",
+ plates:[
+  P("akh2-08a-kettle.jpeg","Before it boils over",
+   "Anger is not the sin. Acting on it is. There is a gap between the two, and everything depends on what you do inside it.",
+   "A kettle on a low flame just beginning to steam, a hand reaching to lift it off the heat before it boils, plain kitchen surface, warm light. No face."),
+  P("akh2-08b-water.jpeg","Sit down, or drink",
+   "He advised: if you are angry standing, sit. If it does not pass, lie down. And seek refuge from Shayṭān.",
+   "A cup of water on a low windowsill beside an open window, a light breeze moving a plain curtain, calm morning light, nobody in the room.")],
+ body:["A man came and said: advise me. He ﷺ said: <b>do not become angry.</b> The man asked again, several times, and each time the answer was the same three words.",
+  "Anger itself is not a sin — he ﷺ became angry when the limits of Allah were violated. The sin is in what you do while angry, because anger removes the part of you that thinks.",
+  "<mark>The strong man is not the one who overcomes people. He is the one who controls himself when he is angry.</mark> And the reward is enormous: whoever swallows his anger when he is able to act on it, Allah will call him before all of creation on the Day of Judgement and let him choose whichever of the ḥūr he wishes."],
+ story:[["The one who was insulted in front of him","A man insulted Abū Bakr while the Prophet ﷺ sat listening, smiling. Abū Bakr stayed silent, then answered back. At that moment the Prophet ﷺ stood up to leave. Abū Bakr asked why. He said: <i>an angel was replying on your behalf while you were silent. When you answered back, Shayṭān took his place — and I do not sit where Shayṭān sits.</i>"],
+  ["The message you nearly sent","You typed it. It was accurate, it was deserved, and it would have ended the argument in your favour. Then you did not send it. Nobody praised you, nobody knew, and the friendship survived. That is kaẓm al-ghayẓ, and it happens on a phone as often as it ever happened in a courtyard."]],
+ had:{q:"The strong man is not the one who overcomes people by his strength, but the one who controls himself when he is angry.",s:"Ṣaḥīḥ al-Bukhārī 6114 · Ṣaḥīḥ Muslim 2609"},
+ ay:{a:"وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+  m:"And those who restrain anger and pardon people…",r:"Sūrah Āl ʿImrān 3:134"},
+ discuss:[["He gave the same three-word advice every time. Why not add anything?","unmute"],
+  ["Type one situation that reliably makes you angry.","chat"],
+  ["An angel replied for Abū Bakr while he was silent. What does that tell you about staying quiet?","unmute"]],
+ why:"You cannot stop anger arriving. You can decide what happens in the ten seconds after it does, and almost every regret you will ever have lives inside those ten seconds.",
+ points:["Anger is not sin; acting on it is","Change your position, drink water, seek refuge","Silence is answered on your behalf"],
+ rem:"Ten seconds. That is the whole distance between a bad day and a broken friendship. Learn to wait it out."
+},
+{
+ t:"Pardoning", ar:"الْعَفْو",
+ sub:"Forgiving someone who is not sorry, and expects nothing.",
+ facts:{term:"ʿAfw — pardon",against:"Intiqām — revenge",quran:"An-Nūr 24:22",note:"Allah's own name"},
+ hook:"Is there anyone you would refuse to forgive even if Allah asked you to?",
+ plates:[
+  P("akh2-09a-untied.jpeg","Putting it down",
+   "Carrying a grudge is not a punishment you give someone else. It is one you keep paying yourself.",
+   "A heavy coil of rope set down on the ground beside an open gate, a walking figure seen from behind passing through the gate empty-handed, morning light."),
+  P("akh2-09b-letter.jpeg","The favour continued",
+   "Abū Bakr swore never again to help a relative who had slandered his daughter — then took the oath back when the āyah came.",
+   "A small pouch of coins and a folded letter left on a wooden step outside a modest door, a hand withdrawing, early light. No faces.")],
+ body:["Forgiving someone who apologises is easy and ordinary. ʿAfw is the harder thing: letting go of a right you actually have, against someone who has not asked you to.",
+  "Al-ʿAfuww — the Pardoner — is one of Allah's own names, and the duʿā he ﷺ taught ʿĀ'ishah for Laylat al-Qadr is built on it: <i>O Allah, You are Pardoning and You love to pardon, so pardon me.</i>",
+  "<mark>You are asking Allah for something you are refusing to give.</mark> That is worth sitting with. Everyone wants ʿafw on the Day of Judgement, and most people will not extend it to a cousin."],
+ story:[["The verse that broke an oath","Misṭaḥ was a poor relative whom Abū Bakr had supported for years — and he took part in spreading the slander against Abū Bakr's own daughter ʿĀ'ishah. Abū Bakr swore he would never spend on him again. Then the Qur'an came down: <i>let them pardon and overlook. Do you not love that Allah should forgive you?</i> Abū Bakr said immediately: <b>yes, by Allah, I do love that Allah should forgive me</b> — and restored the payment, and never withdrew it again."],
+  ["Nobody apologised","Most of the things done to you will never be apologised for. The person has forgotten, or does not think they were wrong, or is too proud. If your peace depends on their apology, you have handed them control of it. ʿAfw is taking that control back."]],
+ had:{q:"O Allah, You are Pardoning and generous, You love to pardon, so pardon me.",s:"Sunan at-Tirmidhī 3513 · Ibn Mājah 3850"},
+ ay:{a:"وَلْيَعْفُوا وَلْيَصْفَحُوا ۗ أَلَا تُحِبُّونَ أَن يَغْفِرَ اللَّهُ لَكُمْ",
+  m:"Let them pardon and overlook. Do you not love that Allah should forgive you?",r:"Sūrah An-Nūr 24:22"},
+ discuss:[["Abū Bakr changed his mind at one āyah. What does that say about him?","unmute"],
+  ["Type <i>yes</i> or <i>no</i>: is there someone you have decided never to forgive?","chat"],
+  ["Does forgiving someone mean trusting them again? Are those the same thing?","unmute"]],
+ why:"Pardon is the one act of worship that costs you nothing to perform and everything to withhold. And you are asking for it yourself, nightly.",
+ points:["ʿAfw is letting go of a right you actually have","You are asking Allah for what you refuse to give","Forgiving and trusting again are not the same thing"],
+ rem:"On Laylat al-Qadr you will ask Allah to pardon you. Decide now whether you want to be asking that with a name still on your list."
+},
+{
+ t:"Keeping Your Word", ar:"الْوَفَاء",
+ sub:"A promise is a debt, and small promises are the ones that break.",
+ facts:{term:"Wafā' — fulfilling",against:"Khiyānah — betrayal",quran:"Al-Isrā' 17:34",note:"A sign of hypocrisy"},
+ hook:"What did you promise this week that you have not done yet?",
+ plates:[
+  P("akh2-10a-handshake.jpeg","Given, not signed",
+   "In Arabia a word was stronger than a document. He ﷺ kept agreements even when keeping them cost him.",
+   "Two hands clasped in agreement above a plain wooden table, sleeves visible, nothing written between them, warm afternoon light. No faces."),
+  P("akh2-10b-small.jpeg","The small promise",
+   "He once made a boy a promise about a small bird and did not treat it as beneath him.",
+   "A small clay bowl of seed left on a low garden wall beside an empty birdcage with its door open, soft morning light, sparrows on the wall.")],
+ body:["He ﷺ named three signs of a hypocrite, and one of them is this: <b>when he promises, he breaks it.</b> Not when he betrays a nation — when he breaks a promise.",
+  "This includes the promises adults treat as unimportant. He said that if you call a child and say <i>come, take this</i>, and you have nothing to give, <mark>a lie has been written against you.</mark>",
+  "Wafā' also covers the promise nobody heard you make — the deadline you accepted, the thing you said you would return, the message you said you would send. The Qur'an says simply: <i>and fulfil the covenant — indeed the covenant will be questioned about.</i>"],
+ story:[["Three days at the appointed place","Before prophethood he agreed to meet a man at a place, and the man forgot and did not come. He waited. He came back the next day and waited again. On the third day the man remembered and rushed there, and found him still waiting. He said only: <i>you have troubled me — I have been here for three days.</i> No anger, no lecture. He simply had not left, because he had said he would be there."],
+  ["The homework you promised","Nobody writes down the small promises. I will send it tonight. I will help you tomorrow. I will pay you back next week. Every one of them was recorded whether you wrote it down or not, and a person who breaks twenty small promises has a reputation built entirely out of things nobody could prove."]],
+ had:{q:"The signs of a hypocrite are three: when he speaks he lies, when he promises he breaks it, and when he is trusted he betrays.",s:"Ṣaḥīḥ al-Bukhārī 33 · Ṣaḥīḥ Muslim 59"},
+ ay:{a:"وَأَوْفُوا بِالْعَهْدِ ۖ إِنَّ الْعَهْدَ كَانَ مَسْئُولًا",
+  m:"And fulfil the covenant — indeed the covenant will be questioned about.",r:"Sūrah Al-Isrā' 17:34"},
+ discuss:[["Breaking a promise is listed beside lying and betrayal. Is that too harsh?","unmute"],
+  ["Type one promise you have not kept. Just the type, not the details.","chat"],
+  ["He waited three days for a man who forgot. Would you have?","unmute"]],
+ why:"Trust is built from very small promises kept and destroyed by very small promises broken. Nobody loses a reputation in one dramatic event.",
+ points:["Breaking promises is named a sign of hypocrisy","Promises to children count exactly the same","Say less, and do what you said"],
+ rem:"Do not promise so easily. Say <i>in shā' Allah I will try</i> when that is the truth — and when you do promise, treat it as a debt, because that is what it is."
+},
+{
+ t:"Gratitude", ar:"الشُّكْر",
+ sub:"The people with least are often the ones who notice most.",
+ facts:{term:"Shukr",against:"Kufr an-niʿmah",quran:"Ibrāhīm 14:7",note:"He prayed until his feet swelled"},
+ hook:"Name three things you had today that you did not thank Allah for.",
+ plates:[
+  P("akh2-11a-water.jpeg","The glass of water",
+   "He ﷺ said whoever wakes safe, healthy, with food for the day, has been given the whole world.",
+   "A plain glass of clear water on a windowsill with morning light passing through it, a small piece of bread beside it, nothing else in the frame."),
+  P("akh2-11b-feet.jpeg","Should I not be a grateful servant",
+   "ʿĀ'ishah asked why he prayed until his feet swelled when his sins were already forgiven. That was his answer.",
+   "An empty prayer mat in a dark room with the first grey light at a window, a shadow of a window frame across it, worn edges on the mat. No people.")],
+ body:["Shukr is not a feeling. It is noticing, saying, and using. Noticing the blessing, thanking the One who gave it, and then using it in a way He would accept.",
+  "Allah made it a formula: <b>if you are grateful, I will certainly increase you.</b> Not perhaps. And He noted something uncomfortable about us: <i>few of My servants are truly grateful.</i>",
+  "<mark>Most blessings are only noticed when they are removed.</mark> Nobody thanks Allah for a working knee, an unblocked nose, or a mother who is still alive — until one of them changes."],
+ story:[["Look at the one below you","He ﷺ said: <i>look at those below you and do not look at those above you — that is more suitable so that you do not belittle the favour of Allah upon you.</i> One sentence dismantles the entire habit of scrolling through other people's lives. The comparison itself is the disease; the direction of the comparison is the cure."],
+  ["Grateful for what was taken","ʿUrwah ibn az-Zubayr had a leg amputated and lost a son in the same journey. He said: O Allah, I had four limbs and You took one and left three; I had four sons and You took one and left three; and if You have tested me, You have kept me safe, and if You have taken, You have left much more. He did not say it years later. He said it that day."]],
+ had:{q:"Whoever among you wakes in the morning secure in his home, healthy in his body, with food for his day — it is as though the whole world has been gathered for him.",s:"Sunan at-Tirmidhī 2346 · Ibn Mājah 4141"},
+ ay:{a:"لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
+  m:"If you are grateful, I will certainly increase you.",r:"Sūrah Ibrāhīm 14:7"},
+ discuss:[["Why does looking at those below you protect gratitude?","unmute"],
+  ["Type one blessing you only noticed after losing it for a while.","chat"],
+  ["Can a person be grateful and still want more? Where is the line?","unmute"]],
+ why:"Gratitude is the only response to blessing that increases it. Complaining has never once produced more of anything.",
+ points:["Notice it, say it, then use it well","Compare downward, not upward","He worshipped out of thanks, not out of need"],
+ rem:"Tonight, before you sleep, name three specific things from today. Not <i>everything</i> — three specific things. Specific gratitude is the only kind that changes you."
+},
+{
+ t:"Justice, Even Against Yourself", ar:"الْعَدْل",
+ sub:"Telling the truth when the truth is on the other side.",
+ facts:{term:"ʿAdl — justice",against:"Ẓulm — wrongdoing",quran:"An-Nisā' 4:135",note:"Even against yourself"},
+ hook:"Your friend is wrong and the person they wronged is someone you dislike. Whose side are you on?",
+ plates:[
+  P("akh2-12a-balance.jpeg","The same measure",
+   "Justice means one standard, applied to the people you love and the people you do not.",
+   "A simple two-pan balance resting level on a plain wooden counter, both pans holding identical stones, even light on both sides."),
+  P("akh2-12b-hand.jpeg","Even if it is your own",
+   "He ﷺ said even if Fāṭimah, his own daughter, had stolen, he would have applied the law.",
+   "An open doorway of a plain courthouse-like room with light falling evenly across the floor from both sides, a single empty bench, nobody present.")],
+ body:["The Qur'an gives a command that is almost impossible to live up to: <b>be maintainers of justice, witnesses for Allah, even against yourselves, or your parents, or your relatives.</b> Even against yourself.",
+  "And it goes further, in a second āyah: do not let hatred of a people lead you to be unjust — <i>be just, that is nearer to taqwā.</i> <mark>You are required to be fair to someone you dislike, and honest about someone you love.</mark>",
+  "This is the hardest trait in the book, because everything in us wants to defend our own side. But a person who bends the truth for their friends has no truth left to offer anyone."],
+ story:[["The woman of Makhzūm","A noblewoman stole, and her family sent Usāmah — beloved to the Prophet ﷺ — to ask that the punishment be waived. His face changed. He said: <i>do you intercede regarding one of the limits of Allah?</i> Then he addressed the people: those before you were destroyed because when a noble person stole they let him go, and when a weak person stole they punished him. <b>By Allah, if Fāṭimah bint Muḥammad stole, I would cut off her hand.</b>"],
+  ["The group chat","Your friend says something untrue about a classmate nobody likes. It would cost you nothing to stay quiet, and it would cost you something to say <i>that is not true</i>. Everyone in that chat will remember which one you did — and so, more importantly, will the two angels."]],
+ had:{q:"Those before you were destroyed because when a noble person among them stole they let him go, and when a weak person stole they carried out the punishment on him.",s:"Ṣaḥīḥ al-Bukhārī 3475 · Ṣaḥīḥ Muslim 1688"},
+ ay:{a:"كُونُوا قَوَّامِينَ بِالْقِسْطِ شُهَدَاءَ لِلَّهِ وَلَوْ عَلَىٰ أَنفُسِكُمْ",
+  m:"Be maintainers of justice, witnesses for Allah, even against yourselves.",r:"Sūrah An-Nisā' 4:135"},
+ discuss:[["Why did he name his own daughter in that sentence?","unmute"],
+  ["Type <i>yes</i> or <i>no</i>: have you ever stayed quiet when a friend was clearly in the wrong?","chat"],
+  ["Is defending your friend always loyalty? When does it become something else?","unmute"]],
+ why:"Communities do not collapse because of thieves. They collapse when the rules bend for some people and not others — and he said so explicitly.",
+ points:["One standard, for those you love and those you do not","Dislike is never a licence to be unfair","Saying <i>that is not true</i> about your own side is the test"],
+ rem:"The measure of your character is not how you treat people you like. It is what you say about your friend when your friend is wrong."
+}
+];
+
+
+/* ===================== MALAYALAM ===================== */
+const UI_ML={
+ coverH:"സ്വഭാവത്തിന്റെ രണ്ടാം പുസ്തകം",
+ coverP:"നൂറുൽ ഹയാത്ത് പുറത്ത് കാണാവുന്ന ശീലങ്ങൾ പഠിപ്പിച്ചു — സത്യം പറയൽ, സഹായിക്കൽ, വൃത്തി. ഈ പുസ്തകം ആർക്കും കാണാനാവാത്തവയെക്കുറിച്ചാണ്: നീ എന്തിന് ചെയ്തു, ആർക്ക് വേണ്ടി ചെയ്തു, അത് നിനക്ക് നഷ്ടമുണ്ടാക്കുമ്പോൾ നീ എന്ത് ചെയ്യുന്നു.",
+ coverTag:"തസ്കിയ · ലെവൽ 3 · 11–15 വയസ്സ്",
+ startBtn:"തുടങ്ങാം →",
+ howtoH:"ഓരോ ഓൺലൈൻ ക്ലാസും എങ്ങനെ നടക്കുന്നു",
+ howto1:"<b>ക്ലാസിന് മുമ്പ്</b> — ആമുഖ ചോദ്യം വായിക്കൂ, രണ്ട് ചിത്രങ്ങളും നോക്കൂ.",
+ howto2:"<b>ക്ലാസിൽ</b> — അധ്യാപകൻ വിശദീകരണവും രണ്ട് കഥകളും നിങ്ങളോടൊപ്പം വായിക്കും, പിന്നെ ചർച്ച തുടങ്ങും. ചാറ്റിൽ എഴുതി അല്ലെങ്കിൽ മൈക്ക് തുറന്ന് ഉത്തരം പറയൂ.",
+ howto3:"<b>ശേഷം</b> — പാഠത്തിന്റെ അവസാനത്തെ ഓർമ്മപ്പെടുത്തലാണ് കൂടെ കൊണ്ടുപോകേണ്ടത്.",
+ doneH:"മാശാ അല്ലാഹ്",
+ doneP:"പന്ത്രണ്ട് ഗുണങ്ങൾ — അതിൽ ഒന്നുപോലും പുറത്തുനിന്ന് കാണാനാവില്ല. അതാണ് കാര്യം. അല്ലാഹു ഹൃദയത്തിലേക്കാണ് നോക്കുന്നത്, ഹൃദയം മാത്രമാണ് നിന്റെ കൈയിലുള്ളത്.",
+ drawerSub:"സൽസ്വഭാവം · 12 പാഠങ്ങൾ · നൂറുൽ ഹയാത്തിന് ശേഷം",
+ lesson:"പാഠം", of:"/",
+ tagPics:"ചിത്രങ്ങൾ",
+ tagHook:"ആമുഖ ചോദ്യം — ക്ലാസിന് മുമ്പ് ചിന്തിക്കൂ",
+ tagBody:"എന്താണ് ഇതിന്റെ അർത്ഥം",
+ tagStory:"രണ്ട് കഥകൾ",
+ scSunnah:"സുന്നത്തിൽ നിന്ന്", scHome:"നമ്മുടെ ജീവിതത്തിൽ",
+ tagHad:"സുന്നത്തിൽ നിന്ന്",
+ tagDiscuss:"ചർച്ച ചെയ്യാം — ലൈവ് ക്ലാസിൽ",
+ discussSub:"അധ്യാപകൻ ഈ ചോദ്യങ്ങൾ ചോദിക്കും. പറഞ്ഞിരിക്കുന്ന രീതിയിൽ ഉത്തരം നൽകൂ.",
+ chat:"ചാറ്റിൽ", unmute:"മൈക്ക് തുറന്ന്",
+ tagWhy:"എന്തുകൊണ്ട് പ്രധാനം",
+ tagRem:"ഈ പാഠം അടയ്ക്കുന്നതിന് മുമ്പ് ഒരു ഓർമ്മപ്പെടുത്തൽ",
+ fTerm:"അറബിയിൽ", fAgainst:"എതിർഗുണം", fQuran:"ഖുർആനിൽ", fNote:"കുറിപ്പ്"
+};
+
+const ML_L=[
+{
+ t:"അല്ലാഹുവിന് വേണ്ടി മാത്രം", ar:"الإِخْلَاص",
+ sub:"നന്മ ചെയ്യുന്നതും ആളുകൾ കാണാൻ വേണ്ടി നന്മ ചെയ്യുന്നതും തമ്മിലുള്ള വ്യത്യാസം.",
+ facts:{term:"ഇഖ്‌ലാസ് — നിഷ്കളങ്കത",against:"രിയാഅ് — കാണിക്കൽ",quran:"അൽ-ബയ്യിന 98:5",note:"ആദ്യം വിധിക്കപ്പെടുന്ന കർമം"},
+ hook:"നീ ഒരു നല്ല കാര്യം ചെയ്തു, ആരും അറിഞ്ഞില്ല. എന്നിട്ടും അത് വിലയുള്ളതായി തോന്നിയോ?",
+ plates:[["ആരും കാണാത്ത കർമം","കാഴ്ചക്കാരില്ലാതെ ചെയ്യുന്ന നന്മ, കാഴ്ചക്കാരോടെ ചെയ്യുന്ന അതേ നന്മയെക്കാൾ വിലയുള്ളതാണ് — കാരണം അതിലൊന്ന് മാത്രമാണ് അല്ലാഹുവിന് വേണ്ടിയായത്."],
+  ["രണ്ട് കൈകൾ, ഒരു കർമം","ഇടതു കൈ അറിയാത്തത്ര രഹസ്യമായി വലതു കൈ നൽകുന്ന ദാനം — അന്ത്യദിനത്തിൽ അർശിന്റെ തണലിൽ നിൽക്കുന്ന ഏഴിൽ ഒരാളാണത്."]],
+ body:["ഓരോ കർമത്തിനും രണ്ട് ഭാഗമുണ്ട്: കർമവും കാരണവും. ആളുകൾക്ക് ആദ്യത്തേത് മാത്രമേ കാണാനാവൂ. അല്ലാഹു രണ്ടും കാണുന്നു, വിധിക്കുന്നത് രണ്ടാമത്തേത് വെച്ചാണ്.",
+  "അതുകൊണ്ടാണ് ഒരേ സ്വഫ്ഫിൽ ഒരേ വേഗത്തിൽ ഒരേ നിസ്കാരം നിസ്കരിക്കുന്ന രണ്ട് വിദ്യാർത്ഥികളിൽ ഒരാൾക്ക് പ്രതിഫലം കിട്ടുകയും മറ്റെയാൾക്ക് ഒന്നും കിട്ടാതിരിക്കുകയും ചെയ്യുന്നത്. <mark>ആ വ്യത്യാസം കണ്ണിന് കാണാനാവില്ല, എന്നിട്ടും അതാണ് ഏക കണക്ക്.</mark>",
+  "ആളുകൾ നല്ലത് വിചാരിക്കാൻ വേണ്ടി ആരാധന ചെയ്യുന്നതാണ് രിയാഅ്. നബി ﷺ അതിനെ <b>ചെറിയ ശിർക്ക്</b> എന്ന് വിളിച്ചു, ദജ്ജാലിനെക്കാൾ അവിടുന്ന് അനുചരന്മാർക്ക് വേണ്ടി അതിനെ ഭയപ്പെട്ടു. അത് ഉച്ചത്തിലായതുകൊണ്ടല്ല, നിശ്ശബ്ദമായതുകൊണ്ടും ചീത്ത കർമങ്ങളിലല്ല നല്ല കർമങ്ങൾക്കുള്ളിൽ ഒളിച്ചിരിക്കുന്നതുകൊണ്ടുമാണ്."],
+ story:["അന്ത്യദിനത്തിൽ ആദ്യം വിധിക്കപ്പെടുന്ന മൂന്ന് പേരെക്കുറിച്ച് നബി ﷺ പറഞ്ഞു: ഒരു ശഹീദ്, ഒരു പണ്ഡിതൻ, ഒരു ദാനശീലൻ. ഓരോരുത്തരോടും എന്ത് ചെയ്തുവെന്ന് ചോദിക്കപ്പെടും. ഓരോരുത്തരും സത്യം പറയും — ഞാൻ യുദ്ധം ചെയ്തു, ഞാൻ പഠിപ്പിച്ചു, ഞാൻ നൽകി. ഓരോരുത്തരോടും പറയപ്പെടും: <i>നീ കളവ് പറഞ്ഞു. ധീരൻ, പണ്ഡിതൻ, ഉദാരൻ എന്ന് പറയപ്പെടാൻ വേണ്ടിയാണ് നീ ചെയ്തത്. അത് പറയപ്പെടുകയും ചെയ്തു.</i> പിന്നെ മൂന്ന് പേരെയും നരകത്തിലേക്ക് വലിച്ചിഴയ്ക്കും. അവരുടെ കർമങ്ങൾ യഥാർത്ഥമായിരുന്നു. കാരണങ്ങൾ ആയിരുന്നില്ല.",
+  "എല്ലാ ക്ലാസിലും ജോലി ചെയ്യുകയും അതിനെക്കുറിച്ച് ഒന്നും പറയാതിരിക്കുകയും ചെയ്യുന്ന ഒരാളുണ്ടാകും. അവർ പറയാതെ വൃത്തിയാക്കും. പോസ്റ്റ് ചെയ്യാതെ സഹായിക്കും. അവരെ ശ്രദ്ധിക്കാതെ പോകാനും ഒച്ചയുള്ളവരെക്കാൾ അവർ കുറവ് ചെയ്യുന്നു എന്ന് കരുതാനും എളുപ്പമാണ്. അല്ലാഹു അവരെ ശ്രദ്ധിക്കാതെ പോകുന്നില്ല — അന്ത്യദിനത്തിലെ ക്രമം ഇന്ന് കാണുന്നതിൽ നിന്ന് വളരെ വ്യത്യസ്തമായിരിക്കും."],
+ had:"കർമങ്ങൾ നിയ്യത്ത് അനുസരിച്ച് മാത്രമാണ്; ഓരോ വ്യക്തിക്കും അവൻ ഉദ്ദേശിച്ചത് മാത്രമേ ലഭിക്കൂ.",
+ ay:"അല്ലാഹുവിന് ദീൻ നിഷ്കളങ്കമാക്കി അവനെ ആരാധിക്കാനല്ലാതെ അവരോട് കൽപ്പിക്കപ്പെട്ടിട്ടില്ല.",
+ discuss:["രണ്ട് പേർ ഒരേ നിസ്കാരം നിസ്കരിക്കുന്നു, ഒരാൾക്ക് മാത്രം പ്രതിഫലം. അവരെ വേർതിരിച്ചത് എന്താണ്?",
+  "ആരും അറിയാത്ത ഒരു നല്ല കാര്യം നീ ചെയ്തിട്ടുണ്ടോ? എന്താണെന്ന് പറയേണ്ട — ഉണ്ട് അല്ലെങ്കിൽ ഇല്ല എന്ന് മാത്രം എഴുതൂ.",
+  "ആരെങ്കിലും പ്രശംസിക്കുമ്പോൾ സന്തോഷം തോന്നുന്നത് തെറ്റാണോ? അതിരെവിടെയാണ്?"],
+ why:"എത്ര നന്മ ചെയ്യാൻ കഴിയും എന്നത് നിന്റെ കൈയിലല്ല. ആർക്ക് വേണ്ടി ചെയ്തു എന്നത് നിന്റെ കൈയിലാണ് — അല്ലാഹു തൂക്കുന്നത് ആ പകുതിയാണ്.",
+ points:["കർമങ്ങൾ വലുപ്പം കൊണ്ടല്ല, നിയ്യത്ത് കൊണ്ടാണ് വിധിക്കപ്പെടുന്നത്","രിയാഅ് ചീത്ത കർമങ്ങളിലല്ല, നല്ല കർമങ്ങൾക്കുള്ളിലാണ് ഒളിക്കുന്നത്","ആഴ്ചയിൽ ഒരു നല്ല കാര്യമെങ്കിലും ആരും അറിയാതെ ചെയ്യൂ"],
+ rem:"ഇന്ന് ഒരു നല്ല കാര്യം ചെയ്യുന്നതിന് മുമ്പ് ഒരു ചെറിയ ചോദ്യം ചോദിക്കൂ: ഇത് ആർക്ക് വേണ്ടിയാണ്? ഉത്തരത്തിന് ഒരു നിമിഷം മതി, പക്ഷേ അത് എല്ലാം മാറ്റും."
+},
+{
+ t:"ലജ്ജ", ar:"الْحَيَاء",
+ sub:"കണ്ണിനും നാവിനും വസ്ത്രത്തിനും സ്ക്രീനിനും ഒരു കാവൽ.",
+ facts:{term:"ഹയാഅ് — ലജ്ജ",against:"നാണമില്ലായ്മ",quran:"അന്നൂർ 24:30–31",note:"ഈമാനിന്റെ ഒരു ശാഖ"},
+ hook:"നീ ഏറ്റവും ബഹുമാനിക്കുന്ന ആൾ ഇപ്പോൾ മുറിയിലേക്ക് കയറിവന്നാൽ, നീ ഇപ്പോൾ ചെയ്യുന്നത് ചെയ്യുമോ?",
+ plates:[["കണ്ണ് താഴ്ത്തൽ","ആദ്യത്തെ നോട്ടം നിനക്കെതിരെ എഴുതപ്പെടില്ല. രണ്ടാമത്തേത് നിന്റേതാണ്, നീ അത് തിരഞ്ഞെടുത്തതാണ്."],
+  ["സ്വകാര്യ സ്ക്രീൻ","ഹയാഅ് മറ്റുള്ളവർ കാണുന്നതിനെക്കുറിച്ച് മാത്രമല്ല. ആർക്കും കാണാനാവാത്തപ്പോഴാണ് അത് ഏറ്റവും പരീക്ഷിക്കപ്പെടുന്നത്."]],
+ body:["ഹയാഅ് എന്നാൽ നാണം എന്ന് പലപ്പോഴും പരിഭാഷപ്പെടുത്താറുണ്ട്, പക്ഷേ അതല്ല. താഴ്ന്ന ഒരു കാര്യം ചെയ്യുന്നതിന് മുമ്പ് ഒരാളെ തടയുന്ന ഉള്ളിലെ ഒരു ബോധമാണത് — ആരും നോക്കുന്നില്ലെങ്കിലും പ്രവർത്തിക്കുന്ന ഒരു ബ്രേക്ക്.",
+  "നബി ﷺ പറഞ്ഞു: <b>ഓരോ മതത്തിനും ഒരു സ്വഭാവമുണ്ട്, ഇസ്‌ലാമിന്റെ സ്വഭാവം ഹയാഅ് ആണ്.</b> അത് ഈമാനിന്റെ ഒരു ശാഖയാണെന്നും അവിടുന്ന് പറഞ്ഞു — അതായത് ഹയാഅ് പോയാൽ ഈമാനിൽ നിന്ന് എന്തോ കൂടി പോയിരിക്കുന്നു.",
+  "നീ ധരിക്കുന്നത്, സംസാരിക്കുന്ന രീതി, നോക്കുന്നത്, സ്ക്രോൾ ചെയ്ത് കടന്നുപോകുന്നത്, ചിരിക്കുന്ന കാര്യങ്ങൾ — എല്ലാം ഇതിൽ വരും. <mark>ഇന്ന് ഹയാഇന്റെ ഏറ്റവും വലിയ പരീക്ഷ ആളുകളുടെ മുന്നിലല്ല. രാത്രിയിൽ, ഒറ്റയ്ക്ക്, ഒരു സ്ക്രീനിന് മുന്നിലാണ്.</mark>"],
+ story:["അബൂസഈദ് (റ) പറഞ്ഞു: നബി ﷺ ക്ക് അകത്തളത്തിലിരിക്കുന്ന ഒരു പെൺകുട്ടിയെക്കാൾ ഹയാഅ് ഉണ്ടായിരുന്നു — അവിടുത്തേക്ക് ഇഷ്ടമില്ലാത്ത ഒന്ന് വന്നാൽ അവർക്ക് അത് അവിടുത്തെ മുഖത്ത് കാണാമായിരുന്നു. അവിടുന്ന് ഒരിക്കലും ആരെയും പരസ്യമായി അപമാനിക്കേണ്ടിവന്നില്ല. ഒരാളുടെയും പേര് പറയാതെ <i>ചിലർ ഇന്നയിന്ന കാര്യം ചെയ്യുന്നത് എന്താണ്</i> എന്ന് അവിടുന്ന് പറയും, ചെയ്തയാൾക്ക് കാര്യം മനസ്സിലാകും, മറ്റാരും അപമാനിക്കപ്പെടുകയുമില്ല.",
+  "അലി (റ) യോട് നബി ﷺ പറഞ്ഞു: ഒരു നോട്ടത്തിന് പിന്നാലെ മറ്റൊരു നോട്ടം അയക്കരുത് — ആദ്യത്തേത് നിനക്കുള്ളതാണ്, രണ്ടാമത്തേത് നിനക്കെതിരാണ്. ഇതിന്റെ അർത്ഥം ശ്രദ്ധിക്കൂ. അബദ്ധത്തിൽ കണ്ണിൽ പെടുന്നതിന് നീ കുറ്റക്കാരനല്ല. നീ മനഃപൂർവം തിരിച്ചുപോയി നോക്കുന്നതിനാണ് ഉത്തരവാദിത്തം. എല്ലാവരുടെയും ഫോൺ ആ രണ്ടാം നോട്ടങ്ങൾ കൊണ്ട് നിറഞ്ഞതാണ്."],
+ had:"ഹയാഅ് നന്മയല്ലാതെ ഒന്നും കൊണ്ടുവരുന്നില്ല.",
+ ay:"സത്യവിശ്വാസികളോട് അവരുടെ കണ്ണുകൾ താഴ്ത്താനും ഗുഹ്യഭാഗങ്ങൾ സൂക്ഷിക്കാനും പറയുക.",
+ discuss:["ഹയാഇനെ ഈമാനിന്റെ ശാഖ എന്ന് വിളിക്കുന്നു. ലജ്ജ എങ്ങനെയാണ് വിശ്വാസത്തിന്റെ ഭാഗമാകുന്നത്?",
+  "നിന്റെ സ്ക്രീൻ അധ്യാപകന് കാണാമായിരുന്നെങ്കിൽ നീ നിർത്തുമായിരുന്ന ഒരു കാര്യം എഴുതൂ.",
+  "പേര് പറയാതെ അവിടുന്ന് ആളുകളെ തിരുത്തി. അത് എന്തുകൊണ്ട് നല്ലതാണ്?"],
+ why:"ഹയാഅ് തെറ്റിന് ശേഷമുള്ള കുറ്റബോധമല്ല, തെറ്റിന് മുമ്പ് മുഴങ്ങുന്ന അലാറമാണ്. ആ അലാറം പ്രവർത്തിക്കുന്നുണ്ടെങ്കിൽ ബാക്കിയെല്ലാം ഏതാണ്ട് തനിയെ ശരിയാകും.",
+ points:["ആദ്യത്തെ നോട്ടം പൊറുക്കപ്പെടും; രണ്ടാമത്തേത് നീ തിരഞ്ഞെടുത്തതാണ്","അപമാനിക്കാതെ ആളുകളെ തിരുത്തൂ","ഹയാഇന്റെ യഥാർത്ഥ പരീക്ഷ ഒറ്റയ്ക്കായിരിക്കുമ്പോഴാണ്"],
+ rem:"ഏതൊരു മനുഷ്യനെക്കാളും നിന്റെ ഹയാഇന് അർഹൻ അല്ലാഹുവാണ്. ആ സ്വകാര്യ സ്ക്രീനും അവൻ കാണുന്നുണ്ട്, പൂട്ടിയ വാതിൽ അവനെ ഒരിക്കലും കബളിപ്പിച്ചിട്ടില്ല."
+},
+{
+ t:"വിനയം", ar:"التَّوَاضُع",
+ sub:"അഹങ്കാരമാണ് ആദ്യത്തെ പാപം. അത് ഇന്നും കാലഹരണപ്പെട്ടിട്ടില്ല.",
+ facts:{term:"തവാളുഅ് — വിനയം",against:"കിബ്ർ — അഹങ്കാരം",quran:"അൽ-ഫുർഖാൻ 25:63",note:"ഇബ്‌ലീസിന്റെ പാപം"},
+ hook:"നീ രഹസ്യമായി ആരെക്കാളാണ് സ്വയം മെച്ചമെന്ന് കരുതുന്നത്? സ്വയം സത്യസന്ധമായി ഉത്തരം പറയൂ.",
+ plates:[["താഴ്ന്ന വാതിൽ","കിബ്‌റിന് രണ്ട് ഭാഗമുണ്ട്: സത്യം നിരാകരിക്കലും ആളുകളെ താഴ്ത്തിക്കാണലും. രണ്ടും ശരിയാക്കാൻ കുനിയേണ്ടിവരും."],
+  ["നിലത്തിരിക്കൽ","മദീനയിൽ വരുന്നവർക്ക് ഏത് മനുഷ്യനാണ് നബി ﷺ എന്ന് തിരിച്ചറിയാനായില്ല — എല്ലാവരും ഇരിക്കുന്നതുപോലെ തന്നെയാണ് അവിടുന്നും ഇരുന്നത്."]],
+ body:["ചെയ്യപ്പെട്ട ആദ്യത്തെ പാപം കിബ്‌റാണ്. അല്ലാഹു ഉണ്ടെന്ന് ഇബ്‌ലീസ് നിഷേധിച്ചില്ല — അവന് നന്നായി അറിയാമായിരുന്നു. കുനിയാൻ പറഞ്ഞവനെക്കാൾ താൻ മെച്ചമാണെന്ന് അവൻ കരുതി, അത്ര മാത്രം. അതിന് ശേഷമുള്ള എല്ലാ അഹങ്കാരത്തിനും അതേ രൂപമാണ്.",
+  "നബി ﷺ കൃത്യമായ ഒരു നിർവചനം നൽകി, അത് മനഃപാഠമാക്കാൻ അർഹതയുള്ളതാണ്: <b>കിബ്ർ എന്നാൽ സത്യം നിരാകരിക്കലും ആളുകളെ താഴ്ത്തിക്കാണലുമാണ്.</b> രണ്ട് ഭാഗവും വസ്ത്രത്തെക്കുറിച്ചോ സമ്പത്തിനെക്കുറിച്ചോ അല്ല എന്ന് ശ്രദ്ധിക്കൂ. നല്ല ചെരിപ്പ് ഇഷ്ടപ്പെടുന്നതിനെക്കുറിച്ച് ഒരാൾ ചോദിച്ചപ്പോൾ അവിടുന്ന് പറഞ്ഞു അല്ലാഹു സുന്ദരനാണ്, സൗന്ദര്യം ഇഷ്ടപ്പെടുന്നു — പാപം ഹൃദയത്തിലാണ്, ചെരിപ്പിലല്ല.",
+  "<mark>അഹങ്കാരം എന്നാൽ സ്വയം നല്ലത് വിചാരിക്കലല്ല. മറ്റൊരാളെക്കുറിച്ച് കുറച്ച് വിചാരിക്കലാണ്.</mark>"],
+ story:["ഖലീഫയായിരിക്കെ ഒരിക്കൽ ഉമർ (റ) മിമ്പറിൽ നിന്ന് ഒരു നിർദേശം നൽകിയപ്പോൾ കൂട്ടത്തിൽ നിന്ന് ഒരാൾ എഴുന്നേറ്റ് പറഞ്ഞു: അങ്ങയുടെ അധിക തുണി എവിടെ നിന്ന് വന്നെന്ന് വിശദീകരിക്കുന്നതുവരെ ഞങ്ങൾ അനുസരിക്കില്ല. ഉമർ (റ) അയാളെ പുറത്താക്കിയില്ല. തന്റെ മകൻ തന്റെ വിഹിതം നൽകിയതാണെന്ന് പരസ്യമായി വിശദീകരിച്ചു. പിന്നെ പറഞ്ഞു: ഉമർ തെറ്റിയാൽ തിരുത്തുന്ന ആളുകളെ നമുക്കിടയിൽ വെച്ച അല്ലാഹുവിന് സ്തുതി. കിബ്‌റില്ലാത്ത ഒരു നേതാവ് അങ്ങനെയാണ്.",
+  "പള്ളി വൃത്തിയാക്കിയിരുന്ന ഒരു സ്ത്രീ മരിച്ചു; ആരോടും പറയാതെ രാത്രിയിൽ മറവ് ചെയ്തു. അറിഞ്ഞപ്പോൾ അവിടുന്ന് വിഷമിച്ചു — അവരെ പറയാൻ മാത്രം പ്രാധാന്യമില്ലെന്ന് അവർ കരുതിയല്ലോ. അവിടുന്ന് അവരുടെ ഖബ്‌റിനടുത്ത് ചെന്ന് നിസ്കരിച്ചു. അവിടുത്തെ സമൂഹത്തിൽ ശ്രദ്ധിക്കപ്പെടാൻ അർഹതയില്ലാത്ത ഒരാളുമുണ്ടായിരുന്നില്ല; മറ്റുള്ളവർ അവഗണിച്ചവരെക്കുറിച്ചാണ് അവിടുന്ന് കൂടുതൽ അന്വേഷിച്ചത്."],
+ had:"കിബ്ർ എന്നാൽ സത്യം നിരാകരിക്കലും ആളുകളെ താഴ്ത്തിക്കാണലുമാണ്.",
+ ay:"പരമകാരുണികന്റെ ദാസന്മാർ ഭൂമിയിൽ വിനയത്തോടെ നടക്കുന്നവരാണ്.",
+ discuss:["അല്ലാഹു ഉണ്ടെന്ന് അറിഞ്ഞിട്ടും ഇബ്‌ലീസ് വിസമ്മതിച്ചു. അപ്പോൾ അവന്റെ കുഴപ്പം എന്തായിരുന്നു?",
+  "താഴ്ത്തിക്കാണാതിരിക്കാൻ നിനക്ക് പ്രയാസം തോന്നുന്ന ഒരു തരം ആളുകളെ എഴുതൂ.",
+  "ആത്മവിശ്വാസവും വിനയവും ഒരാളിൽ ഒരുമിച്ച് ഉണ്ടാകുമോ? എങ്ങനെ?"],
+ why:"നിന്റെ ബുദ്ധിയോ കുടുംബമോ ആരോഗ്യമോ നാടോ നീ തിരഞ്ഞെടുത്തതല്ല. നീ അഹങ്കരിച്ചേക്കാവുന്നതെല്ലാം നിനക്ക് നൽകപ്പെട്ടതാണ്, ഇന്ന് വൈകുന്നേരം തിരിച്ചെടുക്കപ്പെടാവുന്നതുമാണ്.",
+ points:["കിബ്ർ = സത്യം നിരാകരിക്കൽ + ആളുകളെ താഴ്ത്തിക്കാണൽ","നിന്നെക്കാൾ ചെറിയവരിൽ നിന്നും തിരുത്ത് സ്വീകരിക്കൂ","മറ്റുള്ളവർ അവഗണിക്കുന്നവരെ ശ്രദ്ധിക്കൂ"],
+ rem:"നിനക്ക് ഏറ്റവും കുറവ് മതിപ്പുള്ള ആൾ അല്ലാഹുവിന്റെ അടുക്കൽ നിന്നെക്കാൾ വളരെ മുന്നിലായിരിക്കാം. കണക്ക് സൂക്ഷിക്കുന്നത് നീയല്ല."
+},
+{
+ t:"കുടുംബബന്ധം ചേർക്കൽ", ar:"صِلَةُ الرَّحِم",
+ sub:"മാതാപിതാക്കൾ മാത്രമല്ല — പ്രയാസമുള്ളവർ ഉൾപ്പെടെ കുടുംബം മുഴുവൻ.",
+ facts:{term:"സ്വിലത്തുർറഹിം",against:"ഖത്വീഅ — ബന്ധം മുറിക്കൽ",quran:"അന്നിസാഅ് 4:1",note:"അർശുമായി ബന്ധിപ്പിക്കപ്പെട്ടത്"},
+ hook:"ഒരു വർഷത്തിലേറെയായി നീ സംസാരിക്കാത്ത ഒരു ബന്ധുവിന്റെ പേര് പറയൂ. എന്തുകൊണ്ട് സംസാരിച്ചില്ല?",
+ plates:[["ഒരു നീണ്ട നൂൽ","റഹിം എന്ന വാക്ക് റഹ്‌മത്ത് — കാരുണ്യം — എന്ന അതേ വേരിൽ നിന്നാണ്. കുടുംബബന്ധത്തിനും അല്ലാഹുവിന്റെ കാരുണ്യത്തിനും ഒരേ പേരാണ്."],
+  ["ആരും ചെയ്യാത്ത സന്ദർശനം","ബന്ധം ചേർക്കുന്നവൻ ഉപകാരം തിരിച്ചുനൽകുന്നവനല്ല. മറുഭാഗം മുറിച്ചിട്ടും ചേർത്തുനിർത്തുന്നവനാണ്."]],
+ body:["രക്തബന്ധത്താൽ അല്ലാഹു നിന്നെ ചേർത്ത എല്ലാവരുമായും — വല്യുപ്പ, വല്യുമ്മ, അമ്മാവന്മാർ, അമ്മായിമാർ, കസിൻസ്, പിന്നെ ആർക്കും സന്ദർശിക്കാൻ ഇഷ്ടമില്ലാത്ത ബന്ധുക്കൾ — ബന്ധം നിലനിർത്തലാണ് സ്വിലത്തുർറഹിം.",
+  "റഹിം അർശിൽ ബന്ധിപ്പിക്കപ്പെട്ടിരിക്കുന്നുവെന്ന് നബി ﷺ പറഞ്ഞു, അത് പറയുന്നു: <i>എന്നെ ചേർക്കുന്നവനെ അല്ലാഹു ചേർക്കും; എന്നെ മുറിക്കുന്നവനെ അല്ലാഹു മുറിക്കും.</i> <b>കുടുംബബന്ധം മുറിക്കുന്നവൻ സ്വർഗത്തിൽ പ്രവേശിക്കില്ല</b> എന്നും അവിടുന്ന് പറഞ്ഞു — അത്തരത്തിൽ പറഞ്ഞ വളരെ കുറച്ച് പാപങ്ങളിൽ ഒന്നാണിത്.",
+  "മിക്കവരും തെറ്റിദ്ധരിക്കുന്ന ഒരു രീതിയിലാണ് അവിടുന്ന് അതിനെ നിർവചിച്ചത്. <mark>ബന്ധം ചേർക്കൽ എന്നാൽ സന്ദർശനം തിരിച്ചുനൽകലല്ല. നിന്നെ മുറിച്ചവനിലേക്ക് നീ എത്തുന്നതാണ്.</mark> നന്മ ചെയ്യുന്ന ബന്ധുവിനോട് നന്മ ചെയ്യാൻ ആർക്കും കഴിയും."],
+ story:["ഒരാൾ വന്ന് പറഞ്ഞു: എനിക്ക് ചില ബന്ധുക്കളുണ്ട്, ഞാൻ അവരുമായി ബന്ധം ചേർക്കുന്നു അവർ എന്നെ മുറിക്കുന്നു; ഞാൻ അവർക്ക് നന്മ ചെയ്യുന്നു അവർ എനിക്ക് തിന്മ ചെയ്യുന്നു; ഞാൻ ക്ഷമിക്കുന്നു അവർ എന്നോട് വിഡ്ഢിത്തം കാണിക്കുന്നു. നബി ﷺ പറഞ്ഞു: നീ പറഞ്ഞതുപോലെയാണെങ്കിൽ നീ അവർക്ക് ചൂടുള്ള ചാരം തീറ്റിക്കുന്നതുപോലെയാണ് — നീ ഇത് തുടരുന്നിടത്തോളം അല്ലാഹു അവർക്കെതിരെ നിന്നെ സഹായിച്ചുകൊണ്ടിരിക്കും.",
+  "മിക്ക കുടുംബങ്ങളിലും ഒരാൾ നിശ്ശബ്ദമായി ഒഴിവാക്കപ്പെട്ടിട്ടുണ്ടാകും — ഒരിക്കൽ എന്തോ പറഞ്ഞ ഒരാൾ, അല്ലെങ്കിൽ നീ ജനിക്കുന്നതിന് മുമ്പ് നിന്റെ മാതാപിതാക്കളുമായി പിണങ്ങിയ ഒരാളുടെ മക്കൾ. നീ തുടങ്ങാത്ത ഒരു പിണക്കം നിനക്ക് അനന്തരമായി കിട്ടിയിരിക്കുന്നു. കുടുംബത്തിലെ ഏറ്റവും ചെറിയ ആളുടെ ഒരൊറ്റ സന്ദേശം, രണ്ട് മുതിർന്നവർക്ക് അവസാനിപ്പിക്കാനാവാത്ത ഒരു മൗനം പലപ്പോഴും അവസാനിപ്പിക്കും."],
+ had:"തന്റെ ഉപജീവനം വർധിക്കാനും ആയുസ്സ് നീളാനും ആഗ്രഹിക്കുന്നവൻ കുടുംബബന്ധം ചേർക്കട്ടെ.",
+ ay:"നിങ്ങൾ പരസ്പരം ചോദിക്കുന്ന അല്ലാഹുവിനെയും കുടുംബബന്ധങ്ങളെയും സൂക്ഷിക്കുക.",
+ discuss:["ബന്ധം ചേർക്കൽ എന്നാൽ മുറിച്ചവനിലേക്ക് എത്തലാണ്. അതെന്തുകൊണ്ട് യഥാർത്ഥ പരീക്ഷയാണ്?",
+  "ഈ ആഴ്ച നിനക്ക് സന്ദേശം അയക്കാവുന്ന ഒരു ബന്ധുവിനെ എഴുതൂ — പേരല്ല, ബന്ധം മാത്രം.",
+  "നീ തിരഞ്ഞെടുക്കാതെ തന്നെ നിനക്ക് അനന്തരമായി കിട്ടിയ പിണക്കങ്ങൾ ഏതൊക്കെയാണ്?"],
+ why:"ഈ ആളുകളുമായി അല്ലാഹു നിന്നെ ചോദിക്കാതെ ബന്ധിപ്പിച്ചു, ആ ബന്ധം കൊണ്ട് നീ എന്ത് ചെയ്യുന്നു എന്നതിൽ അവൻ നിന്നെ വിധിക്കുന്നു. ബന്ധുക്കളെ ആർക്കും തിരഞ്ഞെടുക്കാനാവില്ല — അതാണ് പരീക്ഷ.",
+ points:["സ്വിലഃ എന്നാൽ ആദ്യം എത്തലാണ്, ഉപകാരം തിരിച്ചുനൽകലല്ല","കുടുംബബന്ധം മുറിക്കൽ എണ്ണപ്പെട്ട വലിയ പാപങ്ങളിൽ ഒന്നാണ്","ഏറ്റവും ചെറിയ ആളുടെ ഒരു സന്ദേശം നീണ്ട മൗനം അവസാനിപ്പിക്കും"],
+ rem:"നിന്റെ കുടുംബത്തിൽ ആരും തന്നെ ഓർക്കുന്നില്ലെന്ന് കരുതുന്ന ഒരു ബന്ധു ഇപ്പോൾ ഉണ്ട്. ഓർക്കുന്ന ആളാകാൻ നിനക്ക് മുപ്പത് സെക്കൻഡ് മതി."
+},
+{
+ t:"ദാനം വീട്ടിൽ നിന്ന് തുടങ്ങുന്നു", ar:"النَّفَقَةُ عَلَى الأَهْل",
+ sub:"നീ ചെലവഴിക്കുന്ന ഏറ്റവും നല്ല പണം കൂടെ താമസിക്കുന്നവർക്ക് വേണ്ടിയുള്ളതാണ്.",
+ facts:{term:"നഫഖ — കുടുംബത്തിന് ചെലവഴിക്കൽ",against:"സ്വന്തക്കാരെ അവഗണിക്കൽ",quran:"അൽ-ബഖറ 2:215",note:"ഏറ്റവും നല്ല ദീനാർ"},
+ hook:"നിന്റെ കൈയിൽ ഒരു നാണയമുണ്ട്. പള്ളിയിലേക്കോ, വിശക്കുന്ന ഒരപരിചിതനോ, അതോ സ്വന്തം ഉമ്മയ്ക്കോ — ഏതാണ് ഏറ്റവും നല്ലത്?",
+ plates:[["വീട്ടിലെ ഭക്ഷണമേശ","നാല് തരം ചെലവിനെ നബി ﷺ ക്രമപ്പെടുത്തി, കുടുംബത്തിന് വേണ്ടി ചെലവഴിച്ചതാണ് ഒന്നാമത് — അടിമമോചനത്തിനും ദരിദ്രന് നൽകുന്നതിനും മുന്നിൽ."],
+  ["ഒരു ഉരുള പോലും","ഭാര്യയുടെ വായിലേക്ക് നീ വെച്ചുകൊടുക്കുന്ന ഭക്ഷണം പോലും നിനക്ക് സ്വദഖയായി എഴുതപ്പെടുമെന്ന് അവിടുന്ന് പറഞ്ഞു."]],
+ body:["ദാനം എന്നാൽ വീട്ടിൽ നിന്ന് പുറത്തുപോകുന്ന പണമാണെന്നാണ് മിക്കവരും കരുതുന്നത്. സുന്നത്ത് അത് മറിച്ചാണ് പറയുന്നത്: <mark>ഏറ്റവും നല്ല ദാനം വീട്ടിൽ തന്നെ നിൽക്കുന്ന പണമാണ്</mark> — നീ ഉത്തരവാദിയായ ആളുകൾക്ക് വേണ്ടി ചെലവഴിക്കുന്നത്.",
+  "നാല് ദീനാറുകൾ നബി ﷺ എണ്ണിപ്പറഞ്ഞു — ദരിദ്രന് നൽകുന്നത്, അടിമയെ മോചിപ്പിക്കാൻ ചെലവഴിക്കുന്നത്, അല്ലാഹുവിന്റെ മാർഗത്തിൽ നൽകുന്നത്, പിന്നെ <b>കുടുംബത്തിന് വേണ്ടി ചെലവഴിക്കുന്നത്</b> — പ്രതിഫലത്തിൽ ഏറ്റവും വലുത് കുടുംബത്തിന് വേണ്ടി ചെലവഴിക്കുന്നതാണെന്ന് അവിടുന്ന് പറഞ്ഞു.",
+  "ഇത് പണം സ്വന്തമാക്കിവെക്കാനുള്ള ഒരു പഴുതല്ല. മുൻഗണനകളുടെ തിരുത്താണ്. സ്വന്തം ഉമ്മയ്ക്ക് മരുന്ന് വേണ്ടിയിരിക്കെ ദൂരെയുള്ള ഒരു ഫണ്ടിലേക്ക് ഉദാരമായി നൽകുന്നയാൾ ദാനം എന്താണെന്ന് മനസ്സിലാക്കിയിട്ടില്ല. ആവശ്യങ്ങൾ നിനക്ക് ശരിക്കും അറിയാവുന്ന ആളുകളിൽ നിന്ന് തുടങ്ങൂ."],
+ story:["സഅ്ദ് ബ്നു അബീവഖാസ് (റ) രോഗിയായപ്പോൾ തന്റെ സമ്പത്തിന്റെ ഭൂരിഭാഗവും ദാനം ചെയ്യാമോ എന്ന് ചോദിച്ചു. അവിടുന്ന് പറഞ്ഞു ഇല്ല. മൂന്നിൽ രണ്ട്? ഇല്ല. പകുതി? ഇല്ല. മൂന്നിലൊന്ന് — അതും ധാരാളമാണ്. പിന്നെ പറഞ്ഞു: <i>നിന്റെ അനന്തരാവകാശികളെ ദരിദ്രരായി ആളുകളോട് ചോദിച്ചുനടക്കാൻ വിടുന്നതിനെക്കാൾ നല്ലത് അവരെ സമ്പന്നരായി വിടുന്നതാണ്.</i> പിന്നെ വിഷയം മുഴുവൻ മാറ്റുന്ന ആ വാക്യം: <b>അല്ലാഹുവിന്റെ തിരുമുഖം തേടി നീ ചെലവഴിക്കുന്ന ഒന്നിനും പ്രതിഫലം കിട്ടാതിരിക്കില്ല — ഭാര്യയുടെ വായിലേക്ക് നീ വെച്ചുകൊടുക്കുന്ന ഉരുളയ്ക്ക് പോലും.</b>",
+  "നിനക്ക് സ്വന്തമായി പണം കിട്ടുന്നു. ഏറ്റവും എളുപ്പം അത് സ്വയം ചെലവഴിക്കലാണ്, രണ്ടാമത്തെ എളുപ്പം അത് പരസ്യമായി ഒരു ഫണ്ടിലേക്ക് നൽകലാണ്. ഏറ്റവും പ്രയാസമുള്ളതും ഏറ്റവും ഉയർന്നതും — ഉമ്മയ്ക്ക് ആവശ്യമുള്ള ഒന്ന് നിശ്ശബ്ദമായി വാങ്ങിക്കൊടുത്ത് അത് എവിടെ നിന്ന് വന്നെന്ന് പറയാതിരിക്കലാണ്. ആ ദീനാറിനെക്കുറിച്ചാണ് ഹദീസ് പറഞ്ഞത്."],
+ had:"ഒരാൾ ചെലവഴിക്കുന്ന ഏറ്റവും നല്ല ദീനാർ തന്റെ കുടുംബത്തിന് വേണ്ടി ചെലവഴിക്കുന്ന ദീനാറാണ്.",
+ ay:"പറയുക: നിങ്ങൾ നല്ലതിൽ നിന്ന് ചെലവഴിക്കുന്നത് മാതാപിതാക്കൾക്കും അടുത്ത ബന്ധുക്കൾക്കുമാണ്…",
+ discuss:["സ്വന്തം കുടുംബത്തിന് ചെലവഴിക്കുന്നത് ദരിദ്രന് നൽകുന്നതിനെക്കാൾ മുന്നിലാകുന്നത് എന്തുകൊണ്ട്?",
+  "വീട്ടിൽ ആർക്കെങ്കിലും ആവശ്യമുള്ള, നിനക്ക് വാങ്ങിക്കൊടുക്കാനോ സഹായിക്കാനോ കഴിയുന്ന ഒരു കാര്യം എഴുതൂ.",
+  "എന്തായാലും ചെയ്യേണ്ട കാര്യമാണെങ്കിൽ അത് ദാനമാകുമോ? ഉത്തരം വിശദീകരിക്കൂ."],
+ why:"അനാഥർക്കും യാത്രക്കാർക്കും മുമ്പ് ആയത്ത് പേരെടുത്ത് പറയുന്നത് മാതാപിതാക്കളെയും ബന്ധുക്കളെയുമാണ്. ഉത്തരവാദിത്തം ക്രമപ്പെടുത്തിയ അതേ രീതിയിലാണ് അല്ലാഹു ദാനവും ക്രമപ്പെടുത്തിയത് — ഏറ്റവും അടുത്തത് ആദ്യം.",
+ points:["ഏറ്റവും നല്ല ദീനാർ കുടുംബത്തിന് വേണ്ടി ചെലവഴിക്കുന്നതാണ്","കുടുംബാംഗത്തിന്റെ വായിലേക്ക് വെക്കുന്ന ഭക്ഷണം പോലും സ്വദഖയാണ്","വീട്ടിൽ, നിശ്ശബ്ദമായി, പ്രഖ്യാപിക്കാതെ ചെയ്യൂ"],
+ rem:"ദിവസവും കൂടെയിരുന്ന് ഭക്ഷണം കഴിക്കുന്നവരാണ് നീ ആദ്യം ഉത്തരവാദിയായ ആളുകൾ. അവരെ ഒഴിവാക്കിയ ദാനം ആദ്യപടി ഒഴിവാക്കിയിരിക്കുന്നു."
+},
+{
+ t:"പിന്നെ അതിനപ്പുറവും", ar:"الصَّدَقَة",
+ sub:"അയൽക്കാരൻ, അനാഥൻ, അപരിചിതൻ — പിന്നെ ഒന്നും ചെലവില്ലാത്ത സ്വദഖ.",
+ facts:{term:"സ്വദഖ",against:"ബുഖ്ൽ — പിശുക്ക്",quran:"അൽ-ബഖറ 2:261",note:"സമ്പത്ത് ഒരിക്കലും കുറയുന്നില്ല"},
+ hook:"ഇന്ന് നിന്റെ കൈയിൽ ഒരു പൈസയുമില്ല. എന്നിട്ടും നിനക്ക് സ്വദഖ ചെയ്യാനാവുമോ?",
+ plates:[["മതിലിന് മുകളിലൂടെ","അയൽക്കാരെ അനന്തരാവകാശികളാക്കുമെന്ന് താൻ കരുതിപ്പോയത്ര ജിബ്‌രീൽ അയൽക്കാരനെക്കുറിച്ച് ഉപദേശിച്ചുകൊണ്ടിരുന്നുവെന്ന് അവിടുന്ന് പറഞ്ഞു."],
+  ["ചെലവില്ലാത്ത ദാനം","വഴിയിൽ നിന്ന് ഉപദ്രവം നീക്കുന്നത്, ഒരു നല്ല വാക്ക്, ഒരു പുഞ്ചിരി പോലും — എല്ലാം സ്വദഖയായി എഴുതപ്പെടുന്നു."]],
+ body:["വീട്ടിലുള്ളവരെ നോക്കിക്കഴിഞ്ഞാൽ വൃത്തം വികസിക്കുന്നു: അയൽക്കാരൻ, അനാഥൻ, യാത്രക്കാരൻ, ചോദിക്കുന്നവൻ, ചോദിക്കാൻ അഭിമാനം സമ്മതിക്കാത്തവൻ.",
+  "അവിടുന്ന് പറഞ്ഞു: <b>അയൽക്കാരൻ വിശന്നിരിക്കെ വയറ് നിറച്ച് കഴിക്കുന്നവൻ വിശ്വാസിയല്ല.</b> അനാഥനെ സംരക്ഷിക്കുന്നതിന്റെ പ്രതിഫലം വിവരിക്കാൻ അവിടുന്ന് രണ്ട് വിരലുകൾ ചേർത്തുപിടിച്ച് അത്രയും അടുത്തായിരിക്കും സ്വർഗത്തിൽ എന്ന് പറഞ്ഞു.",
+  "തന്റെ കൈയിൽ നൽകാൻ ഒന്നുമില്ലെന്ന് ഒരു ദരിദ്രനായ അനുചരൻ പറഞ്ഞപ്പോൾ കിട്ടിയ ഉത്തരം ഒരു പട്ടികയായിരുന്നു: <mark>ഒരു നല്ല വാക്ക് സ്വദഖയാണ്, വഴിയിൽ നിന്ന് ഉപദ്രവം നീക്കൽ സ്വദഖയാണ്, ഒരാളെ വാഹനത്തിൽ കയറാൻ സഹായിക്കൽ സ്വദഖയാണ്, സഹോദരന്റെ മുഖത്ത് നോക്കി പുഞ്ചിരിക്കുന്നത് പോലും സ്വദഖയാണ്.</mark> നൽകാൻ കഴിയാത്തത്ര ദരിദ്രൻ ആരുമില്ല."],
+ story:["അലി (റ) യും ഫാത്വിമ (റ) യും അവരുടെ വീട്ടുകാരും തുടർച്ചയായി മൂന്ന് രാത്രി തങ്ങളുടെ ഭക്ഷണം ദാനം ചെയ്തു — ഒരു ദരിദ്രന്, ഒരു അനാഥന്, ഒരു തടവുകാരന് — സ്വന്തം നോമ്പ് വെള്ളം കൊണ്ട് തുറന്നു. ഖുർആൻ അത് രേഖപ്പെടുത്തി: <i>ഭക്ഷണം ഇഷ്ടമായിരിക്കെ അവർ അത് ദരിദ്രനും അനാഥനും തടവുകാരനും നൽകുന്നു, പറയുന്നു: അല്ലാഹുവിന്റെ തിരുമുഖം തേടി മാത്രമാണ് ഞങ്ങൾ നിങ്ങൾക്ക് ഭക്ഷണം നൽകുന്നത്, നിങ്ങളിൽ നിന്ന് പ്രതിഫലമോ നന്ദിയോ ഞങ്ങൾ ആഗ്രഹിക്കുന്നില്ല.</i> വാങ്ങുന്നയാൾക്ക് കടപ്പാട് തോന്നാതിരിക്കാൻ അവർ അത് ഉറക്കെ പറഞ്ഞു.",
+  "എല്ലാ ക്ലാസിലും ഒരു വിദ്യാർത്ഥിയുണ്ട് — ആരും തിരഞ്ഞെടുക്കാത്ത, ആരും ക്ഷണിക്കാത്ത, ശരിക്കും തിരഞ്ഞെടുക്കാത്ത ഒരു തീരുമാനത്താൽ ഒറ്റയ്ക്ക് ഭക്ഷണം കഴിക്കുന്ന ഒരാൾ. അവർക്ക് നൽകാൻ നിന്റെ കൈയിൽ പണമില്ല. നിന്റെ അരികിലെ ഒരു സീറ്റ്, മുപ്പത് സെക്കൻഡ് സംസാരം, ഒരു പുഞ്ചിരി — ഇവയോരോന്നും നബി ﷺ തന്നെ സ്വദഖ എന്ന് വിളിച്ചതാണ്."],
+ had:"എല്ലാ നന്മയും ദാനമാണ്. നിന്റെ സഹോദരന്റെ മുഖത്ത് നോക്കി നീ പുഞ്ചിരിക്കുന്നതും ദാനമാണ്.",
+ ay:"അല്ലാഹുവിന്റെ മാർഗത്തിൽ സമ്പത്ത് ചെലവഴിക്കുന്നവരുടെ ഉപമ ഏഴ് കതിരുകൾ മുളപ്പിച്ച ഒരു വിത്ത് പോലെയാണ്.",
+ discuss:["അയൽക്കാരെ അനന്തരാവകാശികളാക്കുമെന്ന് കരുതുന്നത്ര ജിബ്‌രീൽ ഉപദേശിച്ചു. എന്തുകൊണ്ട് ഇത്ര ഊന്നൽ?",
+  "ഒരു പൈസ പോലും ചെലവില്ലാതെ ഇന്ന് നിനക്ക് ചെയ്യാവുന്ന ഒരു സ്വദഖ എഴുതൂ.",
+  "നന്ദി വേണ്ടെന്ന് അലി (റ) യുടെ കുടുംബം ഉറക്കെ പറഞ്ഞത് എന്തുകൊണ്ട്?"],
+ why:"സ്വദഖ സമ്പത്ത് കുറയ്ക്കുന്നില്ലെന്ന് അവിടുന്ന് പറഞ്ഞു. പിന്നീട് പകരം കിട്ടും എന്നല്ല — അത് കുറയ്ക്കുകയേ ഇല്ല എന്ന്. നിന്റെ കാൽക്കുലേറ്റർ കണക്കുകൂട്ടുന്ന രീതിയിലല്ല അല്ലാഹു കണക്കുകൂട്ടുന്നത്.",
+ points:["മുസ്‌ലിമായാലും അല്ലെങ്കിലും അയൽക്കാരന് നിന്റെ മേൽ അവകാശമുണ്ട്","അനാഥനെ സംരക്ഷിക്കുന്നത് സ്വർഗത്തിൽ അവിടുത്തെ അരികിലെത്തിക്കും","ഒരു പുഞ്ചിരി, ഒരു നല്ല വാക്ക്, വഴി വൃത്തിയാക്കൽ — എല്ലാം സ്വദഖയാണ്"],
+ rem:"സ്വദഖ ചെയ്യാൻ കഴിയാത്തത്ര ദരിദ്രൻ നീ ഒരിക്കലും ആകില്ല. ആ ഒഴികഴിവ് നബി ﷺ തന്നെ അടച്ചു, ഒരു പുഞ്ചിരി കൊണ്ടാണ് അടച്ചത്."
+}
+,{
+ t:"ആളുകളെക്കുറിച്ച് നല്ലത് വിചാരിക്കൽ", ar:"حُسْنُ الظَّنّ",
+ sub:"മറ്റുള്ളവരെക്കുറിച്ച് നിനക്ക് ഉറപ്പുള്ളതിൽ ഭൂരിഭാഗവും ഊഹമാണ്.",
+ facts:{term:"ഹുസ്നുള്ളൻ",against:"സൂഉള്ളൻ — ദുസ്സംശയം",quran:"അൽ-ഹുജുറാത്ത് 49:12",note:"ഏറ്റവും വലിയ കളവ്"},
+ hook:"ഒരാൾ സലാം പറയാതെ നിന്റെ അരികിലൂടെ കടന്നുപോയി. നിന്റെ മനസ്സ് ആദ്യം എത്തിയ വിശദീകരണം ഏതാണ്?",
+ plates:[["നീ കാണാത്തത്","ഒരൊറ്റ നിമിഷം വെച്ച് നീ ഒരു മനുഷ്യനെ മുഴുവൻ വിധിച്ചു, അതിന് തൊട്ടുമുമ്പുള്ള നിമിഷം നിനക്ക് കാണാൻ കഴിഞ്ഞില്ല."],
+  ["എഴുപത് ഒഴികഴിവുകൾ","ഉമർ (റ) പറഞ്ഞു: സഹോദരന്റെ വാക്കിന് നല്ലൊരു വിശദീകരണം കണ്ടെത്താനാവുന്നിടത്തോളം അതിനെക്കുറിച്ച് മോശം വിചാരിക്കരുത്."]],
+ body:["ഒരു വിടവ് കിട്ടാവുന്നതിൽ ഏറ്റവും മോശം സാമഗ്രി കൊണ്ട് മനസ്സ് നിറയ്ക്കുന്നതാണ് സംശയം. നബി ﷺ അസാധാരണമാംവിധം കടുത്ത വാക്കുകളിൽ അതിനെക്കുറിച്ച് താക്കീത് നൽകി: <b>സംശയത്തെ സൂക്ഷിക്കുക, സംശയമാണ് ഏറ്റവും വലിയ കളവ്.</b>",
+  "കാരണം ലളിതമാണ്. ഒരാൾ ചെയ്തത് എന്തുകൊണ്ട് ചെയ്തു എന്ന് നിനക്ക് ഏതാണ്ട് ഒരിക്കലും അറിയില്ല. അവരുടെ പ്രഭാതം, അവരുടെ വീട്, അവരുടെ രോഗം, അവരുടെ ഭയം — ഒന്നും നീ കണ്ടിട്ടില്ല. <mark>നീ കാണാത്ത ഒരു സിനിമയുടെ ഒരൊറ്റ ഫ്രെയിം വെച്ച് ഒരു മനുഷ്യനെ മുഴുവൻ വിധിക്കുകയാണ്.</mark>",
+  "ആദ്യകാല മുസ്‌ലിംകൾ ഇത് ഗൗരവത്തിലെടുത്ത് ഒരു നിയമമാക്കി: ഒരു സഹോദരൻ പറഞ്ഞ വാക്കിന് എഴുപത് അർത്ഥങ്ങൾ സാധ്യമാണെങ്കിൽ ഏറ്റവും നല്ലത് എടുക്കുക. നല്ല വിശദീകരണം എപ്പോഴും ശരിയായതുകൊണ്ടല്ല — നിന്റെ ഊഹത്തിന് നീ ഉത്തരവാദിയായതുകൊണ്ടും അതിനെക്കുറിച്ച് നീ ചോദിക്കപ്പെടുമെന്നതുകൊണ്ടുമാണ്."],
+ story:["ആഇശ (റ) യെക്കുറിച്ച് ഒരു കള്ളവാർത്ത പരന്നപ്പോൾ അത് ആവർത്തിച്ചതിന് ഖുർആൻ വിശ്വാസികളെ തിരുത്തി — ആ തിരുത്ത് <i>നിങ്ങൾ അന്വേഷിക്കേണ്ടിയിരുന്നു</i> എന്നായിരുന്നില്ല. അത് ഇങ്ങനെയായിരുന്നു: <b>അത് കേട്ടപ്പോൾ വിശ്വാസികളായ പുരുഷന്മാരും സ്ത്രീകളും സ്വന്തം ആളുകളെക്കുറിച്ച് നല്ലത് വിചാരിച്ച് ഇത് വ്യക്തമായ കളവാണെന്ന് പറയാതിരുന്നത് എന്തുകൊണ്ട്?</b> പ്രതീക്ഷിക്കപ്പെട്ട പ്രതികരണം അന്വേഷണമായിരുന്നില്ല. നിരാകരണമായിരുന്നു.",
+  "ഒരാൾ രണ്ട് ദിവസം നിനക്ക് മറുപടി തന്നില്ല, നിന്റെ മനസ്സ് ഒരു കഥ മുഴുവൻ പണിയുന്നു: അവർക്ക് ദേഷ്യമാണ്, അവർ മറ്റാരെയോ തിരഞ്ഞെടുത്തു, അവർ എപ്പോഴും ഇങ്ങനെയായിരുന്നു. പിന്നെ അവരുടെ ഫോൺ കേടായിരുന്നു എന്ന് നീ അറിയുന്നു. ആ രണ്ട് ദിവസവും നീ വേദനിച്ചത് നീ തന്നെ എഴുതിയ ഒരു കഥയിലാണ്, അത് വായിച്ചത് നീ മാത്രമാണ്."],
+ had:"സംശയത്തെ സൂക്ഷിക്കുക, തീർച്ചയായും സംശയമാണ് ഏറ്റവും വലിയ കളവ്.",
+ ay:"സത്യവിശ്വാസികളേ, ധാരാളം ഊഹങ്ങൾ ഒഴിവാക്കുക — തീർച്ചയായും ചില ഊഹങ്ങൾ പാപമാണ്.",
+ discuss:["ഖുർആൻ പ്രതീക്ഷിച്ചത് അന്വേഷണമല്ല, നിരാകരണമാണ്. അതെന്തുകൊണ്ട് ഉയർന്ന ഒരു നിലവാരമാണ്?",
+  "ഒരാളുടെ ഉദ്ദേശ്യത്തെക്കുറിച്ച് ഉറപ്പായിരുന്നിട്ടും നീ തെറ്റിപ്പോയ ഒരു സന്ദർഭം എഴുതൂ.",
+  "നല്ലത് വിചാരിക്കുന്നതും മണ്ടത്തരവും തമ്മിലുള്ള അതിര് എവിടെയാണ്?"],
+ why:"നിന്റെ പ്രവൃത്തികളെക്കുറിച്ച് മാത്രമല്ല, നിന്റെ ഊഹങ്ങളെക്കുറിച്ചും നീ ചോദിക്കപ്പെടും. ഒരിക്കലും സംഭവിക്കാത്ത ഒരു കാര്യത്തിന്റെ പേരിൽ ഒരാൾ വർഷങ്ങളോളം മറ്റൊരാളോട് നിശ്ശബ്ദമായി പക വെക്കാം.",
+ points:["സംശയത്തെ ഏറ്റവും വലിയ കളവ് എന്ന് വിളിക്കുന്നു","മോശം വിശദീകരണം സ്വീകരിക്കുന്നതിന് മുമ്പ് നല്ലത് തിരയൂ","നീ സ്വയം പറയുന്ന കഥയ്ക്ക് നീ ഉത്തരവാദിയാണ്"],
+ rem:"അടുത്ത തവണ ആരെങ്കിലും നിന്നെ നിരാശപ്പെടുത്തുമ്പോൾ പത്ത് സെക്കൻഡ് നിരപരാധിത്വത്തിന്റെ വിശദീകരണം തിരയൂ. നീ വിചാരിക്കുന്നതിലും കൂടുതൽ തവണ നീ ശരിയായിരിക്കും — ഏതായാലും നീ സുരക്ഷിതനുമായിരിക്കും."
+},
+{
+ t:"ദേഷ്യം ഒതുക്കൽ", ar:"كَظْمُ الْغَيْظ",
+ sub:"ശക്തൻ വഴക്കിൽ ജയിക്കുന്നവനല്ല.",
+ facts:{term:"കള്മുൽ ഗൈള്",against:"ഗളബ് — കോപം",quran:"ആലു ഇംറാൻ 3:134",note:"അവിടുന്ന് മൂന്ന് തവണ പറഞ്ഞു"},
+ hook:"ദേഷ്യത്തിൽ നീ അവസാനം പറഞ്ഞ, തിരിച്ചെടുക്കാൻ കഴിഞ്ഞിരുന്നെങ്കിൽ എന്ന് ആഗ്രഹിക്കുന്ന വാക്ക് ഏതാണ്?",
+ plates:[["തിളച്ചുതൂവുന്നതിന് മുമ്പ്","ദേഷ്യം പാപമല്ല. അതനുസരിച്ച് പ്രവർത്തിക്കുന്നതാണ്. രണ്ടിനുമിടയിൽ ഒരു ഇടവേളയുണ്ട്, എല്ലാം ആ ഇടവേളയിൽ നീ ചെയ്യുന്നതിനെ ആശ്രയിച്ചിരിക്കുന്നു."],
+  ["ഇരിക്കൂ, അല്ലെങ്കിൽ വെള്ളം കുടിക്കൂ","അവിടുന്ന് ഉപദേശിച്ചു: നിന്നുകൊണ്ട് ദേഷ്യപ്പെട്ടാൽ ഇരിക്കൂ. അത് മാറിയില്ലെങ്കിൽ കിടക്കൂ. പിശാചിൽ നിന്ന് അഭയം തേടുകയും ചെയ്യൂ."]],
+ body:["ഒരാൾ വന്ന് പറഞ്ഞു: എനിക്ക് ഉപദേശം തരൂ. അവിടുന്ന് പറഞ്ഞു: <b>ദേഷ്യപ്പെടരുത്.</b> അയാൾ പലതവണ ആവർത്തിച്ച് ചോദിച്ചു, ഓരോ തവണയും ഉത്തരം ആ ഒരൊറ്റ വാക്യമായിരുന്നു.",
+  "ദേഷ്യം തന്നെ പാപമല്ല — അല്ലാഹുവിന്റെ അതിരുകൾ ലംഘിക്കപ്പെടുമ്പോൾ അവിടുന്നും ദേഷ്യപ്പെട്ടിട്ടുണ്ട്. ദേഷ്യത്തിൽ നീ ചെയ്യുന്നതാണ് പാപം, കാരണം ദേഷ്യം നിന്നിലെ ചിന്തിക്കുന്ന ഭാഗം എടുത്തുകളയുന്നു.",
+  "<mark>ശക്തൻ ആളുകളെ മല്ലിട്ട് തോൽപ്പിക്കുന്നവനല്ല. ദേഷ്യം വരുമ്പോൾ സ്വയം നിയന്ത്രിക്കുന്നവനാണ്.</mark> പ്രതിഫലം വളരെ വലുതാണ്: പ്രവർത്തിക്കാൻ കഴിവുണ്ടായിരിക്കെ ദേഷ്യം ഒതുക്കുന്നവനെ അന്ത്യദിനത്തിൽ അല്ലാഹു എല്ലാ സൃഷ്ടികളുടെയും മുന്നിൽ വിളിച്ച് ഇഷ്ടമുള്ളത് തിരഞ്ഞെടുക്കാൻ അനുവദിക്കും."],
+ story:["നബി ﷺ ഇരുന്ന് കേട്ടുകൊണ്ടിരിക്കെ ഒരാൾ അബൂബക്കറിനെ (റ) അധിക്ഷേപിച്ചു; അവിടുന്ന് പുഞ്ചിരിച്ചിരുന്നു. അബൂബക്കർ (റ) മൗനമായിരുന്നു, പിന്നെ തിരിച്ചുപറഞ്ഞു. ആ നിമിഷം നബി ﷺ എഴുന്നേറ്റുപോയി. എന്തുകൊണ്ടെന്ന് അബൂബക്കർ (റ) ചോദിച്ചു. അവിടുന്ന് പറഞ്ഞു: <i>നീ മൗനമായിരുന്നപ്പോൾ ഒരു മലക്ക് നിനക്ക് വേണ്ടി മറുപടി പറയുകയായിരുന്നു. നീ തിരിച്ചുപറഞ്ഞപ്പോൾ പിശാച് ആ സ്ഥാനത്ത് വന്നു — പിശാച് ഇരിക്കുന്നിടത്ത് ഞാൻ ഇരിക്കില്ല.</i>",
+  "നീ അത് ടൈപ്പ് ചെയ്തു. അത് സത്യമായിരുന്നു, അർഹിച്ചതായിരുന്നു, തർക്കം നിന്റെ ഭാഗത്തേക്ക് അവസാനിപ്പിക്കുമായിരുന്നു. പിന്നെ നീ അത് അയച്ചില്ല. ആരും പ്രശംസിച്ചില്ല, ആരും അറിഞ്ഞില്ല, സൗഹൃദം ബാക്കിയായി. അതാണ് കള്മുൽ ഗൈള് — അത് ഒരു മുറ്റത്ത് സംഭവിച്ചിരുന്നത്രയും തന്നെ ഇന്ന് ഒരു ഫോണിലും സംഭവിക്കുന്നു."],
+ had:"ശക്തൻ ആളുകളെ മല്ലിട്ട് തോൽപ്പിക്കുന്നവനല്ല, ദേഷ്യം വരുമ്പോൾ സ്വയം നിയന്ത്രിക്കുന്നവനാണ്.",
+ ay:"ദേഷ്യം ഒതുക്കുന്നവരും ആളുകൾക്ക് മാപ്പ് നൽകുന്നവരും…",
+ discuss:["ഓരോ തവണയും അവിടുന്ന് ഒരേ ഉപദേശം നൽകി. മറ്റൊന്നും കൂട്ടിച്ചേർക്കാതിരുന്നത് എന്തുകൊണ്ട്?",
+  "നിന്നെ എപ്പോഴും ദേഷ്യം പിടിപ്പിക്കുന്ന ഒരു സാഹചര്യം എഴുതൂ.",
+  "അബൂബക്കർ (റ) മൗനമായിരുന്നപ്പോൾ ഒരു മലക്ക് മറുപടി പറഞ്ഞു. മൗനത്തെക്കുറിച്ച് അത് എന്ത് പഠിപ്പിക്കുന്നു?"],
+ why:"ദേഷ്യം വരുന്നത് തടയാൻ നിനക്കാവില്ല. അത് വന്ന് കഴിഞ്ഞുള്ള പത്ത് സെക്കൻഡിൽ എന്ത് സംഭവിക്കണമെന്ന് തീരുമാനിക്കാൻ കഴിയും — നിന്റെ മിക്ക ഖേദങ്ങളും ആ പത്ത് സെക്കൻഡിനുള്ളിലാണ് ജീവിക്കുന്നത്.",
+ points:["ദേഷ്യം പാപമല്ല; അതനുസരിച്ച് പ്രവർത്തിക്കുന്നതാണ്","നിലപാട് മാറ്റൂ, വെള്ളം കുടിക്കൂ, അഭയം തേടൂ","മൗനത്തിന് നിനക്ക് വേണ്ടി മറുപടി പറയപ്പെടും"],
+ rem:"പത്ത് സെക്കൻഡ്. ഒരു മോശം ദിവസവും തകർന്ന ഒരു സൗഹൃദവും തമ്മിലുള്ള മുഴുവൻ ദൂരവും അതാണ്. അത് കാത്തിരിക്കാൻ പഠിക്കൂ."
+},
+{
+ t:"മാപ്പ് നൽകൽ", ar:"الْعَفْو",
+ sub:"ഖേദിക്കാത്ത, ഒന്നും പ്രതീക്ഷിക്കാത്ത ഒരാൾക്ക് മാപ്പ് നൽകൽ.",
+ facts:{term:"അഫ്‌വ് — മാപ്പ്",against:"ഇൻതിഖാം — പ്രതികാരം",quran:"അന്നൂർ 24:22",note:"അല്ലാഹുവിന്റെ സ്വന്തം നാമം"},
+ hook:"അല്ലാഹു ആവശ്യപ്പെട്ടാൽ പോലും മാപ്പ് നൽകാൻ നീ വിസമ്മതിക്കുന്ന ആരെങ്കിലുമുണ്ടോ?",
+ plates:[["താഴെ വെക്കൽ","പക ചുമക്കുന്നത് നീ മറ്റൊരാൾക്ക് നൽകുന്ന ശിക്ഷയല്ല. നീ തന്നെ അടച്ചുകൊണ്ടിരിക്കുന്ന ഒന്നാണ്."],
+  ["തുടർന്ന ഉപകാരം","മകളെക്കുറിച്ച് അപവാദം പറഞ്ഞ ബന്ധുവിനെ ഇനി ഒരിക്കലും സഹായിക്കില്ലെന്ന് അബൂബക്കർ (റ) ശപഥം ചെയ്തു — പിന്നെ ആയത്ത് ഇറങ്ങിയപ്പോൾ ആ ശപഥം പിൻവലിച്ചു."]],
+ body:["ക്ഷമ ചോദിക്കുന്നവന് മാപ്പ് നൽകുന്നത് എളുപ്പവും സാധാരണവുമാണ്. അഫ്‌വ് അതിനെക്കാൾ പ്രയാസമാണ്: നിനക്ക് യഥാർത്ഥത്തിൽ അവകാശമുള്ള ഒരു കാര്യം, ചോദിക്കുക പോലും ചെയ്യാത്ത ഒരാൾക്കെതിരെ, വിട്ടുകളയൽ.",
+  "അൽ-അഫുവ്വ് — മാപ്പ് നൽകുന്നവൻ — അല്ലാഹുവിന്റെ സ്വന്തം നാമങ്ങളിൽ ഒന്നാണ്. ലൈലത്തുൽ ഖദ്‌റിൽ ചൊല്ലാൻ ആഇശ (റ) യെ അവിടുന്ന് പഠിപ്പിച്ച ദുആ അതിന്മേലാണ് പണിതത്: <i>അല്ലാഹുവേ, നീ മാപ്പ് നൽകുന്നവനാണ്, മാപ്പ് നൽകുന്നത് നിനക്ക് ഇഷ്ടമാണ്, അതിനാൽ എനിക്ക് മാപ്പ് നൽകേണമേ.</i>",
+  "<mark>നീ നൽകാൻ വിസമ്മതിക്കുന്ന ഒരു കാര്യമാണ് നീ അല്ലാഹുവോട് ചോദിക്കുന്നത്.</mark> അത് ഒന്ന് ആലോചിക്കാൻ അർഹതയുള്ളതാണ്. അന്ത്യദിനത്തിൽ എല്ലാവർക്കും അഫ്‌വ് വേണം, മിക്കവരും അത് ഒരു കസിന് പോലും നൽകില്ല."],
+ story:["മിസ്ത്വഹ് വർഷങ്ങളായി അബൂബക്കർ (റ) സഹായിച്ചുപോന്ന ഒരു ദരിദ്ര ബന്ധുവായിരുന്നു — അദ്ദേഹം അബൂബക്കറിന്റെ (റ) സ്വന്തം മകൾ ആഇശ (റ) ക്കെതിരായ അപവാദത്തിൽ പങ്കാളിയായി. ഇനി ഒരിക്കലും അയാൾക്ക് ചെലവഴിക്കില്ലെന്ന് അബൂബക്കർ (റ) ശപഥം ചെയ്തു. അപ്പോൾ ഖുർആൻ ഇറങ്ങി: <i>അവർ മാപ്പ് നൽകട്ടെ, വിട്ടുകളയട്ടെ. അല്ലാഹു നിങ്ങൾക്ക് പൊറുത്തുതരണമെന്ന് നിങ്ങൾ ഇഷ്ടപ്പെടുന്നില്ലേ?</i> അബൂബക്കർ (റ) ഉടനെ പറഞ്ഞു: <b>അതെ, അല്ലാഹുവാണ, അല്ലാഹു എനിക്ക് പൊറുത്തുതരണമെന്ന് ഞാൻ ഇഷ്ടപ്പെടുന്നു</b> — എന്നിട്ട് സഹായം പുനഃസ്ഥാപിച്ചു, പിന്നെ ഒരിക്കലും പിൻവലിച്ചില്ല.",
+  "നിന്നോട് ചെയ്ത മിക്ക കാര്യങ്ങൾക്കും ഒരിക്കലും ക്ഷമ ചോദിക്കപ്പെടില്ല. അവർ മറന്നിരിക്കും, അല്ലെങ്കിൽ തങ്ങൾ തെറ്റ് ചെയ്തെന്ന് കരുതുന്നില്ല, അല്ലെങ്കിൽ അഹങ്കാരം സമ്മതിക്കുന്നില്ല. അവരുടെ ക്ഷമാപണത്തെ ആശ്രയിച്ചാണ് നിന്റെ സമാധാനം എങ്കിൽ, നീ അതിന്റെ നിയന്ത്രണം അവർക്ക് കൈമാറിയിരിക്കുന്നു. ആ നിയന്ത്രണം തിരിച്ചെടുക്കലാണ് അഫ്‌വ്."],
+ had:"അല്ലാഹുവേ, നീ മാപ്പ് നൽകുന്നവനും ഉദാരനുമാണ്, മാപ്പ് നൽകുന്നത് നിനക്ക് ഇഷ്ടമാണ്, അതിനാൽ എനിക്ക് മാപ്പ് നൽകേണമേ.",
+ ay:"അവർ മാപ്പ് നൽകട്ടെ, വിട്ടുകളയട്ടെ. അല്ലാഹു നിങ്ങൾക്ക് പൊറുത്തുതരണമെന്ന് നിങ്ങൾ ഇഷ്ടപ്പെടുന്നില്ലേ?",
+ discuss:["ഒരൊറ്റ ആയത്ത് കേട്ട് അബൂബക്കർ (റ) മനസ്സ് മാറ്റി. അത് അദ്ദേഹത്തെക്കുറിച്ച് എന്ത് പറയുന്നു?",
+  "<i>ഉണ്ട്</i> അല്ലെങ്കിൽ <i>ഇല്ല</i> എന്ന് എഴുതൂ: ഒരിക്കലും മാപ്പ് നൽകില്ലെന്ന് നീ തീരുമാനിച്ച ഒരാളുണ്ടോ?",
+  "മാപ്പ് നൽകുക എന്നാൽ വീണ്ടും വിശ്വസിക്കുക എന്നാണോ? രണ്ടും ഒന്നാണോ?"],
+ why:"ചെയ്യാൻ ഒന്നും ചെലവില്ലാത്തതും ചെയ്യാതിരിക്കാൻ എല്ലാം ചെലവുള്ളതുമായ ഒരേയൊരു ആരാധനയാണ് മാപ്പ്. അത് നീ തന്നെ എല്ലാ രാത്രിയും ചോദിക്കുന്നുമുണ്ട്.",
+ points:["അഫ്‌വ് എന്നാൽ നിനക്ക് ശരിക്കും അവകാശമുള്ളത് വിട്ടുകളയലാണ്","നൽകാൻ വിസമ്മതിക്കുന്നത് തന്നെയാണ് നീ അല്ലാഹുവോട് ചോദിക്കുന്നത്","മാപ്പ് നൽകുന്നതും വീണ്ടും വിശ്വസിക്കുന്നതും ഒന്നല്ല"],
+ rem:"ലൈലത്തുൽ ഖദ്‌റിൽ നീ അല്ലാഹുവോട് മാപ്പ് ചോദിക്കും. നിന്റെ പട്ടികയിൽ ഒരു പേര് ബാക്കിവെച്ചുകൊണ്ട് അത് ചോദിക്കണോ എന്ന് ഇപ്പോൾ തീരുമാനിക്കൂ."
+},
+{
+ t:"വാക്ക് പാലിക്കൽ", ar:"الْوَفَاء",
+ sub:"വാഗ്ദാനം ഒരു കടമാണ്, ചെറിയ വാഗ്ദാനങ്ങളാണ് മുറിയുന്നത്.",
+ facts:{term:"വഫാഅ് — പൂർത്തീകരണം",against:"ഖിയാന — വഞ്ചന",quran:"അൽ-ഇസ്റാഅ് 17:34",note:"കപടതയുടെ ഒരു അടയാളം"},
+ hook:"ഈ ആഴ്ച നീ വാഗ്ദാനം ചെയ്ത്, ഇതുവരെ ചെയ്യാത്ത ഒരു കാര്യം ഏതാണ്?",
+ plates:[["ഒപ്പിട്ടതല്ല, പറഞ്ഞത്","അറേബ്യയിൽ ഒരു വാക്ക് ഒരു രേഖയെക്കാൾ ശക്തമായിരുന്നു. നഷ്ടം വന്നാലും അവിടുന്ന് കരാറുകൾ പാലിച്ചു."],
+  ["ചെറിയ വാഗ്ദാനം","ഒരു കൊച്ചു പക്ഷിയെക്കുറിച്ച് ഒരു കുട്ടിക്ക് നൽകിയ വാഗ്ദാനം പോലും അവിടുന്ന് നിസ്സാരമായി കണ്ടില്ല."]],
+ body:["കപടവിശ്വാസിയുടെ മൂന്ന് അടയാളങ്ങൾ അവിടുന്ന് പറഞ്ഞു, അതിലൊന്ന് ഇതാണ്: <b>വാഗ്ദാനം ചെയ്താൽ അവൻ ലംഘിക്കുന്നു.</b> ഒരു രാജ്യത്തെ ഒറ്റിക്കൊടുക്കുമ്പോഴല്ല — ഒരു വാഗ്ദാനം ലംഘിക്കുമ്പോൾ.",
+  "മുതിർന്നവർ നിസ്സാരമായി കാണുന്ന വാഗ്ദാനങ്ങളും ഇതിൽ വരും. ഒരു കുട്ടിയെ വിളിച്ച് <i>വരൂ, ഇത് വാങ്ങൂ</i> എന്ന് പറയുകയും കൊടുക്കാൻ ഒന്നുമില്ലാതിരിക്കുകയും ചെയ്താൽ <mark>നിനക്കെതിരെ ഒരു കളവ് എഴുതപ്പെട്ടു</mark> എന്ന് അവിടുന്ന് പറഞ്ഞു.",
+  "ആരും കേൾക്കാത്ത വാഗ്ദാനങ്ങളും വഫാഇൽ പെടും — നീ സമ്മതിച്ച സമയപരിധി, തിരിച്ചുകൊടുക്കാമെന്ന് പറഞ്ഞ സാധനം, അയക്കാമെന്ന് പറഞ്ഞ സന്ദേശം. ഖുർആൻ ലളിതമായി പറയുന്നു: <i>കരാർ പൂർത്തിയാക്കുക — തീർച്ചയായും കരാറിനെക്കുറിച്ച് ചോദിക്കപ്പെടും.</i>"],
+ story:["പ്രവാചകത്വത്തിന് മുമ്പ് ഒരാളുമായി ഒരു സ്ഥലത്ത് കാണാമെന്ന് അവിടുന്ന് സമ്മതിച്ചു; അയാൾ മറന്നുപോയി വന്നില്ല. അവിടുന്ന് കാത്തുനിന്നു. അടുത്ത ദിവസവും വന്ന് കാത്തുനിന്നു. മൂന്നാം ദിവസം അയാൾ ഓർത്ത് ഓടിയെത്തിയപ്പോൾ അവിടുന്ന് അപ്പോഴും അവിടെ കാത്തുനിൽക്കുകയായിരുന്നു. അവിടുന്ന് ഇത്രമാത്രം പറഞ്ഞു: <i>നീ എന്നെ ബുദ്ധിമുട്ടിച്ചു — ഞാൻ മൂന്ന് ദിവസമായി ഇവിടെയുണ്ട്.</i> ദേഷ്യമില്ല, ഉപദേശമില്ല. താൻ വരാമെന്ന് പറഞ്ഞതുകൊണ്ട് അവിടുന്ന് പോയില്ല, അത്ര മാത്രം.",
+  "ചെറിയ വാഗ്ദാനങ്ങൾ ആരും എഴുതിവെക്കാറില്ല. ഇന്ന് രാത്രി ഞാൻ അയക്കാം. നാളെ ഞാൻ സഹായിക്കാം. അടുത്ത ആഴ്ച ഞാൻ തിരിച്ചുതരാം. നീ എഴുതിവെച്ചാലും ഇല്ലെങ്കിലും ഓരോന്നും രേഖപ്പെടുത്തപ്പെട്ടു. ഇരുപത് ചെറിയ വാഗ്ദാനങ്ങൾ ലംഘിക്കുന്ന ഒരാൾക്ക്, ആർക്കും തെളിയിക്കാനാവാത്ത കാര്യങ്ങൾ കൊണ്ട് മാത്രം പണിത ഒരു പേരുണ്ടാകും."],
+ had:"കപടവിശ്വാസിയുടെ അടയാളങ്ങൾ മൂന്നാണ്: സംസാരിച്ചാൽ കളവ് പറയും, വാഗ്ദാനം ചെയ്താൽ ലംഘിക്കും, വിശ്വസിച്ചേൽപ്പിച്ചാൽ വഞ്ചിക്കും.",
+ ay:"കരാർ പൂർത്തിയാക്കുക — തീർച്ചയായും കരാറിനെക്കുറിച്ച് ചോദിക്കപ്പെടും.",
+ discuss:["വാഗ്ദാനം ലംഘിക്കുന്നത് കളവിനും വഞ്ചനയ്ക്കും ഒപ്പമാണ് എണ്ണിയത്. ഇത് അതികഠിനമാണോ?",
+  "നീ പാലിക്കാത്ത ഒരു വാഗ്ദാനം എഴുതൂ. വിശദാംശം വേണ്ട, തരം മാത്രം.",
+  "മറന്നുപോയ ഒരാൾക്ക് വേണ്ടി അവിടുന്ന് മൂന്ന് ദിവസം കാത്തുനിന്നു. നീ കാത്തുനിൽക്കുമായിരുന്നോ?"],
+ why:"വിശ്വാസം പണിതുയരുന്നത് പാലിക്കപ്പെട്ട വളരെ ചെറിയ വാഗ്ദാനങ്ങളിൽ നിന്നാണ്, തകരുന്നത് ലംഘിക്കപ്പെട്ട വളരെ ചെറിയ വാഗ്ദാനങ്ങളിൽ നിന്നും. ഒരൊറ്റ വലിയ സംഭവത്തിൽ ആരും പേര് നഷ്ടപ്പെടുത്താറില്ല.",
+ points:["വാഗ്ദാനം ലംഘിക്കൽ കപടതയുടെ അടയാളമായി എണ്ണപ്പെട്ടു","കുട്ടികൾക്ക് നൽകുന്ന വാഗ്ദാനവും അതേപടി കണക്കാക്കപ്പെടും","കുറച്ച് പറയൂ, പറഞ്ഞത് ചെയ്യൂ"],
+ rem:"ഇത്ര എളുപ്പത്തിൽ വാഗ്ദാനം ചെയ്യരുത്. സത്യം അതാണെങ്കിൽ <i>ഇൻ ശാ അല്ലാഹ് ഞാൻ ശ്രമിക്കാം</i> എന്ന് പറയൂ — വാഗ്ദാനം ചെയ്യുമ്പോൾ അതിനെ ഒരു കടമായി കാണൂ, കാരണം അതാണ് അത്."
+},
+{
+ t:"നന്ദി", ar:"الشُّكْر",
+ sub:"ഏറ്റവും കുറവുള്ളവരാണ് പലപ്പോഴും ഏറ്റവും കൂടുതൽ ശ്രദ്ധിക്കുന്നത്.",
+ facts:{term:"ശുക്ർ",against:"കുഫ്‌റുന്നിഅ്മ",quran:"ഇബ്രാഹീം 14:7",note:"കാൽ വീങ്ങുന്നതുവരെ നിസ്കരിച്ചു"},
+ hook:"ഇന്ന് നിനക്ക് ലഭിച്ചിട്ടും അല്ലാഹുവിന് നന്ദി പറയാത്ത മൂന്ന് കാര്യങ്ങൾ പറയൂ.",
+ plates:[["ഒരു ഗ്ലാസ് വെള്ളം","സുരക്ഷിതനായി, ആരോഗ്യത്തോടെ, അന്നത്തെ ഭക്ഷണത്തോടെ ഉണരുന്നവന് ലോകം മുഴുവൻ നൽകപ്പെട്ടതുപോലെയാണെന്ന് അവിടുന്ന് പറഞ്ഞു."],
+  ["ഞാൻ നന്ദിയുള്ള ദാസനാകേണ്ടേ","പാപങ്ങൾ പൊറുക്കപ്പെട്ടിട്ടും കാൽ വീങ്ങുന്നതുവരെ എന്തിന് നിസ്കരിക്കുന്നുവെന്ന് ആഇശ (റ) ചോദിച്ചു. അതായിരുന്നു അവിടുത്തെ മറുപടി."]],
+ body:["ശുക്ർ ഒരു വികാരമല്ല. ശ്രദ്ധിക്കലും പറയലും ഉപയോഗിക്കലുമാണ്. അനുഗ്രഹം ശ്രദ്ധിക്കുക, തന്നവന് നന്ദി പറയുക, പിന്നെ അവന് സ്വീകാര്യമായ രീതിയിൽ അത് ഉപയോഗിക്കുക.",
+  "അല്ലാഹു അതൊരു സൂത്രവാക്യമാക്കി: <b>നിങ്ങൾ നന്ദി കാണിച്ചാൽ ഞാൻ നിങ്ങൾക്ക് വർധിപ്പിച്ചുതരും.</b> ഒരുപക്ഷേ എന്നല്ല. നമ്മെക്കുറിച്ച് അസ്വസ്ഥമാക്കുന്ന ഒരു കാര്യവും അവൻ പറഞ്ഞു: <i>എന്റെ ദാസന്മാരിൽ നന്ദിയുള്ളവർ കുറവാണ്.</i>",
+  "<mark>മിക്ക അനുഗ്രഹങ്ങളും ശ്രദ്ധിക്കപ്പെടുന്നത് അവ എടുത്തുമാറ്റപ്പെടുമ്പോൾ മാത്രമാണ്.</mark> പ്രവർത്തിക്കുന്ന ഒരു കാൽമുട്ടിനോ അടയാത്ത മൂക്കിനോ ജീവിച്ചിരിക്കുന്ന ഒരു ഉമ്മയ്ക്കോ ആരും നന്ദി പറയാറില്ല — അതിലൊന്ന് മാറുന്നതുവരെ."],
+ story:["അവിടുന്ന് പറഞ്ഞു: <i>നിങ്ങളെക്കാൾ താഴെയുള്ളവരെ നോക്കുക, മുകളിലുള്ളവരെ നോക്കാതിരിക്കുക — അല്ലാഹുവിന്റെ അനുഗ്രഹത്തെ നിസ്സാരമായി കാണാതിരിക്കാൻ അതാണ് ഉചിതം.</i> ഒരൊറ്റ വാക്യം മറ്റുള്ളവരുടെ ജീവിതം സ്ക്രോൾ ചെയ്യുന്ന ശീലം മുഴുവൻ പൊളിക്കുന്നു. താരതമ്യം തന്നെയാണ് രോഗം; താരതമ്യത്തിന്റെ ദിശയാണ് മരുന്ന്.",
+  "ഉർവത് ബ്നു സുബൈറിന്റെ ഒരു കാൽ മുറിച്ചുമാറ്റി, അതേ യാത്രയിൽ ഒരു മകനും നഷ്ടപ്പെട്ടു. അദ്ദേഹം പറഞ്ഞു: അല്ലാഹുവേ, എനിക്ക് നാല് അവയവങ്ങളുണ്ടായിരുന്നു, നീ ഒന്ന് എടുത്ത് മൂന്ന് ബാക്കിവെച്ചു; എനിക്ക് നാല് മക്കളുണ്ടായിരുന്നു, നീ ഒരാളെ എടുത്ത് മൂന്ന് പേരെ ബാക്കിവെച്ചു; നീ പരീക്ഷിച്ചെങ്കിൽ നീ സുരക്ഷിതനാക്കുകയും ചെയ്തു, നീ എടുത്തെങ്കിൽ അതിലേറെ ബാക്കിവെക്കുകയും ചെയ്തു. വർഷങ്ങൾക്ക് ശേഷമല്ല അദ്ദേഹം ഇത് പറഞ്ഞത്. അന്നുതന്നെ പറഞ്ഞു."],
+ had:"നിങ്ങളിൽ ആരെങ്കിലും വീട്ടിൽ സുരക്ഷിതനായി, ശരീരത്തിൽ ആരോഗ്യത്തോടെ, അന്നത്തേക്കുള്ള ഭക്ഷണത്തോടെ പ്രഭാതത്തിലെത്തിയാൽ — ലോകം മുഴുവൻ അവന് ഒരുമിച്ച് നൽകപ്പെട്ടതുപോലെയാണ്.",
+ ay:"നിങ്ങൾ നന്ദി കാണിച്ചാൽ ഞാൻ നിങ്ങൾക്ക് വർധിപ്പിച്ചുതരും.",
+ discuss:["താഴെയുള്ളവരെ നോക്കുന്നത് നന്ദിയെ എങ്ങനെ സംരക്ഷിക്കുന്നു?",
+  "കുറച്ചുകാലത്തേക്ക് നഷ്ടപ്പെട്ടപ്പോൾ മാത്രം നീ ശ്രദ്ധിച്ച ഒരു അനുഗ്രഹം എഴുതൂ.",
+  "നന്ദിയുള്ളവനായിരിക്കെ തന്നെ കൂടുതൽ ആഗ്രഹിക്കാമോ? അതിര് എവിടെയാണ്?"],
+ why:"അനുഗ്രഹത്തോടുള്ള പ്രതികരണങ്ങളിൽ അതിനെ വർധിപ്പിക്കുന്ന ഒരേയൊരു പ്രതികരണം നന്ദിയാണ്. പരാതി ഇതുവരെ ഒന്നും കൂട്ടിയിട്ടില്ല.",
+ points:["ശ്രദ്ധിക്കൂ, പറയൂ, പിന്നെ നന്നായി ഉപയോഗിക്കൂ","മുകളിലേക്കല്ല, താഴേക്ക് താരതമ്യം ചെയ്യൂ","ആവശ്യം കൊണ്ടല്ല, നന്ദി കൊണ്ടാണ് അവിടുന്ന് ആരാധിച്ചത്"],
+ rem:"ഇന്ന് രാത്രി ഉറങ്ങുന്നതിന് മുമ്പ് ഇന്നത്തെ മൂന്ന് കാര്യങ്ങൾ പേരെടുത്ത് പറയൂ. <i>എല്ലാം</i> എന്നല്ല — വ്യക്തമായ മൂന്ന് കാര്യങ്ങൾ. വ്യക്തമായ നന്ദി മാത്രമാണ് നിന്നെ മാറ്റുന്നത്."
+},
+{
+ t:"നീതി, സ്വന്തത്തിനെതിരായാലും", ar:"الْعَدْل",
+ sub:"സത്യം മറുഭാഗത്താണെങ്കിലും അത് പറയൽ.",
+ facts:{term:"അദ്ൽ — നീതി",against:"ളുൽം — അക്രമം",quran:"അന്നിസാഅ് 4:135",note:"സ്വന്തത്തിനെതിരായാലും"},
+ hook:"നിന്റെ സുഹൃത്ത് തെറ്റാണ്, അക്രമിക്കപ്പെട്ടത് നിനക്ക് ഇഷ്ടമില്ലാത്ത ഒരാളും. നീ ആരുടെ ഭാഗത്താണ്?",
+ plates:[["ഒരേ അളവുകോൽ","നീതി എന്നാൽ ഒരേ അളവുകോൽ — നീ സ്നേഹിക്കുന്നവർക്കും സ്നേഹിക്കാത്തവർക്കും."],
+  ["സ്വന്തം മകളായാലും","സ്വന്തം മകൾ ഫാത്വിമ (റ) മോഷ്ടിച്ചാലും ശിക്ഷ നടപ്പാക്കുമായിരുന്നുവെന്ന് അവിടുന്ന് പറഞ്ഞു."]],
+ body:["ജീവിച്ചുകാണിക്കാൻ ഏതാണ്ട് അസാധ്യമായ ഒരു കൽപ്പന ഖുർആൻ നൽകുന്നു: <b>നീതി നിലനിർത്തുന്നവരും അല്ലാഹുവിന് വേണ്ടി സാക്ഷ്യം വഹിക്കുന്നവരുമാകുക — നിങ്ങൾക്കോ മാതാപിതാക്കൾക്കോ ബന്ധുക്കൾക്കോ എതിരായാലും.</b> സ്വന്തത്തിനെതിരായാലും.",
+  "രണ്ടാമത്തെ ഒരു ആയത്തിൽ അത് കൂടുതൽ മുന്നോട്ട് പോകുന്നു: ഒരു ജനതയോടുള്ള വെറുപ്പ് നിങ്ങളെ അനീതിയിലേക്ക് നയിക്കരുത് — <i>നീതി കാണിക്കുക, അതാണ് തഖ്‌വയോട് ഏറ്റവും അടുത്തത്.</i> <mark>ഇഷ്ടമില്ലാത്തവനോട് നീതി കാണിക്കാനും സ്നേഹിക്കുന്നവനെക്കുറിച്ച് സത്യം പറയാനും നീ ബാധ്യസ്ഥനാണ്.</mark>",
+  "ഈ പുസ്തകത്തിലെ ഏറ്റവും പ്രയാസമുള്ള ഗുണമാണിത്, കാരണം നമ്മുടെ ഉള്ളിലെ എല്ലാം സ്വന്തം ഭാഗം സംരക്ഷിക്കാൻ ആഗ്രഹിക്കുന്നു. പക്ഷേ സുഹൃത്തുക്കൾക്ക് വേണ്ടി സത്യം വളയ്ക്കുന്ന ഒരാളുടെ കൈയിൽ ആർക്കും നൽകാൻ സത്യം ബാക്കിയുണ്ടാകില്ല."],
+ story:["മഖ്‌സൂം ഗോത്രത്തിലെ ഒരു കുലീന സ്ത്രീ മോഷ്ടിച്ചു; ശിക്ഷ ഒഴിവാക്കിക്കിട്ടാൻ അവരുടെ കുടുംബം നബി ﷺ ക്ക് ഏറെ പ്രിയപ്പെട്ട ഉസാമയെ (റ) പറഞ്ഞയച്ചു. അവിടുത്തെ മുഖം മാറി. അവിടുന്ന് പറഞ്ഞു: <i>അല്ലാഹുവിന്റെ അതിരുകളിലൊന്നിന്റെ കാര്യത്തിൽ നീ ശുപാർശ ചെയ്യുകയാണോ?</i> പിന്നെ ജനങ്ങളോട് പറഞ്ഞു: നിങ്ങൾക്ക് മുമ്പുള്ളവർ നശിച്ചത് കുലീനൻ മോഷ്ടിച്ചാൽ വിട്ടയക്കുകയും ദുർബലൻ മോഷ്ടിച്ചാൽ ശിക്ഷിക്കുകയും ചെയ്തതുകൊണ്ടാണ്. <b>അല്ലാഹുവാണ, മുഹമ്മദിന്റെ മകൾ ഫാത്വിമ മോഷ്ടിച്ചാലും ഞാൻ അവളുടെ കൈ മുറിക്കും.</b>",
+  "ആർക്കും ഇഷ്ടമില്ലാത്ത ഒരു സഹപാഠിയെക്കുറിച്ച് നിന്റെ സുഹൃത്ത് സത്യമല്ലാത്ത ഒരു കാര്യം പറയുന്നു. മിണ്ടാതിരുന്നാൽ നിനക്ക് ഒന്നും നഷ്ടപ്പെടില്ല; <i>അത് സത്യമല്ല</i> എന്ന് പറഞ്ഞാൽ എന്തോ നഷ്ടപ്പെടും. ആ ഗ്രൂപ്പിലുള്ള എല്ലാവരും നീ ഏതാണ് ചെയ്തതെന്ന് ഓർക്കും — അതിലുപരി, രണ്ട് മലക്കുകളും ഓർക്കും."],
+ had:"നിങ്ങൾക്ക് മുമ്പുള്ളവർ നശിച്ചത്, അവരിൽ കുലീനൻ മോഷ്ടിച്ചാൽ അവനെ വിട്ടയക്കുകയും ദുർബലൻ മോഷ്ടിച്ചാൽ അവനിൽ ശിക്ഷ നടപ്പാക്കുകയും ചെയ്തതുകൊണ്ടാണ്.",
+ ay:"നീതി നിലനിർത്തുന്നവരും അല്ലാഹുവിന് വേണ്ടി സാക്ഷ്യം വഹിക്കുന്നവരുമാകുക — നിങ്ങൾക്കെതിരായാലും.",
+ discuss:["ആ വാക്യത്തിൽ അവിടുന്ന് സ്വന്തം മകളുടെ പേര് പറഞ്ഞത് എന്തുകൊണ്ട്?",
+  "<i>ഉണ്ട്</i> അല്ലെങ്കിൽ <i>ഇല്ല</i>: സുഹൃത്ത് വ്യക്തമായി തെറ്റായിരുന്നപ്പോൾ നീ മിണ്ടാതിരുന്നിട്ടുണ്ടോ?",
+  "സുഹൃത്തിനെ എപ്പോഴും ന്യായീകരിക്കുന്നത് കൂറാണോ? അത് എപ്പോൾ മറ്റെന്തോ ആയി മാറുന്നു?"],
+ why:"കള്ളന്മാർ കാരണമല്ല സമൂഹങ്ങൾ തകരുന്നത്. ചിലർക്ക് വേണ്ടി നിയമം വളയുകയും മറ്റുള്ളവർക്ക് വേണ്ടി വളയാതിരിക്കുകയും ചെയ്യുമ്പോഴാണ് — അവിടുന്ന് അത് വ്യക്തമായി പറഞ്ഞിട്ടുമുണ്ട്.",
+ points:["ഒരേ അളവുകോൽ, സ്നേഹിക്കുന്നവർക്കും അല്ലാത്തവർക്കും","ഇഷ്ടക്കേട് ഒരിക്കലും അനീതിക്കുള്ള അനുമതിയല്ല","സ്വന്തം ഭാഗത്തെക്കുറിച്ച് <i>അത് സത്യമല്ല</i> എന്ന് പറയലാണ് പരീക്ഷ"],
+ rem:"നിന്റെ സ്വഭാവത്തിന്റെ അളവുകോൽ ഇഷ്ടമുള്ളവരോട് നീ എങ്ങനെ പെരുമാറുന്നു എന്നതല്ല. നിന്റെ സുഹൃത്ത് തെറ്റായിരിക്കുമ്പോൾ അവനെക്കുറിച്ച് നീ എന്ത് പറയുന്നു എന്നതാണ്."
+}
+];
+
+/* ================= RENDER ================= */
+function el(h){const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;}
+const host=document.getElementById('lessons'), bn=document.getElementById('bn');
+const plate=x=> IMG==="ready"
+ ? `<div class="plate"><figure><img src="assets/img/${x.f}" alt="${x.cap}" loading="lazy"><figcaption>
+      <div class="cap">${x.cap}</div><div class="info">${x.info}</div></figcaption></figure></div>`
+ : `<div class="plate"><figure><div class="ph">
+      <div class="m"><span class="fn">${x.f}</span><span class="rt">${RATIO}</span></div>
+      <div class="pr">${x.p}</div></div><figcaption>
+      <div class="cap">${x.cap}</div><div class="info">${x.info}</div></figcaption></figure></div>`;
+
+const EN_UI={};document.querySelectorAll("[data-i18n]").forEach(e=>EN_UI[e.dataset.i18n]=e.innerHTML);
+const T={lang:"en"};
+const tx=(k,en)=>T.lang==="ml"&&UI_ML[k]!=null?UI_ML[k]:en;
+
+function merge(x,i){
+  if(T.lang!=="ml"||!ML_L[i]) return x;
+  const m=ML_L[i];
+  return {...x,
+    t:m.t, ar:m.ar, sub:m.sub, facts:m.facts, hook:m.hook,
+    plates:x.plates.map((pl,k)=> m.plates&&m.plates[k]
+      ? {...pl, cap:m.plates[k][0], info:m.plates[k][1]} : pl),
+    body:m.body||x.body,
+    story:x.story.map((sc,k)=> m.story&&m.story[k] ? [sc[0],m.story[k]] : sc),
+    had:{q:m.had||x.had.q, s:x.had.s},
+    ay:{a:x.ay.a, m:m.ay||x.ay.m, r:x.ay.r},
+    discuss:x.discuss.map((d,k)=> m.discuss&&m.discuss[k] ? [m.discuss[k],d[1]] : d),
+    why:m.why, points:m.points, rem:m.rem
+  };
+}
+
+function build(){
+  host.innerHTML=""; bn.innerHTML="";
+  document.body.classList.toggle("lang-ml",T.lang==="ml");
+  document.documentElement.lang=T.lang;
+  document.querySelectorAll("[data-i18n]").forEach(e=>{e.innerHTML=tx(e.dataset.i18n,EN_UI[e.dataset.i18n]);});
+  langBtn.textContent = T.lang==="ml" ? "English" : "മലയാളം";
+
+  L.forEach((x0,i)=>{
+    const x=merge(x0,i), n=i+1, F=x.facts;
+    const facts=[[tx("fTerm","Arabic"),F.term],[tx("fAgainst","Its opposite"),F.against],
+                 [tx("fQuran","In the Qur'an"),F.quran],[tx("fNote","Note"),F.note]]
+      .map(f=>`<div class="fact"><div class="fl">${f[0]}</div><div class="fv">${f[1]}</div></div>`).join('');
+    const body=x.body.map(p=>`<p>${p}</p>`).join('');
+    const st=x.story.map((s2,k)=>`<div class="sc"><span class="sn">${k===0?tx("scSunnah","FROM THE SUNNAH"):tx("scHome","CLOSER TO HOME")}</span><p>${s2[1]}</p></div>`).join('');
+    const disc=x.discuss.map(d=>`<li>${d[0]}<span class="how">${d[1]==='chat'?tx("chat","in the chat"):tx("unmute","unmute")}</span></li>`).join('');
+    const pts=x.points.map(p=>`<li><span class="d">◆</span>${p}</li>`).join('');
+
+    host.appendChild(el(`<section class="lesson" id="lesson${n}">
+      <div class="l-head">
+        <span class="l-badge">${tx("lesson","LESSON")} ${n} ${tx("of","OF")} ${L.length}</span>
+        <h2>${x.t}</h2><div class="l-ar">${x.ar}</div>
+        <div class="l-intro">${x.sub}</div>
+      </div>
+      <div class="pad">
+        <div class="facts">${facts}</div>
+        <div class="hook"><span class="tag">${tx("tagHook","OPENING QUESTION — think before class")}</span><p>${x.hook}</p></div>
+      </div>
+      <div class="plates"><div class="plates-tag">${tx("tagPics","THE PICTURES")}</div>${x.plates.map(plate).join('')}</div>
+      <div class="pad">
+        <div class="body"><div class="tag">${tx("tagBody","WHAT IT MEANS")}</div>${body}</div>
+        <div class="story"><div class="tag">${tx("tagStory","TWO STORIES")}</div>${st}</div>
+        <div class="hq"><div class="l">${tx("tagHad","FROM THE SUNNAH")}</div><div class="q">“${x.had.q}”</div><div class="s">${x.had.s}</div></div>
+        <div class="ay"><div class="a">${x.ay.a}</div><div class="m">${x.ay.m}</div><div class="r">${x.ay.r}</div></div>
+        <div class="discuss"><div class="tag">${tx("tagDiscuss","TALK ABOUT IT — in the live class")}</div>
+          <div class="sub">${tx("discussSub","Your teacher will open these. Answer where it says.")}</div><ol>${disc}</ol></div>
+        <div class="why"><div class="tag">${tx("tagWhy","WHY IT MATTERS")}</div><p>${x.why}</p><ul class="kp">${pts}</ul></div>
+        <div class="remind"><div class="l">${tx("tagRem","A REMINDER BEFORE YOU CLOSE THIS LESSON")}</div><p>${x.rem}</p></div>
+      </div>
+    </section>`));
+    bn.appendChild(el(`<a class="bn" href="#lesson${n}"><span class="n">${n}</span>${x.t}</a>`));
+  });
+  bn.appendChild(el(`<a class="bn" href="#done"><span class="n">★</span>${tx("finish","Finish")}</a>`));
+  Array.from(document.querySelectorAll('.lesson')).forEach(y=>y.classList.add('rv','in'));
+}
+
+const langBtn=document.getElementById('langBtn');
+langBtn.addEventListener('click',()=>{
+  T.lang = T.lang==="ml" ? "en" : "ml";
+  try{localStorage.setItem('mkr_lang',T.lang);}catch(e){}
+  build(); window.scrollTo({top:0});
+});
+try{T.lang=localStorage.getItem('mkr_lang')||"en";}catch(e){}
+build();
+
+const $$=s=>Array.from(document.querySelectorAll(s));
+const drawer=document.getElementById('drawer'), scrim=document.getElementById('scrim');
+function shut(){drawer.classList.remove('on');scrim.classList.remove('on');}
+document.getElementById('menuBtn').addEventListener('click',()=>{drawer.classList.add('on');scrim.classList.add('on');});
+scrim.addEventListener('click',shut);
+bn.addEventListener('click',e=>{if(e.target.closest('.bn'))shut();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')shut();});
+
+const bar=document.getElementById('progress');
+function onScroll(){const h=document.documentElement,m=h.scrollHeight-h.clientHeight;
+  bar.style.width=(m>0?(h.scrollTop/m)*100:0)+'%';}
+window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+try{
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),
+    {rootMargin:'0px 0px -6% 0px',threshold:.05});
+  $$('.cover,.done').forEach(x=>{x.classList.add('rv');io.observe(x);});
+}catch(e){}
+</script>
+</body>
+</html>

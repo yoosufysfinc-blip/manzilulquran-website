@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Ḥalāl and Ḥarām · الْحَلَالُ وَالْحَرَام — ManzilulQuran</title>
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Poppins:wght@400;500;600;700&family=Amiri:wght@400;700&family=Anek+Malayalam:wght@400;500;600;700&family=Baloo+Chettan+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FCFBF7; --edge:#E2DED2;
+  --ink:#232B2E; --soft:#5F6E72;
+  --rule:#CCC7B7;
+  --halal:#2E7D4F; --halal-bg:#E7F3EC;
+  --haram:#A83B33; --haram-bg:#FAEBE9;
+  --doubt:#A9761C; --doubt-bg:#FBF1DF;
+  --info:#2A6076; --info-bg:#E7F0F5;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+@page{size:A4 portrait;margin:0}
+html,body{font-family:'Poppins',sans-serif;color:var(--ink);font-size:14px;line-height:1.6;background:#8D9490}
+body{padding:14px 0}
+
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;
+  padding:10px 14px;background:rgba(252,251,247,.97);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--rule);max-width:210mm;margin:0 auto 14px}
+.bar .t{font-family:'Lora',serif;font-weight:700;color:var(--ink);font-size:15px}
+.bar .ar{font-family:'Amiri',serif;color:var(--doubt);font-size:17px}
+.bar .sp{flex:1}
+.bar .meta{font-size:11.5px;color:var(--soft);white-space:nowrap}
+
+body.lang-ml,body.lang-ml p.txt,body.lang-ml li,body.lang-ml td,body.lang-ml .note,
+body.lang-ml .remember p,body.lang-ml .mng,body.lang-ml .lsub,body.lang-ml .hq .q,
+body.lang-ml .rw .d2,body.lang-ml .cover .cmeta{font-family:'Anek Malayalam','Noto Sans Malayalam',sans-serif}
+body.lang-ml h1.lt,body.lang-ml .h,body.lang-ml th,body.lang-ml .toc .grp,
+body.lang-ml .remember .rh,body.lang-ml .lnum,body.lang-ml .chip{font-family:'Baloo Chettan 2','Anek Malayalam',sans-serif}
+body.lang-ml p.txt,body.lang-ml li,body.lang-ml .rw .d2{line-height:1.95}
+body.lang-ml .lsub,body.lang-ml .hq .q{font-style:normal}
+.bar .lang{min-height:38px;border:1.5px solid var(--doubt);background:#fff;color:var(--doubt);
+  font-family:'Poppins',sans-serif;font-weight:700;font-size:12.5px;border-radius:8px;
+  padding:8px 13px;cursor:pointer;white-space:nowrap}
+.bar .lang:hover{background:var(--doubt);color:#fff}
+
+.page{
+  --acc:var(--info); --accbg:var(--info-bg);
+  width:210mm;min-height:297mm;position:relative;overflow:hidden;
+  page-break-after:always;background:var(--paper);border-top:5mm solid var(--acc);
+  padding:16mm 18mm 16mm;margin:0 auto 14px;text-align:center;
+  box-shadow:0 10px 30px -12px rgba(0,0,0,.5)}
+.page:last-child{page-break-after:auto}
+.page.p1{--acc:#2A6076;--accbg:#E7F0F5}
+.page.p2{--acc:#2E7D4F;--accbg:#E7F3EC}
+.page.p3{--acc:#A9761C;--accbg:#FBF1DF}
+.page.p4{--acc:#5A4A7A;--accbg:#EEEAF5}
+.page.p5{--acc:#A83B33;--accbg:#FAEBE9}
+
+.ptop{display:flex;justify-content:space-between;align-items:center;font-size:9pt;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--soft);
+  border-bottom:1px solid var(--rule);padding-bottom:3mm;margin-bottom:7mm}
+.ptop .part{font-weight:700;color:var(--acc)}
+.lnum{display:inline-block;font-family:'Lora',serif;font-size:10.5pt;font-weight:700;color:#fff;
+  background:var(--acc);border-radius:100px;padding:2mm 6mm;margin-bottom:4mm}
+h1.lt{font-family:'Lora',serif;font-size:23pt;font-weight:700;color:var(--acc);line-height:1.22}
+.lar{font-family:'Amiri',serif;font-size:19pt;font-weight:700;color:var(--doubt);direction:rtl;margin-top:1mm}
+.lsub{font-family:'Lora',serif;font-style:italic;font-size:11pt;color:var(--soft);margin:3mm auto 6mm;max-width:150mm}
+.rule{width:34mm;height:2px;background:var(--acc);margin:0 auto 7mm;opacity:.6}
+
+.blk{margin-bottom:5mm}
+.h{font-family:'Lora',serif;font-size:12.5pt;font-weight:700;color:var(--acc);margin-bottom:2mm}
+p.txt{font-size:11pt;color:var(--ink);max-width:152mm;margin:0 auto 2mm;line-height:1.78}
+mark{background:linear-gradient(transparent 62%,rgba(169,118,28,.3) 62%);color:#6B4A0F;font-weight:700;padding:0 1px}
+
+.arb{direction:rtl;text-align:right;font-family:'Amiri',serif;font-size:16pt;font-weight:700;
+  color:var(--acc);line-height:2.1;background:#fff;border:1px solid var(--accbg);
+  border-right:4px solid var(--acc);border-radius:3mm;padding:4mm 5mm;margin:0 auto 2mm;max-width:158mm}
+.trn{font-style:italic;font-size:9.5pt;color:var(--doubt);max-width:150mm;margin:0 auto 1mm}
+.mng{font-size:10.5pt;color:var(--soft);max-width:150mm;margin:0 auto}
+
+ul.pts,ol.pts{list-style:none;max-width:152mm;margin:0 auto;padding:0}
+ul.pts li,ol.pts li{font-size:10.5pt;padding:1.5mm 0;border-bottom:1px dotted var(--rule);text-align:left}
+ul.pts li:last-child,ol.pts li:last-child{border-bottom:0}
+ol.pts{counter-reset:c}
+ol.pts li::before{counter-increment:c;content:counter(c);display:inline-grid;place-items:center;
+  width:5.5mm;height:5.5mm;border-radius:50%;background:var(--accbg);color:var(--acc);
+  font-weight:700;font-size:8.5pt;margin-right:3mm;vertical-align:middle}
+
+table{border-collapse:collapse;margin:0 auto;max-width:160mm;width:100%;font-size:9.5pt}
+th{background:var(--acc);color:#fff;font-weight:600;padding:2.4mm;font-size:9pt;letter-spacing:.4px;text-transform:uppercase}
+td{border-bottom:1px solid var(--rule);padding:2.4mm;text-align:center}
+tr:nth-child(even) td{background:var(--accbg)}
+
+/* ruling chips */
+.chip{display:inline-block;font-size:8.5pt;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
+  border-radius:100px;padding:1mm 4mm;white-space:nowrap}
+.chip.h{background:var(--halal-bg);color:var(--halal);border:1px solid var(--halal)}
+.chip.x{background:var(--haram-bg);color:var(--haram);border:1px solid var(--haram)}
+.chip.d{background:var(--doubt-bg);color:var(--doubt);border:1px solid var(--doubt)}
+.rulings{display:grid;gap:2.5mm;max-width:158mm;margin:0 auto}
+.rw{display:grid;grid-template-columns:30mm 1fr;gap:4mm;align-items:center;
+  border:1px solid var(--rule);border-radius:2.5mm;padding:2.5mm 3.5mm;background:#fff}
+.rw .d2{text-align:left;font-size:10pt;line-height:1.6}
+
+.note{background:var(--accbg);border:1px solid var(--acc);border-radius:3mm;padding:4mm 6mm;
+  max-width:156mm;margin:0 auto;font-size:10.5pt;text-align:left}
+.note b{color:var(--acc)}
+.hq{border-left:3px solid var(--acc);padding-left:5mm;max-width:152mm;margin:0 auto;text-align:left}
+.hq .q{font-family:'Lora',serif;font-style:italic;font-size:11pt;line-height:1.8}
+.hq .s{font-size:9.5pt;font-weight:700;color:var(--acc);margin-top:2mm}
+.remember{background:var(--acc);color:#fff;border-radius:3mm;padding:5mm 7mm;max-width:156mm;margin:6mm auto 0}
+.remember .rh{font-family:'Lora',serif;font-weight:700;font-size:10.5pt;letter-spacing:1px;
+  text-transform:uppercase;opacity:.82;margin-bottom:1.5mm}
+.remember p{font-size:11pt;line-height:1.72}
+
+.wm{position:absolute;bottom:7mm;left:50%;transform:translateX(-50%);font-family:'Lora',serif;
+  font-size:9pt;color:var(--acc);opacity:.4;letter-spacing:2.4px;font-style:italic;white-space:nowrap}
+.pno{position:absolute;bottom:7mm;right:14mm;font-size:9pt;color:var(--soft)}
+
+.cover{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cover .crest{width:32mm;height:32mm;border-radius:50%;object-fit:cover;border:2px solid var(--doubt);margin-bottom:8mm}
+.cover .car{font-family:'Amiri',serif;font-size:38pt;font-weight:700;color:var(--info);line-height:1.35}
+.cover .cen{font-family:'Lora',serif;font-size:20pt;font-weight:700;color:var(--doubt);letter-spacing:2.5px;margin-top:2mm}
+.cover .cline{width:56mm;height:2px;background:var(--rule);margin:8mm auto}
+.cover .cmeta{font-size:11pt;color:var(--soft);line-height:2}
+.toc{max-width:158mm;margin:0 auto;text-align:left}
+.toc .grp{font-family:'Lora',serif;font-weight:700;color:var(--doubt);font-size:10.5pt;
+  text-transform:uppercase;letter-spacing:1.1px;margin:5mm 0 2mm;text-align:center}
+.toc a{display:flex;gap:4mm;align-items:baseline;text-decoration:none;color:var(--ink);
+  font-size:10.5pt;padding:1.3mm 0;border-bottom:1px dotted var(--rule)}
+.toc a .n{width:7mm;text-align:right;color:var(--info);font-weight:700}
+
+@media print{ body{background:#fff;padding:0} .bar{display:none!important} .page{box-shadow:none;margin:0} }
+@media(max-width:820px){
+  body{padding:0}
+  .bar{max-width:100%;margin-bottom:0}
+  .page{width:100%;min-height:auto;padding:20px 15px 28px;margin-bottom:10px;box-shadow:none;border-bottom:6px solid var(--edge)}
+  h1.lt{font-size:19pt} .cover .car{font-size:28pt} .cover .cen{font-size:15pt}
+  .arb{font-size:14pt;padding:11px 13px}
+  table{font-size:8.5pt} th,td{padding:5px 3px}
+  .rw{grid-template-columns:26mm 1fr;gap:3mm}
+  .wm,.pno{position:static;transform:none;display:block;margin-top:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div><span class="t">Ḥalāl &amp; Ḥarām</span> <span class="ar">الْحَلَالُ وَالْحَرَام</span></div>
+  <div class="sp"></div>
+  <button class="lang" id="langBtn">മലയാളം</button>
+  <div class="meta" id="barMeta">15 lessons · Shāfiʿī · Ages 15–16</div>
+</div>
+
+<div id="book"></div>
+
+<script>
+/* ==========================================================================
+   ⚠️ SHĀFIʿĪ FIQH — 15 lessons, written for students aged 15–16. Every ruling, ḥadīth and
+   reference below must be checked by a qualified teacher before publishing.
+   Where the madhāhib differ, the Shāfiʿī position is given and the difference
+   is noted rather than hidden.
+
+   A4 model matches salah-complete.html. Parts are colour-coded.
+   ========================================================================== */
+
+const PARTS={1:"Part 1 · The Foundations",2:"Part 2 · Food and Drink",
+             3:"Part 3 · Purity",4:"Part 4 · Money, Dress and Screens",
+             5:"Part 5 · Living With Doubt"};
+
+const L=[
+/* ---------------- PART 1 ---------------- */
+{p:1,t:"The Default Is Permission",ar:"الأَصْلُ فِي الأَشْيَاءِ الإِبَاحَة",
+ sub:"Islam did not arrive with a long list of bans. It arrived with a short one.",
+ b:[{t:"txt",x:"There is a rule the scholars state at the start of every book of fiqh, and it changes how the whole subject feels: <mark>in ordinary worldly matters, everything is permitted until there is evidence that it is forbidden.</mark>"},
+   {t:"txt",x:"Worship works the opposite way. There, nothing is legislated unless there is evidence <i>for</i> it — you cannot invent a new prayer. But food, clothes, work, travel, technology and everything else begins as ḥalāl, and stays ḥalāl until proven otherwise."},
+   {t:"h",x:"Why that matters at your age"},
+   {t:"txt",x:"People will tell you a great many things are ḥarām without being able to say where the ruling comes from. Asking <b>what is the evidence</b> is not rudeness. It is the correct question, and a scholar will be pleased you asked it."},
+   {t:"hq",q:"What Allah has made lawful in His Book is lawful, what He has forbidden is forbidden, and what He is silent about is pardoned — so accept the pardon of Allah, for Allah is not forgetful.",s:"Sunan at-Tirmidhī 1726 · al-Ḥākim"},
+   {t:"ar",x:"يَا أَيُّهَا الَّذِينَ آمَنُوا لَا تُحَرِّمُوا طَيِّبَاتِ مَا أَحَلَّ اللَّهُ لَكُمْ",
+    tr:"Yā ayyuha lladhīna āmanū lā tuḥarrimū ṭayyibāti mā aḥalla llāhu lakum",
+    en:"O you who believe, do not forbid the good things Allah has made lawful for you. — Al-Mā'idah 5:87"},
+   {t:"note",x:"<b>Both errors are sins.</b> Calling something ḥalāl that Allah forbade is a sin. Calling something ḥarām that Allah permitted is <i>also</i> a sin — the āyah above was revealed about people who forbade good things on themselves out of extra piety."},
+   {t:"rem",x:"The list of ḥarām things is short. The list of ḥalāl things is nearly everything else. Learn the short list properly and stop guessing about the rest."}]},
+
+{p:1,t:"The Five Rulings",ar:"الأَحْكَامُ الْخَمْسَة",
+ sub:"Not everything is either ḥalāl or ḥarām. There are five categories, not two.",
+ b:[{t:"tbl",head:["Ruling","Arabic","Meaning","If you do it","If you leave it"],
+    rows:[["Obligatory","فَرْض","Must be done","Rewarded","Sin"],
+      ["Recommended","سُنَّة","Better to do","Rewarded","No sin"],
+      ["Permitted","مُبَاح","Neutral","No reward","No sin"],
+      ["Disliked","مَكْرُوه","Better to avoid","No sin","Rewarded"],
+      ["Forbidden","حَرَام","Must be avoided","Sin","Rewarded"]]},
+   {t:"h",x:"Two words people misuse"},
+   {t:"txt",x:"<b>Makrūh</b> does not mean <i>slightly ḥarām</i>. It means there is no sin at all in doing it — only reward in avoiding it. And <b>mubāḥ</b> does not mean worthless: a mubāḥ act done with a good intention becomes worship. Eating is mubāḥ; eating to have strength for Fajr is rewarded."},
+   {t:"note",x:"<b>Watch your language.</b> Saying <i>that is ḥarām</i> about something merely disliked is a serious mistake — you are reporting a ruling from Allah that He did not give. If you are not sure of the category, say <i>I think it is better to avoid it</i>."},
+   {t:"rem",x:"Five categories, not two. Most of life sits in the middle three, and your intention is what turns the middle into worship."}]},
+
+{p:1,t:"The Doubtful Middle",ar:"الشُّبُهَات",
+ sub:"The clearest ḥadīth in this whole subject, and the most useful.",
+ b:[{t:"hq",q:"The ḥalāl is clear and the ḥarām is clear, and between them are doubtful matters that many people do not know. Whoever guards against the doubtful has protected his religion and his honour, and whoever falls into the doubtful falls into the ḥarām — like a shepherd grazing at the edge of a private pasture, about to graze inside it. Every king has a sanctuary, and the sanctuary of Allah is what He has forbidden.",s:"Ṣaḥīḥ al-Bukhārī 52 · Ṣaḥīḥ Muslim 1599"},
+   {t:"txt",x:"Notice what he did <b>not</b> say. He did not say the doubtful is ḥarām. He said it is a border zone, and that people who live on the border eventually cross it."},
+   {t:"h",x:"Three responses to doubt"},
+   {t:"ol",x:["<b>Ask.</b> Most doubtful matters are only doubtful because you have not asked anyone qualified.",
+    "<b>Leave it.</b> If you asked and it is still unclear, leaving it costs you almost nothing.",
+    "<b>Do not make a religion out of it.</b> Avoiding the doubtful is a personal precaution. It does not make you entitled to declare it ḥarām for other people."]},
+   {t:"hq",q:"Leave what makes you doubt for what does not make you doubt.",s:"Sunan at-Tirmidhī 2518 · Nasā'ī"},
+   {t:"rem",x:"Your heart usually knows before your tongue does. That uneasy feeling is worth listening to — but it is a warning light, not a fatwa."}]},
+
+/* ---------------- PART 2 ---------------- */
+{p:2,t:"What Makes Meat Ḥalāl",ar:"الذَّكَاةُ الشَّرْعِيَّة",
+ sub:"Four conditions, and only four.",
+ b:[{t:"ol",x:["The <b>animal</b> is of a lawful kind, and alive at the moment of slaughter.",
+    "The <b>slaughterer</b> is a Muslim, or from the People of the Book.",
+    "The <b>cut</b> severs the throat and gullet — the windpipe and the food pipe.",
+    "The <b>name of Allah</b> is mentioned at the time of slaughter."]},
+   {t:"ar",x:"بِسْمِ اللَّهِ، اللَّهُ أَكْبَرُ",tr:"Bismillāh, Allāhu akbar",
+    en:"In the name of Allah, Allah is the Greatest. — said at the moment of slaughter"},
+   {t:"h",x:"Food of the People of the Book"},
+   {t:"txt",x:"The Qur'an permits the food of the People of the Book. The scholars discuss how far this applies to modern industrial slaughter, where the name of Allah is not mentioned and the method may not meet the conditions above. <mark>Where you can find certified ḥalāl meat, take it. Where you genuinely cannot, ask a scholar rather than deciding for yourself.</mark>"},
+   {t:"ar",x:"وَطَعَامُ الَّذِينَ أُوتُوا الْكِتَابَ حِلٌّ لَّكُمْ",
+    tr:"Wa ṭaʿāmu lladhīna ūtu l-kitāba ḥillun lakum",
+    en:"And the food of those given the Scripture is lawful for you. — Al-Mā'idah 5:5"},
+   {t:"note",x:"<b>Kindness is part of the ruling.</b> He ﷺ said Allah has prescribed excellence in everything — so when you slaughter, do it well: sharpen the blade and let the animal be at ease (Ṣaḥīḥ Muslim 1955). Cruelty does not make meat ḥarām, but it is a sin in itself."},
+   {t:"rem",x:"Halal is not a sticker. It is four conditions, and a person who knows them can ask the right question anywhere in the world."}]},
+
+{p:2,t:"What Is Forbidden to Eat",ar:"الْمُحَرَّمَاتُ مِنَ الطَّعَام",
+ sub:"The Qur'an lists them, and the list is short.",
+ b:[{t:"ar",x:"حُرِّمَتْ عَلَيْكُمُ الْمَيْتَةُ وَالدَّمُ وَلَحْمُ الْخِنزِيرِ وَمَا أُهِلَّ لِغَيْرِ اللَّهِ بِهِ",
+    tr:"Ḥurrimat ʿalaykumu l-maytatu wa d-damu wa laḥmu l-khinzīri wa mā uhilla li-ghayri llāhi bih",
+    en:"Forbidden to you are carrion, blood, the flesh of swine, and what has been dedicated to other than Allah. — Al-Mā'idah 5:3"},
+   {t:"rulings",x:[["x","Pork and everything from it — including lard, bacon and pork gelatine"],
+     ["x","Carrion — an animal that died without lawful slaughter"],
+     ["x","Flowing blood"],
+     ["x","Anything slaughtered in a name other than Allah's"],
+     ["x","Predatory animals with fangs, and birds with talons"],
+     ["h","Fish and sea creatures — no slaughter needed"],
+     ["h","All plants, grains, fruit and vegetables"]]},
+   {t:"note",x:"<b>Necessity.</b> The same āyah ends by permitting the forbidden to someone forced by starvation, without desiring it and without exceeding need. Islam does not require a person to die rather than eat."},
+   {t:"note",x:"<b>Locusts and sea life.</b> He ﷺ said two dead things are lawful for us: fish and locusts (Ibn Mājah 3314). Shāfiʿī scholars discuss which sea creatures are included — ask before assuming everything from the sea is covered."},
+   {t:"rem",x:"Four items in the āyah, and one exception for genuine necessity. Memorise the āyah and you have memorised the core of the subject."}]},
+
+{p:2,t:"Labels, Gelatine and Eating Out",ar:"فِي الْوَاقِع",
+ sub:"Where the ruling actually gets difficult — in a supermarket.",
+ b:[{t:"h",x:"The three things worth checking"},
+   {t:"rulings",x:[["d","<b>Gelatine</b> — from pork, beef or fish. Fish and ḥalāl-slaughtered beef are fine. Pork is not. If the source is unstated, it is doubtful."],
+     ["d","<b>E-numbers and emulsifiers</b> — most are plant or synthetic. A few, such as E441 and some E471, may be animal-derived."],
+     ["d","<b>Alcohol in flavourings</b> — vanilla essence, some sauces. Scholars differ on tiny non-intoxicating traces; ask rather than assume either way."]]},
+   {t:"h",x:"Eating out"},
+   {t:"ol",x:["Ask directly. <i>Is the meat ḥalāl-certified?</i> is a normal question and staff are used to it.",
+     "Watch the shared fryer — chips cooked in the same oil as pork take the ruling of what is in the oil.",
+     "Vegetarian and fish options remove the problem entirely and are always available.",
+     "Do not interrogate your host in someone's home. Eat what is clearly permitted and leave the rest quietly."]},
+   {t:"note",x:"<b>A word about scruples.</b> Some students become so anxious about ingredients that they cannot eat anywhere. That is not taqwā, it is waswasah. The rule is: act on what you know, ask about what you can ask about, and do not chase what is hidden from you."},
+   {t:"rem",x:"You are responsible for what you can reasonably find out — not for what nobody could have known."}]},
+
+{p:2,t:"Intoxicants",ar:"الْمُسْكِرَات",
+ sub:"Alcohol, drugs, and everything that has arrived since.",
+ b:[{t:"hq",q:"Every intoxicant is khamr, and every intoxicant is ḥarām.",s:"Ṣaḥīḥ Muslim 2003"},
+   {t:"txt",x:"That single sentence covers every substance invented since — because the ruling is attached to the <b>effect</b>, not to the name. Nothing has to be listed by name to be forbidden."},
+   {t:"hq",q:"Whatever intoxicates in a large amount, a small amount of it is ḥarām.",s:"Sunan at-Tirmidhī 1865 · Abū Dāwūd 3681"},
+   {t:"h",x:"Ten people, not one"},
+   {t:"txt",x:"He ﷺ cursed ten in connection with khamr: the one who presses it, the one for whom it is pressed, the one who drinks it, the one who carries it, the one it is carried to, the one who serves it, the one who sells it, the one who takes its price, the one who buys it, and the one it is bought for. <mark>The sin is not only in drinking. It is in every hand it passes through.</mark>"},
+   {t:"note",x:"<b>Vaping and smoking.</b> These are not intoxicants, so they are not covered by that ḥadīth. Contemporary scholars generally rule them ḥarām or strongly disliked on a different basis — the prohibition of destroying yourself (<i>wa lā tulqū bi-aydīkum ila t-tahlukah</i>, Al-Baqarah 2:195) and the ḥadīth <i>there is no harm and no reciprocating harm</i> (Ibn Mājah 2341). Ask your teacher for the position your scholars hold."},
+   {t:"rem",x:"At your age, the first offer will be framed as harmless, private and one-time. Decide the answer now, in daylight, before the question is ever asked."}]},
+
+/* ---------------- PART 3 ---------------- */
+{p:3,t:"What Is Impure",ar:"النَّجَاسَة",
+ sub:"Najāsah is a legal category, not a feeling of dirtiness.",
+ b:[{t:"txt",x:"Something can be spotlessly clean and still be najis, and something can be filthy and still be pure. <b>Najāsah is a ruling, not a smell.</b> Mud on your shoes is dirty and pure. A single invisible drop of urine is clean-looking and impure."},
+   {t:"h",x:"The three levels in the Shāfiʿī madhhab"},
+   {t:"tbl",head:["Level","Arabic","What it covers","How it is removed"],
+    rows:[["Light","مُخَفَّفَة","Urine of a boy under two who takes only milk","Sprinkle water over it"],
+      ["Medium","مُتَوَسِّطَة","Most impurities — urine, stool, blood, wine","Wash until colour, smell and taste are gone"],
+      ["Heavy","مُغَلَّظَة","Dog and pig, and what comes from them","Wash seven times, one of them with earth"]]},
+   {t:"h",x:"Things people wrongly think are najis"},
+   {t:"rulings",x:[["h","Human sweat, tears, saliva and mucus"],
+     ["h","The bodies of living humans, Muslim or not"],
+     ["h","Hair, feathers and wool of ḥalāl animals"],
+     ["h","Cats — he ﷺ said explicitly they are not najis"]]},
+   {t:"note",x:"<b>The cat ḥadīth.</b> He ﷺ poured water for a cat, tilted the vessel for it, and said: <i>they are not najis; they are among those who go about among you</i> (Sunan at-Tirmidhī 92, Abū Dāwūd 75). A cat drinking from your cup does not make it impure."},
+   {t:"rem",x:"Learn the three levels once and you will stop worrying about a hundred things that were never impure to begin with."}]},
+
+{p:3,t:"Dogs — Najis, But Not Untouchable",ar:"الْكَلْب",
+ sub:"The most misunderstood ruling your generation will be asked about.",
+ b:[{t:"txt",x:"In the Shāfiʿī madhhab the dog is <b>najis mughallaẓah</b> — heavy impurity. That is the ruling, and it is based on clear evidence. But a great deal has been built on top of that ruling which the evidence does not support, and it is worth separating the two."},
+   {t:"hq",q:"When a dog drinks from the vessel of one of you, let him wash it seven times, the first of them with earth.",s:"Ṣaḥīḥ Muslim 279 · Ṣaḥīḥ al-Bukhārī 172"},
+   {t:"h",x:"What the ruling actually requires"},
+   {t:"ol",x:["Impurity transfers <b>only with wetness</b>. If your hand is dry and the dog is dry, <mark>nothing at all transfers and there is nothing to wash.</mark>",
+     "If either is wet, wash the area seven times, one washing mixed with clean earth.",
+     "Touching a dog <b>does not break your wudu</b>. Nothing in the Sunnah says it does.",
+     "Touching a dog <b>is not a sin</b>. There is no ḥadīth forbidding it. The ruling is about purity for prayer, not about permission to touch."]},
+   {t:"h",x:"And harming one is forbidden"},
+   {t:"txt",x:"A man found a dog dying of thirst at a well, climbed down, filled his shoe with water, carried it up in his mouth and gave it to the dog — and <b>Allah forgave him entirely for it</b>. When the companions asked whether there was reward in animals, he ﷺ said: <i>in every living creature there is reward.</i>"},
+   {t:"hq",q:"In every living creature there is a reward.",s:"Ṣaḥīḥ al-Bukhārī 173 · Ṣaḥīḥ Muslim 2244"},
+   {t:"note",x:"<b>Keeping a dog.</b> Permitted for guarding livestock, guarding crops and hunting (Ṣaḥīḥ al-Bukhārī 5480, Muslim 1575). Scholars extend this to genuine need such as guide dogs and police work. Keeping one purely as an indoor pet is not permitted in the madhhab, and the ḥadīth mentions a daily reduction in reward."},
+   {t:"rem",x:"Najis does not mean evil, and it does not mean cruel treatment is allowed. A man entered Jannah for giving a dog a drink. Be the kind of Muslim who could have been that man."}]},
+
+{p:3,t:"Purifying and Cleaning",ar:"إِزَالَةُ النَّجَاسَة",
+ sub:"How to actually remove an impurity — and when you do not need to.",
+ b:[{t:"h",x:"Medium impurity — most cases"},
+   {t:"ol",x:["Remove the substance itself.",
+     "Pour clean water over the place until <b>colour, smell and taste</b> of the impurity are gone.",
+     "If a trace of colour or smell will not come out despite proper effort, it is pardoned."]},
+   {t:"h",x:"Heavy impurity — dog and pig"},
+   {t:"txt",x:"Seven washings, one of them with clean earth or a substance containing it. Scholars discuss whether modern detergents may substitute for the earth; the standard Shāfiʿī position keeps the earth. Ask your teacher which position your scholars follow."},
+   {t:"h",x:"Small amounts that are pardoned"},
+   {t:"rulings",x:[["h","A trace of impurity too small to see, on clothing"],
+     ["h","Street mud, unless you know an impurity is in it"],
+     ["h","Blood from a small cut, a spot, or an insect bite — a small amount is pardoned"],
+     ["d","A visible amount of blood or urine on the prayer clothes — must be washed"]]},
+   {t:"note",x:"<b>Do not go looking.</b> You are not required to inspect your clothes for invisible impurities, or to ask whether a chair was clean. The Sharīʿah judges by what is apparent. Suspicion is not evidence."},
+   {t:"rem",x:"Water, and enough of it. That is almost the whole subject. The rest is people making it harder than Allah made it."}]},
+
+/* ---------------- PART 4 ---------------- */
+{p:4,t:"Ḥalāl Earning",ar:"الْكَسْبُ الْحَلَال",
+ sub:"Where the money came from is a bigger question than what you spent it on.",
+ b:[{t:"rulings",x:[["x","<b>Ribā</b> — interest, whether paid or received. The Qur'an declares war on it, uniquely."],
+     ["x","<b>Gambling</b> — including betting apps, loot boxes bought for a chance at value, and lotteries."],
+     ["x","<b>Cheating in trade</b> — he ﷺ said whoever deceives us is not of us."],
+     ["x","<b>Bribery</b> — the one who gives and the one who takes are both cursed."],
+     ["x","<b>Stealing, including digital</b> — taking what you did not pay for is theft whatever the format."],
+     ["h","<b>Trade, work, wages, gifts and inheritance</b> — the ordinary means, all lawful."]]},
+   {t:"ar",x:"وَأَحَلَّ اللَّهُ الْبَيْعَ وَحَرَّمَ الرِّبَا",
+    tr:"Wa aḥalla llāhu l-bayʿa wa ḥarrama r-ribā",
+    en:"Allah has permitted trade and forbidden ribā. — Al-Baqarah 2:275"},
+   {t:"hq",q:"A body raised on what is unlawful will not enter Jannah — the Fire is more fitting for it.",s:"Sunan at-Tirmidhī 614 · Aḥmad"},
+   {t:"note",x:"<b>Duʿā and food.</b> He ﷺ described a traveller, dishevelled and dusty, raising his hands to the sky saying <i>O Lord, O Lord</i> — while his food, drink and clothing are unlawful. Then he asked: <i>how could he be answered?</i> (Ṣaḥīḥ Muslim 1015). Unlawful income affects far more than the wallet."},
+   {t:"rem",x:"Nobody your age thinks about where money came from. Start now, and you will not have to unlearn it at thirty."}]},
+
+{p:4,t:"Clothing and Adornment",ar:"اللِّبَاسُ وَالزِّينَة",
+ sub:"Covering, and the two things forbidden to men.",
+ b:[{t:"h",x:"The ʿawrah"},
+   {t:"tbl",head:["","In prayer","In front of others"],
+    rows:[["Men","Navel to knee","Navel to knee"],
+      ["Women","All but face and hands","All but face and hands, before non-maḥram"]]},
+   {t:"h",x:"Forbidden to men only"},
+   {t:"rulings",x:[["x","<b>Gold</b> — jewellery, chains, rings"],
+     ["x","<b>Pure silk</b> — as a garment"],
+     ["h","Both are permitted to women"]]},
+   {t:"hq",q:"These two — gold and silk — are forbidden for the males of my ummah and permitted for its females.",s:"Sunan at-Tirmidhī 1720 · Nasā'ī · Ibn Mājah"},
+   {t:"h",x:"Two further points"},
+   {t:"rulings",x:[["x","<b>Tattoos</b> — the one who does them and the one who has them done are cursed (Bukhārī 5937)"],
+     ["x","<b>Dressing to imitate the opposite gender</b> — explicitly prohibited (Bukhārī 5885)"],
+     ["h","<b>Good clothes, perfume and looking presentable</b> — Allah is beautiful and loves beauty (Muslim 91)"]]},
+   {t:"note",x:"<b>Modest does not mean shabby.</b> He ﷺ had a cloak he kept for delegations and for Jumuʿah. Dressing well is sunnah. The prohibition is on pride, not on quality."},
+   {t:"rem",x:"Cover what must be covered, avoid the two forbidden to men, and then dress well without apology."}]},
+
+{p:4,t:"Screens",ar:"مَا تُشَاهِدُ وَتَسْمَع",
+ sub:"The area with the most opinions and the least clear text.",
+ b:[{t:"txt",x:"There is no single āyah listing what you may watch. Instead there are principles, and they do most of the work:"},
+   {t:"ol",x:["<b>Lowering the gaze</b> applies to a screen exactly as it applies to a street (An-Nūr 24:30).",
+     "<b>Time is asked about.</b> Your youth is one of the four questions on the Day of Judgement.",
+     "<b>You become what you consume.</b> He ﷺ said a person is upon the religion of his close friend — and an algorithm is now a close friend.",
+     "<b>Do not spread what harms.</b> Forwarding is a form of saying it yourself."]},
+   {t:"h",x:"Music — an honest note"},
+   {t:"txt",x:"<mark>The scholars genuinely differ on musical instruments.</mark> The majority position, including the Shāfiʿī madhhab, is that instruments are prohibited, based on the ḥadīth in Bukhārī about people who declare lawful <i>silk, alcohol and musical instruments</i> (Bukhārī 5590). A minority of scholars have questioned the chain or restricted the ruling to music accompanying sin. Follow your teachers — and do not use the existence of a disagreement as a reason to stop thinking about it."},
+   {t:"note",x:"<b>The practical test.</b> Before you open it, ask: would I be comfortable if this were played on the screen behind me in class? The answer arrives faster than any fatwā."},
+   {t:"rem",x:"Nobody has ever regretted the hour they did not spend scrolling. Almost everybody regrets the hour they did."}]},
+
+{p:4,t:"Boundaries",ar:"الْحُدُودُ بَيْنَ الرِّجَالِ وَالنِّسَاء",
+ sub:"Rules that exist to protect people, not to insult them.",
+ b:[{t:"txt",x:"At fifteen and sixteen these rules stop being theoretical, so they are worth stating plainly and without embarrassment."},
+   {t:"rulings",x:[["x","<b>Khalwah</b> — a man and a woman alone in private where nobody may enter"],
+     ["x","<b>Physical contact</b> with a non-maḥram of the opposite gender"],
+     ["x","<b>Private romantic conversation</b> outside marriage, in person or by message"],
+     ["h","<b>Necessary interaction</b> — in class, at work, in business, with respect and purpose"],
+     ["h","<b>Speaking to a shopkeeper, a teacher, a doctor, a classmate about the lesson</b>"]]},
+   {t:"hq",q:"No man is alone with a woman except that Shayṭān is the third of them.",s:"Sunan at-Tirmidhī 2165 · Aḥmad"},
+   {t:"h",x:"Why it is framed this way"},
+   {t:"txt",x:"Notice the ḥadīth does not say either person is bad. It says the situation is unsafe. Islam removes the situation rather than relying on everybody's self-control being perfect on every occasion. <b>The rule protects your reputation as much as your religion</b> — and a reputation, once lost at your age, is very hard to rebuild."},
+   {t:"note",x:"<b>Online counts.</b> A private chat at two in the morning is khalwah in every way that matters. The room is just smaller and the door is harder for anyone else to open."},
+   {t:"rem",x:"Marriage is the door Allah opened for all of this. Everything before that door is only ever going to cost you something."}]},
+
+/* ---------------- PART 5 ---------------- */
+{p:5,t:"When You Are Not Sure",ar:"إِذَا لَمْ تَعْلَم",
+ sub:"How to ask, who to ask, and what not to do meanwhile.",
+ b:[{t:"h",x:"Ask someone qualified"},
+   {t:"ar",x:"فَاسْأَلُوا أَهْلَ الذِّكْرِ إِن كُنتُمْ لَا تَعْلَمُونَ",
+    tr:"Fas'alū ahla dh-dhikri in kuntum lā taʿlamūn",
+    en:"So ask the people of knowledge if you do not know. — An-Naḥl 16:43"},
+   {t:"h",x:"Four rules for asking"},
+   {t:"ol",x:["<b>Ask a person, not a search engine.</b> A scholar asks you follow-up questions; a search result does not.",
+     "<b>Give the full situation.</b> Rulings change with circumstances, and a half-question gets a wrong answer.",
+     "<b>Do not shop for the answer you wanted.</b> Asking six people until one agrees with you is not seeking knowledge.",
+     "<b>Accept that some questions have two valid answers.</b> Where the scholars have genuinely differed for a thousand years, you are not going to settle it this afternoon."]},
+   {t:"note",x:"<b>Never say <i>Allah said</i> about something you have not verified.</b> Speaking about Allah without knowledge is listed in the Qur'an alongside shirk (Al-Aʿrāf 7:33). <i>I don't know, let me ask</i> is a complete and honourable answer."},
+   {t:"hq",q:"Whoever Allah wishes good for, He gives him understanding of the religion.",s:"Ṣaḥīḥ al-Bukhārī 71 · Ṣaḥīḥ Muslim 1037"},
+   {t:"rem",x:"The goal is not to have an opinion on everything. It is to know which things you actually know, and to be honest about the rest."}]}
+];
+
+
+/* ===================== MALAYALAM ===================== */
+const PARTS_ML={1:"ഭാഗം 1 · അടിസ്ഥാനങ്ങൾ",2:"ഭാഗം 2 · ഭക്ഷണവും പാനീയവും",
+  3:"ഭാഗം 3 · ശുദ്ധി",4:"ഭാഗം 4 · പണം, വസ്ത്രം, സ്ക്രീൻ",5:"ഭാഗം 5 · സംശയത്തോടൊപ്പം ജീവിക്കൽ"};
+
+const UI_ML={lesson:"പാഠം",of:"ൽ",remember:"ഓർക്കുക",contents:"ഉള്ളടക്കം",
+  wm:"ഹലാലും ഹറാമും · തസ്കിയ ലെവൽ 3",
+  barMeta:"15 പാഠങ്ങൾ · ശാഫിഈ · 15–16 വയസ്സ്",
+  chipH:"ഹലാൽ",chipX:"ഹറാം",chipD:"പരിശോധിക്കൂ",
+  coverMeta:"തസ്കിയ · ലെവൽ 3 · 15–16 വയസ്സ്<br>അഞ്ച് ഭാഗങ്ങളിലായി പതിനഞ്ച് പാഠങ്ങൾ<br>ശാഫിഈ മദ്ഹബ്<br>മൻസിലുൽ ഖുർആൻ ഇ-ലേണിംഗ് അക്കാദമി"};
+
+const ML_L=[
+/* 1 */{t:"അടിസ്ഥാനം അനുവാദമാണ്",sub:"ഇസ്‌ലാം വന്നത് നീണ്ട വിലക്കുകളുടെ പട്ടികയുമായല്ല. ചെറിയ ഒന്നുമായാണ്.",
+ b:["ഓരോ ഫിഖ്ഹ് ഗ്രന്ഥത്തിന്റെയും തുടക്കത്തിൽ പണ്ഡിതന്മാർ പറയുന്ന ഒരു നിയമമുണ്ട്, അത് ഈ വിഷയത്തെ മുഴുവൻ മാറ്റുന്നു: <mark>സാധാരണ ലൗകിക കാര്യങ്ങളിൽ, വിലക്കിയതിന് തെളിവ് വരുന്നതുവരെ എല്ലാം അനുവദനീയമാണ്.</mark>",
+  "ആരാധനയിൽ ഇത് നേരെ തിരിച്ചാണ്. അവിടെ തെളിവുള്ളതല്ലാതെ ഒന്നും നിയമമാക്കപ്പെടുന്നില്ല — പുതിയൊരു നിസ്കാരം ഉണ്ടാക്കാൻ നിനക്കാവില്ല. പക്ഷേ ഭക്ഷണം, വസ്ത്രം, ജോലി, യാത്ര, സാങ്കേതികവിദ്യ, മറ്റെല്ലാം ഹലാലായി തുടങ്ങുന്നു, മറിച്ച് തെളിയുന്നതുവരെ ഹലാലായി തുടരുന്നു.",
+  "നിന്റെ പ്രായത്തിൽ ഇത് പ്രധാനമാകുന്നത് എന്തുകൊണ്ട്",
+  "പലതും ഹറാമാണെന്ന് ആളുകൾ നിന്നോട് പറയും, ആ വിധി എവിടെ നിന്ന് വരുന്നു എന്ന് പറയാൻ അവർക്കാവില്ല. <b>എന്താണ് തെളിവ്</b> എന്ന് ചോദിക്കുന്നത് അപമര്യാദയല്ല. അതാണ് ശരിയായ ചോദ്യം, നീ അത് ചോദിച്ചതിൽ ഒരു പണ്ഡിതൻ സന്തോഷിക്കുകയേ ഉള്ളൂ.",
+  "അല്ലാഹു തന്റെ ഗ്രന്ഥത്തിൽ അനുവദനീയമാക്കിയത് അനുവദനീയമാണ്, വിലക്കിയത് നിഷിദ്ധമാണ്, മൗനം പാലിച്ചത് വിട്ടുവീഴ്ച ചെയ്യപ്പെട്ടതാണ് — അതിനാൽ അല്ലാഹുവിന്റെ വിട്ടുവീഴ്ച സ്വീകരിക്കുക, അല്ലാഹു മറക്കുന്നവനല്ല.",
+  "സത്യവിശ്വാസികളേ, അല്ലാഹു നിങ്ങൾക്ക് അനുവദനീയമാക്കിയ നല്ല വസ്തുക്കൾ നിങ്ങൾ നിഷിദ്ധമാക്കരുത്. — അൽ-മാഇദ 5:87",
+  "<b>രണ്ട് തെറ്റും പാപമാണ്.</b> അല്ലാഹു വിലക്കിയത് ഹലാലെന്ന് പറയുന്നത് പാപമാണ്. അല്ലാഹു അനുവദിച്ചത് ഹറാമെന്ന് പറയുന്നതും <i>പാപമാണ്</i> — അധിക ഭക്തി കാണിക്കാൻ നല്ല കാര്യങ്ങൾ സ്വയം വിലക്കിയവരെക്കുറിച്ചാണ് മുകളിലെ ആയത്ത് ഇറങ്ങിയത്.",
+  "ഹറാമായ കാര്യങ്ങളുടെ പട്ടിക ചെറുതാണ്. ഹലാലായവയുടെ പട്ടിക ഏതാണ്ട് ബാക്കി എല്ലാമാണ്. ചെറിയ പട്ടിക നന്നായി പഠിച്ച് ബാക്കിയുള്ളതിൽ ഊഹിക്കുന്നത് നിർത്തൂ."]},
+/* 2 */{t:"അഞ്ച് വിധികൾ",sub:"എല്ലാം ഒന്നുകിൽ ഹലാൽ അല്ലെങ്കിൽ ഹറാം എന്നല്ല. രണ്ടല്ല, അഞ്ച് വിഭാഗങ്ങളുണ്ട്.",
+ b:[{head:["വിധി","അറബി","അർത്ഥം","ചെയ്താൽ","ഒഴിവാക്കിയാൽ"],
+   rows:[["നിർബന്ധം","فَرْض","ചെയ്യണം","പ്രതിഫലം","പാപം"],
+     ["സുന്നത്ത്","سُنَّة","ചെയ്യുന്നത് നല്ലത്","പ്രതിഫലം","പാപമില്ല"],
+     ["അനുവദനീയം","مُبَاح","നിഷ്പക്ഷം","പ്രതിഫലമില്ല","പാപമില്ല"],
+     ["വെറുക്കപ്പെട്ടത്","مَكْرُوه","ഒഴിവാക്കുന്നത് നല്ലത്","പാപമില്ല","പ്രതിഫലം"],
+     ["നിഷിദ്ധം","حَرَام","ഒഴിവാക്കണം","പാപം","പ്രതിഫലം"]]},
+  "ആളുകൾ തെറ്റായി ഉപയോഗിക്കുന്ന രണ്ട് വാക്കുകൾ",
+  "<b>മക്‌റൂഹ്</b> എന്നാൽ <i>അൽപ്പം ഹറാം</i> എന്നല്ല. ചെയ്യുന്നതിൽ ഒട്ടും പാപമില്ല എന്നാണ് — ഒഴിവാക്കുന്നതിൽ പ്രതിഫലം മാത്രം. <b>മുബാഹ്</b> എന്നാൽ വിലയില്ലാത്തത് എന്നുമല്ല: നല്ല നിയ്യത്തോടെ ചെയ്യുന്ന മുബാഹ് കർമം ആരാധനയായി മാറും. ഭക്ഷണം കഴിക്കൽ മുബാഹാണ്; സുബ്ഹിക്ക് ശക്തി കിട്ടാൻ കഴിക്കുന്നതിന് പ്രതിഫലമുണ്ട്.",
+  "<b>നിന്റെ വാക്കുകൾ ശ്രദ്ധിക്കൂ.</b> വെറും വെറുക്കപ്പെട്ട ഒരു കാര്യത്തെക്കുറിച്ച് <i>അത് ഹറാമാണ്</i> എന്ന് പറയുന്നത് ഗുരുതരമായ തെറ്റാണ് — അല്ലാഹു നൽകാത്ത ഒരു വിധി നീ അവനിൽ നിന്ന് റിപ്പോർട്ട് ചെയ്യുകയാണ്. ഏത് വിഭാഗമെന്ന് ഉറപ്പില്ലെങ്കിൽ <i>ഒഴിവാക്കുന്നതാണ് നല്ലതെന്ന് ഞാൻ കരുതുന്നു</i> എന്ന് പറയൂ.",
+  "രണ്ടല്ല, അഞ്ച് വിഭാഗങ്ങൾ. ജീവിതത്തിന്റെ ഭൂരിഭാഗവും നടുവിലെ മൂന്നിലാണ്, ആ നടുവിനെ ആരാധനയാക്കി മാറ്റുന്നത് നിന്റെ നിയ്യത്താണ്."]},
+/* 3 */{t:"സംശയമുള്ള ഇടനില",sub:"ഈ വിഷയത്തിലെ ഏറ്റവും വ്യക്തവും ഏറ്റവും ഉപകാരപ്രദവുമായ ഹദീസ്.",
+ b:["ഹലാൽ വ്യക്തമാണ്, ഹറാമും വ്യക്തമാണ്, അവയ്ക്കിടയിൽ പലർക്കും അറിയാത്ത സംശയമുള്ള കാര്യങ്ങളുണ്ട്. സംശയമുള്ളതിൽ നിന്ന് സൂക്ഷിക്കുന്നവൻ തന്റെ ദീനും അഭിമാനവും സംരക്ഷിച്ചു; സംശയമുള്ളതിൽ വീഴുന്നവൻ ഹറാമിൽ വീഴും — സ്വകാര്യ മേച്ചിൽസ്ഥലത്തിന്റെ അതിരിൽ ആടിനെ മേയ്ക്കുന്ന ഇടയനെപ്പോലെ, ഏത് നിമിഷവും അകത്ത് കയറാം. ഓരോ രാജാവിനും ഒരു സംരക്ഷിത മേഖലയുണ്ട്, അല്ലാഹുവിന്റെ സംരക്ഷിത മേഖല അവൻ വിലക്കിയവയാണ്.",
+  "അവിടുന്ന് <b>പറയാത്തത്</b> ശ്രദ്ധിക്കൂ. സംശയമുള്ളത് ഹറാമാണെന്ന് അവിടുന്ന് പറഞ്ഞില്ല. അതൊരു അതിർത്തി മേഖലയാണെന്നും, അതിർത്തിയിൽ ജീവിക്കുന്നവർ ഒടുവിൽ അത് കടക്കുമെന്നും പറഞ്ഞു.",
+  "സംശയത്തോട് മൂന്ന് പ്രതികരണങ്ങൾ",
+  ["<b>ചോദിക്കൂ.</b> സംശയമുള്ള മിക്ക കാര്യങ്ങളും സംശയമുള്ളതാകുന്നത് നീ യോഗ്യനായ ആരോടും ചോദിക്കാത്തതുകൊണ്ടാണ്.",
+   "<b>ഒഴിവാക്കൂ.</b> ചോദിച്ചിട്ടും വ്യക്തമല്ലെങ്കിൽ, ഒഴിവാക്കുന്നതിന് നിനക്ക് ഏതാണ്ട് ഒന്നും നഷ്ടപ്പെടുന്നില്ല.",
+   "<b>അതൊരു മതമാക്കരുത്.</b> സംശയമുള്ളത് ഒഴിവാക്കുന്നത് വ്യക്തിപരമായ ഒരു കരുതലാണ്. മറ്റുള്ളവർക്ക് അത് ഹറാമാണെന്ന് പ്രഖ്യാപിക്കാൻ അത് നിനക്ക് അധികാരം നൽകുന്നില്ല."],
+  "സംശയമുണ്ടാക്കുന്നത് വിട്ട് സംശയമുണ്ടാക്കാത്തതിലേക്ക് പോകൂ.",
+  "നാവിന് മുമ്പ് സാധാരണ ഹൃദയത്തിന് അറിയാം. ആ അസ്വസ്ഥത ശ്രദ്ധിക്കാൻ അർഹതയുള്ളതാണ് — പക്ഷേ അതൊരു മുന്നറിയിപ്പ് വിളക്കാണ്, ഒരു ഫത്‌വയല്ല."]},
+/* 4 */{t:"മാംസം ഹലാലാകുന്നത് എങ്ങനെ",sub:"നാല് ഉപാധികൾ, നാലെണ്ണം മാത്രം.",
+ b:[["<b>മൃഗം</b> അനുവദനീയമായ ഇനത്തിൽ പെട്ടതും അറുക്കുന്ന നിമിഷം ജീവനുള്ളതുമായിരിക്കണം.",
+   "<b>അറുക്കുന്നയാൾ</b> മുസ്‌ലിമോ വേദക്കാരിൽ പെട്ടയാളോ ആയിരിക്കണം.",
+   "<b>മുറിവ്</b> കഴുത്തും അന്നനാളവും മുറിക്കണം — ശ്വാസനാളവും ഭക്ഷണനാളവും.",
+   "അറുക്കുന്ന സമയത്ത് <b>അല്ലാഹുവിന്റെ നാമം</b> ഉച്ചരിക്കണം."],
+  "അല്ലാഹുവിന്റെ നാമത്തിൽ, അല്ലാഹു ഏറ്റവും വലിയവൻ. — അറുക്കുന്ന നിമിഷം ചൊല്ലുന്നത്",
+  "വേദക്കാരുടെ ഭക്ഷണം",
+  "വേദക്കാരുടെ ഭക്ഷണം ഖുർആൻ അനുവദിക്കുന്നു. അല്ലാഹുവിന്റെ നാമം ഉച്ചരിക്കപ്പെടാത്തതും മുകളിലെ ഉപാധികൾ പാലിക്കപ്പെടാത്തതുമായ ആധുനിക വ്യാവസായിക അറവിന് ഇത് എത്രത്തോളം ബാധകമാണെന്ന് പണ്ഡിതന്മാർ ചർച്ച ചെയ്യുന്നു. <mark>ഹലാൽ സർട്ടിഫിക്കറ്റുള്ള മാംസം കിട്ടുന്നിടത്ത് അത് എടുക്കൂ. ശരിക്കും കിട്ടാത്തിടത്ത് സ്വയം തീരുമാനിക്കാതെ ഒരു പണ്ഡിതനോട് ചോദിക്കൂ.</mark>",
+  "വേദം നൽകപ്പെട്ടവരുടെ ഭക്ഷണം നിങ്ങൾക്ക് അനുവദനീയമാണ്. — അൽ-മാഇദ 5:5",
+  "<b>ദയ വിധിയുടെ ഭാഗമാണ്.</b> എല്ലാ കാര്യത്തിലും ഇഹ്‌സാൻ അല്ലാഹു നിശ്ചയിച്ചിരിക്കുന്നുവെന്ന് അവിടുന്ന് പറഞ്ഞു — അതിനാൽ അറുക്കുമ്പോൾ നന്നായി ചെയ്യൂ: കത്തി മൂർച്ചകൂട്ടൂ, മൃഗത്തിന് ആശ്വാസം നൽകൂ. ക്രൂരത മാംസത്തെ ഹറാമാക്കുന്നില്ല, പക്ഷേ അത് സ്വയം ഒരു പാപമാണ്.",
+  "ഹലാൽ ഒരു സ്റ്റിക്കറല്ല. നാല് ഉപാധികളാണ് — അവ അറിയാവുന്ന ഒരാൾക്ക് ലോകത്ത് എവിടെയും ശരിയായ ചോദ്യം ചോദിക്കാം."]},
+/* 5 */{t:"തിന്നാൻ വിലക്കപ്പെട്ടത്",sub:"ഖുർആൻ അവ എണ്ണിപ്പറയുന്നു, പട്ടിക ചെറുതാണ്.",
+ b:["ശവം, രക്തം, പന്നിമാംസം, അല്ലാഹു അല്ലാത്തവരുടെ പേരിൽ അറുക്കപ്പെട്ടത് — ഇവ നിങ്ങൾക്ക് നിഷിദ്ധമാക്കപ്പെട്ടിരിക്കുന്നു. — അൽ-മാഇദ 5:3",
+  ["പന്നിയും അതിൽ നിന്നുള്ള എല്ലാം — പന്നിക്കൊഴുപ്പും ബേക്കണും പന്നി ജെലാറ്റിനും ഉൾപ്പെടെ",
+   "ശവം — നിയമപ്രകാരം അറുക്കാതെ ചത്ത മൃഗം",
+   "ഒഴുകുന്ന രക്തം",
+   "അല്ലാഹുവിന്റേതല്ലാത്ത നാമത്തിൽ അറുക്കപ്പെട്ടത്",
+   "കോമ്പല്ലുള്ള ഇരപിടിയൻ മൃഗങ്ങളും നഖമുള്ള പക്ഷികളും",
+   "മത്സ്യവും കടൽജീവികളും — അറവ് വേണ്ട",
+   "എല്ലാ ചെടികളും ധാന്യങ്ങളും പഴങ്ങളും പച്ചക്കറികളും"],
+  "<b>അനിവാര്യത.</b> പട്ടിണി കൊണ്ട് നിർബന്ധിതനായവന്, ആഗ്രഹമില്ലാതെയും അതിരുകവിയാതെയും, വിലക്കപ്പെട്ടത് അനുവദിച്ചുകൊണ്ടാണ് അതേ ആയത്ത് അവസാനിക്കുന്നത്. കഴിക്കുന്നതിന് പകരം മരിക്കണമെന്ന് ഇസ്‌ലാം ആവശ്യപ്പെടുന്നില്ല.",
+  "<b>വെട്ടുകിളിയും കടൽജീവികളും.</b> രണ്ട് ശവങ്ങൾ നമുക്ക് അനുവദനീയമാണെന്ന് അവിടുന്ന് പറഞ്ഞു: മത്സ്യവും വെട്ടുകിളിയും. കടലിലെ ഏതൊക്കെ ജീവികൾ ഇതിൽ ഉൾപ്പെടുമെന്ന് ശാഫിഈ പണ്ഡിതന്മാർ ചർച്ച ചെയ്യുന്നു — കടലിലുള്ളതെല്ലാം ഉൾപ്പെടുമെന്ന് ഊഹിക്കുന്നതിന് മുമ്പ് ചോദിക്കൂ.",
+  "ആയത്തിൽ നാല് ഇനങ്ങൾ, യഥാർത്ഥ അനിവാര്യതയ്ക്ക് ഒരു ഇളവ്. ആയത്ത് മനഃപാഠമാക്കിയാൽ ഈ വിഷയത്തിന്റെ കാതൽ നീ മനഃപാഠമാക്കി."]},
+/* 6 */{t:"ലേബലുകൾ, ജെലാറ്റിൻ, പുറത്ത് ഭക്ഷണം",sub:"വിധി ശരിക്കും പ്രയാസമാകുന്നിടം — ഒരു സൂപ്പർമാർക്കറ്റിൽ.",
+ b:["പരിശോധിക്കേണ്ട മൂന്ന് കാര്യങ്ങൾ",
+  ["<b>ജെലാറ്റിൻ</b> — പന്നി, ബീഫ് അല്ലെങ്കിൽ മത്സ്യത്തിൽ നിന്ന്. മത്സ്യവും ഹലാൽ അറവ് ചെയ്ത ബീഫും കുഴപ്പമില്ല. പന്നി അല്ല. ഉറവിടം പറയാത്തതെങ്കിൽ അത് സംശയമുള്ളതാണ്.",
+   "<b>ഇ-നമ്പറുകളും എമൽസിഫയറുകളും</b> — ഭൂരിഭാഗവും സസ്യജന്യമോ കൃത്രിമമോ ആണ്. E441 പോലുള്ള ചിലതും ചില E471-ഉം മൃഗജന്യമാകാം.",
+   "<b>രുചിക്കൂട്ടുകളിലെ മദ്യം</b> — വാനില എസൻസ്, ചില സോസുകൾ. ലഹരിയുണ്ടാക്കാത്ത നേരിയ അംശങ്ങളെക്കുറിച്ച് പണ്ഡിതന്മാർ ഭിന്നിക്കുന്നു; ഏതെങ്കിലും വശം ഊഹിക്കാതെ ചോദിക്കൂ."],
+  "പുറത്ത് ഭക്ഷണം കഴിക്കുമ്പോൾ",
+  ["നേരിട്ട് ചോദിക്കൂ. <i>ഈ മാംസം ഹലാൽ സർട്ടിഫൈഡ് ആണോ?</i> എന്നത് സാധാരണ ചോദ്യമാണ്, ജീവനക്കാർക്ക് അത് പരിചയവുമാണ്.",
+   "പങ്കിടുന്ന എണ്ണ ശ്രദ്ധിക്കൂ — പന്നിയിറച്ചി വറുത്ത അതേ എണ്ണയിൽ വറുത്ത ചിപ്സിന് ആ എണ്ണയിലുള്ളതിന്റെ വിധിയാണ്.",
+   "സസ്യാഹാരവും മത്സ്യവും പ്രശ്നം പൂർണമായി ഒഴിവാക്കുന്നു, അവ എപ്പോഴും ലഭ്യവുമാണ്.",
+   "ഒരാളുടെ വീട്ടിൽ ചെന്ന് ആതിഥേയനെ ചോദ്യം ചെയ്യരുത്. വ്യക്തമായി അനുവദനീയമായത് കഴിച്ച് ബാക്കി നിശ്ശബ്ദമായി വിടൂ."],
+  "<b>അമിത സൂക്ഷ്മതയെക്കുറിച്ച് ഒരു വാക്ക്.</b> ചില വിദ്യാർത്ഥികൾ ചേരുവകളെക്കുറിച്ച് ഇത്ര ഉത്കണ്ഠപ്പെട്ട് എവിടെയും കഴിക്കാനാവാത്ത അവസ്ഥയിലെത്തും. അത് തഖ്‌വയല്ല, വസ്‌വാസാണ്. നിയമം ഇതാണ്: അറിയാവുന്നതനുസരിച്ച് പ്രവർത്തിക്കൂ, ചോദിക്കാവുന്നത് ചോദിക്കൂ, നിന്നിൽ നിന്ന് മറച്ചുവെക്കപ്പെട്ടതിന്റെ പിന്നാലെ പോകരുത്.",
+  "ന്യായമായി അന്വേഷിച്ചറിയാവുന്നതിനാണ് നീ ഉത്തരവാദി — ആർക്കും അറിയാൻ കഴിയാത്തതിനല്ല."]},
+/* 7 */{t:"ലഹരിവസ്തുക്കൾ",sub:"മദ്യം, മയക്കുമരുന്ന്, പിന്നെ അതിന് ശേഷം വന്നതെല്ലാം.",
+ b:["എല്ലാ ലഹരിവസ്തുവും ഖംറാണ്, എല്ലാ ലഹരിവസ്തുവും ഹറാമാണ്.",
+  "ആ ഒരൊറ്റ വാക്യം അതിന് ശേഷം കണ്ടുപിടിക്കപ്പെട്ട എല്ലാ വസ്തുവിനെയും ഉൾക്കൊള്ളുന്നു — കാരണം വിധി പേരിനോടല്ല, <b>ഫലത്തോടാണ്</b> ചേർത്തിരിക്കുന്നത്. വിലക്കപ്പെടാൻ ഒന്നിനും പേരെടുത്ത് പറയേണ്ടതില്ല.",
+  "കൂടിയ അളവിൽ ലഹരിയുണ്ടാക്കുന്നതിന്റെ കുറഞ്ഞ അളവും ഹറാമാണ്.",
+  "ഒരാളല്ല, പത്ത് പേർ",
+  "ഖംറുമായി ബന്ധപ്പെട്ട് പത്ത് പേരെ അവിടുന്ന് ശപിച്ചു: പിഴിയുന്നവൻ, ആർക്ക് വേണ്ടി പിഴിയുന്നുവോ അവൻ, കുടിക്കുന്നവൻ, ചുമക്കുന്നവൻ, ആരിലേക്ക് ചുമക്കുന്നുവോ അവൻ, വിളമ്പുന്നവൻ, വിൽക്കുന്നവൻ, വില വാങ്ങുന്നവൻ, വാങ്ങുന്നവൻ, ആർക്കുവേണ്ടി വാങ്ങുന്നുവോ അവൻ. <mark>പാപം കുടിക്കുന്നതിൽ മാത്രമല്ല. അത് കടന്നുപോകുന്ന ഓരോ കൈയിലുമുണ്ട്.</mark>",
+  "<b>വേപ്പിംഗും പുകവലിയും.</b> ഇവ ലഹരിവസ്തുക്കളല്ല, അതിനാൽ ആ ഹദീസിൽ ഇവ വരുന്നില്ല. സമകാലിക പണ്ഡിതന്മാർ പൊതുവെ ഇവ ഹറാമെന്നോ ശക്തമായി വെറുക്കപ്പെട്ടതെന്നോ വിധിക്കുന്നത് മറ്റൊരു അടിസ്ഥാനത്തിലാണ് — സ്വയം നശിപ്പിക്കുന്നത് വിലക്കിയ ആയത്തും (<i>വലാ തുൽഖൂ ബി അയ്ദീകും ഇലത്തഹ്‌ലുക</i>, അൽ-ബഖറ 2:195) <i>ഉപദ്രവവുമില്ല തിരിച്ചുപദ്രവവുമില്ല</i> എന്ന ഹദീസും. നിന്റെ പണ്ഡിതന്മാരുടെ നിലപാട് അധ്യാപകനോട് ചോദിക്കൂ.",
+  "നിന്റെ പ്രായത്തിൽ ആദ്യത്തെ വാഗ്ദാനം നിരുപദ്രവകരവും സ്വകാര്യവും ഒറ്റത്തവണത്തേതുമായി അവതരിപ്പിക്കപ്പെടും. ചോദ്യം വരുന്നതിന് മുമ്പേ, പകൽവെളിച്ചത്തിൽ, ഇപ്പോൾ ഉത്തരം തീരുമാനിക്കൂ."]}
+,
+/* 8 */{t:"നജസ് എന്താണ്",sub:"നജാസത്ത് ഒരു നിയമപരമായ വിഭാഗമാണ്, അഴുക്കിന്റെ തോന്നലല്ല.",
+ b:["ഒരു വസ്തു പൂർണമായി വൃത്തിയായിരുന്നിട്ടും നജസാകാം, അഴുക്കായിരുന്നിട്ടും ശുദ്ധമാകാം. <b>നജാസത്ത് ഒരു വിധിയാണ്, ഒരു മണമല്ല.</b> ചെരിപ്പിലെ ചെളി അഴുക്കാണ്, ശുദ്ധവുമാണ്. കാണാനാവാത്ത ഒരു തുള്ളി മൂത്രം വൃത്തിയായി കാണപ്പെടും, അശുദ്ധവുമാണ്.",
+  "ശാഫിഈ മദ്ഹബിലെ മൂന്ന് തലങ്ങൾ",
+  {head:["തലം","അറബി","എന്തൊക്കെ","എങ്ങനെ നീക്കും"],
+   rows:[["ലഘു","مُخَفَّفَة","പാൽ മാത്രം കുടിക്കുന്ന രണ്ട് വയസ്സിന് താഴെയുള്ള ആൺകുഞ്ഞിന്റെ മൂത്രം","മുകളിൽ വെള്ളം തളിക്കുക"],
+     ["ഇടത്തരം","مُتَوَسِّطَة","മിക്ക അശുദ്ധികളും — മൂത്രം, മലം, രക്തം, മദ്യം","നിറവും മണവും രുചിയും പോകുന്നതുവരെ കഴുകുക"],
+     ["കടുത്തത്","مُغَلَّظَة","നായയും പന്നിയും, അവയിൽ നിന്നുള്ളതും","ഏഴ് തവണ കഴുകുക, ഒന്ന് മണ്ണ് ചേർത്ത്"]]},
+  "നജസാണെന്ന് ആളുകൾ തെറ്റായി കരുതുന്നവ",
+  ["മനുഷ്യന്റെ വിയർപ്പ്, കണ്ണുനീർ, ഉമിനീർ, മൂക്കൊലിപ്പ്",
+   "ജീവിച്ചിരിക്കുന്ന മനുഷ്യരുടെ ശരീരം, മുസ്‌ലിമായാലും അല്ലെങ്കിലും",
+   "ഹലാൽ മൃഗങ്ങളുടെ രോമവും തൂവലും കമ്പിളിയും",
+   "പൂച്ചകൾ — അവ നജസല്ലെന്ന് അവിടുന്ന് വ്യക്തമായി പറഞ്ഞു"],
+  "<b>പൂച്ചയുടെ ഹദീസ്.</b> അവിടുന്ന് ഒരു പൂച്ചയ്ക്ക് വെള്ളം ഒഴിച്ചുകൊടുത്തു, പാത്രം ചരിച്ചുകൊടുത്തു, പറഞ്ഞു: <i>അവ നജസല്ല; അവ നിങ്ങൾക്കിടയിൽ ചുറ്റിനടക്കുന്നവയിൽ പെട്ടതാണ്.</i> നിന്റെ ഗ്ലാസിൽ നിന്ന് പൂച്ച കുടിച്ചാൽ അത് അശുദ്ധമാകുന്നില്ല.",
+  "മൂന്ന് തലങ്ങൾ ഒരിക്കൽ പഠിച്ചാൽ, ഒരിക്കലും അശുദ്ധമല്ലാതിരുന്ന നൂറ് കാര്യങ്ങളെക്കുറിച്ച് നീ ആകുലപ്പെടുന്നത് നിൽക്കും."]},
+/* 9 */{t:"നായ — നജസ്, പക്ഷേ തൊടാൻ പാടില്ലാത്തതല്ല",sub:"നിന്റെ തലമുറയോട് ചോദിക്കപ്പെടുന്ന ഏറ്റവും തെറ്റിദ്ധരിക്കപ്പെട്ട വിധി.",
+ b:["ശാഫിഈ മദ്ഹബിൽ നായ <b>നജസ് മുഗല്ലള</b> ആണ് — കടുത്ത അശുദ്ധി. അതാണ് വിധി, വ്യക്തമായ തെളിവിന്റെ അടിസ്ഥാനത്തിലുള്ളതുമാണ്. പക്ഷേ ആ വിധിക്ക് മുകളിൽ തെളിവ് പിന്തുണയ്ക്കാത്ത പലതും കെട്ടിപ്പൊക്കിയിട്ടുണ്ട്, ആ രണ്ടും വേർതിരിക്കേണ്ടതുണ്ട്.",
+  "നിങ്ങളിലൊരാളുടെ പാത്രത്തിൽ നിന്ന് നായ കുടിച്ചാൽ അവൻ അത് ഏഴ് തവണ കഴുകട്ടെ, ആദ്യത്തേത് മണ്ണ് കൊണ്ട്.",
+  "വിധി ശരിക്കും ആവശ്യപ്പെടുന്നത്",
+  ["അശുദ്ധി <b>നനവുള്ളപ്പോൾ മാത്രമേ</b> പകരുന്നുള്ളൂ. നിന്റെ കൈ ഉണങ്ങിയതും നായ ഉണങ്ങിയതുമാണെങ്കിൽ <mark>ഒന്നും പകരുന്നില്ല, കഴുകാൻ ഒന്നുമില്ല.</mark>",
+   "ഏതെങ്കിലും ഒന്ന് നനഞ്ഞതാണെങ്കിൽ ആ ഭാഗം ഏഴ് തവണ കഴുകൂ, ഒരു തവണ ശുദ്ധമായ മണ്ണ് ചേർത്ത്.",
+   "നായയെ തൊട്ടാൽ <b>വുദൂ മുറിയുന്നില്ല.</b> അങ്ങനെ പറയുന്ന ഒന്നും സുന്നത്തിലില്ല.",
+   "നായയെ തൊടുന്നത് <b>പാപവുമല്ല.</b> അത് വിലക്കുന്ന ഒരു ഹദീസുമില്ല. ഈ വിധി നിസ്കാരത്തിനുള്ള ശുദ്ധിയെക്കുറിച്ചാണ്, തൊടാനുള്ള അനുവാദത്തെക്കുറിച്ചല്ല."],
+  "അതിനെ ഉപദ്രവിക്കുന്നത് നിഷിദ്ധവുമാണ്",
+  "ദാഹിച്ച് ചാകാറായ ഒരു നായയെ ഒരു കിണറ്റിനരികിൽ കണ്ട ഒരാൾ കിണറ്റിലിറങ്ങി, ചെരിപ്പിൽ വെള്ളം നിറച്ച്, വായിൽ കടിച്ചുപിടിച്ച് മുകളിൽ കൊണ്ടുവന്ന് നായയ്ക്ക് കൊടുത്തു — <b>അതിന്റെ പേരിൽ അല്ലാഹു അയാൾക്ക് പൂർണമായി പൊറുത്തുകൊടുത്തു.</b> മൃഗങ്ങളുടെ കാര്യത്തിലും പ്രതിഫലമുണ്ടോ എന്ന് സ്വഹാബികൾ ചോദിച്ചപ്പോൾ അവിടുന്ന് പറഞ്ഞു: <i>ജീവനുള്ള ഓരോ ജീവിയിലും പ്രതിഫലമുണ്ട്.</i>",
+  "ജീവനുള്ള ഓരോ ജീവിയിലും ഒരു പ്രതിഫലമുണ്ട്.",
+  "<b>നായയെ വളർത്തൽ.</b> കന്നുകാലികളെ കാക്കാനും കൃഷി കാക്കാനും വേട്ടയ്ക്കും അനുവദനീയമാണ്. വഴികാട്ടി നായ്ക്കൾ, പോലീസ് നായ്ക്കൾ പോലുള്ള യഥാർത്ഥ ആവശ്യങ്ങളിലേക്കും പണ്ഡിതന്മാർ ഇത് വ്യാപിപ്പിക്കുന്നു. വെറും വളർത്തുമൃഗമായി വീട്ടിൽ വളർത്തുന്നത് മദ്ഹബിൽ അനുവദനീയമല്ല, ദിവസവും പ്രതിഫലം കുറയുമെന്ന് ഹദീസിൽ വന്നിട്ടുമുണ്ട്.",
+  "നജസ് എന്നാൽ ദുഷ്ടം എന്നല്ല, ക്രൂരമായി പെരുമാറാമെന്നുമല്ല. ഒരു നായയ്ക്ക് വെള്ളം കൊടുത്തതിന്റെ പേരിൽ ഒരാൾ സ്വർഗത്തിൽ കയറി. ആ മനുഷ്യനാകാൻ കഴിയുന്ന തരം മുസ്‌ലിമാകൂ."]},
+/* 10 */{t:"ശുദ്ധീകരണവും കഴുകലും",sub:"ഒരു അശുദ്ധി ശരിക്കും എങ്ങനെ നീക്കാം — എപ്പോൾ നീക്കേണ്ടതില്ല.",
+ b:["ഇടത്തരം അശുദ്ധി — മിക്ക സന്ദർഭങ്ങളും",
+  ["ആ വസ്തു തന്നെ നീക്കൂ.",
+   "അശുദ്ധിയുടെ <b>നിറവും മണവും രുചിയും</b> പോകുന്നതുവരെ ആ സ്ഥലത്ത് ശുദ്ധമായ വെള്ളം ഒഴിക്കൂ.",
+   "ശരിയായി ശ്രമിച്ചിട്ടും നിറത്തിന്റെയോ മണത്തിന്റെയോ ഒരു അംശം പോകുന്നില്ലെങ്കിൽ അത് വിട്ടുവീഴ്ച ചെയ്യപ്പെട്ടതാണ്."],
+  "കടുത്ത അശുദ്ധി — നായയും പന്നിയും",
+  "ഏഴ് തവണ കഴുകൽ, ഒന്ന് ശുദ്ധമായ മണ്ണോ മണ്ണടങ്ങിയ വസ്തുവോ ചേർത്ത്. ആധുനിക ഡിറ്റർജന്റുകൾ മണ്ണിന് പകരമാകുമോ എന്ന് പണ്ഡിതന്മാർ ചർച്ച ചെയ്യുന്നു; സാധാരണ ശാഫിഈ നിലപാട് മണ്ണ് തന്നെ വേണമെന്നാണ്. നിന്റെ പണ്ഡിതന്മാർ ഏത് നിലപാടാണ് സ്വീകരിക്കുന്നതെന്ന് അധ്യാപകനോട് ചോദിക്കൂ.",
+  "വിട്ടുവീഴ്ച ചെയ്യപ്പെട്ട ചെറിയ അളവുകൾ",
+  ["വസ്ത്രത്തിൽ കണ്ണിന് കാണാനാവാത്തത്ര ചെറിയ അശുദ്ധിയുടെ അംശം",
+   "തെരുവിലെ ചെളി — അതിൽ അശുദ്ധിയുണ്ടെന്ന് അറിയാത്തിടത്തോളം",
+   "ചെറിയ മുറിവിൽ നിന്നുള്ള രക്തം, ഒരു പുള്ളി, അല്ലെങ്കിൽ പ്രാണിക്കടി — ചെറിയ അളവ് വിട്ടുവീഴ്ച ചെയ്യപ്പെട്ടതാണ്",
+   "നിസ്കാര വസ്ത്രത്തിൽ കാണാവുന്ന അളവിൽ രക്തമോ മൂത്രമോ — കഴുകണം"],
+  "<b>തിരഞ്ഞുപോകരുത്.</b> കാണാനാവാത്ത അശുദ്ധികൾക്കായി വസ്ത്രം പരിശോധിക്കാനോ ഒരു കസേര വൃത്തിയായിരുന്നോ എന്ന് ചോദിക്കാനോ നീ ബാധ്യസ്ഥനല്ല. ശരീഅത്ത് പ്രകടമായതനുസരിച്ചാണ് വിധിക്കുന്നത്. സംശയം തെളിവല്ല.",
+  "വെള്ളം, ധാരാളമായി. ഏതാണ്ട് ഈ വിഷയം മുഴുവൻ അതാണ്. ബാക്കി അല്ലാഹു ആക്കിയതിനെക്കാൾ പ്രയാസമാക്കുന്ന ആളുകളാണ്."]},
+/* 11 */{t:"ഹലാൽ സമ്പാദ്യം",sub:"പണം എവിടെ നിന്ന് വന്നു എന്നത് അത് എന്തിന് ചെലവഴിച്ചു എന്നതിനെക്കാൾ വലിയ ചോദ്യമാണ്.",
+ b:[["<b>റിബാ</b> — പലിശ, കൊടുത്താലും വാങ്ങിയാലും. ഖുർആൻ അതിനോട് മാത്രമാണ് യുദ്ധം പ്രഖ്യാപിക്കുന്നത്.",
+   "<b>ചൂതാട്ടം</b> — വാതുവെപ്പ് ആപ്പുകൾ, മൂല്യമുള്ളത് കിട്ടാൻ വേണ്ടി വാങ്ങുന്ന ലൂട്ട് ബോക്സുകൾ, ലോട്ടറി എന്നിവയുൾപ്പെടെ.",
+   "<b>കച്ചവടത്തിലെ വഞ്ചന</b> — നമ്മെ വഞ്ചിക്കുന്നവൻ നമ്മിൽ പെട്ടവനല്ലെന്ന് അവിടുന്ന് പറഞ്ഞു.",
+   "<b>കൈക്കൂലി</b> — കൊടുക്കുന്നവനും വാങ്ങുന്നവനും ശപിക്കപ്പെട്ടിരിക്കുന്നു.",
+   "<b>മോഷണം, ഡിജിറ്റലായാലും</b> — പണം കൊടുക്കാത്തത് എടുക്കുന്നത് ഏത് രൂപത്തിലായാലും മോഷണമാണ്.",
+   "<b>കച്ചവടം, ജോലി, കൂലി, സമ്മാനം, അനന്തരാവകാശം</b> — സാധാരണ വഴികളെല്ലാം അനുവദനീയമാണ്."],
+  "അല്ലാഹു കച്ചവടം അനുവദനീയമാക്കി, പലിശ നിഷിദ്ധമാക്കി. — അൽ-ബഖറ 2:275",
+  "നിഷിദ്ധമായതിൽ വളർന്ന ശരീരം സ്വർഗത്തിൽ പ്രവേശിക്കില്ല — നരകമാണ് അതിന് കൂടുതൽ അനുയോജ്യം.",
+  "<b>ദുആയും ഭക്ഷണവും.</b> പൊടിപിടിച്ച്, ജടപിടിച്ച്, ആകാശത്തേക്ക് കൈ ഉയർത്തി <i>റബ്ബേ, റബ്ബേ</i> എന്ന് വിളിക്കുന്ന ഒരു യാത്രക്കാരനെ അവിടുന്ന് വിവരിച്ചു — അയാളുടെ ഭക്ഷണവും പാനീയവും വസ്ത്രവും നിഷിദ്ധമാണ്. പിന്നെ ചോദിച്ചു: <i>അയാൾക്ക് എങ്ങനെ ഉത്തരം കിട്ടും?</i> നിഷിദ്ധ വരുമാനം പേഴ്സിനെക്കാൾ ഏറെ ബാധിക്കുന്നു.",
+  "നിന്റെ പ്രായത്തിൽ ആരും പണം എവിടെ നിന്ന് വന്നെന്ന് ചിന്തിക്കാറില്ല. ഇപ്പോൾ തുടങ്ങൂ, മുപ്പതാം വയസ്സിൽ അത് മാറ്റിപ്പഠിക്കേണ്ടിവരില്ല."]},
+/* 12 */{t:"വസ്ത്രവും അലങ്കാരവും",sub:"മറയ്ക്കൽ, പിന്നെ പുരുഷന്മാർക്ക് വിലക്കപ്പെട്ട രണ്ട് കാര്യങ്ങൾ.",
+ b:["ഔറത്ത്",
+  {head:["","നിസ്കാരത്തിൽ","മറ്റുള്ളവരുടെ മുന്നിൽ"],
+   rows:[["പുരുഷൻ","പൊക്കിൾ മുതൽ മുട്ട് വരെ","പൊക്കിൾ മുതൽ മുട്ട് വരെ"],
+     ["സ്ത്രീ","മുഖവും മുൻകൈകളും ഒഴികെ","മഹ്‌റമല്ലാത്തവരുടെ മുന്നിൽ മുഖവും മുൻകൈകളും ഒഴികെ"]]},
+  "പുരുഷന്മാർക്ക് മാത്രം വിലക്കപ്പെട്ടത്",
+  ["<b>സ്വർണം</b> — ആഭരണം, മാല, മോതിരം",
+   "<b>ശുദ്ധമായ പട്ട്</b> — വസ്ത്രമായി",
+   "രണ്ടും സ്ത്രീകൾക്ക് അനുവദനീയമാണ്"],
+  "ഈ രണ്ടും — സ്വർണവും പട്ടും — എന്റെ ഉമ്മത്തിലെ പുരുഷന്മാർക്ക് നിഷിദ്ധവും സ്ത്രീകൾക്ക് അനുവദനീയവുമാണ്.",
+  "മറ്റ് രണ്ട് കാര്യങ്ങൾ",
+  ["<b>പച്ചകുത്തൽ</b> — ചെയ്യുന്നവനും ചെയ്യിക്കുന്നവനും ശപിക്കപ്പെട്ടിരിക്കുന്നു",
+   "<b>എതിർലിംഗത്തെ അനുകരിച്ചുള്ള വേഷം</b> — വ്യക്തമായി വിലക്കപ്പെട്ടിരിക്കുന്നു",
+   "<b>നല്ല വസ്ത്രം, സുഗന്ധം, വൃത്തിയായി കാണപ്പെടൽ</b> — അല്ലാഹു സുന്ദരനാണ്, സൗന്ദര്യം ഇഷ്ടപ്പെടുന്നു"],
+  "<b>മാന്യത എന്നാൽ പഴഞ്ചൻ എന്നല്ല.</b> പ്രതിനിധി സംഘങ്ങൾക്കും ജുമുഅയ്ക്കും വേണ്ടി അവിടുന്ന് ഒരു മേലങ്കി സൂക്ഷിച്ചിരുന്നു. നന്നായി വസ്ത്രം ധരിക്കുന്നത് സുന്നത്താണ്. വിലക്ക് അഹങ്കാരത്തിനാണ്, ഗുണമേന്മയ്ക്കല്ല.",
+  "മറയ്ക്കേണ്ടത് മറയ്ക്കൂ, പുരുഷന്മാർക്ക് വിലക്കപ്പെട്ട രണ്ടും ഒഴിവാക്കൂ, പിന്നെ മാപ്പ് പറയാതെ നന്നായി വസ്ത്രം ധരിക്കൂ."]},
+/* 13 */{t:"സ്ക്രീനുകൾ",sub:"ഏറ്റവും കൂടുതൽ അഭിപ്രായങ്ങളും ഏറ്റവും കുറവ് വ്യക്തമായ വാചകങ്ങളുമുള്ള മേഖല.",
+ b:["എന്ത് കാണാം എന്ന് പട്ടികപ്പെടുത്തുന്ന ഒരൊറ്റ ആയത്തില്ല. പകരം ചില അടിസ്ഥാന തത്ത്വങ്ങളുണ്ട്, അവ ഭൂരിഭാഗം ജോലിയും ചെയ്യുന്നു:",
+  ["<b>കണ്ണ് താഴ്ത്തൽ</b> ഒരു തെരുവിൽ ബാധകമായതുപോലെ ഒരു സ്ക്രീനിലും ബാധകമാണ്.",
+   "<b>സമയത്തെക്കുറിച്ച് ചോദിക്കപ്പെടും.</b> അന്ത്യദിനത്തിലെ നാല് ചോദ്യങ്ങളിൽ ഒന്ന് നിന്റെ യൗവനമാണ്.",
+   "<b>നീ ഉൾക്കൊള്ളുന്നത് നീ ആയിത്തീരുന്നു.</b> ഒരാൾ തന്റെ ഉറ്റ ചങ്ങാതിയുടെ ദീനിലാണെന്ന് അവിടുന്ന് പറഞ്ഞു — ഇന്ന് ഒരു അൽഗോരിതം ഒരു ഉറ്റ ചങ്ങാതിയാണ്.",
+   "<b>ഉപദ്രവകരമായത് പരത്തരുത്.</b> ഫോർവേഡ് ചെയ്യുന്നത് നീ തന്നെ പറയുന്നതിന് തുല്യമാണ്."],
+  "സംഗീതം — ഒരു സത്യസന്ധമായ കുറിപ്പ്",
+  "<mark>സംഗീത ഉപകരണങ്ങളുടെ കാര്യത്തിൽ പണ്ഡിതന്മാർക്കിടയിൽ യഥാർത്ഥ അഭിപ്രായവ്യത്യാസമുണ്ട്.</mark> ശാഫിഈ മദ്ഹബ് ഉൾപ്പെടെയുള്ള ഭൂരിപക്ഷ നിലപാട് ഉപകരണങ്ങൾ നിഷിദ്ധമാണെന്നാണ്, <i>പട്ടും മദ്യവും സംഗീത ഉപകരണങ്ങളും</i> അനുവദനീയമാക്കുന്നവരെക്കുറിച്ചുള്ള ബുഖാരിയിലെ ഹദീസിന്റെ അടിസ്ഥാനത്തിൽ. ന്യൂനപക്ഷം പണ്ഡിതന്മാർ ആ പരമ്പരയെ ചോദ്യം ചെയ്യുകയോ വിധിയെ പാപത്തോടൊപ്പമുള്ള സംഗീതത്തിൽ പരിമിതപ്പെടുത്തുകയോ ചെയ്തിട്ടുണ്ട്. നിന്റെ ഉസ്താദുമാരെ പിന്തുടരൂ — അഭിപ്രായവ്യത്യാസമുണ്ടെന്നത് ഇതിനെക്കുറിച്ച് ചിന്തിക്കുന്നത് നിർത്താനുള്ള കാരണമാക്കരുത്.",
+  "<b>പ്രായോഗിക പരീക്ഷ.</b> തുറക്കുന്നതിന് മുമ്പ് ചോദിക്കൂ: ക്ലാസിൽ എന്റെ പിന്നിലെ സ്ക്രീനിൽ ഇത് പ്രദർശിപ്പിച്ചാൽ എനിക്ക് സുഖം തോന്നുമോ? ഏത് ഫത്‌വയെക്കാളും വേഗം ഉത്തരം വരും.",
+  "സ്ക്രോൾ ചെയ്യാതിരുന്ന ഒരു മണിക്കൂറിന്റെ പേരിൽ ആരും ഒരിക്കലും ഖേദിച്ചിട്ടില്ല. സ്ക്രോൾ ചെയ്ത മണിക്കൂറിന്റെ പേരിൽ ഏതാണ്ട് എല്ലാവരും ഖേദിക്കുന്നു."]},
+/* 14 */{t:"അതിരുകൾ",sub:"ആളുകളെ അപമാനിക്കാനല്ല, സംരക്ഷിക്കാനുള്ള നിയമങ്ങൾ.",
+ b:["പതിനഞ്ചിലും പതിനാറിലും ഈ നിയമങ്ങൾ വെറും സിദ്ധാന്തമല്ലാതാകുന്നു, അതിനാൽ അവ ലജ്ജയില്ലാതെ വ്യക്തമായി പറയേണ്ടതുണ്ട്.",
+  ["<b>ഖൽവത്ത്</b> — മറ്റാർക്കും കടന്നുവരാനാവാത്ത സ്വകാര്യതയിൽ ഒരു പുരുഷനും സ്ത്രീയും ഒറ്റയ്ക്കാകൽ",
+   "മഹ്‌റമല്ലാത്ത എതിർലിംഗത്തിലുള്ളവരുമായി <b>ശാരീരിക സ്പർശം</b>",
+   "വിവാഹത്തിന് പുറത്ത് <b>സ്വകാര്യ പ്രണയ സംഭാഷണം</b>, നേരിട്ടായാലും സന്ദേശമായാലും",
+   "<b>ആവശ്യമായ ഇടപെടൽ</b> — ക്ലാസിൽ, ജോലിയിൽ, കച്ചവടത്തിൽ, ബഹുമാനത്തോടെയും ലക്ഷ്യത്തോടെയും",
+   "<b>കടക്കാരനോടോ അധ്യാപകനോടോ ഡോക്ടറോടോ പാഠത്തെക്കുറിച്ച് സഹപാഠിയോടോ സംസാരിക്കൽ</b>"],
+  "ഒരു പുരുഷനും ഒരു സ്ത്രീയും ഒറ്റയ്ക്കാകുമ്പോൾ അവരിൽ മൂന്നാമൻ പിശാചായിരിക്കും.",
+  "എന്തുകൊണ്ട് ഇങ്ങനെ പറയുന്നു",
+  "രണ്ടിലാരെങ്കിലും മോശമാണെന്ന് ഹദീസ് പറയുന്നില്ല എന്ന് ശ്രദ്ധിക്കൂ. ആ <i>സാഹചര്യം</i> സുരക്ഷിതമല്ലെന്നാണ് പറയുന്നത്. എല്ലാ അവസരത്തിലും എല്ലാവരുടെയും ആത്മനിയന്ത്രണം പൂർണമായിരിക്കുമെന്ന് ആശ്രയിക്കുന്നതിന് പകരം ഇസ്‌ലാം ആ സാഹചര്യം തന്നെ ഒഴിവാക്കുന്നു. <b>ഈ നിയമം നിന്റെ ദീനിനെ എന്നപോലെ നിന്റെ പേരിനെയും സംരക്ഷിക്കുന്നു</b> — നിന്റെ പ്രായത്തിൽ ഒരിക്കൽ നഷ്ടപ്പെട്ട പേര് വീണ്ടെടുക്കാൻ വളരെ പ്രയാസമാണ്.",
+  "<b>ഓൺലൈനും ഇതിൽ വരും.</b> രാത്രി രണ്ട് മണിക്കുള്ള ഒരു സ്വകാര്യ ചാറ്റ് എല്ലാ അർത്ഥത്തിലും ഖൽവത്താണ്. മുറി ചെറുതാണെന്നും വാതിൽ മറ്റുള്ളവർക്ക് തുറക്കാൻ കൂടുതൽ പ്രയാസമാണെന്നും മാത്രം.",
+  "ഇതിനെല്ലാം അല്ലാഹു തുറന്നുവെച്ച വാതിലാണ് വിവാഹം. ആ വാതിലിന് മുമ്പുള്ളതെല്ലാം നിനക്ക് എന്തെങ്കിലും നഷ്ടമുണ്ടാക്കുകയേ ഉള്ളൂ."]},
+/* 15 */{t:"ഉറപ്പില്ലാത്തപ്പോൾ",sub:"എങ്ങനെ ചോദിക്കണം, ആരോട് ചോദിക്കണം, അതുവരെ എന്ത് ചെയ്യരുത്.",
+ b:["യോഗ്യനായ ഒരാളോട് ചോദിക്കൂ",
+  "നിങ്ങൾക്ക് അറിയില്ലെങ്കിൽ അറിവുള്ളവരോട് ചോദിക്കുക. — അന്നഹ്ൽ 16:43",
+  "ചോദിക്കാനുള്ള നാല് നിയമങ്ങൾ",
+  ["<b>ഒരു സെർച്ച് എൻജിനോടല്ല, ഒരു വ്യക്തിയോട് ചോദിക്കൂ.</b> ഒരു പണ്ഡിതൻ നിന്നോട് തിരിച്ചുചോദിക്കും; ഒരു സെർച്ച് ഫലം ചോദിക്കില്ല.",
+   "<b>സാഹചര്യം പൂർണമായി പറയൂ.</b> സാഹചര്യമനുസരിച്ച് വിധി മാറും, പാതി ചോദ്യത്തിന് തെറ്റായ ഉത്തരമാണ് കിട്ടുക.",
+   "<b>ഇഷ്ടപ്പെട്ട ഉത്തരം തേടി നടക്കരുത്.</b> ഒരാൾ യോജിക്കുന്നതുവരെ ആറ് പേരോട് ചോദിക്കുന്നത് അറിവ് തേടലല്ല.",
+   "<b>ചില ചോദ്യങ്ങൾക്ക് രണ്ട് ശരിയായ ഉത്തരങ്ങളുണ്ടെന്ന് അംഗീകരിക്കൂ.</b> ആയിരം വർഷമായി പണ്ഡിതന്മാർ ഭിന്നിച്ചുനിൽക്കുന്നിടത്ത് ഇന്ന് ഉച്ചകഴിഞ്ഞ് നീ അത് തീർപ്പാക്കാൻ പോകുന്നില്ല."],
+  "<b>പരിശോധിക്കാത്ത ഒന്നിനെക്കുറിച്ച് ഒരിക്കലും <i>അല്ലാഹു പറഞ്ഞു</i> എന്ന് പറയരുത്.</b> അറിവില്ലാതെ അല്ലാഹുവിനെക്കുറിച്ച് സംസാരിക്കുന്നത് ശിർക്കിനൊപ്പമാണ് ഖുർആൻ എണ്ണുന്നത് (അൽ-അഅ്റാഫ് 7:33). <i>എനിക്കറിയില്ല, ഞാൻ ചോദിച്ചിട്ട് പറയാം</i> എന്നത് പൂർണവും മാന്യവുമായ ഒരു ഉത്തരമാണ്.",
+  "അല്ലാഹു ആർക്കെങ്കിലും നന്മ ഉദ്ദേശിച്ചാൽ അവന് ദീനിൽ ഗ്രാഹ്യം നൽകും.",
+  "എല്ലാ കാര്യത്തിലും ഒരു അഭിപ്രായം ഉണ്ടായിരിക്കുകയല്ല ലക്ഷ്യം. ഏതൊക്കെ കാര്യങ്ങൾ നിനക്ക് ശരിക്കും അറിയാമെന്ന് അറിയുകയും ബാക്കിയുള്ളതിനെക്കുറിച്ച് സത്യസന്ധനാകുകയുമാണ്."]}
+];
+
+/* ================= RENDER ================= */
+function el(h){const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;}
+const book=document.getElementById('book');
+const langBtn=document.getElementById('langBtn'), barMeta=document.getElementById('barMeta');
+let pageNo=0;
+
+const T={lang:"en"};
+try{T.lang=localStorage.getItem('hh_lang')||"en";}catch(e){}
+const tx=(k,en)=>T.lang==="ml"&&UI_ML[k]!=null?UI_ML[k]:en;
+
+/* merge a lesson with its Malayalam; Arabic, chip codes and sources stay */
+function mb(x,i){
+  if(T.lang!=="ml"||!ML_L[i]) return x;
+  const m=ML_L[i];
+  const b=x.b.map((blk,k)=>{
+    const v=m.b?m.b[k]:null;
+    if(v==null) return blk;
+    switch(blk.t){
+      case "h": case "txt": case "note": case "rem": return {...blk,x:v};
+      case "ar": return {...blk,en:v};
+      case "hq": return {...blk,q:v};
+      case "ul": case "ol": return {...blk,x:v};
+      case "tbl": return {...blk,head:v.head,rows:v.rows};
+      case "rulings": return {...blk,x:blk.x.map((r,j)=>[r[0], (v[j]!=null?v[j]:r[1])])};
+      default: return blk;
+    }
+  });
+  return {...x,t:m.t,sub:m.sub,b};
+}
+
+function blocks(a){return a.map(b=>{
+  switch(b.t){
+   case "h": return `<div class="blk"><div class="h">${b.x}</div></div>`;
+   case "txt": return `<div class="blk"><p class="txt">${b.x}</p></div>`;
+   case "ar": return `<div class="blk"><div class="arb">${b.x}</div>`+
+     (b.tr?`<div class="trn">${b.tr}</div>`:``)+(b.en?`<div class="mng">${b.en}</div>`:``)+`</div>`;
+   case "ul": return `<div class="blk"><ul class="pts">${b.x.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+   case "ol": return `<div class="blk"><ol class="pts">${b.x.map(i=>`<li>${i}</li>`).join('')}</ol></div>`;
+   case "tbl": return `<div class="blk"><table><thead><tr>${b.head.map(h=>`<th>${h}</th>`).join('')}</tr></thead>`+
+     `<tbody>${b.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+   case "rulings": return `<div class="blk"><div class="rulings">${b.x.map(r=>{
+       const lab={h:tx("chipH","Ḥalāl"),x:tx("chipX","Ḥarām"),d:tx("chipD","Check it")}[r[0]];
+       return `<div class="rw"><span class="chip ${r[0]}">${lab}</span><div class="d2">${r[1]}</div></div>`;}).join('')}</div></div>`;
+   case "hq": return `<div class="blk"><div class="hq"><div class="q">“${b.q}”</div><div class="s">${b.s}</div></div></div>`;
+   case "note": return `<div class="blk"><div class="note">${b.x}</div></div>`;
+   case "rem": return `<div class="remember"><div class="rh">${tx("remember","Remember")}</div><p>${b.x}</p></div>`;
+   default: return "";
+  }}).join('');}
+
+function page(inner,part,right,cls){
+  pageNo++;
+  return `<section class="page p${cls||1}">
+    <div class="ptop"><span class="part">${part||''}</span><span>${right||''}</span></div>
+    ${inner}
+    <div class="wm">${tx("wm","Ḥalāl &amp; Ḥarām · Thazkiya Level 3")}</div>
+    <div class="pno">${pageNo}</div></section>`;
+}
+
+function render(){
+book.innerHTML=""; pageNo=0;
+book.appendChild(el(`<section class="page p1 cover">
+  <img class="crest" src="/logo.png" alt="">
+  <div class="car">الْحَلَالُ وَالْحَرَام</div>
+  <div class="cen">ḤALĀL &amp; ḤARĀM</div>
+  <div class="cline"></div>
+  <div class="cmeta">${tx("coverMeta","Thazkiya · Level 3 · Ages 15–16<br>Fifteen lessons in five parts<br>Shāfiʿī madhhab<br>ManzilulQuran E-learning Academy")}</div>
+  <div class="wm">${tx("wm","Ḥalāl &amp; Ḥarām · Thazkiya Level 3")}</div></section>`));
+
+let toc='',cur=0;
+L.forEach((x,i)=>{ if(x.p!==cur){cur=x.p;toc+=`<div class="grp">${(T.lang==="ml"?PARTS_ML:PARTS)[cur]}</div>`;}
+  toc+=`<a href="#l${i+1}"><span class="n">${i+1}</span><span>${x.t}</span></a>`; });
+book.appendChild(el(`<section class="page p1"><h1 class="lt">${tx("contents","Contents")}</h1><div class="rule"></div>
+  <div class="toc">${toc}</div>
+  <div class="wm">${tx("wm","Ḥalāl &amp; Ḥarām · Thazkiya Level 3")}</div></section>`));
+
+L.forEach((x0,i)=>{
+  const x=mb(x0,i);
+  const n=i+1;
+  book.appendChild(el(page(`<span class="lnum">${tx("lesson","Lesson")} ${n}</span>
+    <h1 class="lt" id="l${n}">${x.t}</h1>
+    <div class="lar">${x.ar}</div>
+    <div class="lsub">${x.sub}</div>
+    <div class="rule"></div>
+    ${blocks(x.b)}`, (T.lang==="ml"?PARTS_ML:PARTS)[x.p], `${tx("lesson","Lesson")} ${n} ${tx("of","of")} ${L.length}`, x.p)));
+});
+}
+function paintLang(){
+  document.body.classList.toggle("lang-ml",T.lang==="ml");
+  document.documentElement.lang=T.lang;
+  langBtn.textContent = T.lang==="ml" ? "English" : "മലയാളം";
+  barMeta.textContent = tx("barMeta","15 lessons · Shāfiʿī · Ages 15–16");
+}
+langBtn.addEventListener('click',()=>{
+  T.lang = T.lang==="ml" ? "en" : "ml";
+  try{localStorage.setItem('hh_lang',T.lang);}catch(e){}
+  paintLang(); render(); window.scrollTo({top:0});
+});
+paintLang(); render();
+</script>
+</body>
+</html>
