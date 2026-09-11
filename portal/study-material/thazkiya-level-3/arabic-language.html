@@ -8,7 +8,7 @@
 <link rel="icon" href="/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lora:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lora:wght@500;600;700&family=Poppins:wght@400;500;600;700&family=Anek+Malayalam:wght@400;500;600;700&family=Baloo+Chettan+2:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --sand:#FBF6EC;
@@ -20,6 +20,8 @@
   --ui:'Poppins',system-ui,sans-serif;
   --disp:'Lora',Georgia,serif;
   --ar:'Amiri',serif;
+  --ml:'Anek Malayalam','Noto Sans Malayalam',sans-serif;
+  --ml-disp:'Baloo Chettan 2','Anek Malayalam',sans-serif;
   --r:18px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -31,6 +33,16 @@ body{font-family:var(--ui);color:var(--ink);line-height:1.7;min-height:100vh;
     var(--sand);
   background-attachment:fixed}
 
+body.lang-ml{font-family:var(--ml)}
+body.lang-ml .l-head h2,body.lang-ml .cover .en-t,body.lang-ml .done h2,
+body.lang-ml .gram h4,body.lang-ml .task h4,body.lang-ml .howto h3{font-family:var(--ml-disp);font-weight:700}
+body.lang-ml .l-intro,body.lang-ml .gram p,body.lang-ml .sent .m,body.lang-ml .qlink p,
+body.lang-ml .task li,body.lang-ml .vc .e,body.lang-ml .gram .ex .m,body.lang-ml .plate .cap,
+body.lang-ml .cover p,body.lang-ml .howto li{font-weight:500;line-height:1.9}
+.lang-btn{min-height:44px;border:2px solid var(--sun);color:#7a4f10;background:var(--sun-bg);
+  font-family:var(--ui);font-weight:800;font-size:13px;border-radius:100px;padding:9px 15px;
+  cursor:pointer;white-space:nowrap;flex:0 0 auto}
+.lang-btn:hover{background:var(--sun);color:#fff}
 #progress{position:fixed;top:0;left:0;height:4px;width:0;z-index:120;
   background:linear-gradient(90deg,var(--sea-l),var(--sea),var(--sun));transition:width .1s}
 
@@ -179,13 +191,14 @@ body{font-family:var(--ui);color:var(--ink);line-height:1.7;min-height:100vh;
     <div class="en">ARABIC FOR BEGINNERS</div>
   </div>
   <div class="sp"></div>
+  <button class="lang-btn" id="langBtn">മലയാളം</button>
   <div class="pill">Thazkiya · L3</div>
 </div>
 
 <div class="scrim" id="scrim"></div>
 <nav class="drawer" id="drawer">
   <h2>Arabic for Beginners<span class="ar">اللُّغَةُ الْعَرَبِيَّة</span></h2>
-  <div class="sub">Ten lessons · about 100 words</div>
+  <div class="sub" data-i18n="drawerSub">Ten lessons · about 100 words</div>
   <div id="bn"></div>
 </nav>
 
@@ -193,18 +206,18 @@ body{font-family:var(--ui);color:var(--ink);line-height:1.7;min-height:100vh;
   <section class="cover">
     <img class="logo" src="/logo.png" alt="">
     <div class="ar-t">اللُّغَةُ الْعَرَبِيَّة</div>
-    <div class="en-t">ARABIC FOR BEGINNERS</div>
-    <span class="tag">Thazkiya · Level 3 · Ages 11–15</span>
-    <p>You can already read Arabic letters. Now learn what the words mean. Ten lessons, about a hundred words, and enough grammar to build your own sentences — and to start recognising real words inside the āyāt you recite.</p>
-    <a href="#lesson1">Start lesson one →</a>
+    <div class="en-t" data-i18n="coverH">ARABIC FOR BEGINNERS</div>
+    <span class="tag" data-i18n="coverTag">Thazkiya · Level 3 · Ages 11–15</span>
+    <p data-i18n="coverP">You can already read Arabic letters. Now learn what the words mean. Ten lessons, about a hundred words, and enough grammar to build your own sentences — and to start recognising real words inside the āyāt you recite.</p>
+    <a href="#lesson1" data-i18n="startBtn">Start lesson one →</a>
   </section>
 
   <div class="howto">
-    <h3>How to use this book</h3>
+    <h3 data-i18n="howtoH">How to use this book</h3>
     <ol>
-      <li><b>Tap a word card</b> to hide or show the English. Cover the meanings and test yourself.</li>
-      <li><b>Read every sentence out loud.</b> Arabic is learned by the mouth, not only the eyes.</li>
-      <li><b>Do the task</b> before the next class and send it to your teacher.</li>
+      <li data-i18n="howto1"><b>Tap a word card</b> to hide or show the English. Cover the meanings and test yourself.</li>
+      <li data-i18n="howto2"><b>Read every sentence out loud.</b> Arabic is learned by the mouth, not only the eyes.</li>
+      <li data-i18n="howto3"><b>Do the task</b> before the next class and send it to your teacher.</li>
     </ol>
   </div>
 
@@ -212,8 +225,8 @@ body{font-family:var(--ui);color:var(--ink);line-height:1.7;min-height:100vh;
 
   <section class="done" id="done">
     <div class="em">🎉</div>
-    <h2>Mabrūk! مَبْرُوك</h2>
-    <p>A hundred words and ten grammar points. You can now build your own Arabic sentences — keep going.</p>
+    <h2 data-i18n="doneH">Mabrūk! مَبْرُوك</h2>
+    <p data-i18n="doneP">A hundred words and ten grammar points. You can now build your own Arabic sentences — keep going.</p>
   </section>
 
   <div class="foot">
@@ -539,6 +552,162 @@ const LESSONS=[
 }
 ];
 
+
+/* ===================== MALAYALAM ===================== */
+const UI_ML={
+ coverH:"അറബി ഭാഷ — തുടക്കക്കാർക്ക്",
+ coverP:"അറബി അക്ഷരങ്ങൾ വായിക്കാൻ നിനക്ക് ഇതിനകം അറിയാം. ഇനി വാക്കുകളുടെ അർത്ഥം പഠിക്കാം. പത്ത് പാഠങ്ങൾ, ഏകദേശം നൂറ് വാക്കുകൾ, സ്വന്തമായി വാക്യങ്ങൾ ഉണ്ടാക്കാൻ മതിയായ വ്യാകരണം — പിന്നെ നീ ഓതുന്ന ആയത്തുകൾക്കുള്ളിലെ യഥാർത്ഥ വാക്കുകൾ തിരിച്ചറിയാനും.",
+ coverTag:"തസ്കിയ · ലെവൽ 3 · 11–15 വയസ്സ്",
+ startBtn:"ഒന്നാം പാഠം തുടങ്ങാം →",
+ howtoH:"ഈ പുസ്തകം എങ്ങനെ ഉപയോഗിക്കാം",
+ howto1:"<b>ഒരു വാക്ക് കാർഡിൽ അമർത്തൂ</b> — മലയാളം അർത്ഥം മറയ്ക്കാനും കാണിക്കാനും. അർത്ഥങ്ങൾ മറച്ചുവെച്ച് സ്വയം പരീക്ഷിക്കൂ.",
+ howto2:"<b>ഓരോ വാക്യവും ഉറക്കെ വായിക്കൂ.</b> അറബി പഠിക്കുന്നത് നാവുകൊണ്ടാണ്, കണ്ണുകൊണ്ട് മാത്രമല്ല.",
+ howto3:"<b>ചുമതല ചെയ്യൂ</b> — അടുത്ത ക്ലാസിന് മുമ്പ് ചെയ്ത് അധ്യാപകന് അയക്കൂ.",
+ doneH:"മബ്റൂക്! مَبْرُوك",
+ doneP:"നൂറ് വാക്കുകളും പത്ത് വ്യാകരണ പാഠങ്ങളും. ഇനി നിനക്ക് സ്വന്തമായി അറബി വാക്യങ്ങൾ ഉണ്ടാക്കാം — തുടർന്നുകൊണ്ടേയിരിക്കൂ.",
+ drawerSub:"പത്ത് പാഠങ്ങൾ · ഏകദേശം 100 വാക്കുകൾ",
+ lesson:"പാഠം", of:"/",
+ tagVocab:"പുതിയ വാക്കുകൾ",
+ vhint:"മലയാളം കാണാനും മറയ്ക്കാനും കാർഡിൽ അമർത്തൂ.",
+ tagGram:"വ്യാകരണം",
+ tagSay:"ഉറക്കെ പറയൂ",
+ tagQ:"ഈ വാക്ക് ഖുർആനിൽ നിന്ന് നിനക്ക് അറിയാം",
+ tagTask:"ഈ ആഴ്ചയിലെ ചുമതല"
+};
+
+const ML_L=[
+{
+ t:"അഭിവാദ്യവും പേരും", intro:"അറബിയിൽ നീ ആദ്യമായി പറയാൻ പോകുന്ന വാക്കുകൾ.",
+ cap:"സ്കൂൾ ഗേറ്റിന് പുറത്ത് രണ്ട് കുട്ടികൾ പരസ്പരം അഭിവാദ്യം ചെയ്യുന്നു.",
+ vocab:["നിങ്ങൾക്ക് സമാധാനം","നിങ്ങൾക്കും സമാധാനം","സുപ്രഭാതം","ശുഭ സായാഹ്നം","ഞാൻ","നീ (ആൺകുട്ടിയോട്)","നീ (പെൺകുട്ടിയോട്)","പേര്","ആര്","നന്ദി"],
+ gram:{h:"ആൺകുട്ടിയോടും പെൺകുട്ടിയോടും സംസാരിക്കുമ്പോൾ",
+  p:"ആരോടാണ് സംസാരിക്കുന്നത് എന്നതനുസരിച്ച് അറബിയിൽ <i>നീ</i> എന്ന വാക്ക് മാറും. ആൺകുട്ടിയോട് <b>അൻത</b>. പെൺകുട്ടിയോട് <b>അൻതി</b>. അവസാനത്തെ സ്വരം മാത്രമേ മാറുന്നുള്ളൂ — പക്ഷേ അത് ശരിയാകണം.",
+  ex:["നീ ഒരു ആൺകുട്ടിയാണ്.","നീ ഒരു പെൺകുട്ടിയാണ്."]},
+ sents:["നിന്റെ പേരെന്താണ്? (ആൺകുട്ടിയോട്)","നിന്റെ പേരെന്താണ്? (പെൺകുട്ടിയോട്)","എന്റെ പേര് അഹ്മദ്.","നിനക്ക് സുഖമാണോ?","എനിക്ക് സുഖമാണ്, അൽഹംദുലില്ലാഹ്."],
+ q:"<b>അസ്സലാമു അലൈക്കും</b> നീ എന്നും പറയുന്നു. സ്വർഗക്കാർ പരസ്പരം അഭിവാദ്യം ചെയ്യുന്നതും ഇങ്ങനെയാണ്:",
+ task:{h:"പത്ത് അഭിവാദ്യങ്ങൾ",
+  steps:["ഈ ആഴ്ച പത്ത് പേരോട് അസ്സലാമു അലൈക്കും പറയൂ.","അവരിൽ ഒരാളോട് مَا اسْمُكَ؟ എന്ന് ചോദിച്ച് ഉത്തരം മനസ്സിലാക്കൂ.","എത്ര പേർ അറബിയിൽ മറുപടി പറഞ്ഞു എന്ന് എഴുതൂ."],
+  send:"നിന്റെ എണ്ണം അധ്യാപകന് അയക്കൂ."}
+},
+{
+ t:"ഇത്, അത്", intro:"സാധനങ്ങൾ ചൂണ്ടിക്കാണിക്കൽ — പിന്നെ അറബിയിലെ ആദ്യത്തെ ലിംഗനിയമം.",
+ cap:"ഒരു കുട്ടി മേശപ്പുറത്തുള്ള സാധനങ്ങൾ ചൂണ്ടിക്കാണിക്കുന്നു — പുസ്തകം, പേന, ബാഗ്, വാതിൽ.",
+ vocab:["ഇത് (പുല്ലിംഗം)","ഇത് (സ്ത്രീലിംഗം)","പുസ്തകം","പേന","വാതിൽ","ബാഗ്","ജനൽ","ഘടികാരം","താക്കോൽ","കസേര"],
+ gram:{h:"ഓരോ അറബി വാക്കും ആണോ പെണ്ണോ ആണ്",
+  p:"അറബി നാമങ്ങൾ പുല്ലിംഗമോ സ്ത്രീലിംഗമോ ആണ്. മിക്ക സ്ത്രീലിംഗ വാക്കുകളും <b>ة</b> — താ മർബൂത്വ — യിൽ അവസാനിക്കുന്നു. പുല്ലിംഗ വാക്കുകൾക്ക് <b>ഹാദാ</b> എന്നും സ്ത്രീലിംഗത്തിന് <b>ഹാദിഹി</b> എന്നും പറയൂ.",
+  ex:["ഇത് ഒരു പുസ്തകമാണ്. (കിതാബ് — പുല്ലിംഗം)","ഇത് ഒരു ബാഗാണ്. (ഹഖീബ — ة യിൽ അവസാനിക്കുന്നു, സ്ത്രീലിംഗം)"]},
+ sents:["ഇത് ഒരു പേനയാണ്.","ഇത് ഒരു ഘടികാരമാണ്.","ഇത് വാതിലും ഇത് ജനലുമാണ്.","ഇത് എന്താണ്?","ഇത് ഒരു താക്കോലാണ്."],
+ q:"<b>കിതാബ്</b> എന്നാൽ പുസ്തകം. ഖുർആനിന്റെ പേരിൽ നിന്ന് തന്നെ ഈ വാക്ക് നിനക്ക് അറിയാം:",
+ task:{h:"നിന്റെ മുറിയിലെ പത്ത് സാധനങ്ങൾ",
+  steps:["നിന്റെ മുറിയിലെ പത്ത് സാധനങ്ങൾ ചൂണ്ടി ഓരോന്നിന്റെയും അറബി പേര് പറയൂ.","ഓരോന്നിനും മുന്നിൽ ഹാദാ എന്നോ ഹാദിഹി എന്നോ എഴുതൂ.","പരിശോധിക്കൂ: ആ വാക്ക് ة യിൽ അവസാനിക്കുന്നുണ്ടോ?"],
+  send:"പത്തിന്റെയും പട്ടിക അധ്യാപകന് അയക്കൂ."}
+},
+{
+ t:"എന്റെ കുടുംബം", intro:"നിനക്ക് ഏറ്റവും അടുത്തവർ — പിന്നെ <i>എന്റെ</i> എന്ന് പറയുന്ന വിധം.",
+ cap:"വീട്ടിലെ ഒരു കുടുംബം — ഉപ്പ, ഉമ്മ, സഹോദരൻ, സഹോദരി, വല്യുപ്പ.",
+ vocab:["കുടുംബം","ഉപ്പ","ഉമ്മ","സഹോദരൻ","സഹോദരി","വല്യുപ്പ","വല്യുമ്മ","മകൻ","മകൾ / പെൺകുട്ടി","വീട്"],
+ gram:{h:"<i>എന്റെ</i> എന്ന് പറയാൻ — ي ചേർത്താൽ മതി",
+  p:"അറബിയിൽ <i>എന്റെ</i> എന്ന് പറയാൻ വാക്കിന്റെ അവസാനം <b>ـي</b> ചേർക്കൂ. പ്രത്യേകം ഒരു വാക്ക് വേണ്ട.",
+  ex:["പുസ്തകം → എന്റെ പുസ്തകം","ഉമ്മ → എന്റെ ഉമ്മ","വീട് → എന്റെ വീട്"]},
+ sents:["ഇത് എന്റെ ഉപ്പയാണ്.","ഇത് എന്റെ ഉമ്മയാണ്.","എനിക്ക് ഒരു സഹോദരനും ഒരു സഹോദരിയുമുണ്ട്.","എന്റെ കുടുംബം വലുതാണ്.","എന്റെ വല്യുപ്പ എവിടെ?"],
+ q:"<b>ബൈത്ത്</b> എന്നാൽ വീട്. കഅ്ബയെ അല്ലാഹുവിന്റെ ഭവനം — <i>ബൈത്ത്</i> — എന്ന് വിളിക്കുന്നു:",
+ task:{h:"നിന്റെ കുടുംബവൃക്ഷം",
+  steps:["ഒരു കടലാസിൽ നിന്റെ കുടുംബവൃക്ഷം എഴുതൂ.","ഓരോ ആളെയും അറബിയിൽ അടയാളപ്പെടുത്തൂ — അബീ, ഉമ്മീ, അഖീ, ഉഖ്തീ, ജദ്ദീ.","മുഴുവൻ വൃക്ഷവും വീട്ടിലുള്ള ഒരാൾക്ക് ഉറക്കെ വായിച്ചുകൊടുക്കൂ."],
+  send:"അടയാളപ്പെടുത്തിയ കുടുംബവൃക്ഷത്തിന്റെ ഫോട്ടോ അയക്കൂ."}
+},
+{
+ t:"വീട്ടിനുള്ളിൽ", intro:"സാധനങ്ങൾ എവിടെയാണ് — ഉള്ളിൽ, മുകളിൽ, താഴെ, അടുത്ത്.",
+ cap:"ഒരു വീടിന്റെ ഉൾഭാഗം — മേശപ്പുറത്ത് പുസ്തകം, കസേരയ്ക്ക് താഴെ പൂച്ച, ജനലരികിൽ പക്ഷി.",
+ vocab:["ഉള്ളിൽ","മുകളിൽ","താഴെ","മുന്നിൽ","പിന്നിൽ","കൂടെ","മുറി","അടുക്കള","കട്ടിൽ","മേശ"],
+ gram:{h:"സ്ഥലം കാണിക്കുന്ന വാക്കുകൾ",
+  p:"ഈ ചെറിയ വാക്കുകൾ നാമത്തിന് <b>മുമ്പാണ്</b> വരുന്നത്, മലയാളത്തിൽ നിന്ന് വ്യത്യസ്തമായി. ഇവ ഒരുമിച്ച് പഠിക്കൂ — നീ വായിക്കാൻ പോകുന്ന ഏതാണ്ട് എല്ലാ വാക്യത്തിലും ഇവ വരും.",
+  ex:["പുസ്തകം മേശപ്പുറത്താണ്.","പൂച്ച കസേരയ്ക്ക് താഴെയാണ്."]},
+ sents:["ഞാൻ വീട്ടിലാണ്.","എന്റെ ഉമ്മ അടുക്കളയിലാണ്.","ബാഗ് കട്ടിലിനടിയിലാണ്.","വാതിൽ ജനലിന്റെ മുന്നിലാണ്.","ഞാൻ എന്റെ സഹോദരനോടൊപ്പമാണ്."],
+ q:"<b>ഫീ</b> — ഉള്ളിൽ — ഖുർആനിലെ ഏറ്റവും സാധാരണമായ വാക്കുകളിലൊന്നാണ്. നൂറുകണക്കിന് തവണ നീ ഇത് വായിച്ചിട്ടുണ്ട്:",
+ task:{h:"അത് എവിടെയാണ്?",
+  steps:["നിന്റെ മുറിയിൽ അഞ്ച് സാധനങ്ങൾ പല സ്ഥലങ്ങളിൽ വെക്കൂ.","ഫീ, അലാ, തഹ്ത, അമാമ, ഖൽഫ എന്നിവ ഉപയോഗിച്ച് ഓരോന്നിനും ഒരു വാക്യം എഴുതൂ.","അഞ്ചും ഉറക്കെ വായിക്കൂ."],
+  send:"നിന്റെ അഞ്ച് വാക്യങ്ങൾ അയക്കൂ."}
+},
+{
+ t:"നിറങ്ങൾ", intro:"വിശേഷണം പറയൽ — പിന്നെ എല്ലാവരെയും അമ്പരപ്പിക്കുന്ന വാക്യക്രമം.",
+ cap:"നിറമുള്ള സാധനങ്ങൾ — ചുവന്ന പുസ്തകം, പച്ച വാതിൽ, നീല ബാഗ്, വെളുത്ത കപ്പ്, കറുത്ത പേന.",
+ vocab:["നിറം","ചുവപ്പ്","നീല","പച്ച","മഞ്ഞ","വെളുപ്പ്","കറുപ്പ്","വലുത്","ചെറുത്","മനോഹരം"],
+ gram:{h:"വിശേഷണം രണ്ടാമതാണ് വരുന്നത്",
+  p:"മലയാളത്തിൽ നാം <i>ചുവന്ന പുസ്തകം</i> എന്ന് പറയുന്നു. അറബിയിൽ അത് നേരെ തിരിച്ചാണ് — ആദ്യം നാമം, പിന്നെ വിശേഷണം: <b>കിതാബുൻ അഹ്മർ</b>, അതായത് <i>പുസ്തകം ചുവന്നത്</i>.",
+  ex:["ഒരു ചുവന്ന പുസ്തകം","ഒരു വലിയ വീട്","ഒരു മനോഹരമായ ബാഗ് — രണ്ട് വാക്കിലും ة ശ്രദ്ധിക്കൂ"]},
+ sents:["ഇത് ഒരു നീല പുസ്തകമാണ്.","എന്റെ വീട് ചെറുതാണ്.","വാതിൽ പച്ചയാണ്.","നിന്റെ ബാഗിന്റെ നിറം എന്താണ്?","എന്റെ ബാഗ് വെളുത്തതാണ്."],
+ q:"<b>അബ്‌യള്</b> — വെളുപ്പ് — പ്രഭാതത്തെ വിവരിക്കുമ്പോൾ ഖുർആനിൽ വരുന്നു:",
+ task:{h:"നിറം തിരയൽ",
+  steps:["പഠിച്ച ഓരോ നിറത്തിലുമുള്ള ഓരോ സാധനം കണ്ടെത്തൂ.","ഓരോന്നിനും അറബി എഴുതൂ — ആദ്യം നാമം, പിന്നെ നിറം.","നിന്റെ ആറ് പ്രയോഗങ്ങളും ഉറക്കെ വായിക്കൂ."],
+  send:"നിന്റെ ആറ് പ്രയോഗങ്ങൾ അയക്കൂ."}
+}
+,{
+ t:"സംഖ്യകൾ", intro:"ഒന്ന് മുതൽ ഇരുപത് വരെ, പിന്നെ ചുറ്റുമുള്ളവ എണ്ണൽ.",
+ cap:"അറബി അക്കങ്ങൾ ١ മുതൽ ١٠ വരെ, ഒപ്പം അത്രയും സാധനങ്ങളുടെ കൂട്ടങ്ങൾ.",
+ vocab:["ഒന്ന്","രണ്ട്","മൂന്ന്","നാല്","അഞ്ച്","ആറ്","ഏഴ്","എട്ട്","ഒമ്പത്","പത്ത്"],
+ gram:{h:"അറബി അക്കങ്ങൾ ഇടത്തുനിന്ന് വലത്തോട്ടാണ് എഴുതുന്നത്",
+  p:"അറബി വാക്കുകൾ വലത്തുനിന്ന് ഇടത്തോട്ടാണ്, പക്ഷേ അക്കങ്ങൾ അങ്ങനെയല്ല. ١٢٣ എന്നാൽ <b>നൂറ്റി ഇരുപത്തിമൂന്ന്</b>, മലയാളത്തിലേതുപോലെ തന്നെ. രൂപങ്ങൾ മാത്രമാണ് വ്യത്യാസം.",
+  ex:["അഞ്ച് നിസ്കാരങ്ങൾ","പന്ത്രണ്ട് മാസം"]},
+ sents:["നിന്റെ കൈയിൽ എത്ര പുസ്തകമുണ്ട്?","എന്റെ കൈയിൽ അഞ്ച് പുസ്തകമുണ്ട്.","ഒരാഴ്ചയിൽ ഏഴ് ദിവസമുണ്ട്.","നാം അഞ്ച് നിസ്കാരം നിസ്കരിക്കുന്നു.","എനിക്ക് പത്ത് വയസ്സാണ്."],
+ q:"<b>ഏഴ്</b> എന്ന സംഖ്യ പലപ്പോഴും വരുന്നു. ആകാശങ്ങളെ ഏഴെന്ന് വിവരിക്കുന്നു:",
+ task:{h:"നിന്റെ ദിവസം എണ്ണൂ",
+  steps:["വീട്ടിലെ അഞ്ച് വ്യത്യസ്ത സാധനങ്ങൾ എണ്ണി അറബി അക്കത്തിൽ എഴുതൂ.","ഓരോന്നിനും അരികിൽ അറബി അക്ഷരത്തിൽ സംഖ്യാവാക്കും എഴുതൂ.","നിന്റെ വയസ്സ് ഒരാളോട് അറബിയിൽ പറയൂ."],
+  send:"അഞ്ചിന്റെയും പട്ടിക അയക്കൂ."}
+},
+{
+ t:"ചോദ്യങ്ങൾ ചോദിക്കൽ", intro:"എല്ലാ സംഭാഷണവും തുറക്കുന്ന അഞ്ച് ചെറിയ വാക്കുകൾ.",
+ cap:"ഒരു കുട്ടി ക്ലാസിൽ കൈ ഉയർത്തുന്നു, ചുറ്റും ചോദ്യചിഹ്നങ്ങൾ.",
+ vocab:["എന്ത് (വസ്തുക്കൾക്ക്)","ആര് (ആളുകൾക്ക്)","എവിടെ","എങ്ങനെ","എത്ര","എപ്പോൾ","എന്തുകൊണ്ട്","ആണോ / ഉണ്ടോ — അതെ/ഇല്ല ചോദ്യം","അതെ","ഇല്ല"],
+ gram:{h:"ചോദിക്കാൻ രണ്ട് വഴി",
+  p:"അതെ അല്ലെങ്കിൽ ഇല്ല എന്ന ചോദ്യത്തിന് <b>ഹൽ</b> മുന്നിൽ വെക്കൂ, ബാക്കി ഒന്നും മാറ്റേണ്ട. മറ്റെല്ലാറ്റിനും ചോദ്യവാക്കിൽ തുടങ്ങൂ.",
+  ex:["നിന്റെ കൈയിൽ പേനയുണ്ടോ?","പേന എവിടെ?"]},
+ sents:["ഇത് ആരാണ്?","നിന്റെ വീട് എവിടെയാണ്?","നിനക്ക് സുഖമാണോ? (പെൺകുട്ടിയോട്)","നിസ്കാരം എപ്പോഴാണ്?","നീ ഒരു വിദ്യാർത്ഥിയാണോ?"],
+ q:"<b>മാ</b> — എന്ത് — നീ ഇതിനകം പറയുന്ന ഏറ്റവും പ്രശസ്തമായ ഒരു പ്രയോഗത്തിൽ തുടങ്ങുന്നു:",
+ task:{h:"അഞ്ച് ചോദ്യങ്ങൾ",
+  steps:["മാ, മൻ, അയ്ന, കൈഫ, കം എന്നിവ ഓരോന്നും ഉപയോഗിച്ച് ഓരോ ചോദ്യം എഴുതൂ.","വീട്ടിലുള്ള ഒരാളോട് ഓരോ ചോദ്യവും ചോദിച്ച് ഉത്തരം കുറിക്കൂ.","ചോദ്യങ്ങൾ അറബിയിൽ ഉറക്കെ വായിക്കൂ."],
+  send:"നിന്റെ അഞ്ച് ചോദ്യങ്ങൾ അയക്കൂ."}
+},
+{
+ t:"ഞാൻ ദിവസവും ചെയ്യുന്നത്", intro:"നിന്റെ ആദ്യത്തെ അറബി ക്രിയകൾ — ഞാൻ വായിക്കുന്നു, ഞാൻ എഴുതുന്നു, ഞാൻ പോകുന്നു.",
+ cap:"ഒരു ദിവസം ചിത്രങ്ങളിൽ — ഉണരൽ, നിസ്കാരം, ഭക്ഷണം, സ്കൂൾ, വായന, ഉറക്കം.",
+ vocab:["ഞാൻ പോകുന്നു","ഞാൻ വായിക്കുന്നു","ഞാൻ എഴുതുന്നു","ഞാൻ കഴിക്കുന്നു","ഞാൻ കുടിക്കുന്നു","ഞാൻ നിസ്കരിക്കുന്നു","ഞാൻ പഠിക്കുന്നു","ഞാൻ കളിക്കുന്നു","സ്കൂൾ","പള്ളി"],
+ gram:{h:"أ എന്ന അക്ഷരത്തിന്റെ അർത്ഥം <i>ഞാൻ</i> എന്നാണ്",
+  p:"അറബി ക്രിയകൾക്ക് <i>ഞാൻ</i> എന്നതിന് പ്രത്യേകം ഒരു വാക്ക് വേണ്ട. മുന്നിലുള്ള <b>أ</b> എന്ന അക്ഷരം തന്നെ അത് അർത്ഥമാക്കുന്നു. ആ ആദ്യ അക്ഷരം മാറ്റിയാൽ ചെയ്യുന്ന ആളും മാറും.",
+  ex:["ഞാൻ വായിക്കുന്നു","നീ വായിക്കുന്നു","അവൻ വായിക്കുന്നു","നാം വായിക്കുന്നു"]},
+ sents:["ഞാൻ സ്കൂളിലേക്ക് പോകുന്നു.","ഞാൻ ഖുർആൻ വായിക്കുന്നു.","ഞാൻ പള്ളിയിൽ നിസ്കരിക്കുന്നു.","ഞാൻ എന്റെ കുടുംബത്തോടൊപ്പം കഴിക്കുന്നു.","സ്കൂൾ കഴിഞ്ഞ് ഞാൻ കളിക്കുന്നു."],
+ q:"<b>ഇഖ്‌റഅ്</b> — വായിക്കുക — ഖുർആനിൽ അവതരിച്ച ഏറ്റവും ആദ്യത്തെ വാക്കാണ്:",
+ task:{h:"എന്റെ ദിവസം അറബിയിൽ",
+  steps:["നിന്റെ ദിവസത്തെക്കുറിച്ച് അഞ്ച് വാക്യങ്ങൾ എഴുതൂ, ഓരോന്നും ഒരു ക്രിയയിൽ തുടങ്ങണം.","ഈ പാഠത്തിലെ കുറഞ്ഞത് മൂന്ന് വ്യത്യസ്ത ക്രിയകൾ ഉപയോഗിക്കൂ.","അടുത്ത ക്ലാസിൽ അധ്യാപകനോട് അവ ഉറക്കെ വായിക്കൂ."],
+  send:"നിന്റെ അഞ്ച് വാക്യങ്ങൾ അയക്കൂ."}
+},
+{
+ t:"സ്കൂളും പള്ളിയും", intro:"നീ ഏറ്റവും കൂടുതൽ പോകുന്ന രണ്ടിടങ്ങൾ — പിന്നെ വാക്യങ്ങൾ കൂട്ടിച്ചേർക്കൽ.",
+ cap:"ഒരു വശത്ത് സ്കൂളും മറുവശത്ത് പള്ളിയുമുള്ള ഒരു തെരുവ്.",
+ vocab:["അധ്യാപകൻ","അധ്യാപിക","വിദ്യാർത്ഥി (ആൺ)","വിദ്യാർത്ഥിനി","പാഠം","ക്ലാസ് / വരി","ഇമാം","ഖിബ്‌ല","നിസ്കാരപ്പായ","സമയം"],
+ gram:{h:"ഒരു വാക്കിനെ സ്ത്രീലിംഗമാക്കൽ",
+  p:"അവസാനം <b>ة</b> ചേർത്താൽ പുല്ലിംഗ വാക്ക് സ്ത്രീലിംഗമാകും. ഈ ഒരൊറ്റ നിയമം അറബിയിലെ മിക്ക ജോലികളെയും പദവികളെയും ഉൾക്കൊള്ളുന്നു.",
+  ex:["അധ്യാപകൻ → അധ്യാപിക","വിദ്യാർത്ഥി → വിദ്യാർത്ഥിനി","മുസ്‌ലിം പുരുഷൻ → മുസ്‌ലിം സ്ത്രീ"]},
+ sents:["ഞാൻ സ്കൂളിലെ ഒരു വിദ്യാർത്ഥിയാണ്.","എന്റെ അധ്യാപിക ക്ലാസിലാണ്.","പാഠം മനോഹരമാണ്.","എന്റെ നിസ്കാരപ്പായ വീട്ടിലാണ്.","നിസ്കാരത്തിന്റെ സമയം എപ്പോഴാണ്?"],
+ q:"<b>വഖ്ത്ത്</b> — സമയം — നിസ്കാരത്തിന്റെ നിശ്ചിത സമയങ്ങൾക്ക് ഉപയോഗിക്കുന്ന വാക്കിന്റെ വേരാണ്:",
+ task:{h:"നിന്റെ സ്കൂൾ ബാഗ് അടയാളപ്പെടുത്തൂ",
+  steps:["നീ ദിവസവും ഉപയോഗിക്കുന്ന ആറ് സാധനങ്ങളുടെ അറബി പേര് ചെറിയ കടലാസിൽ എഴുതൂ.","ഓരോ ലേബലും അതത് സാധനത്തിൽ ഒട്ടിക്കൂ.","ഒരാഴ്ച അവ അവിടെ വെച്ച് എല്ലാ രാവിലെയും വായിക്കൂ."],
+  send:"അടയാളപ്പെടുത്തിയ മൂന്ന് സാധനങ്ങളുടെ ഫോട്ടോ അയക്കൂ."}
+},
+{
+ t:"ഒരുമിച്ച് സംസാരിക്കാം", intro:"ആദ്യത്തെ ഒമ്പത് പാഠങ്ങളിലെ എല്ലാം, ഒരൊറ്റ സംഭാഷണത്തിൽ.",
+ cap:"രണ്ട് കുട്ടികൾ ഒരുമിച്ചിരുന്ന് സംസാരിക്കുന്നു, മുകളിൽ സംഭാഷണ കുമിളകൾ.",
+ vocab:["സ്വാഗതം / ഹായ്","ദയവായി, മുന്നോട്ട് പോകൂ","സാരമില്ല / ക്ഷമിക്കണം","ക്ഷമിക്കണം (പുരുഷൻ)","ക്ഷമിക്കണം (സ്ത്രീ)","വിട","സുഹൃത്ത് (ആൺ)","സുഹൃത്ത് (പെൺ)","ഇന്ന്","നാളെ"],
+ gram:{h:"എല്ലാം കൂട്ടിച്ചേർക്കാം",
+  p:"ഒരു അറബി വാക്യത്തിന്റെ നാല് ഭാഗങ്ങളും ഇപ്പോൾ നിന്റെ കൈയിലുണ്ട്: പേരുവാക്ക്, വിശേഷണം, സ്ഥലവാക്ക്, ക്രിയ. താഴെയുള്ള ഓരോ വാക്യവും മുൻപാഠങ്ങളിൽ നിന്നുള്ള എന്തെങ്കിലും ഉപയോഗിക്കുന്നു.",
+  ex:["ഞാൻ ഒരു ചെറിയ വിദ്യാർത്ഥിയാണ്. — നാമം + വിശേഷണം","ഇന്ന് ഞാൻ പള്ളിയിലേക്ക് പോകുന്നു. — ക്രിയ + സ്ഥലം + സമയം"]},
+ sents:["ഹായ്! നിനക്ക് സുഖമാണോ?","എനിക്ക് സുഖമാണ്, നന്ദി. നിനക്കോ?","നിന്റെ സുഹൃത്തിന്റെ പേരെന്താണ്?","അവന്റെ പേര് യൂസുഫ്, അവൻ എന്റെ സ്കൂളിലെ വിദ്യാർത്ഥിയാണ്.","നാളെ കാണാം, വിട."],
+ q:"നീ ഏകദേശം നൂറ് വാക്കുകൾ പഠിച്ചു. ഇനിയും ചോദിച്ചുകൊണ്ടിരിക്കൂ — ഖുർആൻ ഈ ദുആ പഠിപ്പിക്കുന്നു:",
+ task:{h:"ഒരു യഥാർത്ഥ സംഭാഷണം",
+  steps:["ഒരു കൂട്ടാളിയെ കണ്ടെത്തൂ — സഹപാഠി, സഹോദരൻ അല്ലെങ്കിൽ രക്ഷിതാവ്.","കുറഞ്ഞത് ആറ് വരി, മുഴുവൻ അറബിയിൽ, സംസാരിക്കൂ.","അത് ഒരു ശബ്ദസന്ദേശമായി റെക്കോർഡ് ചെയ്യൂ."],
+  send:"അവസാന ചുമതലയായി റെക്കോർഡിംഗ് അധ്യാപകന് അയക്കൂ."}
+}
+];
+
 /* ================= RENDER ================= */
 function el(h){const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;}
 const host=document.getElementById('lessons'), bn=document.getElementById('bn');
@@ -550,54 +719,81 @@ function plateHTML(im){
   return `<div class="plate">${media}<div class="cap">${im.cap}</div></div>`;
 }
 
-LESSONS.forEach((L,i)=>{
-  const n=i+1;
-  const vc=L.vocab.map(v=>`<div class="vc"><div class="a">${v[0]}</div><div class="t">${v[1]}</div><div class="e">${v[2]}</div></div>`).join('');
-  const gx=L.gram.ex.map(e=>`<div class="ex"><div class="a">${e[0]}</div><div class="m">${e[1]}</div></div>`).join('');
-  const st=L.sents.map(s=>`<div class="sent"><div class="a">${s[0]}</div><div class="t">${s[1]}</div><div class="m">${s[2]}</div></div>`).join('');
-  const tk=L.task.steps.map(s=>`<li>${s}</li>`).join('');
+const EN_UI={};document.querySelectorAll("[data-i18n]").forEach(e=>EN_UI[e.dataset.i18n]=e.innerHTML);
+const T={lang:"en"};
+const tx=(k,en)=>T.lang==="ml"&&UI_ML[k]!=null?UI_ML[k]:en;
 
-  host.appendChild(el(`<section class="lesson" id="lesson${n}">
-    <div class="l-head">
-      <span class="l-badge">LESSON ${n} OF ${LESSONS.length}</span>
-      <div class="l-em">${L.em}</div>
-      <h2>${L.t}</h2>
-      <div class="l-ar">${L.ar}</div>
-    </div>
-    <p class="l-intro">${L.intro}</p>
-    ${plateHTML(L.img)}
-    <div class="vocab">
-      <div class="sec-tag">📚 NEW WORDS</div>
-      <div class="vgrid">${vc}</div>
-      <div class="vhint">Tap a card to show or hide the English.</div>
-    </div>
-    <div class="gram">
-      <div class="sec-tag">🧩 GRAMMAR</div>
-      <h4>${L.gram.h}</h4>
-      <p>${L.gram.p}</p>
-      ${gx}
-    </div>
-    <div class="sents">
-      <div class="sec-tag">🗣️ SAY IT OUT LOUD</div>
-      ${st}
-    </div>
-    <div class="qlink">
-      <div class="sec-tag">✦ YOU ALREADY KNOW THIS FROM THE QUR'AN</div>
-      <p>${L.q.p}</p>
-      <div class="a">${L.q.a}</div>
-      <div class="r">${L.q.r}</div>
-    </div>
-    <div class="task">
-      <div class="sec-tag">🏠 THIS WEEK'S TASK</div>
-      <h4>${L.task.h}</h4>
-      <ol>${tk}</ol>
-      <div class="send">📤 ${L.task.send}</div>
-    </div>
-  </section>`));
+function merge(L,i){
+  if(T.lang!=="ml"||!ML_L[i]) return L;
+  const m=ML_L[i];
+  return {...L,
+    t:m.t, intro:m.intro,
+    img:{...L.img, cap:m.cap||L.img.cap},
+    vocab:L.vocab.map((v,k)=> m.vocab&&m.vocab[k] ? [v[0],v[1],m.vocab[k]] : v),
+    gram:{h:m.gram.h, p:m.gram.p,
+      ex:L.gram.ex.map((e,k)=> m.gram.ex&&m.gram.ex[k] ? [e[0],m.gram.ex[k]] : e)},
+    sents:L.sents.map((x,k)=> m.sents&&m.sents[k] ? [x[0],x[1],m.sents[k]] : x),
+    q:{...L.q, p:m.q||L.q.p},
+    task:{h:m.task.h, steps:m.task.steps, send:m.task.send}
+  };
+}
 
-  bn.appendChild(el(`<a class="bn" href="#lesson${n}"><span class="n">${n}</span>${L.t}</a>`));
+function build(){
+  host.innerHTML=""; bn.innerHTML="";
+  document.body.classList.toggle("lang-ml",T.lang==="ml");
+  document.documentElement.lang=T.lang;
+  document.querySelectorAll("[data-i18n]").forEach(e=>{e.innerHTML=tx(e.dataset.i18n,EN_UI[e.dataset.i18n]);});
+  langBtn.textContent = T.lang==="ml" ? "English" : "മലയാളം";
+
+  LESSONS.forEach((L0,i)=>{
+    const L=merge(L0,i), n=i+1;
+    const vc=L.vocab.map(v=>`<div class="vc"><div class="a">${v[0]}</div><div class="t">${v[1]}</div><div class="e">${v[2]}</div></div>`).join('');
+    const gx=L.gram.ex.map(e=>`<div class="ex"><div class="a">${e[0]}</div><div class="m">${e[1]}</div></div>`).join('');
+    const st=L.sents.map(x=>`<div class="sent"><div class="a">${x[0]}</div><div class="t">${x[1]}</div><div class="m">${x[2]}</div></div>`).join('');
+    const tk=L.task.steps.map(x=>`<li>${x}</li>`).join('');
+
+    host.appendChild(el(`<section class="lesson" id="lesson${n}">
+      <div class="l-head">
+        <span class="l-badge">${tx("lesson","LESSON")} ${n} ${tx("of","OF")} ${LESSONS.length}</span>
+        <div class="l-em">${L.em}</div>
+        <h2>${L.t}</h2><div class="l-ar">${L.ar}</div>
+      </div>
+      <p class="l-intro">${L.intro}</p>
+      ${plateHTML(L.img)}
+      <div class="vocab">
+        <div class="sec-tag">📚 ${tx("tagVocab","NEW WORDS")}</div>
+        <div class="vgrid">${vc}</div>
+        <div class="vhint">${tx("vhint","Tap a card to show or hide the English.")}</div>
+      </div>
+      <div class="gram">
+        <div class="sec-tag">🧩 ${tx("tagGram","GRAMMAR")}</div>
+        <h4>${L.gram.h}</h4><p>${L.gram.p}</p>${gx}
+      </div>
+      <div class="sents"><div class="sec-tag">🗣️ ${tx("tagSay","SAY IT OUT LOUD")}</div>${st}</div>
+      <div class="qlink">
+        <div class="sec-tag">✦ ${tx("tagQ","YOU ALREADY KNOW THIS FROM THE QUR'AN")}</div>
+        <p>${L.q.p}</p><div class="a">${L.q.a}</div><div class="r">${L.q.r}</div>
+      </div>
+      <div class="task">
+        <div class="sec-tag">🏠 ${tx("tagTask","THIS WEEK'S TASK")}</div>
+        <h4>${L.task.h}</h4><ol>${tk}</ol>
+        <div class="send">📤 ${L.task.send}</div>
+      </div>
+    </section>`));
+    bn.appendChild(el(`<a class="bn" href="#lesson${n}"><span class="n">${n}</span>${L.t}</a>`));
+  });
+  bn.appendChild(el(`<a class="bn" href="#done"><span class="n">★</span>${tx("finish","Finish")}</a>`));
+  Array.from(document.querySelectorAll('.vc')).forEach(c=>c.addEventListener('click',()=>c.classList.toggle('on')));
+}
+
+const langBtn=document.getElementById('langBtn');
+langBtn.addEventListener('click',()=>{
+  T.lang = T.lang==="ml" ? "en" : "ml";
+  try{localStorage.setItem('arb_lang',T.lang);}catch(e){}
+  build(); window.scrollTo({top:0});
 });
-bn.appendChild(el(`<a class="bn" href="#done"><span class="n">★</span>Finish</a>`));
+try{T.lang=localStorage.getItem('arb_lang')||"en";}catch(e){}
+build();
 
 /* behaviour */
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -607,7 +803,6 @@ document.getElementById('menuBtn').addEventListener('click',()=>{drawer.classLis
 scrim.addEventListener('click',shut);
 bn.addEventListener('click',e=>{if(e.target.closest('.bn'))shut();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')shut();});
-$$('.vc').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('on')));
 
 const bar=document.getElementById('progress');
 function onScroll(){const h=document.documentElement,m=h.scrollHeight-h.clientHeight;
