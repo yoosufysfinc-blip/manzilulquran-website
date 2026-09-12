@@ -519,7 +519,11 @@ function renderCalBody(){
             <div class="day-holiday">Holiday</div>
           </div>`;
         }
-        const joinable = canJoin && d.link;
+        /* A finished day is never joinable again. The academy switching a
+           calendar on, or a link still sitting in the rotation, does not
+           bring yesterday back — before this, every past day inside a
+           running plan kept a live Meet button. */
+        const joinable = canJoin && d.link && !isPast;
         return `<div class="day ${isFocus ? 'spotlight' : (isToday ? 'today' : '')} ${isPast && !isToday && !isFocus ? 'past' : ''}">
           <div class="day-left">
             <div class="day-n">Day ${d.n}</div>
@@ -537,7 +541,7 @@ function renderCalBody(){
                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                    Join
                  </a>`
-              : `<span class="btn-join dead">Join</span>`}
+              : `<span class="btn-join dead">${isPast ? 'Finished' : 'Join'}</span>`}
           </div>
         </div>`;
       }).join('')}
