@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calendar Sheets · ManzilulQuran Admin</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/assets/classes/calendars.v1.css" />
+</head>
+<body>
+
+  <!-- LOCK -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
+    <div class="lock-title">Calendar Sheets</div>
+    <div class="lock-sub">Enter the portal password to continue.</div>
+    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="off" autofocus />
+    <button class="lock-btn" id="lockBtn">Unlock</button>
+    <div class="lock-error" id="lockError">&nbsp;</div>
+    <div class="lock-hint">Admin access only.<br><a href="./">← Back to Classes</a></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="admin" id="adminView">
+
+    <a class="crumb" href="./">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      All Classes
+    </a>
+
+    <div class="admin-head">
+      <div>
+        <div class="admin-title">Calendar <span class="accent">Sheets</span></div>
+        <div class="admin-sub" id="studentLine">—</div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-gold" id="newCalBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Calendar Sheet
+        </button>
+        <button class="btn-ghost" id="previewBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Student View
+        </button>
+        <button class="btn-ghost" id="refreshBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <div id="calList">
+      <div class="loading"><div class="loading-spin"></div><div>Loading calendar sheets…</div></div>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT MODAL -->
+  <div class="modal-backdrop" id="formModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="formTitle">New <span class="accent">Calendar Sheet</span></h3>
+        <p id="formSubtitle">Set the schedule once — the days are generated automatically.</p>
+      </div>
+      <div class="modal-body">
+        <div class="fgrid">
+
+          <div class="field full">
+            <label>Calendar Name <span class="req">*</span></label>
+            <input type="text" id="fName" placeholder="e.g. July Plan, Revision Plan, Hifz Plan" />
+            <span class="err-msg">Please enter a name.</span>
+          </div>
+
+          <div class="field">
+            <label>Start Date <span class="req">*</span></label>
+            <input type="date" id="fStart" />
+            <span class="err-msg">Please pick a start date.</span>
+          </div>
+
+          <div class="field">
+            <label>Number of Days <span class="req">*</span></label>
+            <input type="number" id="fDays" min="1" max="40" value="30" />
+            <span class="err-msg">Enter 1–40 days.</span>
+          </div>
+
+          <div class="field full">
+            <label>Weekly Off <span class="hint">— these days show “Holiday”, no Join button</span></label>
+            <div class="dow-row" id="dowRow"></div>
+          </div>
+
+          <div class="field full">
+            <label>Class Links <span class="req">*</span> <span class="hint">— rotated across class days</span></label>
+            <div id="linkList"></div>
+            <button type="button" class="link-add" id="addLinkBtn">+ Add another link</button>
+            <span class="err-msg" id="linkErr">Add at least one valid link (must start with http).</span>
+            <div class="rotate-note" id="rotateNote"></div>
+          </div>
+
+          <div class="field full" id="positionField">
+            <label>Position</label>
+            <select id="fPosition"></select>
+          </div>
+
+          <div class="field full">
+            <label>Status</label>
+            <select id="fActive">
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="formCancelBtn">Cancel</button>
+        <button class="btn-solid" id="formSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM MODAL -->
+  <div class="modal-backdrop" id="confirmModal">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-head">
+        <h3 id="confirmTitle">Are you <span class="accent">sure?</span></h3>
+        <p id="confirmText">This cannot be undone.</p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="confirmCancelBtn">Cancel</button>
+        <button class="btn-solid danger" id="confirmOkBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<!-- DEMO BUILD — demo spreadsheet, demo gate password. -->
+<script>
+window.MQ_BASE       = "/portal/demo";
+window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
+</script>
+
+<script src="/assets/classes/engine.v1.js"></script>
+<script src="/assets/classes/api.v1.js"></script>
+<script>
+/* =================================================================
+   ░░  CALENDAR SHEETS ADMIN  ░░
+   ================================================================= */
+
+const SCRIPT_URL = window.MQ_SCRIPT_URL;
+const PORTAL_PASSWORD = "mqdemo2026";       // DEMO gate — deliberately NOT the live Classes password
+const ADMIN_API_PASSWORD = "manzil2026admin";
+const MAX_DAYS = 40;
+
+const SESSION_KEY = "mq_demo_classes_unlocked_at";  // own key — a live Classes unlock does NOT open the demo
+const SESSION_MAX_MS = 24 * 60 * 60 * 1000;
+
+const classId = new URLSearchParams(location.search).get('id') || '';
+
+let classInfo = null;
+let calendars = [];
+let editingId = null;
+let confirmAction = null;
+
+/* ---------------- Lock ---------------- */
+function isUnlocked(){
+  try{
+    const at = parseInt(sessionStorage.getItem(SESSION_KEY) || "0", 10);
+    return at && (Date.now() - at) < SESSION_MAX_MS;
+  }catch(e){ return false; }
+}
+function unlock(){
+  try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  load();
+}
+function tryPassword(){
+  if(($("lockInput").value || "").trim() === PORTAL_PASSWORD){ unlock(); }
+  else{
+    $("lockInput").classList.add("wrong");
+    $("lockError").textContent = "Wrong password. Try again.";
+    setTimeout(()=>$("lockInput").classList.remove("wrong"), 400);
+    $("lockInput").select();
+  }
+}
+$("lockBtn").onclick = tryPassword;
+$("lockInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryPassword(); });
+if(isUnlocked()){
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  load();
+}
+
+/* ---------------- Date engine ----------------
+   The 40 day rows are NOT stored anywhere. We keep only the rule
+   (start + days + weekly off + links) and rebuild the days here.
+------------------------------------------------ */
+async function load(){
+  if(!classId){
+    $("calList").innerHTML = '<div class="empty-state">No class sheet selected.<br><a href="./" style="color:var(--gold-light)">← Back to Classes</a></div>';
+    return;
+  }
+  $("calList").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading calendar sheets…</div></div>';
+  try{
+    const url = `${SCRIPT_URL}?action=getClassAdmin&classId=${encodeURIComponent(classId)}&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Failed to load");
+
+    classInfo = data.class;
+    calendars = data.calendars || [];
+
+    $("studentLine").textContent = `${classInfo.studentName} · ${classInfo.studentId} · ${classInfo.course}`;
+    document.title = `Calendars · ${classInfo.studentName} · ManzilulQuran`;
+    renderList();
+  }catch(err){
+    console.error(err);
+    $("calList").innerHTML = `<div class="empty-state">Failed to load.<br><br>
+      <small style="color:#ff9999">Error: ${escapeHtml(err.message)}</small></div>`;
+  }
+}
+$("refreshBtn").onclick = load;
+$("previewBtn").onclick = () => {
+  if(classInfo && classInfo.shareToken){
+    window.open('/class/?t=' + encodeURIComponent(classInfo.shareToken), '_blank');
+  }
+};
+
+/* ---------------- Render ---------------- */
+function renderList(){
+  if(!calendars.length){
+    $("calList").innerHTML = `<div class="empty-state">
+      No calendar sheets yet for this student.<br>
+      Click <b style="color:var(--gold-light)">New Calendar Sheet</b> to build the first schedule.
+    </div>`;
+    return;
+  }
+
+  $("calList").innerHTML = '<div class="cal-list">' + calendars.map((c, i) => {
+    const st = calStatus(c);
+    const s = parseDate(c.startDate);
+    const e = endDate(c);
+    const range = (s && e) ? `${fmtDate(s)} – ${fmtDate(e)}` : '—';
+    const offTxt = (c.weeklyOff && c.weeklyOff.length) ? c.weeklyOff.join(', ') : 'None';
+    const classDays = buildDays(c).filter(d => !d.isOff).length;
+
+    return `<div class="cal ${c.active ? 'is-active' : 'is-inactive'}">
+      <div class="cal-head">
+        <div style="flex:1;min-width:220px">
+          <div class="cal-name">
+            ${escapeHtml(c.name)}
+            <span class="pill ${st.toLowerCase()}">${st}</span>
+          </div>
+          <div class="cal-meta">
+            <b>${range}</b> · ${c.days} days (${classDays} classes)<br>
+            Weekly off: <b>${escapeHtml(offTxt)}</b> · Links: <b>${c.links.length}</b>
+          </div>
+        </div>
+        <div class="cal-actions">
+          <button class="icon" data-act="up"   data-id="${c.calendarId}" ${i === 0 ? 'disabled' : ''} title="Move up">↑</button>
+          <button class="icon" data-act="down" data-id="${c.calendarId}" ${i === calendars.length-1 ? 'disabled' : ''} title="Move down">↓</button>
+          <button data-act="days"   data-id="${c.calendarId}">Days</button>
+          <button data-act="toggle" data-id="${c.calendarId}">${c.active ? 'Deactivate' : 'Activate'}</button>
+          <button data-act="edit"   data-id="${c.calendarId}">Edit</button>
+          <button data-act="del"    data-id="${c.calendarId}" class="danger">Delete</button>
+        </div>
+      </div>
+      <div class="cal-days" id="days-${c.calendarId}"></div>
+    </div>`;
+  }).join('') + '</div>';
+
+  $("calList").querySelectorAll('button[data-act]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const c = calendars.find(x => x.calendarId === btn.dataset.id);
+      if(!c) return;
+      const act = btn.dataset.act;
+      if(act === 'days')   toggleDays(c);
+      if(act === 'edit')   openForm(c);
+      if(act === 'toggle') doToggle(c);
+      if(act === 'del')    askDelete(c);
+      if(act === 'up')     doMove(c, 'up');
+      if(act === 'down')   doMove(c, 'down');
+    });
+  });
+}
+
+function toggleDays(c){
+  const box = $('days-' + c.calendarId);
+  if(box.classList.contains('show')){ box.classList.remove('show'); return; }
+
+  const t = today0().getTime();
+  box.innerHTML = buildDays(c).map(d => {
+    const isToday = d.date.getTime() === t;
+    return `<div class="day ${d.isOff ? 'off' : ''} ${isToday ? 'today' : ''}">
+      <div class="day-n">Day ${d.n}</div>
+      <div class="day-date">${fmtDate(d.date)}</div>
+      <div class="day-dow">${DAYS_SHORT[d.date.getDay()]}</div>
+      ${d.isOff
+        ? '<div class="day-holiday">Holiday</div>'
+        : `<div class="day-link">${escapeHtml(d.link || '—')}</div>`}
+    </div>`;
+  }).join('');
+  box.classList.add('show');
+
+  const todayEl = box.querySelector('.day.today');
+  if(todayEl) todayEl.scrollIntoView({ block:'center' });
+}
+
+/* ---------------- Create / Edit ---------------- */
+$("newCalBtn").onclick = () => openForm(null);
+
+function openForm(c){
+  editingId = c ? c.calendarId : null;
+  $("formTitle").innerHTML = c ? 'Edit <span class="accent">Calendar Sheet</span>' : 'New <span class="accent">Calendar Sheet</span>';
+  $("formSubtitle").textContent = c
+    ? 'Changes apply to the student’s view immediately.'
+    : 'Set the schedule once — the days are generated automatically.';
+
+  $("fName").value  = c ? c.name : '';
+  $("fStart").value = c ? c.startDate : '';
+  $("fDays").value  = c ? c.days : 30;
+  $("fActive").value = c ? String(!!c.active) : 'true';
+
+  buildDowChips(c ? c.weeklyOff : []);
+  buildLinkRows(c ? c.links : ['']);
+
+  // Position picker only makes sense when creating
+  $("positionField").style.display = c ? 'none' : 'flex';
+  if(!c) buildPositionOptions();
+
+  document.querySelectorAll("#formModal .field").forEach(f => f.classList.remove("invalid"));
+  updateRotateNote();
+  openModal("formModal");
+  setTimeout(()=>$("fName").focus(), 200);
+}
+
+function buildDowChips(selected){
+  const sel = new Set(selected || []);
+  $("dowRow").innerHTML = DAYS_FULL.map((d,i) =>
+    `<div class="dow ${sel.has(d) ? 'on' : ''}" data-day="${d}">${DAYS_SHORT[i]}</div>`
+  ).join('');
+  $("dowRow").querySelectorAll('.dow').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('on');
+      updateRotateNote();
+    });
+  });
+}
+function getWeeklyOff(){
+  return [...$("dowRow").querySelectorAll('.dow.on')].map(c => c.dataset.day);
+}
+
+function buildLinkRows(links){
+  const list = (links && links.length) ? links : [''];
+  $("linkList").innerHTML = '';
+  list.forEach(l => addLinkRow(l));
+}
+function addLinkRow(value){
+  const row = document.createElement('div');
+  row.className = 'link-row';
+  row.innerHTML = `
+    <span class="num"></span>
+    <input type="url" placeholder="https://meet.google.com/..." value="${escapeHtml(value || '')}" />
+    <button type="button" class="link-del" title="Remove">×</button>`;
+  row.querySelector('.link-del').addEventListener('click', () => {
+    row.remove();
+    renumberLinks();
+    updateRotateNote();
+  });
+  row.querySelector('input').addEventListener('input', updateRotateNote);
+  $("linkList").appendChild(row);
+  renumberLinks();
+}
+function renumberLinks(){
+  $("linkList").querySelectorAll('.link-row').forEach((r, i) => {
+    r.querySelector('.num').textContent = (i+1) + '.';
+  });
+}
+function getLinks(){
+  return [...$("linkList").querySelectorAll('input')]
+    .map(i => i.value.trim())
+    .filter(v => v && /^https?:\/\//i.test(v));
+}
+$("addLinkBtn").onclick = () => { addLinkRow(''); updateRotateNote(); };
+
+// Live preview of how links land on the first few days
+function updateRotateNote(){
+  const links = getLinks();
+  const off = new Set(getWeeklyOff().map(n => DAYS_FULL.indexOf(n)));
+  const start = parseDate($("fStart").value);
+  const note = $("rotateNote");
+
+  if(!links.length){
+    note.innerHTML = 'Add links above to see how they rotate.';
+    return;
+  }
+  if(!start){
+    note.innerHTML = `<b>${links.length} link${links.length>1?'s':''}</b> will rotate across class days. Pick a start date to preview.`;
+    return;
+  }
+
+  let linkIdx = 0;
+  const lines = [];
+  const total = Math.min(6, parseInt($("fDays").value,10) || 6);
+  for(let i = 0; i < total; i++){
+    const d = addDays(start, i);
+    if(off.has(d.getDay())){
+      lines.push(`Day ${i+1} ${DAYS_SHORT[d.getDay()]} → Holiday`);
+    } else {
+      lines.push(`Day ${i+1} ${DAYS_SHORT[d.getDay()]} → Link ${(linkIdx % links.length)+1}`);
+      linkIdx++;
+    }
+  }
+  note.innerHTML = `<b>Rotation preview</b><br>` + lines.join(' · ') + ' …';
+}
+$("fStart").addEventListener('change', updateRotateNote);
+$("fDays").addEventListener('input', updateRotateNote);
+
+function buildPositionOptions(){
+  const sel = $("fPosition");
+  let html = '<option value="end">Add at the end</option>';
+  calendars.forEach(c => {
+    html += `<option value="before|${c.calendarId}">Before — ${escapeHtml(c.name)}</option>`;
+    html += `<option value="after|${c.calendarId}">After — ${escapeHtml(c.name)}</option>`;
+  });
+  sel.innerHTML = html;
+}
+
+$("formCancelBtn").onclick = () => closeModal("formModal");
+
+$("formSaveBtn").onclick = async () => {
+  if(!validateForm()) return;
+
+  const btn = $("formSaveBtn");
+  btn.disabled = true;
+  const old = btn.textContent;
+  btn.textContent = "Saving…";
+
+  try{
+    const posRaw = $("fPosition").value || 'end';
+    const [position, relativeTo] = posRaw.includes('|') ? posRaw.split('|') : [posRaw, ''];
+
+    const payload = {
+      action:     editingId ? "updateCalendar" : "createCalendar",
+      password:   ADMIN_API_PASSWORD,
+      calendarId: editingId,
+      classId:    classId,
+      name:       $("fName").value.trim(),
+      startDate:  $("fStart").value,
+      days:       parseInt($("fDays").value, 10),
+      weeklyOff:  getWeeklyOff(),
+      links:      getLinks(),
+      active:     $("fActive").value === 'true',
+      position:   position,
+      relativeTo: relativeTo
+    };
+
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Save failed");
+
+    closeModal("formModal");
+    toast(editingId ? "Calendar updated" : "Calendar sheet created");
+    await load();
+  }catch(err){
+    console.error(err);
+    toast(err.message, true);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+};
+
+function validateForm(){
+  let ok = true;
+  const mark = (el, bad) => {
+    el.closest(".field").classList.toggle("invalid", bad);
+    if(bad) ok = false;
+  };
+  mark($("fName"),  !$("fName").value.trim());
+  mark($("fStart"), !$("fStart").value);
+
+  const days = parseInt($("fDays").value, 10);
+  mark($("fDays"), isNaN(days) || days < 1 || days > MAX_DAYS);
+
+  const linksOk = getLinks().length > 0;
+  $("linkErr").style.display = linksOk ? 'none' : 'block';
+  if(!linksOk) ok = false;
+
+  return ok;
+}
+document.querySelectorAll("#formModal input, #formModal select").forEach(el => {
+  el.addEventListener("input",  () => el.closest(".field") && el.closest(".field").classList.remove("invalid"));
+  el.addEventListener("change", () => el.closest(".field") && el.closest(".field").classList.remove("invalid"));
+});
+
+/* ---------------- Toggle / Move / Delete ---------------- */
+async function doToggle(c){
+  try{
+    const res = await fetch(SCRIPT_URL, {
+      method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: JSON.stringify({ action:"toggleCalendar", password:ADMIN_API_PASSWORD, calendarId:c.calendarId, active:!c.active })
+    });
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Failed");
+    toast(c.active ? "Calendar deactivated — Join buttons are now off" : "Calendar activated");
+    await load();
+  }catch(err){ toast(err.message, true); }
+}
+
+async function doMove(c, direction){
+  try{
+    const res = await fetch(SCRIPT_URL, {
+      method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: JSON.stringify({ action:"moveCalendar", password:ADMIN_API_PASSWORD, calendarId:c.calendarId, direction })
+    });
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Failed");
+    await load();
+  }catch(err){ toast(err.message, true); }
+}
+
+function askDelete(c){
+  askConfirm(
+    "Delete this calendar sheet?",
+    `“${c.name}” will be permanently removed from this student's class sheet. Old calendars are usually kept as history — consider deactivating instead.`,
+    async () => {
+      try{
+        const res = await fetch(SCRIPT_URL, {
+          method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" },
+          body: JSON.stringify({ action:"deleteCalendar", password:ADMIN_API_PASSWORD, calendarId:c.calendarId })
+        });
+        const data = await res.json();
+        if(data.result !== "success") throw new Error(data.error || "Delete failed");
+        toast("Calendar sheet deleted");
+        await load();
+      }catch(err){ toast(err.message, true); }
+    }
+  );
+}
+
+/* ---------------- Confirm ---------------- */
+function askConfirm(title, text, onOk){
+  $("confirmTitle").textContent = title;
+  $("confirmText").textContent = text;
+  confirmAction = onOk;
+  openModal("confirmModal");
+}
+$("confirmCancelBtn").onclick = () => { confirmAction = null; closeModal("confirmModal"); };
+$("confirmOkBtn").onclick = async () => {
+  const fn = confirmAction;
+  confirmAction = null;
+  closeModal("confirmModal");
+  if(fn) await fn();
+};
+
+/* ---------------- Modal helpers ---------------- */
+function openModal(id){ $(id).classList.add("show"); document.body.style.overflow = "hidden"; }
+function closeModal(id){
+  $(id).classList.remove("show");
+  if(!document.querySelector(".modal-backdrop.show")) document.body.style.overflow = "";
+}
+document.querySelectorAll(".modal-backdrop").forEach(m => {
+  m.addEventListener("click", e => { if(e.target === m) closeModal(m.id); });
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape"){
+    const open = document.querySelector(".modal-backdrop.show");
+    if(open) closeModal(open.id);
+  }
+});
+
+/* ---------------- Toast ---------------- */
+let toastTimer = null;
+function toast(msg, isErr){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.toggle("err", !!isErr);
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 3200);
+}
+
+/* ---------------- Utils ---------------- */
+function escapeHtml(str){
+  if(str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function fmtDate(d){
+  if(!(d instanceof Date) || isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+</script>
+</body>
+</html>
