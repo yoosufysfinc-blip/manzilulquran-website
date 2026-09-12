@@ -207,3 +207,30 @@
     *{animation-duration:0.01ms !important;animation-iteration-count:1 !important}
     .brand{-webkit-text-fill-color:var(--frost);color:var(--frost)}
   }
+
+  /* ---------- Direct join + renewal notice (added with the
+       two-button landing). The meeting button is the brighter of the
+       two on purpose: on a class day it is what the student wants. --- */
+  .btn-meet{
+    background:linear-gradient(135deg,var(--azure) 0%,var(--iris) 100%);
+    border-color:transparent;
+    color:#061024;
+    font-weight:800;
+    box-shadow:0 6px 22px var(--azure-glow);
+  }
+  .btn-meet:hover{filter:brightness(1.07)}
+  .btn-meet svg{stroke:#061024}
+
+  .renew-note{
+    margin-top:14px;padding:12px 14px;border-radius:12px;
+    font-size:13.5px;line-height:1.6;
+    color:var(--frost-dim);
+    background:rgba(255,154,166,.07);
+    border:1px solid rgba(255,154,166,.22);
+    max-width:330px;
+  }
+  .renew-note b{color:var(--rose);font-weight:700}
+
+  @media (prefers-reduced-motion: reduce){
+    .btn-meet{box-shadow:none}
+  }
