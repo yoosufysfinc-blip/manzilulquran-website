@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Joining Class · ManzilulQuran E-learning Academy</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/assets/classes/join.v1.css?b=1" />
+</head>
+<body>
+
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="sky" id="sky" aria-hidden="true"></div>
+
+  <!-- gradient definition for the countdown ring -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"   stop-color="#93c5fd"/>
+        <stop offset="100%" stop-color="#5b9dff"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="stage">
+
+    <!-- LOADING -->
+    <div class="state show" id="stateLoading">
+      <div class="logo-wrap">
+        <div class="halo"></div>
+        <div class="logo-circle">
+          <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+        </div>
+      </div>
+      <div class="brand">ManzilulQuran</div>
+      <div class="brand-sub">E-Learning Academy</div>
+      <div class="status">Preparing your class…</div>
+    </div>
+
+    <!-- COUNTDOWN -->
+    <div class="state" id="stateGo">
+      <div class="logo-wrap">
+        <div class="halo"></div>
+        <div class="halo"></div>
+        <div class="halo"></div>
+        <svg class="ring" viewBox="0 0 150 150">
+          <circle class="track" cx="75" cy="75" r="70"/>
+          <circle class="prog" id="ringProg" cx="75" cy="75" r="70"/>
+        </svg>
+        <div class="logo-circle">
+          <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+        </div>
+        <div class="count"><span id="countNum">3</span></div>
+      </div>
+
+      <div class="brand">ManzilulQuran</div>
+      <div class="brand-sub">E-Learning Academy</div>
+
+      <div class="rule"><i></i><span>Your Class</span><i></i></div>
+
+      <h1 id="who">Student</h1>
+      <div class="meta" id="when">—</div>
+
+      <div class="status" id="goStatus">Opening your class sheet…</div>
+
+      <a class="btn" id="goNowBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Open Class Sheet
+      </a>
+      <div class="fallback">If it doesn’t open by itself, tap the button above.</div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="state" id="stateError">
+      <div class="err-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="err-title" id="errTitle">Something went wrong</div>
+      <div class="err-text" id="errText">Please contact the academy for a new link.</div>
+      <a class="btn ghost" href="https://wa.me/917025070415" target="_blank" rel="noopener" style="margin-top:24px">Contact Academy</a>
+    </div>
+
+  </div>
+
+  <footer class="foot">
+    <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a>
+  </footer>
+
+<!-- DEMO BUILD — demo spreadsheet only. -->
+<script>
+window.MQ_BASE       = "/portal/demo";   // live build omits this line
+window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
+</script>
+
+<script src="/assets/classes/engine.v1.js"></script>
+<script src="/assets/classes/api.v1.js"></script>
+<script>
+spawnStars(40);
+/* =================================================================
+   ░░  JOIN  ░░
+   Opened from a WhatsApp invite: /join/?t=TOKEN&dt=YYYY-MM-DD
+
+   Shows the academy for a beat, then opens the student's class sheet
+   with that day already in focus. It deliberately does NOT jump straight
+   into Meet: the student should see their schedule and press Join
+   themselves, rather than being thrown into a call they didn't tap.
+
+   The invite carries a date, never a Meet URL. The day is resolved live
+   from the calendar rule, so invites already sitting in WhatsApp stay
+   correct even if the academy changes the links later.
+
+   As with /class/, there is no admin password in this file.
+   ================================================================= */
+
+const COUNTDOWN = 3;
+
+function showState(id){
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('show'));
+  $(id).classList.add('show');
+}
+function fail(title, text){
+  $('errTitle').textContent = title;
+  $('errText').textContent = text;
+  showState('stateError');
+}
+
+/* ---------------- Resolve which link this invite means ---------------- */
+function resolve(calendars, want){
+  // Prefer a running calendar, then upcoming, then anything that covers the date
+  const order = ['Active','Upcoming','Completed','Inactive'];
+  const ranked = calendars.slice().sort((a,b) => order.indexOf(calStatus(a)) - order.indexOf(calStatus(b)));
+
+  for(const cal of ranked){
+    const day = buildDays(cal).find(d => sameDay(d.date, want));
+    if(day) return { cal, day, status: calStatus(cal) };
+  }
+  return null;
+}
+
+/* ---------------- Go ---------------- */
+(async function(){
+  const q = new URLSearchParams(location.search);
+  const token = (q.get('t') || '').trim();
+  const dt    = (q.get('dt') || '').trim();
+
+  if(!token || !dt){
+    fail('Invalid link', 'This invite link is incomplete. Please ask the academy to send it again.');
+    return;
+  }
+  const want = parseDate(dt);
+  if(!want){
+    fail('Invalid link', 'This invite link has a bad date. Please ask the academy to send it again.');
+    return;
+  }
+
+  let data;
+  try{
+    const out = await fetchClass(token);
+    if(out.result !== 'success'){
+      fail('Link not valid', 'This link is no longer valid, or it was reset by the academy. Please ask for a new one.');
+      return;
+    }
+    data = out.data;
+  }catch(err){
+    console.error(err);
+    fail('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
+    return;
+  }
+
+  const found = resolve(data.calendars || [], want);
+  const pretty = want.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  if(!found){
+    fail('No class that day', `There is no class scheduled for ${pretty}.`);
+    return;
+  }
+  if(found.day.isOff){
+    fail('That day is a holiday', `${pretty} is a weekly off in the ${found.cal.name}. There is no class.`);
+    return;
+  }
+  if(found.status === 'Inactive'){
+    fail('Class not available', 'This plan has been switched off by the academy. Please contact us.');
+    return;
+  }
+  if(found.status === 'Completed'){
+    fail('This plan has finished', `The ${found.cal.name} ended already. Please contact the academy for the current schedule.`);
+    return;
+  }
+  if(!found.day.link){
+    fail('No link for this class', 'The academy hasn’t added a class link for that day yet.');
+    return;
+  }
+
+  // Fill the page in
+  const name = data.studentName || 'Student';
+  const parts = name.trim().split(/\s+/);
+  $('who').innerHTML = parts.length > 1
+    ? esc(parts.slice(0,-1).join(' ')) + ' <span class="accent">' + esc(parts[parts.length-1]) + '</span>'
+    : esc(name);
+  $('when').textContent = `${found.cal.name} · Day ${found.day.n} · ${pretty}`;
+
+  // Land on the class sheet, on the calendar tab, with this day spotlighted.
+  const sheetUrl = `${mqUrl('/class/')}?t=${encodeURIComponent(token)}&d=${encodeURIComponent(dt)}`;
+  $('goNowBtn').href = sheetUrl;
+
+  showState('stateGo');
+  countdownThenGo(sheetUrl);
+})();
+
+function countdownThenGo(link){
+  const ring = $('ringProg');
+  const CIRC = 2 * Math.PI * 70;   // r=70
+  ring.style.strokeDasharray = CIRC;
+  ring.style.strokeDashoffset = CIRC;
+
+  const started = performance.now();
+  const total = COUNTDOWN * 1000;
+  let shown = COUNTDOWN;
+  $('countNum').textContent = shown;
+
+  function tick(now){
+    const elapsed = Math.min(now - started, total);
+    const pct = elapsed / total;
+    ring.style.strokeDashoffset = CIRC * (1 - pct);
+
+    const left = Math.ceil((total - elapsed) / 1000);
+    if(left !== shown && left > 0){
+      shown = left;
+      const el = $('countNum');
+      el.textContent = shown;
+      el.style.animation = 'none';
+      void el.offsetWidth;          // restart the pop
+      el.style.animation = '';
+    }
+
+    if(elapsed < total){
+      requestAnimationFrame(tick);
+    } else {
+      $('goStatus').textContent = 'Opening now';
+      $('countNum').textContent = '0';
+      location.href = link;
+    }
+  }
+  requestAnimationFrame(tick);
+}
+</script>
+</body>
+</html>
