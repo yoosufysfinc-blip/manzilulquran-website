@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Demo &amp; Testing · ManzilulQuran Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="/logo.png" />
+<style>
+  :root{
+    --ink:#0a1f16; --ink-deep:#061109; --panel:rgba(255,255,255,.045);
+    --line:rgba(201,169,97,.22); --gold:#c9a961; --gold-soft:#e8d29a;
+    --text:#e7efe9; --text-dim:rgba(231,239,233,.68); --amber:#f0b429;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    background:radial-gradient(ellipse 70% 50% at 50% -10%, #14382a 0%, transparent 60%),
+               linear-gradient(180deg,var(--ink) 0%,var(--ink-deep) 100%);
+    background-attachment:fixed; color:var(--text);
+    min-height:100vh; padding:28px 18px 56px;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+  .back{display:inline-block;color:var(--text-dim);text-decoration:none;font-size:14px;margin-bottom:22px}
+  .back:hover{color:var(--gold-soft)}
+  h1{font-size:clamp(24px,6vw,34px);font-weight:800;letter-spacing:-.5px}
+  .sub{color:var(--text-dim);font-size:15px;margin-top:6px;line-height:1.55}
+
+  .warn{
+    margin:22px 0 26px;padding:14px 16px;border-radius:14px;
+    background:rgba(240,180,41,.09);border:1px solid rgba(240,180,41,.3);
+    font-size:14px;line-height:1.6;color:#ffe6ad;
+  }
+  .warn b{color:var(--amber)}
+
+  .label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+         color:var(--gold-soft);margin:26px 0 12px}
+
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
+  label.f{display:block;font-size:13px;font-weight:600;color:var(--text-dim);margin-bottom:7px}
+  input{
+    width:100%;padding:13px 14px;border-radius:11px;font-size:15px;
+    background:rgba(0,0,0,.28);border:1px solid var(--line);color:var(--text);
+    font-family:inherit;
+  }
+  input:focus{outline:none;border-color:var(--gold)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:13px}
+  .btn{
+    flex:1 1 170px;padding:13px 16px;border-radius:11px;border:1px solid var(--line);
+    background:rgba(255,255,255,.05);color:var(--text);font:inherit;font-weight:700;
+    font-size:14px;cursor:pointer;text-align:center;text-decoration:none;
+  }
+  .btn.primary{background:linear-gradient(90deg,var(--gold-soft),var(--gold));color:#1a1206;border-color:transparent}
+  .btn:active{transform:translateY(1px)}
+  .hint{font-size:13px;color:var(--text-dim);margin-top:11px;line-height:1.55}
+
+  .grid{display:grid;gap:14px;grid-template-columns:1fr}
+  @media(min-width:700px){ .grid{grid-template-columns:1fr 1fr} }
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+  .card h3{font-size:16px;font-weight:700;margin-bottom:5px}
+  .card p{font-size:13.5px;color:var(--text-dim);line-height:1.55}
+  .pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;
+        padding:3px 9px;border-radius:999px;margin-top:9px;
+        background:rgba(201,169,97,.14);color:var(--gold-soft);border:1px solid var(--line)}
+  .pill.done{background:rgba(94,234,212,.12);color:#8ff0dd;border-color:rgba(94,234,212,.3)}
+
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07);
+         font-size:13px;color:var(--text-dim);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="/portal/">&larr; Back to portal</a>
+
+  <h1>Demo &amp; Testing</h1>
+  <div class="sub">Staging build of the class system. Everything here is safe to break.</div>
+
+  <div class="warn">
+    <b>Reads the DEMO spreadsheet only.</b> These pages point at a separate copy
+    of the Classes sheet with its own Apps Script deployment. Nothing done here
+    can touch a live student, and a live share token will not open here.
+  </div>
+
+  <div class="label">Open a demo class sheet</div>
+
+  <div class="box">
+    <label class="f" for="tok">Share token from the DEMO sheet</label>
+    <input id="tok" type="text" placeholder="20-character token" autocomplete="off" spellcheck="false" />
+    <div class="row">
+      <button class="btn primary" id="goSheet">Open class sheet</button>
+      <button class="btn" id="goJoin">Open join page (today)</button>
+    </div>
+    <div class="hint">
+      Copy a token from the <b>Classes</b> tab of the DEMO spreadsheet.
+      The join page needs a class day, so it opens for today's date.
+    </div>
+  </div>
+
+  <div class="label">Build status</div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Step 1 &mdash; Shared assets</h3>
+      <p>Class and join pages split into versioned files under /assets/classes/.
+         Verified to render identically to the live pages.</p>
+      <span class="pill done">Ready to test</span>
+    </div>
+    <div class="card">
+      <h3>Step 2 &mdash; Admin split</h3>
+      <p>The classes admin page moved onto the same shared assets, with no
+         change to how it behaves.</p>
+      <span class="pill">Not started</span>
+    </div>
+    <div class="card">
+      <h3>Step 3 &mdash; Individual / Batch tabs</h3>
+      <p>Two workspaces in the admin page. Individual is today's system;
+         Batch is new and starts empty.</p>
+      <span class="pill">Not started</span>
+    </div>
+    <div class="card">
+      <h3>Steps 4&ndash;7</h3>
+      <p>Past-day join lock, courses &amp; subjects, notice board, then the
+         batch system with monthly paid access.</p>
+      <span class="pill">Planned</span>
+    </div>
+  </div>
+
+  <footer>ManzilulQuran E-learning Academy &middot; staging &mdash; not indexed</footer>
+</div>
+
+<script>
+/* Both buttons just build a URL. No data, no password, nothing stored. */
+function token(){
+  return (document.getElementById('tok').value || '').trim();
+}
+function today(){
+  const d = new Date();
+  return d.getFullYear() + '-' +
+         String(d.getMonth()+1).padStart(2,'0') + '-' +
+         String(d.getDate()).padStart(2,'0');
+}
+function need(){
+  const el = document.getElementById('tok');
+  el.focus();
+  el.style.borderColor = '#ff9aa6';
+  setTimeout(function(){ el.style.borderColor = ''; }, 1400);
+}
+
+document.getElementById('goSheet').addEventListener('click', function(){
+  const t = token();
+  if(!t) return need();
+  window.location.href = '/portal/demo/class/?t=' + encodeURIComponent(t);
+});
+
+document.getElementById('goJoin').addEventListener('click', function(){
+  const t = token();
+  if(!t) return need();
+  window.location.href = '/portal/demo/join/?t=' + encodeURIComponent(t) + '&dt=' + today();
+});
+
+document.getElementById('tok').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') document.getElementById('goSheet').click();
+});
+</script>
+</body>
+</html>
