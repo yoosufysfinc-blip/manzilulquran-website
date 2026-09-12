@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Classes · ManzilulQuran Admin</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/assets/classes/admin.v1.css" />
+</head>
+<body>
+
+  <!-- LOCK -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
+    <div class="lock-title">Classes</div>
+    <div class="lock-sub">Enter the portal password to continue.</div>
+    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="off" autofocus />
+    <button class="lock-btn" id="lockBtn">Unlock</button>
+    <div class="lock-error" id="lockError">&nbsp;</div>
+    <div class="lock-hint">Admin access only.<br><a href="/portal/">← Back to portal</a></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="admin" id="adminView">
+    <div class="admin-head">
+      <div class="admin-head-left">
+        <div class="admin-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
+        <div>
+          <div class="admin-title">Class <span class="accent">Sheets</span></div>
+          <div class="admin-sub">Student Workspaces</div>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-gold" id="newClassBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Class Sheet
+        </button>
+        <button class="btn-ghost" id="refreshBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          Refresh
+        </button>
+        <button class="btn-ghost" id="lockAgainBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Lock
+        </button>
+      </div>
+    </div>
+
+    <div class="alerts" id="alerts">
+      <div class="alerts-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <h4>Needs attention</h4>
+        <span class="count" id="alertCount">0</span>
+      </div>
+      <div id="alertRows"></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Total class sheets</div><div class="stat-value" id="statTotal">—</div></div>
+      <div class="stat"><div class="stat-label">Active</div><div class="stat-value" id="statActive">—</div></div>
+      <div class="stat"><div class="stat-label">Inactive</div><div class="stat-value" id="statInactive">—</div></div>
+    </div>
+
+    <div class="list-wrap">
+      <div class="list-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search by student name, student ID, or course..." />
+        <span id="resultCount"></span>
+      </div>
+
+      <div class="filters">
+        <select id="filterCourse"><option value="">All courses</option></select>
+        <select id="filterStatus">
+          <option value="">All status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+        <select id="filterMonth"><option value="">All join months</option></select>
+        <select id="filterYear"><option value="">All join years</option></select>
+        <select id="sortBy">
+          <option value="createdDesc">Recently created</option>
+          <option value="updatedDesc">Recently updated</option>
+          <option value="nameAsc">Student name (A–Z)</option>
+          <option value="joinDesc">Join date (newest)</option>
+          <option value="joinAsc">Join date (oldest)</option>
+          <option value="courseAsc">Course</option>
+          <option value="statusAsc">Status</option>
+        </select>
+      </div>
+
+      <div id="listContent">
+        <div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT MODAL -->
+  <div class="modal-backdrop" id="formModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="formTitle">New <span class="accent">Class Sheet</span></h3>
+        <p id="formSubtitle">Creates a secure workspace and share link for this student.</p>
+      </div>
+      <div class="modal-body">
+        <div class="fgrid">
+          <div class="field full">
+            <label>Student Name <span class="req">*</span></label>
+            <input type="text" id="fName" placeholder="e.g. Aisha Rahman" />
+            <span class="err-msg">Please enter the student's name.</span>
+          </div>
+          <div class="field">
+            <label>Student ID <span class="req">*</span></label>
+            <input type="text" id="fStudentId" placeholder="e.g. MQ-2026-014" />
+            <span class="err-msg">Please enter a student ID.</span>
+          </div>
+          <div class="field">
+            <label>Join Date <span class="req">*</span></label>
+            <input type="date" id="fJoinDate" />
+            <span class="err-msg">Please pick a join date.</span>
+          </div>
+          <div class="field">
+            <label>Course <span class="req">*</span></label>
+            <select id="fCourse">
+              <option value="" disabled selected>Select course</option>
+              <option value="Hifzul Qur'an">Hifzul Qur'an</option>
+              <option value="Tartheel">Tartheel</option>
+              <option value="Quranul Yawmi">Quranul Yawmi</option>
+              <option value="Madrasa Studies">Madrasa Studies</option>
+              <option value="Tajweedul Qur'an">Tajweedul Qur'an</option>
+              <option value="Tafseerul Qur'an">Tafseerul Qur'an</option>
+              <option value="Dawra">Dawra</option>
+            </select>
+            <span class="err-msg">Please select a course.</span>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="fStatus">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>WhatsApp Group Link</label>
+            <input type="url" id="fWhatsapp" placeholder="https://chat.whatsapp.com/..." />
+            <span class="err-msg">Please enter a valid link (or leave empty).</span>
+          </div>
+          <div class="field full">
+            <label>Study Material <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— tick any courses this student may open</span></label>
+            <div class="sm-wrap" id="fSmList"></div>
+          </div>
+          <div class="field full">
+            <label>Hifz Report Link <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— paste from the Hifz Command Center (share ▸). Shows a button on the class sheet.</span></label>
+            <input type="url" id="fHifzLink" placeholder="https://manzilulquran.in/portal/study-report/?s=...&t=..." />
+          </div>
+          <div class="field full">
+            <label>Contact Number <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— admin only, never shown on the share link</span></label>
+            <input type="tel" id="fPhone" placeholder="+91 98765 43210" />
+            <span class="err-msg">Please enter a valid number (or leave empty).</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="formCancelBtn">Cancel</button>
+        <button class="btn-solid" id="formSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHARE MODAL -->
+  <div class="modal-backdrop" id="shareModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Share <span class="accent">Class Sheet</span></h3>
+        <p id="shareSubtitle">Anyone with this link can open this class sheet.</p>
+      </div>
+      <div class="modal-body">
+        <div class="share-link-box">
+          <input type="text" id="shareLinkInput" readonly />
+        </div>
+        <div class="share-actions">
+          <button class="btn-solid" id="copyLinkBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Link
+          </button>
+          <button class="btn-wa" id="waShareBtn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/></svg>
+            WhatsApp
+          </button>
+        </div>
+        <div class="warn-box">
+          <b>Reset Link</b> creates a brand-new link and permanently kills the old one.
+          Use this if a link was shared with the wrong person.
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="shareCloseBtn">Close</button>
+        <button class="btn-solid danger" id="resetLinkBtn">Reset Link</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM MODAL -->
+  <div class="modal-backdrop" id="confirmModal">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-head">
+        <h3 id="confirmTitle">Are you <span class="accent">sure?</span></h3>
+        <p id="confirmText">This cannot be undone.</p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="confirmCancelBtn">Cancel</button>
+        <button class="btn-solid danger" id="confirmOkBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<!-- DEMO BUILD — demo spreadsheet, demo gate password. -->
+<script>
+window.MQ_BASE       = "/portal/demo";
+window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
+</script>
+
+<script src="/assets/classes/engine.v1.js"></script>
+<script src="/assets/classes/api.v1.js"></script>
+<script src="/assets/classes/catalog.v1.js"></script>
+<script>
+/* =================================================================
+   ░░  CLASSES ADMIN  ░░
+   ================================================================= */
+
+// CONFIG — paste the Classes Apps Script Web App URL here
+const SCRIPT_URL = window.MQ_SCRIPT_URL;
+const PORTAL_PASSWORD = "mqdemo2026";       // DEMO gate — deliberately NOT the live Classes password
+const ADMIN_API_PASSWORD = "manzil2026admin"; // must match ADMIN_PASSWORD in apps-script-classes.gs
+const SHARE_BASE = window.location.origin + mqUrl("/class/");
+
+const SESSION_KEY = "mq_demo_classes_unlocked_at";  // own key — a live Classes unlock does NOT open the demo
+const SESSION_MAX_MS = 24 * 60 * 60 * 1000;
+
+let classes = [];
+let editingId = null;      // null = creating, otherwise Class ID
+let shareTarget = null;    // class object currently in the share modal
+let confirmAction = null;  // function to run on confirm
+
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const LOW_CLASS_THRESHOLD = 6;
+
+/* ---------------- Who needs attention? ----------------
+   Two things worth chasing:
+     ending — a plan is running but nearly out of classes
+     none   — the student is active but has no plan at all
+------------------------------------------------------- */
+function classAlert(c){
+  if((c["Status"] || "Active") !== "Active") return null;   // don't nag about paused students
+
+  const cals = c.calendars || [];
+  const running = cals.find(x => calStatus(x) === 'Active');
+
+  if(running){
+    const t = today0().getTime();
+    const left = buildDays(running).filter(d => !d.isOff && d.date.getTime() >= t).length;
+    if(left < LOW_CLASS_THRESHOLD){
+      return { kind:'ending', left, cal:running };
+    }
+    return null;
+  }
+
+  // Nothing running — is anything queued up?
+  if(cals.some(x => calStatus(x) === 'Upcoming')) return null;
+
+  return { kind:'none', left:0, cal:null };
+}
+
+/* ---------------- Lock ---------------- */
+function isUnlocked(){
+  try{
+    const at = parseInt(sessionStorage.getItem(SESSION_KEY) || "0", 10);
+    return at && (Date.now() - at) < SESSION_MAX_MS;
+  }catch(e){ return false; }
+}
+function unlock(){
+  try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  loadClasses();
+}
+function lock(){
+  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  $("adminView").classList.remove("show");
+  $("lockScreen").style.display = "";
+  $("lockInput").value = "";
+  setTimeout(()=>$("lockInput").focus(), 100);
+}
+function tryPassword(){
+  if(($("lockInput").value || "").trim() === PORTAL_PASSWORD){ unlock(); }
+  else{
+    $("lockInput").classList.add("wrong");
+    $("lockError").textContent = "Wrong password. Try again.";
+    setTimeout(()=>$("lockInput").classList.remove("wrong"), 400);
+    $("lockInput").select();
+  }
+}
+$("lockBtn").onclick = tryPassword;
+$("lockInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryPassword(); });
+$("lockAgainBtn").onclick = lock;
+if(isUnlocked()){
+  $("lockScreen").style.display = "none";
+  $("adminView").classList.add("show");
+  loadClasses();
+}
+
+/* ---------------- Load ---------------- */
+async function loadClasses(){
+  $("listContent").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>';
+  try{
+    if(!mqConfigured()){
+      throw new Error("SCRIPT_URL is not set in this file yet.");
+    }
+    const res = await fetch(`${SCRIPT_URL}?action=listClasses&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Failed to load");
+
+    classes = data.classes || [];
+    buildFilterOptions();
+    updateStats();
+    renderAlerts();
+    applyView();
+  }catch(err){
+    console.error(err);
+    $("listContent").innerHTML = `<div class="empty-state">Failed to load class sheets.<br><br>
+      <small style="color:#ff9999">Error: ${escapeHtml(err.message)}</small><br><br>
+      Check that the Classes Apps Script is deployed and the URL + admin password match.</div>`;
+  }
+}
+$("refreshBtn").onclick = loadClasses;
+
+/* ---------------- Needs attention panel ---------------- */
+function renderAlerts(){
+  const rows = [];
+  classes.forEach(c => {
+    const a = classAlert(c);
+    if(a) rows.push({ c, a });
+  });
+
+  // Emptiest plans first, then students with no plan at all
+  rows.sort((x, y) => {
+    if(x.a.kind !== y.a.kind) return x.a.kind === 'none' ? 1 : -1;
+    return x.a.left - y.a.left;
+  });
+
+  if(!rows.length){ $("alerts").classList.remove("show"); return; }
+
+  $("alertCount").textContent = rows.length;
+  $("alertRows").innerHTML = rows.map(({c, a}) => {
+    const phone = digits(c["Phone"]);
+    const sub = a.kind === 'ending'
+      ? `<b>${escapeHtml(a.cal.name)}</b> · ${a.left === 0 ? 'no classes left' : a.left + (a.left === 1 ? ' class left' : ' classes left')} · ends ${fmtDate(endDate(a.cal))}`
+      : `No calendar plan running`;
+
+    return `<div class="alert-row">
+      <div class="alert-info">
+        <div class="alert-name">${escapeHtml(c["Student Name"])}
+          <span class="tag ${a.kind}">${a.kind === 'ending' ? 'Ending soon' : 'No plan'}</span>
+        </div>
+        <div class="alert-sub">${escapeHtml(c["Student ID"])} · ${escapeHtml(c["Course"] || '—')} — ${sub}</div>
+      </div>
+      <div class="alert-btns">
+        ${phone
+          ? `<button class="btn-wa-sm" data-wa="${escapeHtml(c["Class ID"])}">
+               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/></svg>
+               Message
+             </button>`
+          : `<span class="btn-wa-sm off" title="Add a contact number to this class sheet">No number</span>`}
+        <button data-cal="${escapeHtml(c["Class ID"])}" style="background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold-light);padding:8px 14px;border-radius:100px;cursor:pointer;font-size:10.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;font-family:'Manrope',sans-serif">Calendars</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  $("alertRows").querySelectorAll('[data-wa]').forEach(b => {
+    b.addEventListener('click', () => {
+      const c = classes.find(x => x["Class ID"] === b.dataset.wa);
+      if(c) messageStudent(c);
+    });
+  });
+  $("alertRows").querySelectorAll('[data-cal]').forEach(b => {
+    b.addEventListener('click', () => {
+      window.location.href = "calendars.html?id=" + encodeURIComponent(b.dataset.cal);
+    });
+  });
+
+  $("alerts").classList.add("show");
+}
+
+/* Opens a 1-to-1 WhatsApp chat with the student.
+   The number lives only in the admin sheet — it is never sent to the share
+   link, so nobody holding a class sheet link can see or reach it. */
+function messageStudent(c){
+  const phone = digits(c["Phone"]);
+  if(!phone){ toast("No contact number saved for this student", true); return; }
+
+  const a = classAlert(c);
+  let body;
+  if(a && a.kind === 'ending'){
+    body = a.left === 0
+      ? `Your *${a.cal.name}* has finished. Shall we set up the next plan, in shā’ Allāh?`
+      : `Your *${a.cal.name}* has only *${a.left}* ${a.left === 1 ? 'class' : 'classes'} left (ends ${fmtDate(endDate(a.cal))}). Shall we set up the next plan, in shā’ Allāh?`;
+  } else {
+    body = `We haven't set up your next class plan yet. Shall we arrange it, in shā’ Allāh?`;
+  }
+
+  const msg = `Assalamu Alaikum 🌙\n\n*${c["Student Name"]}*\n${body}\n\n_ManzilulQuran E-learning Academy_`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+}
+
+/* Strip to digits. A bare 10-digit number is assumed Indian and gets 91,
+   which covers how numbers are usually typed here. Anything already
+   carrying a country code is left alone. */
+function digits(v){
+  let d = String(v || "").replace(/\D/g, "");
+  if(!d) return "";
+  if(d.length === 10) d = "91" + d;
+  return d;
+}
+
+/* ---------------- Stats ---------------- */
+function updateStats(){
+  $("statTotal").textContent = classes.length;
+  $("statActive").textContent = classes.filter(c => c["Status"] === "Active").length;
+  $("statInactive").textContent = classes.filter(c => c["Status"] !== "Active").length;
+}
+
+/* ---------------- Filters ---------------- */
+function buildFilterOptions(){
+  // Courses present in the data
+  const courses = [...new Set(classes.map(c => c["Course"]).filter(Boolean))].sort();
+  const cSel = $("filterCourse");
+  const cVal = cSel.value;
+  cSel.innerHTML = '<option value="">All courses</option>' +
+    courses.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  cSel.value = cVal;
+
+  // Months
+  const mSel = $("filterMonth");
+  const mVal = mSel.value;
+  mSel.innerHTML = '<option value="">All join months</option>' +
+    MONTHS.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+  mSel.value = mVal;
+
+  // Years present in the data
+  const years = [...new Set(classes.map(c => {
+    const d = new Date(c["Join Date"]);
+    return isNaN(d.getTime()) ? null : d.getFullYear();
+  }).filter(Boolean))].sort((a,b)=>b-a);
+  const ySel = $("filterYear");
+  const yVal = ySel.value;
+  ySel.innerHTML = '<option value="">All join years</option>' +
+    years.map(y => `<option value="${y}">${y}</option>`).join('');
+  ySel.value = yVal;
+}
+
+["filterCourse","filterStatus","filterMonth","filterYear","sortBy"].forEach(id => {
+  $(id).addEventListener("change", applyView);
+});
+$("searchInput").addEventListener("input", applyView);
+
+function applyView(){
+  const q      = $("searchInput").value.trim().toLowerCase();
+  const course = $("filterCourse").value;
+  const status = $("filterStatus").value;
+  const month  = $("filterMonth").value;
+  const year   = $("filterYear").value;
+  const sort   = $("sortBy").value;
+
+  let list = classes.filter(c => {
+    if(q){
+      const hay = [c["Student Name"], c["Student ID"], c["Course"]].join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    if(course && c["Course"] !== course) return false;
+    if(status && (c["Status"] || "Active") !== status) return false;
+    if(month !== "" || year !== ""){
+      const d = new Date(c["Join Date"]);
+      if(isNaN(d.getTime())) return false;
+      if(month !== "" && d.getMonth() !== parseInt(month,10)) return false;
+      if(year !== ""  && d.getFullYear() !== parseInt(year,10)) return false;
+    }
+    return true;
+  });
+
+  const t = (v) => { const d = new Date(v); return isNaN(d.getTime()) ? 0 : d.getTime(); };
+  const s = (v) => String(v || "").toLowerCase();
+
+  list.sort((a,b) => {
+    switch(sort){
+      case "updatedDesc": return t(b["Last Updated"]) - t(a["Last Updated"]);
+      case "nameAsc":     return s(a["Student Name"]).localeCompare(s(b["Student Name"]));
+      case "joinDesc":    return t(b["Join Date"]) - t(a["Join Date"]);
+      case "joinAsc":     return t(a["Join Date"]) - t(b["Join Date"]);
+      case "courseAsc":   return s(a["Course"]).localeCompare(s(b["Course"]));
+      case "statusAsc":   return s(a["Status"]).localeCompare(s(b["Status"]));
+      case "createdDesc":
+      default:            return t(b["Created Date"]) - t(a["Created Date"]);
+    }
+  });
+
+  renderList(list);
+  $("resultCount").textContent = `Showing ${list.length} of ${classes.length}`;
+}
+
+/* ---------------- List ---------------- */
+function renderList(items){
+  if(!classes.length){
+    $("listContent").innerHTML = `<div class="empty-state">
+      No class sheets yet.<br>Click <b style="color:var(--gold-light)">New Class Sheet</b> to create the first one.
+    </div>`;
+    return;
+  }
+  if(!items.length){
+    $("listContent").innerHTML = '<div class="empty-state">No class sheets match these filters.</div>';
+    return;
+  }
+
+  const rows = items.map(c => {
+    const isActive = (c["Status"] || "Active") === "Active";
+    return `<tr>
+      <td data-label="Student">${escapeHtml(c["Student Name"] || "—")}</td>
+      <td class="sid" data-label="Student ID">${escapeHtml(c["Student ID"] || "—")}</td>
+      <td data-label="Course">${escapeHtml(c["Course"] || "—")}</td>
+      <td class="date" data-label="Joined">${fmtDate(c["Join Date"])}</td>
+      <td data-label="Status"><span class="pill ${isActive ? 'active':'inactive'}">${isActive ? 'Active':'Inactive'}</span></td>
+      <td class="actions">
+        <button data-act="cal"   data-id="${escapeHtml(c["Class ID"])}">Calendars</button>
+        <button data-act="open"  data-id="${escapeHtml(c["Class ID"])}">Open</button>
+        <button data-act="share" data-id="${escapeHtml(c["Class ID"])}">Share</button>
+        <button data-act="edit"  data-id="${escapeHtml(c["Class ID"])}">Edit</button>
+        <button data-act="del"   data-id="${escapeHtml(c["Class ID"])}" class="danger">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  $("listContent").innerHTML = `<table class="list-table">
+    <thead><tr>
+      <th>Student</th><th>Student ID</th><th>Course</th><th>Joined</th><th>Status</th>
+      <th style="text-align:right">Actions</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+
+  $("listContent").querySelectorAll("button[data-act]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();   // don't let the tap collapse the chip underneath
+      const c = classes.find(x => x["Class ID"] === btn.dataset.id);
+      if(!c) return;
+      const act = btn.dataset.act;
+      if(act === "cal")   window.location.href = "calendars.html?id=" + encodeURIComponent(c["Class ID"]);
+      if(act === "open")  window.open(shareUrl(c), "_blank");
+      if(act === "share") openShare(c);
+      if(act === "edit")  openForm(c);
+      if(act === "del")   askDelete(c);
+    });
+  });
+
+  // Tap a chip to reveal its actions. Only one open at a time — otherwise
+  // the list grows back into the wall of cards this replaced.
+  $("listContent").querySelectorAll("tr").forEach(tr => {
+    tr.addEventListener("click", () => {
+      const wasOpen = tr.classList.contains("open");
+      $("listContent").querySelectorAll("tr.open").forEach(o => o.classList.remove("open"));
+      if(!wasOpen) tr.classList.add("open");
+    });
+  });
+}
+
+function shareUrl(c){ return SHARE_BASE + "?t=" + encodeURIComponent(c["Share Token"]); }
+
+/* ---------------- Create / Edit ---------------- */
+$("newClassBtn").onclick = () => openForm(null);
+
+/* =================================================================
+   STUDY MATERIAL CATALOG
+   Add a course here and it appears in the picker automatically.
+   Keep this list in sync with the copy inside the class sheet page.
+   ================================================================= */
+function smStringify(list){
+  const clean = (list || []).filter(x => x && x.course)
+    .map(x => ({ course: x.course, lessons: (x.lessons || []).slice().sort((a,b) => a-b) }));
+  return clean.length ? JSON.stringify(clean) : "";
+}
+
+/* Build one block per course, pre-ticked from `assigned` */
+function smBuild(assigned){
+  const byKey = {};
+  (assigned || []).forEach(x => byKey[x.course] = new Set(x.lessons));
+  const wrap = $("fSmList");
+  wrap.innerHTML = Object.keys(SM_CATALOG).map(key => {
+    const cat = SM_CATALOG[key], on = key in byKey, set = byKey[key] || new Set();
+    const chips = cat.lessons.map((t,i) => {
+      const n = i+1, tick = set.has(n);
+      return `<label class="sm-chk${tick?' on':''}" title="${escapeHtml(t)}">
+                <input type="checkbox" value="${n}"${tick?' checked':''}> ${n}
+              </label>`;
+    }).join("");
+    return `<div class="sm-course${on?' on':''}" data-key="${key}">
+      <label class="sm-head">
+        <input type="checkbox" class="sm-on"${on?' checked':''}>
+        <b>${escapeHtml(cat.title)}</b>
+        <span class="sm-count"></span>
+      </label>
+      <div class="sm-body">
+        <div class="sm-hint">Tick the lessons this student may open. Leave all unticked to give the whole course.</div>
+        <div class="sm-lessons">${chips}</div>
+        <div class="sm-tools">
+          <button type="button" class="sm-all">Select all</button>
+          <button type="button" class="sm-none">Clear</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  wrap.querySelectorAll(".sm-course").forEach(box => {
+    const on = box.querySelector(".sm-on");
+    const chips = [...box.querySelectorAll(".sm-lessons input")];
+    const sync = () => {
+      box.classList.toggle("on", on.checked);
+      const n = chips.filter(c => c.checked).length;
+      box.querySelector(".sm-count").textContent =
+        !on.checked ? "" : (n === 0 ? "whole course" : n + " of " + chips.length);
+      chips.forEach(c => c.closest(".sm-chk").classList.toggle("on", c.checked));
+    };
+    on.onchange = sync;
+    chips.forEach(c => c.onchange = sync);
+    box.querySelector(".sm-all").onclick  = () => { chips.forEach(c => c.checked = true);  sync(); };
+    box.querySelector(".sm-none").onclick = () => { chips.forEach(c => c.checked = false); sync(); };
+    sync();
+  });
+}
+
+/* Read the picker back out */
+function smCollect(){
+  return [...document.querySelectorAll("#fSmList .sm-course")]
+    .filter(box => box.querySelector(".sm-on").checked)
+    .map(box => ({
+      course : box.dataset.key,
+      lessons: [...box.querySelectorAll(".sm-lessons input:checked")].map(c => Number(c.value))
+    }));
+}
+
+function openForm(c){
+  editingId = c ? c["Class ID"] : null;
+  $("formTitle").innerHTML = c ? 'Edit <span class="accent">Class Sheet</span>' : 'New <span class="accent">Class Sheet</span>';
+  $("formSubtitle").textContent = c
+    ? "Changes apply immediately. The share link stays the same."
+    : "Creates a secure workspace and share link for this student.";
+
+  $("fName").value      = c ? (c["Student Name"] || "") : "";
+  $("fStudentId").value = c ? (c["Student ID"] || "") : "";
+  $("fCourse").value    = c ? (c["Course"] || "") : "";
+  $("fJoinDate").value  = c ? toDateInput(c["Join Date"]) : "";
+  $("fWhatsapp").value  = c ? (c["WhatsApp Group Link"] || "") : "";
+  $("fPhone").value     = c ? (c["Phone"] || "") : "";
+  $("fStatus").value    = c ? (c["Status"] || "Active") : "Active";
+
+  smBuild(smParse(c ? c["Study Material"] : ""));
+  $("fHifzLink").value = c ? (c["Hifz Link"] || "") : "";
+
+  document.querySelectorAll("#formModal .field").forEach(f => f.classList.remove("invalid"));
+  openModal("formModal");
+  setTimeout(()=>$("fName").focus(), 200);
+}
+
+$("formCancelBtn").onclick = () => closeModal("formModal");
+
+$("formSaveBtn").onclick = async () => {
+  if(!validateForm()) return;
+
+  const btn = $("formSaveBtn");
+  btn.disabled = true;
+  const oldLabel = btn.textContent;
+  btn.textContent = "Saving…";
+
+  try{
+    const payload = {
+      action:      editingId ? "updateClass" : "createClass",
+      password:    ADMIN_API_PASSWORD,
+      classId:     editingId,
+      studentName: $("fName").value.trim(),
+      studentId:   $("fStudentId").value.trim(),
+      course:      $("fCourse").value,
+      joinDate:    $("fJoinDate").value,
+      whatsapp:    $("fWhatsapp").value.trim(),
+      phone:       $("fPhone").value.trim(),
+      status:      $("fStatus").value,
+      studyMaterial: smStringify(smCollect()),
+      hifzLink:      $("fHifzLink").value.trim()
+    };
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(data.result !== "success") throw new Error(data.error || "Save failed");
+
+    closeModal("formModal");
+    toast(editingId ? "Class sheet updated" : "Class sheet created");
+    await loadClasses();
+
+    // Straight after creating, show the share link — that's the whole point
+    if(!editingId && data.token){
+      const created = classes.find(x => x["Share Token"] === data.token);
+      if(created) openShare(created);
+    }
+  }catch(err){
+    console.error(err);
+    toast(err.message, true);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = oldLabel;
+  }
+};
+
+function validateForm(){
+  let ok = true;
+  const mark = (el, bad) => {
+    const f = el.closest(".field");
+    f.classList.toggle("invalid", bad);
+    if(bad) ok = false;
+  };
+  mark($("fName"),      !$("fName").value.trim());
+  mark($("fStudentId"), !$("fStudentId").value.trim());
+  mark($("fCourse"),    !$("fCourse").value);
+  mark($("fJoinDate"),  !$("fJoinDate").value);
+
+  const wa = $("fWhatsapp").value.trim();
+  mark($("fWhatsapp"), !!wa && !/^https?:\/\//i.test(wa));
+
+  return ok;
+}
+document.querySelectorAll("#formModal input, #formModal select").forEach(el => {
+  el.addEventListener("input",  () => el.closest(".field").classList.remove("invalid"));
+  el.addEventListener("change", () => el.closest(".field").classList.remove("invalid"));
+});
+
+/* ---------------- Share ---------------- */
+function openShare(c){
+  shareTarget = c;
+  $("shareSubtitle").textContent = `${c["Student Name"]} · ${c["Student ID"]}`;
+  $("shareLinkInput").value = shareUrl(c);
+  openModal("shareModal");
+}
+$("shareCloseBtn").onclick = () => closeModal("shareModal");
+
+$("copyLinkBtn").onclick = async () => {
+  const url = $("shareLinkInput").value;
+  try{
+    await navigator.clipboard.writeText(url);
+    toast("Link copied to clipboard");
+  }catch(e){
+    $("shareLinkInput").select();
+    document.execCommand("copy");
+    toast("Link copied");
+  }
+};
+
+$("waShareBtn").onclick = () => {
+  if(!shareTarget) return;
+  const msg = `Assalamu Alaikum 👋\n\n*${shareTarget["Student Name"]}* — ManzilulQuran class sheet:\n${shareUrl(shareTarget)}\n\nAll class details are in this link, in shā’ Allāh.`;
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+};
+
+$("resetLinkBtn").onclick = () => {
+  if(!shareTarget) return;
+  askConfirm(
+    "Reset this link?",
+    `The current link for ${shareTarget["Student Name"]} will stop working immediately. Anyone still using it will lose access.`,
+    async () => {
+      try{
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action:"resetToken", password: ADMIN_API_PASSWORD, classId: shareTarget["Class ID"] })
+        });
+        const data = await res.json();
+        if(data.result !== "success") throw new Error(data.error || "Reset failed");
+
+        shareTarget["Share Token"] = data.token;
+        $("shareLinkInput").value = shareUrl(shareTarget);
+        toast("New link created — old link is dead");
+        loadClasses();
+      }catch(err){
+        toast(err.message, true);
+      }
+    }
+  );
+};
+
+/* ---------------- Delete ---------------- */
+function askDelete(c){
+  askConfirm(
+    "Delete this class sheet?",
+    `${c["Student Name"]} (${c["Student ID"]}) will be permanently removed, and their share link will stop working. This cannot be undone.`,
+    async () => {
+      try{
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action:"deleteClass", password: ADMIN_API_PASSWORD, classId: c["Class ID"] })
+        });
+        const data = await res.json();
+        if(data.result !== "success") throw new Error(data.error || "Delete failed");
+        toast("Class sheet deleted");
+        loadClasses();
+      }catch(err){
+        toast(err.message, true);
+      }
+    }
+  );
+}
+
+/* ---------------- Confirm modal ---------------- */
+function askConfirm(title, text, onOk){
+  $("confirmTitle").innerHTML = escapeHtml(title).replace(/(\?)$/, '<span class="accent">$1</span>');
+  $("confirmText").textContent = text;
+  confirmAction = onOk;
+  openModal("confirmModal");
+}
+$("confirmCancelBtn").onclick = () => { confirmAction = null; closeModal("confirmModal"); };
+$("confirmOkBtn").onclick = async () => {
+  const fn = confirmAction;
+  confirmAction = null;
+  closeModal("confirmModal");
+  if(fn) await fn();
+};
+
+/* ---------------- Modal helpers ---------------- */
+function openModal(id){
+  $(id).classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closeModal(id){
+  $(id).classList.remove("show");
+  if(!document.querySelector(".modal-backdrop.show")) document.body.style.overflow = "";
+}
+document.querySelectorAll(".modal-backdrop").forEach(m => {
+  m.addEventListener("click", e => { if(e.target === m) closeModal(m.id); });
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape"){
+    const open = document.querySelector(".modal-backdrop.show");
+    if(open) closeModal(open.id);
+  }
+});
+
+/* ---------------- Toast ---------------- */
+let toastTimer = null;
+function toast(msg, isErr){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.toggle("err", !!isErr);
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 3000);
+}
+
+/* ---------------- Utils ---------------- */
+function toDateInput(v){
+  if(!v) return '';
+  const d = new Date(v);
+  if(isNaN(d.getTime())) return String(v).slice(0,10);
+  return d.toISOString().slice(0,10);
+}
+</script>
+</body>
+</html>
