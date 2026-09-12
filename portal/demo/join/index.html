@@ -70,11 +70,17 @@
 
       <div class="status" id="goStatus">Opening your class sheet…</div>
 
+      <a class="btn btn-meet" id="joinNowBtn" target="_blank" rel="noopener" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        Join Class Now
+      </a>
+
       <a class="btn" id="goNowBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Open Class Sheet
       </a>
-      <div class="fallback">If it doesn’t open by itself, tap the button above.</div>
+      <div class="fallback" id="fallbackNote">If it doesn’t open by itself, tap the button above.</div>
+      <div class="renew-note" id="renewNote" hidden></div>
     </div>
 
     <!-- ERROR -->
@@ -120,6 +126,28 @@ spawnStars(40);
    ================================================================= */
 
 const COUNTDOWN = 3;
+
+/* Below this many teaching days left, the invite stops offering a direct
+   jump into the meeting and sends the student to their sheet instead,
+   where the "running low" notice is. The aim is that a student close to
+   the end of a plan sees that before the next class, not after. */
+const MIN_CLASSES_FOR_DIRECT_JOIN = 4;
+
+/* Teaching days still to come, today included, across every calendar that
+   has not finished. A renewal the academy has already queued as Upcoming
+   counts — a student who has paid must not be nagged. */
+function classesRemaining(calendars){
+  const t = today0().getTime();
+  let n = 0;
+  (calendars || []).forEach(function(cal){
+    const st = calStatus(cal);
+    if(st !== 'Active' && st !== 'Upcoming') return;
+    buildDays(cal).forEach(function(d){
+      if(!d.isOff && d.date.getTime() >= t) n++;
+    });
+  });
+  return n;
+}
 
 function showState(id){
   document.querySelectorAll('.state').forEach(s => s.classList.remove('show'));
@@ -197,6 +225,12 @@ function resolve(calendars, want){
     fail('No link for this class', 'The academy hasn’t added a class link for that day yet.');
     return;
   }
+  /* An invite for a day that has already gone by. The sheet is still
+     useful, the meeting is not. */
+  if(want.getTime() < today0().getTime()){
+    fail('That class has finished', `${pretty} has already passed. Open your class sheet for the current schedule.`);
+    return;
+  }
 
   // Fill the page in
   const name = data.studentName || 'Student';
@@ -210,9 +244,36 @@ function resolve(calendars, want){
   const sheetUrl = `${mqUrl('/class/')}?t=${encodeURIComponent(token)}&d=${encodeURIComponent(dt)}`;
   $('goNowBtn').href = sheetUrl;
 
+  /* Direct join is offered only when both are true:
+       - the invite is for TODAY (a link for next Tuesday is not a meeting
+         you can walk into now)
+       - the student has enough classes left that renewal is not overdue */
+  const isToday = want.getTime() === today0().getTime();
+  const left    = classesRemaining(data.calendars || []);
+  const offerJoin = isToday && left >= MIN_CLASSES_FOR_DIRECT_JOIN;
+
+  if(offerJoin){
+    $('joinNowBtn').href = found.day.link;
+    $('joinNowBtn').hidden = false;
+    $('goStatus').textContent = 'Tap to join, or wait for your class sheet…';
+  } else if(isToday && left < MIN_CLASSES_FOR_DIRECT_JOIN){
+    $('renewNote').innerHTML =
+      'Only <b>' + left + (left === 1 ? ' class' : ' classes') + ' left</b> on your plan. ' +
+      'Opening your class sheet — please contact the academy to continue.';
+    $('renewNote').hidden = false;
+  }
+
   showState('stateGo');
   countdownThenGo(sheetUrl);
 })();
+
+/* The countdown can be stopped. Three seconds is barely enough time to
+   reach a button, so tapping Join cancels it outright, and touching the
+   card pauses it while the student reads. */
+let countdownStopped = false;
+let countdownPaused  = false;
+
+function stopCountdown(){ countdownStopped = true; }
 
 function countdownThenGo(link){
   const ring = $('ringProg');
@@ -225,8 +286,14 @@ function countdownThenGo(link){
   let shown = COUNTDOWN;
   $('countNum').textContent = shown;
 
+  let elapsedBefore = 0;
+  let resumedAt = started;
+
   function tick(now){
-    const elapsed = Math.min(now - started, total);
+    if(countdownStopped) return;
+    if(countdownPaused){ resumedAt = now; requestAnimationFrame(tick); return; }
+
+    const elapsed = Math.min(elapsedBefore + (now - resumedAt), total);
     const pct = elapsed / total;
     ring.style.strokeDashoffset = CIRC * (1 - pct);
 
@@ -241,6 +308,8 @@ function countdownThenGo(link){
     }
 
     if(elapsed < total){
+      elapsedBefore = elapsed;
+      resumedAt = now;
       requestAnimationFrame(tick);
     } else {
       $('goStatus').textContent = 'Opening now';
@@ -249,6 +318,25 @@ function countdownThenGo(link){
     }
   }
   requestAnimationFrame(tick);
+
+  // Tapping Join leaves for the meeting — never yank the page away after.
+  const jb = $('joinNowBtn');
+  if(jb) jb.addEventListener('click', function(){
+    stopCountdown();
+    $('goStatus').textContent = 'Opening your class…';
+    $('fallbackNote').textContent = 'Your class sheet is one tap away, below.';
+  });
+
+  // Hold to read. Works for touch and mouse alike.
+  const card = document.querySelector('#stateGo');
+  if(card){
+    ['touchstart','mousedown'].forEach(function(ev){
+      card.addEventListener(ev, function(){ countdownPaused = true; }, {passive:true});
+    });
+    ['touchend','touchcancel','mouseup','mouseleave'].forEach(function(ev){
+      card.addEventListener(ev, function(){ countdownPaused = false; }, {passive:true});
+    });
+  }
 }
 </script>
 </body>
