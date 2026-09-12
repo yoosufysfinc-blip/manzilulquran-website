@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Class Sheet · ManzilulQuran E-learning Academy</title>
+<link rel="icon" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/assets/classes/sheet.v1.css?b=1" />
+</head>
+<body>
+
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="sky" id="sky" aria-hidden="true"></div>
+
+  <div class="stage">
+
+    <!-- LOADING -->
+    <div class="state show" id="stateLoading">
+      <div class="loading">
+        <div class="loading-orb"><span></span><span></span></div>
+        <div>Opening class sheet…</div>
+      </div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="state" id="stateError">
+      <div class="err-card">
+        <div class="err-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </div>
+        <h2 id="errTitle">Link not valid</h2>
+        <p id="errText">This class sheet link is not valid, or it may have been reset by the academy. Please ask for a new link.</p>
+        <a class="cta" href="https://wa.me/917025070415" target="_blank" rel="noopener">Contact Academy</a>
+      </div>
+    </div>
+
+    <!-- CLASS SHEET -->
+    <div class="state" id="stateSheet">
+      <div class="card">
+
+        <div class="head">
+          <div class="logo-wrap">
+            <div class="halo"></div>
+            <div class="halo"></div>
+            <div class="halo"></div>
+            <div class="logo-circle">
+              <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+            </div>
+          </div>
+
+          <!-- Academy name — flare sweeps across this -->
+          <div class="brand">ManzilulQuran</div>
+          <div class="brand-sub">E-Learning Academy</div>
+
+          <div class="rule"><i></i><span>Class Sheet</span><i></i></div>
+
+          <h1 id="studentName">Student</h1>
+          <div class="head-sub" id="headSub">—</div>
+        </div>
+
+        <div class="status-banner" id="statusBanner">
+          This class sheet is currently inactive. Please contact the academy.
+        </div>
+        <div class="sync-note" id="syncNote"></div>
+
+        <div class="tabs">
+          <button class="tab active" data-tab="overview">Overview</button>
+          <button class="tab" data-tab="calendar">Calendar Sheets</button>
+          <button class="tab" data-tab="material" id="tabMaterial" hidden>Study Material</button>
+          <button class="tab tab-hifz" data-tab="hifz" id="tabHifz" hidden>🕮 Hifz Report</button>
+        </div>
+
+        <!-- Overview -->
+        <div class="tab-panel show" id="panel-overview">
+          <div class="info-grid">
+            <div class="info-item full">
+              <div class="info-label">Student Name</div>
+              <div class="info-value big" id="ovName">—</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Student ID</div>
+              <div class="info-value" id="ovId">—</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Course</div>
+              <div class="info-value" id="ovCourse">—</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Join Date</div>
+              <div class="info-value" id="ovJoin">—</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Status</div>
+              <div class="info-value" id="ovStatus">—</div>
+            </div>
+            <div class="info-item full">
+              <div class="info-label">Calendar Status</div>
+              <div class="info-value" id="ovCalendar" style="font-size:14px;font-weight:500;color:var(--frost-dim)">No calendar sheets yet</div>
+            </div>
+          </div>
+
+          <a class="btn-wa disabled" id="waBtn" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/></svg>
+            <span id="waLabel">WhatsApp Group</span>
+          </a>
+
+          <a class="complaint-link" href="https://manzilulquran.in/portal/forms/complaint-form.html" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Have a concern? Register a complaint</span>
+          </a>
+        </div>
+
+        <!-- Calendar Sheets -->
+        <div class="tab-panel" id="panel-calendar">
+          <div id="calArea">
+            <div class="empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <h4>No calendar sheets yet</h4>
+              <p>Your class schedule and join links will appear here once the academy publishes them, in shā’ Allāh.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Study Material -->
+        <div class="tab-panel" id="panel-material">
+          <div id="smArea">
+            <div class="empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+              <h4>No study material yet</h4>
+              <p>Your lesson material will appear here once the academy assigns it, in sh\u0101\u2019 All\u0101h.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hifz Report -->
+        <div class="tab-panel" id="panel-hifz">
+          <div class="hifz-hero">
+            <div class="hifz-crest"><img src="/logo.png" alt="ManzilulQuran" onerror="this.replaceWith(document.createTextNode('🕮'))"></div>
+            <h3 class="hifz-title">Daily Hifz Report</h3>
+            <p class="hifz-sub">Your live memorisation record — daily lessons, revision, portions memorised and juz progress, updated by the academy.</p>
+            <a class="hifz-open" id="hifzBtn" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              Open my Hifz Report
+            </a>
+            <p class="hifz-note">Opens in a new tab · your personal report</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="foot">
+    ManzilulQuran E-learning Academy ·
+    <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a>
+  </footer>
+
+<!-- =================================================================
+     DEMO BUILD — points at the DEMO spreadsheet, never the live one.
+     The live page keeps its own copy of this line with the live URL.
+     ================================================================= -->
+<script>
+window.MQ_BASE       = "/portal/demo";   // live build omits this line
+window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
+</script>
+
+<script src="/assets/classes/engine.v1.js"></script>
+<script src="/assets/classes/api.v1.js"></script>
+<script src="/assets/classes/catalog.v1.js"></script>
+<script>
+/* =================================================================
+   ░░  CLASS SHEET (shared view) — page logic  ░░
+   Loads exactly ONE class sheet, using only the token in the URL.
+   There is deliberately NO admin password anywhere in this file.
+
+   The calendar engine, the API client and the study-material catalog
+   now live in /assets/classes/. What remains here is what only this
+   page does: its markup, its states, its tabs and its rendering.
+   ================================================================= */
+
+spawnStars(46);
+/* =================================================================
+   ░░  CLASS SHEET (shared view)  ░░
+   Loads exactly ONE class sheet, using only the token in the URL.
+   There is deliberately NO admin password anywhere in this file.
+   ================================================================= */
+
+/* ---------------- State switching ---------------- */
+function showState(id){
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('show'));
+  $(id).classList.add('show');
+}
+function showError(title, text){
+  if(title) $('errTitle').textContent = title;
+  if(text)  $('errText').textContent = text;
+  showState('stateError');
+}
+
+/* ---------------- Tabs ---------------- */
+function activateTab(name){
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('show'));
+  const panel = $('panel-' + name);
+  if(panel) panel.classList.add('show');
+}
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => activateTab(tab.dataset.tab));
+});
+
+/* =================================================================
+   ░░  LOAD — stale-while-revalidate  ░░
+
+   Apps Script needs ~3s from cold, and there is no way around that on
+   the first ever open. But there is no reason to pay it twice.
+
+   So: paint the saved copy instantly, then re-check in the background
+   and repaint only if something actually changed. Repeat opens feel
+   instant because they are — the network is no longer in the way.
+   ================================================================= */
+/* ---------------- Page state ----------------
+   Declared above load(). `let` sits in the temporal dead zone until its
+   own line runs, so anything load() touches has to be declared before
+   it, not further down the file. */
+let shareToken = '';
+let studentNameCache = '';
+let calendars = [];
+let activeCalIdx = 0;
+let focusDate = '';        // ?d=YYYY-MM-DD — the day an invite pointed at
+
+function setSyncing(on){
+  const card = document.querySelector('#stateSheet .card');
+  if(card) card.classList.toggle('syncing', !!on);
+}
+function setSyncNote(msg){
+  const n = $('syncNote');
+  if(!n) return;
+  if(msg){ n.textContent = msg; n.classList.add('show'); }
+  else   { n.classList.remove('show'); }
+}
+
+async function load(){
+  const params = new URLSearchParams(window.location.search);
+  const token = (params.get('t') || '').trim();
+
+  if(!token){
+    showError('No link provided', 'This page needs a class sheet link. Please use the link shared with you by the academy.');
+    return;
+  }
+  if(!mqConfigured()){
+    showError('Not configured yet', 'This class sheet system is not connected yet. Please contact the academy.');
+    return;
+  }
+
+  shareToken = token;
+  focusDate = (params.get('d') || '').trim();
+
+  // 1. Paint from cache immediately, if we have one.
+  const cached = readCache(token);
+  if(cached){
+    render(cached.data);
+    showState('stateSheet');
+    setSyncing(true);
+  }
+
+  // 2. Always re-check with the server.
+  try{
+    const out = await fetchClass(token);
+
+    if(out.result !== 'success'){
+      if(out.error === 'invalid_token'){
+        // Link was reset. Drop the stale copy and say so, even if we were
+        // already showing it — otherwise a dead link looks alive.
+        clearCache(token);
+        showError('Link not valid', 'This class sheet link is not valid, or it may have been reset by the academy. Please ask for a new link.');
+      } else if(!cached){
+        showError('Could not open', out.error || 'Something went wrong. Please try again in a moment.');
+      }
+      setSyncing(false);
+      return;
+    }
+
+    writeCache(token, out.data);
+
+    // Repaint only if something actually changed — avoids a pointless flash.
+    if(!cached || JSON.stringify(cached.data) !== JSON.stringify(out.data)){
+      render(out.data);
+    }
+    if(!cached) showState('stateSheet');
+    setSyncing(false);
+    setSyncNote('');
+
+  }catch(err){
+    console.error(err);
+    if(!cached){
+      showError('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
+    } else {
+      // Offline but we have a copy — showing it beats showing an error.
+      setSyncing(false);
+      setSyncNote('Offline — showing your saved copy');
+    }
+  }
+}
+
+/* ---------------- Render ---------------- */
+/* =================================================================
+   STUDY MATERIAL
+   The catalog is a mirror of the one in portal/classes/index.html.
+   Whatever the admin ticked arrives as d.studyMaterial, a JSON string:
+     {"course":"foundation-of-islamic-studies","lessons":[1,4,7]}
+   An empty lessons array means the whole course.
+   ================================================================= */
+function renderHifzLink(url){
+  const btn = $('hifzBtn'), tab = $('tabHifz');
+  const u = (url || '').trim();
+  const ok = /^https?:\/\/[^\s]+study-report[^\s]*[?&]s=[^\s]+&t=[^\s]+/i.test(u);
+  if(ok){ btn.href = u; tab.hidden = false; }
+  else  { btn.removeAttribute('href'); tab.hidden = true; }
+}
+
+function renderStudyMaterial(raw){
+  const tab = $('tabMaterial');
+  const list = smParse(raw);
+  if(!list.length){ tab.hidden = true; return; }
+
+  const many = list.length > 1;
+  const blocks = list.map((e,i) => smBlock(e, i+1, many)).filter(Boolean);
+  if(!blocks.length){ tab.hidden = true; return; }
+
+  tab.hidden = false;
+  $('smArea').innerHTML = blocks.join("") +
+    `<div class="sm-note">Tap a course to see its lessons. You can switch between English and \u0d2e\u0d32\u0d2f\u0d3e\u0d33\u0d02 inside the book.</div>`;
+
+  /* the card opens and closes its own lesson list */
+  $('smArea').querySelectorAll('.sm-block').forEach(function(block){
+    const card = block.querySelector('.sm-course');
+    card.addEventListener('click', function(){ block.classList.toggle('open'); });
+    /* the "Open the book" link must not collapse the card */
+    const open = block.querySelector('.sm-open');
+    if(open) open.addEventListener('click', function(e){ e.stopPropagation(); });
+  });
+
+}
+
+function render(d){
+  const isActive = (d.status || 'Active') === 'Active';
+
+  document.title = `${d.studentName} · Class Sheet · ManzilulQuran`;
+
+  $('studentName').innerHTML = accentLastWord(d.studentName || 'Student');
+  $('headSub').textContent = [d.course, d.studentId].filter(Boolean).join('  ·  ') || '—';
+
+  $('ovName').textContent   = d.studentName || '—';
+  $('ovId').textContent     = d.studentId || '—';
+  $('ovCourse').textContent = d.course || '—';
+  $('ovJoin').textContent   = fmtDate(parseDate(d.joinDate) || d.joinDate);
+  $('ovStatus').innerHTML   = `<span class="pill ${isActive ? 'active' : 'inactive'}">${isActive ? 'Active' : 'Inactive'}</span>`;
+
+  if(!isActive) $('statusBanner').classList.add('show');
+
+  const wa = (d.whatsapp || '').trim();
+  const btn = $('waBtn');
+  if(wa && /^https?:\/\//i.test(wa)){
+    btn.href = wa;
+    btn.classList.remove('disabled');
+    $('waLabel').textContent = 'Open WhatsApp Group';
+  } else {
+    btn.removeAttribute('href');
+    btn.classList.add('disabled');
+    $('waLabel').textContent = 'No WhatsApp group linked';
+  }
+
+  calendars = d.calendars || [];
+  studentNameCache = d.studentName || 'Student';
+  renderCalendarStatus();
+  renderCalendars();
+  renderStudyMaterial(d.studyMaterial);
+  renderHifzLink(d.hifzLink);
+}
+
+/* ---------------- Overview: calendar status line ---------------- */
+function renderCalendarStatus(){
+  const box = $('ovCalendar');
+  if(!calendars.length){ box.textContent = 'No calendar sheets yet'; return; }
+
+  const running = calendars.find(c => calStatus(c) === 'Active');
+  if(running){
+    const days = buildDays(running);
+    const t = today0().getTime();
+    const idx = days.findIndex(d => d.date.getTime() === t);
+    const dayLine = idx >= 0 ? ` · Day ${idx+1} of ${running.days}` : '';
+    box.innerHTML = `<b style="color:var(--mint);font-weight:800">${escapeHtml(running.name)}</b>
+      <span style="color:var(--frost-dim)"> · Running${dayLine}</span>`;
+    return;
+  }
+
+  const upcoming = calendars.find(c => calStatus(c) === 'Upcoming');
+  if(upcoming){
+    box.innerHTML = `<b style="color:var(--azure-light);font-weight:800">${escapeHtml(upcoming.name)}</b>
+      <span style="color:var(--frost-dim)"> · Starts ${fmtDate(parseDate(upcoming.startDate))}</span>`;
+    return;
+  }
+
+  box.innerHTML = `<span style="color:var(--frost-dim)">${calendars.length} calendar sheet${calendars.length>1?'s':''} · none running right now</span>`;
+}
+
+/* ---------------- Calendar tab ---------------- */
+function renderCalendars(){
+  const area = $('calArea');
+
+  if(!calendars.length) return;  // keep the empty state already in the HTML
+
+  // Arrived from an invite? Open the calendar that actually contains that
+  // day. Otherwise: whatever is running, then the next upcoming, then the first.
+  let start = -1;
+  if(focusDate){
+    start = calendars.findIndex(c => buildDays(c).some(d => isoDate(d.date) === focusDate));
+  }
+  if(start < 0) start = calendars.findIndex(c => calStatus(c) === 'Active');
+  if(start < 0) start = calendars.findIndex(c => calStatus(c) === 'Upcoming');
+  if(start < 0) start = 0;
+  activeCalIdx = start;
+
+  if(focusDate) activateTab('calendar');
+
+  area.innerHTML = `<div class="cal-chips" id="calChips"></div><div id="calBody"></div>`;
+  renderChips();
+  renderCalBody();
+}
+
+function renderChips(){
+  $('calChips').innerHTML = calendars.map((c, i) => {
+    const st = calStatus(c);
+    const colour = st === 'Active'   ? 'var(--mint)'
+                 : st === 'Upcoming' ? 'var(--azure-light)'
+                 : st === 'Inactive' ? 'var(--rose)'
+                 : 'var(--frost-faint)';
+    return `<button class="cal-chip ${i === activeCalIdx ? 'on' : ''}" data-i="${i}">
+      <b>${escapeHtml(c.name)}</b>
+      <span class="st" style="color:${colour}">${st}</span>
+    </button>`;
+  }).join('');
+
+  $('calChips').querySelectorAll('.cal-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      activeCalIdx = parseInt(chip.dataset.i, 10);
+      renderChips();
+      renderCalBody();
+    });
+  });
+}
+
+function renderCalBody(){
+  const cal = calendars[activeCalIdx];
+  if(!cal) return;
+
+  const st    = calStatus(cal);
+  const s     = parseDate(cal.startDate);
+  const e     = endDate(cal);
+  const days  = buildDays(cal);
+  const classCount = days.filter(d => !d.isOff).length;
+  const canJoin = joinAllowed(cal);
+  const offTxt  = (cal.weeklyOff && cal.weeklyOff.length) ? cal.weeklyOff.join(', ') : 'None';
+
+  const stColour = st === 'Active'   ? 'var(--mint)'
+                 : st === 'Upcoming' ? 'var(--azure-light)'
+                 : st === 'Inactive' ? 'var(--rose)'
+                 : 'var(--frost-faint)';
+
+  let note = '';
+  if(st === 'Completed'){
+    note = `<div class="cal-note dim">This plan finished on ${fmtDate(e)}. Kept here for your records.</div>`;
+  } else if(st === 'Inactive'){
+    note = `<div class="cal-note warn">This calendar has been switched off by the academy. Join buttons are disabled.</div>`;
+  } else if(st === 'Upcoming'){
+    note = `<div class="cal-note dim">This plan starts on ${fmtDate(s)}, in shā’ Allāh.</div>`;
+  }
+
+  const t = today0().getTime();
+
+  $('calBody').innerHTML = `
+    <div class="cal-summary">
+      <div>
+        <h3>${escapeHtml(cal.name)}</h3>
+        <div class="sub">
+          <b>${fmtDate(s)} – ${fmtDate(e)}</b> · ${cal.days} days (${classCount} classes)<br>
+          Weekly off: <b>${escapeHtml(offTxt)}</b>
+        </div>
+      </div>
+      <span class="pill" style="color:${stColour};border:1px solid ${stColour};background:transparent">${st}</span>
+    </div>
+    ${note}
+    <div class="days">
+      ${days.map(d => {
+        const isToday = d.date.getTime() === t;
+        const isPast  = d.date.getTime() < t;
+        const isFocus = !!focusDate && isoDate(d.date) === focusDate;
+        if(d.isOff){
+          return `<div class="day off ${isFocus ? 'spotlight' : ''} ${isPast && !isFocus ? 'past' : ''}">
+            <div class="day-left">
+              <div class="day-n">Day ${d.n}</div>
+              <div class="day-date">${fmtDate(d.date)}<span class="day-dow">${DAYS_SHORT[d.date.getDay()]}</span></div>
+            </div>
+            <div class="day-holiday">Holiday</div>
+          </div>`;
+        }
+        const joinable = canJoin && d.link;
+        return `<div class="day ${isFocus ? 'spotlight' : (isToday ? 'today' : '')} ${isPast && !isToday && !isFocus ? 'past' : ''}">
+          <div class="day-left">
+            <div class="day-n">Day ${d.n}</div>
+            <div class="day-date">${fmtDate(d.date)}<span class="day-dow">${DAYS_SHORT[d.date.getDay()]}</span>${isToday ? '<span class="today-tag">Today</span>' : ''}${isFocus && !isToday ? '<span class="invited-tag">Invited</span>' : ''}</div>
+          </div>
+          <div class="day-btns">
+            ${joinable
+              ? `<button class="btn-invite" data-invite="${isoDate(d.date)}" title="Send this class on WhatsApp">
+                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/></svg>
+                   Invite
+                 </button>`
+              : ''}
+            ${joinable
+              ? `<a class="btn-join" href="${escapeHtml(d.link)}" target="_blank" rel="noopener">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                   Join
+                 </a>`
+              : `<span class="btn-join dead">Join</span>`}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  $('calBody').querySelectorAll('[data-invite]').forEach(b => {
+    b.addEventListener('click', () => sendInvite(b.dataset.invite));
+  });
+
+  // Scroll to the invited day if we came from an invite, otherwise to today
+  const target = $('calBody').querySelector('.day.spotlight') || $('calBody').querySelector('.day.today');
+  if(target) target.scrollIntoView({ block:'center', behavior:'smooth' });
+}
+
+/* ---------------- Invite ----------------
+   WhatsApp has no URL that opens a specific group AND prefills a message —
+   Meta doesn't allow it. wa.me/?text= is the closest thing that exists:
+   it opens WhatsApp with the message written, and you pick the group once.
+
+   The message carries a /join/ link rather than the raw Meet URL, so the
+   student lands on an academy page first, and the Meet link is resolved
+   fresh at click time (change the links later and old invites still work).
+------------------------------------------ */
+function sendInvite(isoDay){
+  const d = parseDate(isoDay);
+  const pretty = d ? d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : isoDay;
+  const url = `${location.origin}${mqUrl('/join/')}?t=${encodeURIComponent(shareToken)}&dt=${encodeURIComponent(isoDay)}`;
+
+  const msg =
+    `Assalamu Alaikum 🌙\n\n` +
+    `*${studentNameCache}* — Quran class\n` +
+    `📅 ${pretty}\n\n` +
+    `Join here:\n${url}\n\n` +
+    `_ManzilulQuran E-learning Academy_`;
+
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+/* =================================================================
+   Boot LAST. load() paints straight from cache on a warm open, which
+   reaches the calendar engine defined below — so it must not run until
+   this whole script has been evaluated.
+   ================================================================= */
+load();
+
+load();
+</script>
+</body>
+</html>
