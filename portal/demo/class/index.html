@@ -104,7 +104,7 @@
               <div class="subj-row" id="ovSubjects" hidden></div>
             </div>
             <div class="info-item">
-              <div class="info-label">Join Date</div>
+              <div class="info-label" id="ovJoinLabel">Join Date</div>
               <div class="info-value" id="ovJoin">—</div>
             </div>
             <div class="info-item">
@@ -185,6 +185,28 @@
     ManzilulQuran E-learning Academy ·
     <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a>
   </footer>
+
+<div class="state" id="stateLogin">
+  <div class="login-card">
+    <div class="login-logo"><img src="/logo.png" alt="" onerror="this.style.display='none'" /></div>
+    <div class="brand">ManzilulQuran</div>
+    <div class="brand-sub">E-Learning Academy</div>
+
+    <div class="rule"><i></i><span id="loginBatch">Batch Class</span><i></i></div>
+
+    <p class="login-lead">Sign in to open your batch class sheet.</p>
+
+    <label class="login-lbl" for="liEmail">Email</label>
+    <input type="email" id="liEmail" autocomplete="email" placeholder="the email given to the academy" />
+
+    <label class="login-lbl" for="liDob">Date of birth</label>
+    <input type="date" id="liDob" autocomplete="bday" />
+
+    <button class="login-btn" id="liBtn">Sign in</button>
+    <div class="login-err" id="liErr" hidden></div>
+    <div class="login-foot">Your details are checked by the academy&rsquo;s system. They are never shown on this page.</div>
+  </div>
+</div>
 
 <div class="ntc-modal" id="ntcModal" hidden></div>
 
@@ -291,6 +313,19 @@ function setSyncNote(msg){
 async function load(){
   const params = new URLSearchParams(window.location.search);
   const token = (params.get('t') || '').trim();
+  const bTok  = (params.get('b') || '').trim();
+
+  // A ?b= link is a batch. Different door, same house.
+  if(bTok){
+    if(!mqConfigured()){
+      showError('Not configured yet', 'This class sheet system is not connected yet. Please contact the academy.');
+      return;
+    }
+    batchToken = bTok;
+    focusDate = (params.get('d') || '').trim();
+    await loadBatch();
+    return;
+  }
 
   if(!token){
     showError('No link provided', 'This page needs a class sheet link. Please use the link shared with you by the academy.');
@@ -402,6 +437,7 @@ function render(d){
   $('ovName').textContent   = d.studentName || '—';
   $('ovId').textContent     = d.studentId || '—';
   $('ovCourse').textContent = d.course || '—';
+  $('ovJoinLabel').textContent = 'Join Date';
 
   /* Notices. The server has already decided which of these belong to this
      student — everything here is presentation. */
@@ -441,6 +477,205 @@ function render(d){
   renderCalendars();
   renderStudyMaterial(d.studyMaterial);
   renderHifzLink(d.hifzLink);
+}
+
+
+/* =================================================================
+   BATCH MODE
+   -----------------------------------------------------------------
+   Same page, different door. /class/?b=TOKEN is a batch link: the
+   token alone shows nothing but a sign-in form. The student proves
+   who they are with their email and date of birth, and the server
+   decides — on every read, not just at sign-in — whether this month
+   is paid for.
+
+   Nothing here decides access. If this file were rewritten by hand in
+   a browser console, the server would still refuse.
+   ================================================================= */
+const BATCH_SESSION_KEY = 'mq_batch_session_';
+const BATCH_DEVICE_KEY  = 'mq_device_id';
+
+let batchToken = '';
+
+/* A random id for this browser, kept locally. It is not an identifier
+   of the person — it exists so the academy can cap how many devices one
+   student signs in from, and so a returning phone keeps its slot. */
+function deviceId(){
+  try{
+    let d = localStorage.getItem(BATCH_DEVICE_KEY);
+    if(!d){
+      d = 'dv' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+      localStorage.setItem(BATCH_DEVICE_KEY, d);
+    }
+    return d;
+  }catch(e){
+    return 'dv-nostore';   // private browsing: works, just never remembered
+  }
+}
+
+function batchSession(){
+  try{ return localStorage.getItem(BATCH_SESSION_KEY + batchToken) || ''; }catch(e){ return ''; }
+}
+function saveBatchSession(v){
+  try{ localStorage.setItem(BATCH_SESSION_KEY + batchToken, v); }catch(e){}
+}
+function dropBatchSession(){
+  try{ localStorage.removeItem(BATCH_SESSION_KEY + batchToken); }catch(e){}
+}
+
+/* Every refusal the server can give, in the student's words. Deliberately
+   specific about what to DO, and never about which detail was wrong. */
+const BATCH_ERRORS = {
+  invalid_link:      ['Link not valid', 'This batch link is no longer valid. Please ask the academy for the current one.'],
+  batch_paused:      ['Batch paused', 'This batch is paused at the moment. Please contact the academy.'],
+  not_paid:          ['Not open yet', 'This month is not open for you yet. Once the academy records your payment, this link will work again.'],
+  too_many_devices:  ['Already signed in elsewhere', 'This account is signed in on two devices already. Ask the academy to reset it, then try again.'],
+  locked_out:        ['Too many attempts', 'Too many sign-in attempts. Please wait 30 minutes and try again.'],
+  no_match:          ['We could not match those details', 'Please check the email and date of birth given to the academy.'],
+  not_active:        ['Not on this batch', 'This account is not active on this batch. Please contact the academy.'],
+  missing_details:   ['Something is missing', 'Please fill in both the email and the date of birth.']
+};
+
+function batchFail(err, extra){
+  const m = BATCH_ERRORS[err] || ['Something went wrong', 'Please try again, or contact the academy.'];
+  let text = m[1];
+  if(err === 'no_match' && extra && extra.attemptsLeft !== undefined){
+    text += ` ${extra.attemptsLeft} attempt${extra.attemptsLeft === 1 ? '' : 's'} left.`;
+  }
+  return { title: m[0], text: text };
+}
+
+function showLogin(batchName, message){
+  if(batchName) $('loginBatch').textContent = batchName;
+  const box = $('liErr');
+  if(message){ box.textContent = message; box.hidden = false; }
+  else { box.hidden = true; }
+  showState('stateLogin');
+}
+
+async function loadBatch(){
+  const session = batchSession();
+  try{
+    const res = await fetch(`${mqEndpoint()}?action=getBatch&token=${encodeURIComponent(batchToken)}` +
+                            (session ? `&session=${encodeURIComponent(session)}` : ''));
+    const out = await res.json();
+
+    if(out.result === 'success'){
+      renderBatch(out.data);
+      showState('stateSheet');
+      return;
+    }
+    if(out.result === 'needs_login'){
+      dropBatchSession();
+      showLogin(out.batchName,
+        out.reason === 'month_ended'
+          ? 'A new month has started. Please sign in again.'
+          : '');
+      return;
+    }
+    // not_paid, batch_paused, invalid_link
+    const f = batchFail(out.error, out);
+    if(out.error === 'not_paid'){
+      dropBatchSession();
+      showLogin('', f.text);
+    } else {
+      showError(f.title, f.text);
+    }
+  }catch(err){
+    console.error(err);
+    showError('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
+  }
+}
+
+async function doBatchLogin(){
+  const email = $('liEmail').value.trim();
+  const dob   = $('liDob').value;
+  const btn   = $('liBtn');
+
+  if(!email || !dob) return showLogin('', BATCH_ERRORS.missing_details[1]);
+
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+  try{
+    const res = await fetch(mqEndpoint(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'batchLogin',
+        batchToken: batchToken,
+        email: email,
+        dob: dob,
+        deviceId: deviceId()
+      })
+    });
+    const out = await res.json();
+
+    if(out.result === 'success'){
+      saveBatchSession(out.session);
+      renderBatch(out.data);
+      showState('stateSheet');
+      return;
+    }
+    const f = batchFail(out.error, out);
+    showLogin('', f.text);
+  }catch(err){
+    console.error(err);
+    showLogin('', 'Could not reach the academy. Please check your internet and try again.');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = 'Sign in';
+  }
+}
+
+$('liBtn').addEventListener('click', doBatchLogin);
+$('liDob').addEventListener('keydown', e => { if(e.key === 'Enter') doBatchLogin(); });
+$('liEmail').addEventListener('keydown', e => { if(e.key === 'Enter') $('liDob').focus(); });
+
+/* Render a batch sheet. It reuses everything the individual sheet has —
+   the calendar engine, the notice board, the subjects — and differs only
+   where a batch genuinely differs: no join date, no per-student study
+   material, and the batch name shown above the student's own. */
+function renderBatch(d){
+  studentNameCache = d.studentName || 'Student';
+  $('studentName').innerHTML = accentLastWord(studentNameCache);
+  $('headSub').textContent = d.batchName || 'Batch class';
+
+  $('ovId').textContent     = d.studentId || '—';
+  $('ovCourse').textContent = d.course || '—';
+  $('ovJoin').textContent   = d.batchName || '—';
+  $('ovJoinLabel').textContent = 'Batch';
+  $('ovStatus').textContent = d.status || 'Active';
+
+  const subs = Array.isArray(d.subjects) ? d.subjects : [];
+  const sr = $('ovSubjects');
+  if(subs.length){
+    sr.innerHTML = subs.map(x => `<span class="subj-pill">${escapeHtml(x)}</span>`).join('');
+    sr.hidden = false;
+  } else { sr.innerHTML = ''; sr.hidden = true; }
+
+  // Grace: they are in, but on last month's payment. Say so plainly rather
+  // than letting the lockout arrive as a surprise in a few days.
+  const banner = $('statusBanner');
+  if(d.grace){
+    banner.textContent = `Your fee for this month hasn't been recorded yet. You can still join for the first ${d.graceDays} day${d.graceDays === 1 ? '' : 's'} — please contact the academy.`;
+    banner.classList.add('show', 'warn');
+  } else {
+    banner.classList.remove('show', 'warn');
+  }
+
+  const wa = $('waBtn');
+  if(d.whatsapp){ wa.href = d.whatsapp; wa.hidden = false; } else { wa.hidden = true; }
+
+  // No per-student material or Hifz report on a batch sheet.
+  $('tabMaterial').hidden = true;
+  $('tabHifz').hidden = true;
+
+  renderNotices(Array.isArray(d.notices) ? d.notices : []);
+
+  calendars = d.calendars || [];
+  activeCalIdx = 0;
+  renderCalendarStatus();
+  renderCalendars();
 }
 
 /* ---------------- Notices ----------------
