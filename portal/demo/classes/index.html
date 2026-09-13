@@ -45,6 +45,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Batch
         </button>
+        <button class="btn-ghost" id="noticesBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+          Notices
+        </button>
         <button class="btn-ghost" id="coursesBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
           Courses
@@ -156,6 +160,96 @@
           <div class="ws-plan-row"><b>Devices</b><span>Two per student per month, with a reset button</span></div>
         </div>
         <div class="ws-note">Not built yet. This tab is the shell it will go into.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTICE BOARD -->
+  <div class="modal-backdrop" id="noticesModal">
+    <div class="modal modal-wide">
+      <div class="modal-head">
+        <h3>Notice <span class="accent">Board</span></h3>
+        <p>Announcements to one student, a course, or everyone.</p>
+      </div>
+      <div class="modal-body">
+
+        <div class="ntc-admin-grid">
+          <!-- composer -->
+          <div class="ntc-compose">
+            <div class="field">
+              <label>Title</label>
+              <input type="text" id="nTitle" maxlength="80" placeholder="e.g. Eid holiday" autocomplete="off" />
+              <span class="err-msg">A notice needs a title.</span>
+            </div>
+
+            <div class="field">
+              <label>Message</label>
+              <textarea id="nMessage" rows="3" maxlength="500" placeholder="What should the students know?"></textarea>
+              <span class="err-msg">A notice needs a message.</span>
+            </div>
+
+            <div class="field">
+              <label>Type</label>
+              <div class="ntc-types" id="nTypes">
+                <button type="button" class="ntc-type on" data-type="info">Info</button>
+                <button type="button" class="ntc-type" data-type="urgent">Important</button>
+                <button type="button" class="ntc-type" data-type="holiday">Holiday</button>
+                <button type="button" class="ntc-type" data-type="celebration">Good news</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Who sees it</label>
+              <select id="nAudience">
+                <option value="all">Everyone</option>
+                <option value="course">Selected courses</option>
+                <option value="students">Selected students</option>
+              </select>
+            </div>
+
+            <div class="field" id="nTargetField" hidden>
+              <label id="nTargetLabel">Courses</label>
+              <input type="text" id="nTargetSearch" placeholder="Search…" autocomplete="off" />
+              <div class="ntc-targets" id="nTargets"></div>
+              <span class="err-msg">Pick at least one.</span>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label>From <span class="opt">optional</span></label>
+                <input type="date" id="nStart" />
+              </div>
+              <div class="field">
+                <label>Until <span class="opt">optional</span></label>
+                <input type="date" id="nEnd" />
+              </div>
+            </div>
+
+            <label class="ntc-pin">
+              <input type="checkbox" id="nPinned" />
+              <span>Pin it — also runs in the ticker under the header</span>
+            </label>
+
+            <div class="ntc-compose-actions">
+              <button class="btn-outline" id="nCancelBtn" hidden>Cancel edit</button>
+              <button class="btn-solid" id="nSaveBtn">Post notice</button>
+            </div>
+          </div>
+
+          <!-- live preview -->
+          <div class="ntc-preview">
+            <div class="ntc-preview-label">How it will look</div>
+            <div class="ntc-phone">
+              <div class="ntc-phone-in" id="nPreview"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ntc-board-label">Posted notices</div>
+        <div id="nList"><div class="loading"><div class="loading-spin"></div><div>Loading notices…</div></div></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="nCloseBtn">Done</button>
       </div>
     </div>
   </div>
@@ -611,6 +705,290 @@ $("crsList").addEventListener("keydown", (e) => {
 });
 
 $("fCourse").addEventListener("change", () => buildSubjects([]));
+
+
+/* ---------------- Notice board ----------------
+   Audience is decided HERE only for the admin's convenience. The server
+   filters again on every read, so a student can never receive a notice
+   addressed to someone else even if this page is tampered with. */
+let notices = [];
+let editingNotice = null;
+let nType = "info";
+
+async function loadNotices(){
+  try{
+    const res = await fetch(`${SCRIPT_URL}?action=listNotices&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
+    const out = await res.json();
+    notices = (out.result === "success") ? (out.notices || []) : [];
+  }catch(e){ console.error(e); notices = []; }
+  renderNoticeList();
+}
+
+function noticeStatusClass(st){
+  return st === "Live" ? "live" : st === "Scheduled" ? "sched" : st === "Expired" ? "exp" : "off";
+}
+
+function audienceText(n){
+  if(n.audience === "all") return "Everyone";
+  if(!n.targets.length) return "Nobody";
+  if(n.audience === "course") return n.targets.join(", ");
+  // students: show names where we have them, IDs where we don't
+  return n.targets.map(id => {
+    const c = classes.find(x => String(x["Student ID"]) === String(id));
+    return c ? c["Student Name"] : id;
+  }).join(", ");
+}
+
+function renderNoticeList(){
+  if(!notices.length){
+    $("nList").innerHTML = '<div class="empty-state">No notices posted yet.</div>';
+    return;
+  }
+  $("nList").innerHTML = notices.map(n => `
+    <div class="ntc-item" data-id="${n.noticeId}">
+      <div class="ntc-item-main">
+        <div class="ntc-item-top">
+          <span class="ntc-badge ntc-b-${escapeHtml(n.type)}">${escapeHtml(n.type)}</span>
+          <span class="ntc-status ${noticeStatusClass(n.status)}">${escapeHtml(n.status)}</span>
+          ${n.pinned ? '<span class="ntc-pinned">Pinned</span>' : ''}
+        </div>
+        <div class="ntc-item-title">${escapeHtml(n.title)}</div>
+        <div class="ntc-item-meta">${escapeHtml(audienceText(n))}${
+          n.start || n.end
+            ? ' · ' + (n.start ? fmtDate(n.start) : 'now') + ' to ' + (n.end ? fmtDate(n.end) : 'no end')
+            : ''}</div>
+      </div>
+      <div class="ntc-item-btns">
+        <button class="btn-ghost sm" data-act="edit">Edit</button>
+        <button class="btn-ghost sm" data-act="toggle">${n.active ? 'Switch off' : 'Switch on'}</button>
+        <button class="btn-ghost sm danger" data-act="del">Delete</button>
+      </div>
+    </div>`).join("");
+}
+
+/* ---------------- Composer ---------------- */
+function nResetForm(){
+  editingNotice = null;
+  nType = "info";
+  $("nTitle").value = "";
+  $("nMessage").value = "";
+  $("nAudience").value = "all";
+  $("nStart").value = "";
+  $("nEnd").value = "";
+  $("nPinned").checked = false;
+  $("nTargetSearch").value = "";
+  document.querySelectorAll(".ntc-type").forEach(b => b.classList.toggle("on", b.dataset.type === "info"));
+  $("nSaveBtn").textContent = "Post notice";
+  $("nCancelBtn").hidden = true;
+  nSyncAudience([]);
+  nPreview();
+  document.querySelectorAll("#noticesModal .field").forEach(f => f.classList.remove("invalid"));
+}
+
+function nFillForm(n){
+  editingNotice = n.noticeId;
+  nType = n.type;
+  $("nTitle").value = n.title;
+  $("nMessage").value = n.message;
+  $("nAudience").value = n.audience;
+  $("nStart").value = n.start || "";
+  $("nEnd").value = n.end || "";
+  $("nPinned").checked = n.pinned;
+  document.querySelectorAll(".ntc-type").forEach(b => b.classList.toggle("on", b.dataset.type === n.type));
+  $("nSaveBtn").textContent = "Save changes";
+  $("nCancelBtn").hidden = false;
+  nSyncAudience(n.targets);
+  nPreview();
+}
+
+/* The target list is courses or students depending on the audience. */
+function nSyncAudience(selected){
+  const aud = $("nAudience").value;
+  const field = $("nTargetField");
+  if(aud === "all"){ field.hidden = true; $("nTargets").innerHTML = ""; return; }
+
+  field.hidden = false;
+  $("nTargetLabel").textContent = aud === "course" ? "Courses" : "Students";
+  $("nTargetSearch").placeholder = aud === "course" ? "Search courses…" : "Search students…";
+  nRenderTargets(selected || nCollectTargets());
+}
+
+function nRenderTargets(selected){
+  const aud = $("nAudience").value;
+  const q = ($("nTargetSearch").value || "").trim().toLowerCase();
+  const on = new Set((selected || []).map(String));
+
+  let items = [];
+  if(aud === "course"){
+    items = courses.filter(c => c.active || on.has(c.name))
+                   .map(c => ({ value: c.name, label: c.name, sub: "" }));
+  } else {
+    items = classes.map(c => ({
+      value: String(c["Student ID"]),
+      label: c["Student Name"] || c["Student ID"],
+      sub: c["Course"] || ""
+    }));
+  }
+  // A ticked item stays visible while filtering — otherwise a search can
+  // silently hide a selection the admin already made.
+  if(q) items = items.filter(i => on.has(i.value) ||
+                 i.label.toLowerCase().includes(q) || i.value.toLowerCase().includes(q));
+
+  $("nTargets").innerHTML = items.length
+    ? items.map(i => `
+        <label class="ntc-target${on.has(i.value) ? ' on' : ''}">
+          <input type="checkbox" value="${escapeHtml(i.value)}"${on.has(i.value) ? " checked" : ""}>
+          <span class="ntc-target-l">${escapeHtml(i.label)}</span>
+          ${i.sub ? `<span class="ntc-target-s">${escapeHtml(i.sub)}</span>` : ""}
+        </label>`).join("")
+    : '<div class="ntc-target-none">Nothing matches that search.</div>';
+
+  $("nTargets").querySelectorAll("input").forEach(cb => {
+    cb.addEventListener("change", () => {
+      cb.closest(".ntc-target").classList.toggle("on", cb.checked);
+      nPreview();
+    });
+  });
+}
+
+function nCollectTargets(){
+  return [...$("nTargets").querySelectorAll("input:checked")].map(cb => cb.value);
+}
+
+/* How many students this notice actually reaches. Worth showing before
+   posting, because "everyone" and "one course" look identical until sent. */
+function nReach(){
+  const aud = $("nAudience").value;
+  if(aud === "all") return classes.length;
+  const t = new Set(nCollectTargets().map(x => x.toLowerCase()));
+  if(aud === "course") return classes.filter(c => t.has(String(c["Course"] || "").toLowerCase())).length;
+  return classes.filter(c => t.has(String(c["Student ID"] || "").toLowerCase())).length;
+}
+
+const N_LABEL = { info:"Notice", urgent:"Important", holiday:"Holiday", celebration:"Good news" };
+
+function nPreview(){
+  const title = $("nTitle").value.trim() || "Your title here";
+  const msg   = $("nMessage").value.trim() || "Your message will appear here.";
+  const reach = nReach();
+
+  $("nPreview").innerHTML = `
+    <div class="ntc-prev-card ntc-p-${nType}">
+      <div class="ntc-prev-kind">${escapeHtml(N_LABEL[nType] || "Notice")}</div>
+      <div class="ntc-prev-title">${escapeHtml(title)}</div>
+      <div class="ntc-prev-msg">${escapeHtml(msg).replace(/\n/g, "<br>")}</div>
+      <div class="ntc-prev-btn">Got it</div>
+    </div>
+    <div class="ntc-prev-reach">${reach} student${reach === 1 ? "" : "s"} will see this</div>`;
+}
+
+/* ---------------- Wiring ---------------- */
+$("noticesBtn").addEventListener("click", async () => {
+  openModal("noticesModal");
+  if(!courses.length) await loadCourses();
+  nResetForm();
+  await loadNotices();
+});
+$("nCloseBtn").addEventListener("click", () => closeModal("noticesModal"));
+$("nCancelBtn").addEventListener("click", nResetForm);
+
+document.querySelectorAll(".ntc-type").forEach(b => {
+  b.addEventListener("click", () => {
+    nType = b.dataset.type;
+    document.querySelectorAll(".ntc-type").forEach(x => x.classList.toggle("on", x === b));
+    nPreview();
+  });
+});
+
+$("nAudience").addEventListener("change", () => { nSyncAudience([]); nPreview(); });
+$("nTargetSearch").addEventListener("input", () => nRenderTargets(nCollectTargets()));
+["nTitle","nMessage"].forEach(id => $(id).addEventListener("input", nPreview));
+
+$("nSaveBtn").addEventListener("click", async () => {
+  const title = $("nTitle").value.trim();
+  const msg   = $("nMessage").value.trim();
+  const aud   = $("nAudience").value;
+  const targets = aud === "all" ? [] : nCollectTargets();
+
+  $("nTitle").closest(".field").classList.toggle("invalid", !title);
+  $("nMessage").closest(".field").classList.toggle("invalid", !msg);
+  $("nTargetField").classList.toggle("invalid", aud !== "all" && !targets.length);
+  if(!title || !msg || (aud !== "all" && !targets.length)) return;
+
+  const start = $("nStart").value, end = $("nEnd").value;
+  if(start && end && end < start) return toast("The end date is before the start date", true);
+
+  const body = {
+    action: "saveNotice",
+    password: ADMIN_API_PASSWORD,
+    noticeId: editingNotice || "",
+    title: title, message: msg, type: nType,
+    audience: aud, targets: targets,
+    start: start, end: end,
+    pinned: $("nPinned").checked
+  };
+
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(body)
+  });
+  const out = await res.json();
+  if(out.result !== "success") return toast(out.error || "Could not save the notice", true);
+
+  const was = editingNotice;
+  nResetForm();
+  await loadNotices();
+  toast(was ? "Notice updated" : `Notice posted to ${nReachOf(body)} student${nReachOf(body) === 1 ? "" : "s"}`);
+});
+
+// Reach for a payload we just sent (the form has been reset by now).
+function nReachOf(body){
+  if(body.audience === "all") return classes.length;
+  const t = new Set(body.targets.map(x => String(x).toLowerCase()));
+  if(body.audience === "course") return classes.filter(c => t.has(String(c["Course"] || "").toLowerCase())).length;
+  return classes.filter(c => t.has(String(c["Student ID"] || "").toLowerCase())).length;
+}
+
+$("nList").addEventListener("click", async (e) => {
+  const row = e.target.closest(".ntc-item");
+  if(!row) return;
+  const n = notices.find(x => x.noticeId === row.dataset.id);
+  if(!n) return;
+  const act = e.target.dataset.act;
+
+  if(act === "edit"){
+    nFillForm(n);
+    $("nTitle").scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  if(act === "toggle"){
+    const out = await postNotice({ action: "toggleNotice", noticeId: n.noticeId, active: !n.active });
+    if(out.result !== "success") return toast(out.error || "Could not change it", true);
+    await loadNotices();
+    return;
+  }
+  if(act === "del"){
+    askConfirm("Delete this notice?",
+      `"${n.title}" will be removed for everyone. This cannot be undone.`,
+      async () => {
+        const out = await postNotice({ action: "deleteNotice", noticeId: n.noticeId });
+        if(out.result !== "success") return toast(out.error || "Could not delete it", true);
+        if(editingNotice === n.noticeId) nResetForm();
+        await loadNotices();
+        toast("Notice deleted");
+      });
+  }
+});
+
+async function postNotice(body){
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(Object.assign({ password: ADMIN_API_PASSWORD }, body))
+  });
+  return await res.json();
+}
 
 /* ---------------- Lock ---------------- */
 function isUnlocked(){
