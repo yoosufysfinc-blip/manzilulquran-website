@@ -45,6 +45,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Batch
         </button>
+        <button class="btn-ghost" id="coursesBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          Courses
+        </button>
         <button class="btn-ghost" id="refreshBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
           Refresh
@@ -156,6 +160,27 @@
     </div>
   </div>
 
+  <!-- COURSES & SUBJECTS -->
+  <div class="modal-backdrop" id="coursesModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Courses &amp; <span class="accent">Subjects</span></h3>
+        <p>The course list the form offers, and the subjects under each one.</p>
+      </div>
+      <div class="modal-body">
+        <div id="crsList"><div class="loading"><div class="loading-spin"></div><div>Loading courses…</div></div></div>
+
+        <div class="crs-add">
+          <input type="text" id="crsNewName" placeholder="New course name" autocomplete="off" />
+          <button class="btn-solid" id="crsAddBtn">Add course</button>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="crsCloseBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
   <!-- CREATE / EDIT MODAL -->
   <div class="modal-backdrop" id="formModal">
     <div class="modal">
@@ -184,15 +209,14 @@
             <label>Course <span class="req">*</span></label>
             <select id="fCourse">
               <option value="" disabled selected>Select course</option>
-              <option value="Hifzul Qur'an">Hifzul Qur'an</option>
-              <option value="Tartheel">Tartheel</option>
-              <option value="Quranul Yawmi">Quranul Yawmi</option>
-              <option value="Madrasa Studies">Madrasa Studies</option>
-              <option value="Tajweedul Qur'an">Tajweedul Qur'an</option>
-              <option value="Tafseerul Qur'an">Tafseerul Qur'an</option>
-              <option value="Dawra">Dawra</option>
             </select>
             <span class="err-msg">Please select a course.</span>
+          </div>
+
+          <div class="field" id="fSubjectsField" hidden>
+            <label>Subjects <span class="opt">optional</span></label>
+            <div class="subj-wrap" id="fSubjects"></div>
+            <div class="subj-none" id="fSubjectsNone" hidden>This course has no subjects yet. Add them in Courses &amp; Subjects.</div>
           </div>
           <div class="field">
             <label>Status</label>
@@ -365,6 +389,229 @@ document.querySelectorAll(".ws-tab").forEach(function(t){
   t.addEventListener("click", function(){ setWorkspace(t.dataset.ws); });
 });
 
+
+/* ---------------- Courses & Subjects ----------------
+   The course list used to be seven <option> tags frozen into this file.
+   It is now a sheet, so the academy can add a course without an upload.
+   Subjects hang off the course; a student gets a subset of them.
+
+   Renaming is handled entirely on the server: it rewrites every class row
+   holding the old name in the same call, so nothing is left orphaned. */
+let courses = [];
+
+async function loadCourses(){
+  try{
+    const res = await fetch(`${SCRIPT_URL}?action=listCourses`);
+    const out = await res.json();
+    courses = (out.result === "success") ? (out.courses || []) : [];
+  }catch(e){
+    console.error(e);
+    courses = [];
+  }
+  fillCourseSelects();
+}
+
+/* The form offers active courses only, but an existing student may sit on
+   a course that was since switched off. That option is added back just for
+   them, so opening their record never silently changes their course. */
+function fillCourseSelects(keepValue){
+  const sel = $("fCourse");
+  const want = keepValue !== undefined ? keepValue : sel.value;
+
+  let opts = '<option value="" disabled' + (want ? '' : ' selected') + '>Select course</option>';
+  courses.filter(c => c.active).forEach(c => {
+    opts += `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`;
+  });
+  if(want && !courses.some(c => c.active && c.name === want)){
+    opts += `<option value="${escapeHtml(want)}">${escapeHtml(want)} (inactive)</option>`;
+  }
+  sel.innerHTML = opts;
+  if(want) sel.value = want;
+}
+
+/* listClasses returns the raw cell, getClassAdmin returns a parsed array.
+   Accept both rather than making the caller care. */
+function smSubjects(c){
+  const v = c && c["Subjects"];
+  if(Array.isArray(v)) return v;
+  if(!v) return [];
+  try{ const a = JSON.parse(v); return Array.isArray(a) ? a : []; }catch(e){ return []; }
+}
+
+function courseByName(name){
+  return courses.find(c => c.name === name) || null;
+}
+
+/* Subject chips for whichever course is selected. Ticks are preserved
+   when they still exist on the new course, dropped when they do not. */
+function buildSubjects(selected){
+  const course = courseByName($("fCourse").value);
+  const field  = $("fSubjectsField");
+  const wrap   = $("fSubjects");
+  const none   = $("fSubjectsNone");
+
+  if(!course){ field.hidden = true; wrap.innerHTML = ""; return; }
+
+  field.hidden = false;
+  const list = course.subjects || [];
+  const on = new Set(selected || []);
+
+  if(!list.length){
+    wrap.innerHTML = "";
+    none.hidden = false;
+    return;
+  }
+  none.hidden = true;
+  wrap.innerHTML = list.map(sub => `
+    <label class="subj-chip${on.has(sub) ? ' on' : ''}">
+      <input type="checkbox" value="${escapeHtml(sub)}"${on.has(sub) ? ' checked' : ''}>
+      <span>${escapeHtml(sub)}</span>
+    </label>`).join("");
+
+  wrap.querySelectorAll(".subj-chip input").forEach(cb => {
+    cb.addEventListener("change", () => cb.closest(".subj-chip").classList.toggle("on", cb.checked));
+  });
+}
+
+function collectSubjects(){
+  return [...$("fSubjects").querySelectorAll("input:checked")].map(cb => cb.value);
+}
+
+/* ---------------- Courses manager ---------------- */
+function renderCourses(){
+  if(!courses.length){
+    $("crsList").innerHTML = '<div class="empty-state">No courses yet. Add the first one below.</div>';
+    return;
+  }
+  $("crsList").innerHTML = courses.map(c => {
+    const used = classes.filter(x => (x["Course"] || "") === c.name).length;
+    return `<div class="crs-row${c.active ? '' : ' off'}" data-id="${c.courseId}">
+      <div class="crs-top">
+        <input type="text" class="crs-name" value="${escapeHtml(c.name)}" />
+        <span class="crs-used">${used} student${used === 1 ? '' : 's'}</span>
+        <button class="crs-toggle" data-act="toggle" title="${c.active ? 'Switch off' : 'Switch on'}">${c.active ? 'On' : 'Off'}</button>
+      </div>
+      <div class="crs-subs">
+        ${(c.subjects || []).map(sb => `<span class="crs-sub">${escapeHtml(sb)}<b data-act="delsub" data-sub="${escapeHtml(sb)}">&times;</b></span>`).join("")}
+        <input type="text" class="crs-subadd" placeholder="+ subject" />
+      </div>
+      <div class="crs-actions">
+        <button class="btn-outline crs-save" data-act="save">Save</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function saveCourse(courseId, name, subjects, active){
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      action: "saveCourse",
+      password: ADMIN_API_PASSWORD,
+      courseId: courseId || "",
+      name: name,
+      subjects: subjects,
+      active: active
+    })
+  });
+  return await res.json();
+}
+
+$("coursesBtn").addEventListener("click", async () => {
+  openModal("coursesModal");
+  await loadCourses();
+  renderCourses();
+});
+$("crsCloseBtn").addEventListener("click", () => closeModal("coursesModal"));
+
+$("crsAddBtn").addEventListener("click", async () => {
+  const name = ($("crsNewName").value || "").trim();
+  if(!name) return toast("Type a course name first", true);
+
+  const out = await saveCourse("", name, [], true);
+  if(out.result !== "success") return toast(out.error || "Could not add the course", true);
+
+  $("crsNewName").value = "";
+  await loadCourses();
+  renderCourses();
+  toast("Course added");
+});
+
+/* One delegated handler for the whole list — rows are rebuilt often. */
+$("crsList").addEventListener("click", async (e) => {
+  const row = e.target.closest(".crs-row");
+  if(!row) return;
+  const id = row.dataset.id;
+  const course = courses.find(c => c.courseId === id);
+  if(!course) return;
+
+  const act = e.target.dataset.act;
+  const subs = [...row.querySelectorAll(".crs-sub")].map(x => x.childNodes[0].nodeValue.trim());
+
+  if(act === "delsub"){
+    e.target.closest(".crs-sub").remove();
+    return;                      // removed on screen; Save writes it
+  }
+  if(act === "toggle"){
+    const used = classes.filter(x => (x["Course"] || "") === course.name).length;
+    if(course.active && used){
+      askConfirm("Switch off this course?",
+        `${used} student${used === 1 ? ' is' : 's are'} on ${course.name}. They keep it — it just stops being offered for new sheets.`,
+        async () => {
+          const out = await saveCourse(id, course.name, course.subjects, false);
+          if(out.result !== "success") return toast(out.error || "Could not switch it off", true);
+          await loadCourses(); renderCourses(); toast("Course switched off");
+        });
+      return;
+    }
+    const out = await saveCourse(id, course.name, course.subjects, !course.active);
+    if(out.result !== "success") return toast(out.error || "Could not change it", true);
+    await loadCourses(); renderCourses();
+    return;
+  }
+  if(act === "save"){
+    const name = (row.querySelector(".crs-name").value || "").trim();
+    if(!name) return toast("A course needs a name", true);
+
+    const pending = (row.querySelector(".crs-subadd").value || "").trim();
+    const all = pending ? subs.concat([pending]) : subs;
+
+    const renaming = (name !== course.name);
+    const used = classes.filter(x => (x["Course"] || "") === course.name).length;
+
+    const go = async () => {
+      const out = await saveCourse(id, name, all, course.active);
+      if(out.result !== "success") return toast(out.error || "Could not save", true);
+      await loadCourses(); renderCourses();
+      if(out.renamed) await loadClasses();
+      toast(out.renamed ? `Saved — ${out.renamed} class sheet${out.renamed === 1 ? '' : 's'} updated` : "Saved");
+    };
+
+    if(renaming && used){
+      askConfirm("Rename this course?",
+        `${used} class sheet${used === 1 ? '' : 's'} will be updated from "${course.name}" to "${name}".`, go);
+      return;
+    }
+    await go();
+  }
+});
+
+/* Enter adds a subject without leaving the keyboard. */
+$("crsList").addEventListener("keydown", (e) => {
+  if(e.key !== "Enter" || !e.target.classList.contains("crs-subadd")) return;
+  e.preventDefault();
+  const val = (e.target.value || "").trim();
+  if(!val) return;
+  const chip = document.createElement("span");
+  chip.className = "crs-sub";
+  chip.innerHTML = `${escapeHtml(val)}<b data-act="delsub" data-sub="${escapeHtml(val)}">&times;</b>`;
+  e.target.parentNode.insertBefore(chip, e.target);
+  e.target.value = "";
+});
+
+$("fCourse").addEventListener("change", () => buildSubjects([]));
+
 /* ---------------- Lock ---------------- */
 function isUnlocked(){
   try{
@@ -406,6 +653,7 @@ if(isUnlocked()){
 
 /* ---------------- Load ---------------- */
 async function loadClasses(){
+  if(!courses.length) loadCourses();   // fire and forget — the form needs it, the list does not
   $("listContent").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>';
   try{
     if(!mqConfigured()){
@@ -750,7 +998,8 @@ function openForm(c){
 
   $("fName").value      = c ? (c["Student Name"] || "") : "";
   $("fStudentId").value = c ? (c["Student ID"] || "") : "";
-  $("fCourse").value    = c ? (c["Course"] || "") : "";
+  fillCourseSelects(c ? (c["Course"] || "") : "");
+  buildSubjects(c ? smSubjects(c) : []);
   $("fJoinDate").value  = c ? toDateInput(c["Join Date"]) : "";
   $("fWhatsapp").value  = c ? (c["WhatsApp Group Link"] || "") : "";
   $("fPhone").value     = c ? (c["Phone"] || "") : "";
@@ -782,6 +1031,7 @@ $("formSaveBtn").onclick = async () => {
       studentName: $("fName").value.trim(),
       studentId:   $("fStudentId").value.trim(),
       course:      $("fCourse").value,
+      subjects:    collectSubjects(),
       joinDate:    $("fJoinDate").value,
       whatsapp:    $("fWhatsapp").value.trim(),
       phone:       $("fPhone").value.trim(),
