@@ -785,3 +785,67 @@
     .ntc-modal,.ntc-modal-card{transition:none}
     .ntc-modal-card{transform:none}
   }
+
+  /* ============================================================
+     BATCH SIGN-IN (v9)
+     The first thing a batch student ever sees, so it carries the
+     academy's face rather than looking like a login wall.
+     ============================================================ */
+  .login-card{
+    width:100%;max-width:370px;margin:0 auto;padding:30px 24px 24px;
+    border-radius:24px;text-align:center;
+    background:linear-gradient(165deg,rgba(19,37,70,.9),rgba(11,24,48,.9));
+    border:1px solid rgba(140,180,255,.22);
+    box-shadow:0 22px 60px rgba(0,0,0,.4);
+    animation:ntcIn .5s cubic-bezier(.2,.8,.3,1) both;
+  }
+  .login-logo{
+    width:66px;height:66px;margin:0 auto 14px;border-radius:20px;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+    background:rgba(255,255,255,.06);border:1px solid rgba(140,180,255,.2);
+  }
+  .login-logo img{width:100%;height:100%;object-fit:contain;padding:9px}
+  .login-lead{margin:14px 0 20px;font-size:14px;line-height:1.6;color:var(--frost-dim)}
+
+  .login-lbl{
+    display:block;text-align:left;margin-bottom:6px;
+    font-size:10.5px;font-weight:700;letter-spacing:1.6px;
+    text-transform:uppercase;color:var(--azure-light);
+  }
+  .login-card input{
+    width:100%;padding:13px 14px;margin-bottom:15px;border-radius:12px;
+    font:inherit;font-size:15px;color:var(--frost);
+    background:rgba(0,0,0,.3);border:1px solid rgba(140,180,255,.2);
+    color-scheme:dark;
+  }
+  .login-card input::placeholder{color:var(--frost-faint)}
+  .login-card input:focus{outline:none;border-color:var(--azure)}
+
+  .login-btn{
+    width:100%;padding:14px;border-radius:13px;border:none;cursor:pointer;
+    font:inherit;font-size:15px;font-weight:800;color:#04101f;
+    background:linear-gradient(135deg,#8fd0ff,var(--azure));
+  }
+  .login-btn:disabled{opacity:.6;cursor:default}
+  .login-btn:active:not(:disabled){transform:translateY(1px)}
+
+  .login-err{
+    margin-top:15px;padding:12px 13px;border-radius:12px;
+    font-size:13.5px;line-height:1.6;color:#ffd6db;
+    background:rgba(255,154,166,.09);
+    border:1px solid rgba(255,154,166,.26);
+    animation:ntcIn .35s ease both;
+  }
+  .login-foot{margin-top:16px;font-size:11.5px;line-height:1.55;color:var(--frost-faint)}
+
+  /* The grace-period banner reuses the status banner, in a warmer colour:
+     it is a reminder, not a lockout. */
+  .status-banner.warn{
+    color:#ffe6ad;
+    background:rgba(240,180,41,.09);
+    border-color:rgba(240,180,41,.3);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .login-card,.login-err{animation:none}
+  }
