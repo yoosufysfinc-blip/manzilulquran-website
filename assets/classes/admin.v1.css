@@ -732,3 +732,93 @@
   .field textarea::placeholder{color:rgba(250,246,238,0.32)}
   .field textarea:focus{outline:none;border-color:var(--gold)}
   .field.invalid textarea{border-color:var(--err)}
+
+  /* ============================================================
+     BATCH WORKSPACE (v9)
+     ============================================================ */
+  .b-card{
+    padding:16px;border-radius:16px;margin-bottom:12px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(201,169,97,.15);
+  }
+  .b-card.paused{opacity:.6}
+  .b-top{margin-bottom:13px}
+  .b-id{font-size:10.5px;font-weight:700;letter-spacing:1.6px;color:var(--gold-light)}
+  .b-name{font-size:17px;font-weight:800;color:var(--cream);margin-top:3px}
+  .b-course{font-size:12.5px;color:var(--cream-dim);margin-top:2px}
+
+  .b-nums{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:13px}
+  .b-num{
+    flex:1 1 78px;padding:9px 11px;border-radius:11px;text-align:center;
+    background:rgba(0,0,0,.2);border:1px solid rgba(201,169,97,.1);
+  }
+  .b-num b{display:block;font-size:17px;font-weight:800;color:var(--cream)}
+  .b-num span{font-size:10.5px;letter-spacing:.4px;color:var(--cream-dim)}
+  .b-num.good b{color:var(--emerald-glow)}
+  .b-num.warn b{color:var(--gold-warm)}
+
+  .b-btns{display:flex;flex-wrap:wrap;gap:7px}
+  .btn-solid.sm,.btn-outline.sm{padding:7px 13px;font-size:12.5px}
+  .b-hint{
+    margin-top:4px;padding:11px 13px;border-radius:11px;
+    font-size:12.5px;line-height:1.6;color:var(--cream-dim);
+    background:rgba(0,0,0,.18);border:1px solid rgba(201,169,97,.12);
+  }
+
+  /* ---------- Roster ---------- */
+  .r-monthbar{
+    display:flex;gap:9px;align-items:center;flex-wrap:wrap;
+    padding-bottom:14px;margin-bottom:14px;
+    border-bottom:1px solid rgba(201,169,97,.14);
+  }
+  .r-monthbar label{font-size:10.5px;font-weight:700;letter-spacing:1.6px;
+                    text-transform:uppercase;color:var(--gold-light)}
+  .r-monthbar input{
+    padding:8px 11px;border-radius:9px;font:inherit;font-size:13.5px;
+    color:var(--cream);background:rgba(0,0,0,.26);
+    border:1px solid rgba(201,169,97,.18);color-scheme:dark;
+  }
+  .r-monthbar .btn-solid{margin-left:auto}
+
+  .r-row{
+    display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+    padding:12px 13px;border-radius:12px;margin-bottom:8px;
+    background:rgba(255,255,255,.03);border:1px solid rgba(201,169,97,.12);
+  }
+  .r-row.off{opacity:.55}
+  .r-tick{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+  .r-tick input{accent-color:var(--emerald-glow);width:19px;height:19px;cursor:pointer}
+  .r-tick span{font-size:9.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--cream-dim)}
+  .r-who{flex:1;min-width:150px}
+  .r-name{font-size:14.5px;font-weight:700;color:var(--cream)}
+  .r-meta{font-size:11.5px;color:var(--cream-dim);margin-top:2px;word-break:break-word}
+  .r-flags{display:flex;gap:6px;flex-wrap:wrap}
+  .r-flag{
+    font-size:10px;font-weight:700;letter-spacing:.4px;padding:3px 8px;
+    border-radius:999px;color:var(--cream-dim);background:rgba(255,255,255,.06);
+  }
+  .r-flag.full{color:var(--gold-warm);background:rgba(255,184,107,.12)}
+  .r-btns{display:flex;gap:6px;flex-wrap:wrap}
+
+  .r-add{
+    margin-top:18px;padding:15px;border-radius:14px;
+    background:rgba(0,0,0,.2);border:1px solid rgba(201,169,97,.14);
+  }
+  .r-add-title{font-size:10.5px;font-weight:700;letter-spacing:1.8px;
+               text-transform:uppercase;color:var(--gold-light);margin-bottom:11px}
+  .r-add-grid{display:grid;gap:9px;grid-template-columns:1fr 1fr}
+  .r-add-grid input{
+    width:100%;padding:10px 12px;border-radius:10px;font:inherit;font-size:13.5px;
+    color:var(--cream);background:rgba(0,0,0,.3);
+    border:1px solid rgba(201,169,97,.18);color-scheme:dark;
+  }
+  .r-add-grid input:focus{outline:none;border-color:var(--gold)}
+  .r-add-actions{display:flex;align-items:center;gap:11px;margin-top:11px;flex-wrap:wrap}
+  .r-add-note{flex:1;min-width:170px;font-size:11.5px;color:var(--cream-dim);line-height:1.5}
+
+  @media (max-width:560px){
+    .r-add-grid{grid-template-columns:1fr}
+    .r-monthbar .btn-solid{margin-left:0}
+    .r-btns{width:100%}
+    .r-btns button{flex:1}
+  }
