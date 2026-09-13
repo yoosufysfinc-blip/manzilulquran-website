@@ -41,7 +41,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Class Sheet
         </button>
-        <button class="btn-gold" id="newBatchBtn" hidden disabled>
+        <button class="btn-gold" id="newBatchBtn" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Batch
         </button>
@@ -142,24 +142,94 @@
 
     <!-- BATCH WORKSPACE — shell only. Nothing here talks to the server yet. -->
     <div class="ws" id="wsBatch" hidden>
-      <div class="ws-empty">
-        <div class="ws-empty-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 10h18"/><path d="M9 15h6"/>
-          </svg>
+      <div class="stats" id="bStats">
+        <div class="stat"><div class="stat-label">Batches</div><div class="stat-value" id="bStatTotal">—</div></div>
+        <div class="stat"><div class="stat-label">Students</div><div class="stat-value" id="bStatStudents">—</div></div>
+        <div class="stat"><div class="stat-label">Paid this month</div><div class="stat-value" id="bStatPaid">—</div></div>
+      </div>
+      <div id="bList"><div class="loading"><div class="loading-spin"></div><div>Loading batches…</div></div></div>
+    </div>
+  </div>
+    </div>
+  </div>
+
+  <!-- BATCH: create / edit -->
+  <div class="modal-backdrop" id="batchModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="bFormTitle">New <span class="accent">Batch</span></h3>
+        <p>One share link for the whole batch. Who may open it is decided by the monthly tick, not the link.</p>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Batch name</label>
+          <input type="text" id="bName" placeholder="e.g. Madrasa Evening" autocomplete="off" />
+          <span class="err-msg">A batch needs a name.</span>
         </div>
-        <h3>Batch classes</h3>
-        <p>
-          One share link per batch instead of one per student, with monthly
-          access so only students who have paid can open it.
-        </p>
-        <div class="ws-plan">
-          <div class="ws-plan-row"><b>Batches</b><span>Name, course, calendars, WhatsApp group — one link per batch</span></div>
-          <div class="ws-plan-row"><b>Roster</b><span>Students on the batch, with the email and date of birth used to sign in</span></div>
-          <div class="ws-plan-row"><b>Monthly access</b><span>Tick who has paid each month; last month can be copied forward</span></div>
-          <div class="ws-plan-row"><b>Devices</b><span>Two per student per month, with a reset button</span></div>
+        <div class="field">
+          <label>Course</label>
+          <select id="bCourse"><option value="">Select course</option></select>
         </div>
-        <div class="ws-note">Not built yet. This tab is the shell it will go into.</div>
+        <div class="field" id="bSubjectsField" hidden>
+          <label>Subjects <span class="opt">optional</span></label>
+          <div class="subj-wrap" id="bSubjects"></div>
+          <div class="subj-none" id="bSubjectsNone" hidden>This course has no subjects yet.</div>
+        </div>
+        <div class="field">
+          <label>WhatsApp group <span class="opt">optional</span></label>
+          <input type="url" id="bWhatsapp" placeholder="https://chat.whatsapp.com/…" autocomplete="off" />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Grace days</label>
+            <input type="number" id="bGrace" min="0" max="28" value="5" />
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="bStatus"><option value="Active">Active</option><option value="Paused">Paused</option></select>
+          </div>
+        </div>
+        <div class="b-hint">Grace days let last month&rsquo;s paid students still get in for the first few days of a new month, so a late fee doesn&rsquo;t lock a child out on the 1st. Set 0 to switch it off.</div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="bCancelBtn">Cancel</button>
+        <button class="btn-solid" id="bSaveBtn">Create batch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BATCH: roster + monthly access -->
+  <div class="modal-backdrop" id="rosterModal">
+    <div class="modal modal-wide">
+      <div class="modal-head">
+        <h3 id="rTitle">Roster</h3>
+        <p>Who is on this batch, and who has paid this month.</p>
+      </div>
+      <div class="modal-body">
+        <div class="r-monthbar">
+          <label for="rMonth">Month</label>
+          <input type="month" id="rMonth" />
+          <button class="btn-outline sm" id="rCopyPrev">Copy last month</button>
+          <button class="btn-solid sm" id="rSaveAccess">Save ticks</button>
+        </div>
+        <div id="rList"><div class="loading"><div class="loading-spin"></div><div>Loading roster…</div></div></div>
+
+        <div class="r-add">
+          <div class="r-add-title">Add a student</div>
+          <div class="r-add-grid">
+            <input type="text" id="rName" placeholder="Full name" autocomplete="off" />
+            <input type="text" id="rSid" placeholder="Student ID" autocomplete="off" />
+            <input type="email" id="rEmail" placeholder="Email for sign-in" autocomplete="off" />
+            <input type="date" id="rDob" />
+          </div>
+          <div class="r-add-actions">
+            <span class="r-add-note">The student signs in with this email and date of birth.</span>
+            <button class="btn-solid sm" id="rAddBtn">Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="rCloseBtn">Done</button>
       </div>
     </div>
   </div>
@@ -477,6 +547,10 @@ function setWorkspace(name){
   $("newBatchBtn").hidden = !batch;
 
   try{ sessionStorage.setItem(WS_KEY, name); }catch(e){}
+
+  // The batch list is fetched the first time that workspace is opened,
+  // not on unlock — most sessions never leave the Individual tab.
+  if(batch && !batches.length) loadBatches();
 }
 
 document.querySelectorAll(".ws-tab").forEach(function(t){
@@ -989,6 +1063,322 @@ async function postNotice(body){
   });
   return await res.json();
 }
+
+
+/* =================================================================
+   BATCH WORKSPACE
+   -----------------------------------------------------------------
+   One share link per batch. The link alone opens nothing: the student
+   signs in with their email and date of birth, and the server checks
+   the monthly tick on every read. Nothing on this page can grant
+   access — it only records who has paid.
+   ================================================================= */
+let batches = [];
+let editingBatch = null;
+let rosterBatch = null;     // the batch whose roster is open
+let rosterData = null;      // its last loaded payload
+
+async function loadBatches(){
+  try{
+    const res = await fetch(`${SCRIPT_URL}?action=listBatches&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
+    const out = await res.json();
+    batches = (out.result === "success") ? (out.batches || []) : [];
+  }catch(e){ console.error(e); batches = []; }
+  renderBatches();
+}
+
+function renderBatches(){
+  $("bStatTotal").textContent    = batches.length;
+  $("bStatStudents").textContent = batches.reduce((n, b) => n + b.students, 0);
+  $("bStatPaid").textContent     = batches.reduce((n, b) => n + b.allowed, 0);
+
+  if(!batches.length){
+    $("bList").innerHTML = '<div class="empty-state">No batches yet. Create the first one with the New Batch button.</div>';
+    return;
+  }
+
+  $("bList").innerHTML = batches.map(b => {
+    const unpaid = b.students - b.allowed;
+    return `<div class="b-card${b.status === 'Active' ? '' : ' paused'}" data-id="${b.batchId}">
+      <div class="b-top">
+        <div class="b-id">${escapeHtml(b.batchId)}</div>
+        <div class="b-name">${escapeHtml(b.name)}</div>
+        <div class="b-course">${escapeHtml(b.course || '—')}${b.status === 'Active' ? '' : ' · Paused'}</div>
+      </div>
+      <div class="b-nums">
+        <div class="b-num"><b>${b.students}</b><span>on roster</span></div>
+        <div class="b-num${b.allowed ? ' good' : ''}"><b>${b.allowed}</b><span>paid</span></div>
+        <div class="b-num${unpaid > 0 ? ' warn' : ''}"><b>${unpaid}</b><span>unpaid</span></div>
+        <div class="b-num"><b>${b.calendars}</b><span>calendars</span></div>
+        <div class="b-num"><b>${b.online}</b><span>signed in</span></div>
+      </div>
+      <div class="b-btns">
+        <button class="btn-solid sm" data-act="roster">Roster &amp; fees</button>
+        <button class="btn-ghost sm" data-act="cal">Calendars</button>
+        <button class="btn-ghost sm" data-act="share">Share link</button>
+        <button class="btn-ghost sm" data-act="edit">Edit</button>
+        <button class="btn-ghost sm danger" data-act="del">Delete</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function postBatch(body){
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(Object.assign({ password: ADMIN_API_PASSWORD }, body))
+  });
+  return await res.json();
+}
+
+/* ---------------- Batch form ---------------- */
+function bFillCourses(keep){
+  let opts = '<option value="">Select course</option>';
+  courses.filter(c => c.active).forEach(c => {
+    opts += `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`;
+  });
+  if(keep && !courses.some(c => c.active && c.name === keep)){
+    opts += `<option value="${escapeHtml(keep)}">${escapeHtml(keep)} (inactive)</option>`;
+  }
+  $("bCourse").innerHTML = opts;
+  if(keep) $("bCourse").value = keep;
+}
+
+function bBuildSubjects(selected){
+  const course = courseByName($("bCourse").value);
+  const field = $("bSubjectsField"), wrap = $("bSubjects"), none = $("bSubjectsNone");
+  if(!course){ field.hidden = true; wrap.innerHTML = ""; return; }
+
+  field.hidden = false;
+  const list = course.subjects || [];
+  const on = new Set(selected || []);
+  if(!list.length){ wrap.innerHTML = ""; none.hidden = false; return; }
+  none.hidden = true;
+  wrap.innerHTML = list.map(sub => `
+    <label class="subj-chip${on.has(sub) ? ' on' : ''}">
+      <input type="checkbox" value="${escapeHtml(sub)}"${on.has(sub) ? ' checked' : ''}><span>${escapeHtml(sub)}</span>
+    </label>`).join("");
+  wrap.querySelectorAll("input").forEach(cb =>
+    cb.addEventListener("change", () => cb.closest(".subj-chip").classList.toggle("on", cb.checked)));
+}
+
+function openBatchForm(b){
+  editingBatch = b ? b.batchId : null;
+  $("bFormTitle").innerHTML = b ? 'Edit <span class="accent">Batch</span>' : 'New <span class="accent">Batch</span>';
+  $("bSaveBtn").textContent = b ? "Save changes" : "Create batch";
+  $("bName").value = b ? b.name : "";
+  bFillCourses(b ? b.course : "");
+  bBuildSubjects(b ? (b.subjects || []) : []);
+  $("bWhatsapp").value = b ? (b.whatsapp || "") : "";
+  $("bGrace").value = b ? b.graceDays : 5;
+  $("bStatus").value = b ? b.status : "Active";
+  document.querySelectorAll("#batchModal .field").forEach(f => f.classList.remove("invalid"));
+  openModal("batchModal");
+}
+
+$("newBatchBtn").addEventListener("click", async () => {
+  if(!courses.length) await loadCourses();
+  openBatchForm(null);
+});
+$("bCancelBtn").addEventListener("click", () => closeModal("batchModal"));
+$("bCourse").addEventListener("change", () => bBuildSubjects([]));
+
+$("bSaveBtn").addEventListener("click", async () => {
+  const name = $("bName").value.trim();
+  $("bName").closest(".field").classList.toggle("invalid", !name);
+  if(!name) return;
+
+  const out = await postBatch({
+    action: "saveBatch",
+    batchId: editingBatch || "",
+    name: name,
+    course: $("bCourse").value,
+    subjects: [...$("bSubjects").querySelectorAll("input:checked")].map(c => c.value),
+    whatsapp: $("bWhatsapp").value.trim(),
+    graceDays: $("bGrace").value,
+    status: $("bStatus").value
+  });
+  if(out.result !== "success") return toast(out.error || "Could not save the batch", true);
+
+  closeModal("batchModal");
+  await loadBatches();
+  toast(editingBatch ? "Batch updated" : "Batch created");
+});
+
+/* ---------------- Batch card actions ---------------- */
+$("bList").addEventListener("click", async (e) => {
+  const card = e.target.closest(".b-card");
+  if(!card) return;
+  const b = batches.find(x => x.batchId === card.dataset.id);
+  if(!b) return;
+  const act = e.target.dataset.act;
+
+  if(act === "roster") return openRoster(b.batchId);
+  if(act === "cal")    { window.location.href = "calendars.html?id=" + encodeURIComponent(b.batchId); return; }
+
+  if(act === "share"){
+    // Batch links carry ?b= so the class sheet knows to ask for a sign-in.
+    const url = window.location.origin + mqUrl("/class/") + "?b=" + encodeURIComponent(b.token);
+    $("shareSubtitle").textContent = "Anyone with this link must still sign in with their email and date of birth.";
+    $("shareLinkInput").value = url;
+    openModal("shareModal");
+    return;
+  }
+  if(act === "edit"){
+    if(!courses.length) await loadCourses();
+    const full = await fetch(`${SCRIPT_URL}?action=getBatchAdmin&password=${encodeURIComponent(ADMIN_API_PASSWORD)}&batchId=${encodeURIComponent(b.batchId)}`);
+    const out = await full.json();
+    if(out.result !== "success") return toast(out.error || "Could not open the batch", true);
+    openBatchForm(out.batch);
+    return;
+  }
+  if(act === "del"){
+    askConfirm("Delete this batch?",
+      `${escapeHtml(b.name)} has ${b.students} student${b.students === 1 ? '' : 's'}. The roster, the fee ticks, the calendars and the share link all go with it. This cannot be undone.`,
+      async () => {
+        const out = await postBatch({ action: "deleteBatch", batchId: b.batchId });
+        if(out.result !== "success") return toast(out.error || "Could not delete it", true);
+        await loadBatches();
+        toast("Batch deleted");
+      });
+  }
+});
+
+/* ---------------- Roster & monthly access ---------------- */
+function thisMonth(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+}
+
+async function openRoster(batchId){
+  rosterBatch = batchId;
+  if(!$("rMonth").value) $("rMonth").value = thisMonth();
+  openModal("rosterModal");
+  await loadRoster();
+}
+
+async function loadRoster(){
+  const month = $("rMonth").value || thisMonth();
+  try{
+    const res = await fetch(`${SCRIPT_URL}?action=getBatchAdmin&password=${encodeURIComponent(ADMIN_API_PASSWORD)}` +
+                            `&batchId=${encodeURIComponent(rosterBatch)}&month=${encodeURIComponent(month)}`);
+    rosterData = await res.json();
+  }catch(e){ console.error(e); rosterData = null; }
+
+  if(!rosterData || rosterData.result !== "success"){
+    $("rList").innerHTML = '<div class="empty-state">Could not load the roster.</div>';
+    return;
+  }
+  $("rTitle").textContent = rosterData.batch.name + " · Roster & fees";
+  renderRoster();
+}
+
+function renderRoster(){
+  const r = rosterData.roster || [];
+  if(!r.length){
+    $("rList").innerHTML = '<div class="empty-state">Nobody on this batch yet. Add the first student below.</div>';
+    return;
+  }
+  $("rList").innerHTML = r.map(st => `
+    <div class="r-row${st.active ? '' : ' off'}" data-sid="${escapeHtml(st.studentId)}">
+      <label class="r-tick">
+        <input type="checkbox" class="r-allow"${st.allowed ? " checked" : ""}>
+        <span>Paid</span>
+      </label>
+      <div class="r-who">
+        <div class="r-name">${escapeHtml(st.studentName)}</div>
+        <div class="r-meta">${escapeHtml(st.studentId)} · ${escapeHtml(st.email)} · ${escapeHtml(st.dob)}</div>
+      </div>
+      <div class="r-flags">
+        ${st.lastMonth ? '<span class="r-flag">paid last month</span>' : ''}
+        <span class="r-flag${st.devices >= 2 ? ' full' : ''}">${st.devices}/2 devices</span>
+      </div>
+      <div class="r-btns">
+        <button class="btn-ghost sm" data-act="devices">Reset devices</button>
+        <button class="btn-ghost sm danger" data-act="remove">Remove</button>
+      </div>
+    </div>`).join("");
+}
+
+$("rMonth").addEventListener("change", loadRoster);
+$("rCloseBtn").addEventListener("click", async () => {
+  closeModal("rosterModal");
+  await loadBatches();      // the card counts will have moved
+});
+
+$("rCopyPrev").addEventListener("click", () => {
+  if(!rosterData) return;
+  // Ticks only — nothing is written until Save ticks is pressed.
+  $("rList").querySelectorAll(".r-row").forEach(row => {
+    const st = rosterData.roster.find(x => x.studentId === row.dataset.sid);
+    if(st) row.querySelector(".r-allow").checked = st.lastMonth;
+  });
+  toast("Copied last month — press Save ticks to apply");
+});
+
+$("rSaveAccess").addEventListener("click", async () => {
+  if(!rosterData) return;
+  const entries = [...$("rList").querySelectorAll(".r-row")].map(row => ({
+    studentId: row.dataset.sid,
+    allowed: row.querySelector(".r-allow").checked
+  }));
+  const out = await postBatch({
+    action: "setAccess",
+    batchId: rosterBatch,
+    month: $("rMonth").value || thisMonth(),
+    entries: entries
+  });
+  if(out.result !== "success") return toast(out.error || "Could not save", true);
+  await loadRoster();
+  const paid = entries.filter(e => e.allowed).length;
+  toast(`Saved — ${paid} of ${entries.length} can open the batch`);
+});
+
+$("rList").addEventListener("click", async (e) => {
+  const row = e.target.closest(".r-row");
+  if(!row) return;
+  const sid = row.dataset.sid;
+  const act = e.target.dataset.act;
+
+  if(act === "devices"){
+    const out = await postBatch({ action: "resetDevices", batchId: rosterBatch, studentId: sid });
+    if(out.result !== "success") return toast(out.error || "Could not reset", true);
+    await loadRoster();
+    toast("Devices reset — they can sign in again");
+    return;
+  }
+  if(act === "remove"){
+    const st = rosterData.roster.find(x => x.studentId === sid);
+    askConfirm("Remove this student?",
+      `${escapeHtml(st ? st.studentName : sid)} will be taken off the batch and signed out. Their fee history for past months stays.`,
+      async () => {
+        const out = await postBatch({ action: "removeRosterStudent", batchId: rosterBatch, studentId: sid });
+        if(out.result !== "success") return toast(out.error || "Could not remove", true);
+        await loadRoster();
+        toast("Student removed");
+      });
+  }
+});
+
+$("rAddBtn").addEventListener("click", async () => {
+  const name = $("rName").value.trim();
+  const sid   = $("rSid").value.trim();
+  const email = $("rEmail").value.trim();
+  const dob   = $("rDob").value;
+  if(!name || !sid || !email || !dob) return toast("Name, ID, email and date of birth are all needed", true);
+
+  const out = await postBatch({
+    action: "saveRosterStudent",
+    batchId: rosterBatch,
+    studentId: sid, studentName: name, email: email, dob: dob
+  });
+  if(out.result !== "success") return toast(out.error || "Could not add the student", true);
+
+  ["rName","rSid","rEmail","rDob"].forEach(id => $(id).value = "");
+  await loadRoster();
+  toast("Student added — they still need a paid tick for this month");
+});
 
 /* ---------------- Lock ---------------- */
 function isUnlocked(){
