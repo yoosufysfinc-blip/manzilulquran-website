@@ -228,7 +228,9 @@ async function load(){
 $("refreshBtn").onclick = load;
 $("previewBtn").onclick = () => {
   if(classInfo && classInfo.shareToken){
-    window.open('/class/?t=' + encodeURIComponent(classInfo.shareToken), '_blank');
+    // A batch student link is ?b= — it opens the sign-in, not the sheet.
+    const q = classInfo.isBatch ? '?b=' : '?t=';
+    window.open(mqUrl('/class/') + q + encodeURIComponent(classInfo.shareToken), '_blank');
   }
 };
 
