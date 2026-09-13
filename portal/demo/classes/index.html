@@ -1077,6 +1077,12 @@ let batches = [];
 let editingBatch = null;
 let rosterBatch = null;     // the batch whose roster is open
 let rosterData = null;      // its last loaded payload
+let shareBatch = null;      // set when the share modal is showing a batch
+
+// Batch links carry ?b= so the class sheet knows to ask for a sign-in.
+function batchShareUrl(b){
+  return window.location.origin + mqUrl("/class/") + "?b=" + encodeURIComponent(b.token);
+}
 
 async function loadBatches(){
   try{
@@ -1218,10 +1224,14 @@ $("bList").addEventListener("click", async (e) => {
   if(act === "cal")    { window.location.href = "calendars.html?id=" + encodeURIComponent(b.batchId); return; }
 
   if(act === "share"){
-    // Batch links carry ?b= so the class sheet knows to ask for a sign-in.
-    const url = window.location.origin + mqUrl("/class/") + "?b=" + encodeURIComponent(b.token);
-    $("shareSubtitle").textContent = "Anyone with this link must still sign in with their email and date of birth.";
-    $("shareLinkInput").value = url;
+    /* The share modal is shared with the Individual workspace, and its
+       WhatsApp and Reset buttons read shareTarget. Setting shareBatch
+       instead of leaving shareTarget stale is what makes those buttons
+       act on THIS batch rather than on whichever student was shared last. */
+    shareTarget = null;
+    shareBatch  = b;
+    $("shareSubtitle").textContent = b.name + " · anyone with this link must still sign in";
+    $("shareLinkInput").value = batchShareUrl(b);
     openModal("shareModal");
     return;
   }
@@ -1857,6 +1867,7 @@ document.querySelectorAll("#formModal input, #formModal select").forEach(el => {
 
 /* ---------------- Share ---------------- */
 function openShare(c){
+  shareBatch  = null;
   shareTarget = c;
   $("shareSubtitle").textContent = `${c["Student Name"]} · ${c["Student ID"]}`;
   $("shareLinkInput").value = shareUrl(c);
@@ -1877,12 +1888,30 @@ $("copyLinkBtn").onclick = async () => {
 };
 
 $("waShareBtn").onclick = () => {
-  if(!shareTarget) return;
-  const msg = `Assalamu Alaikum 👋\n\n*${shareTarget["Student Name"]}* — ManzilulQuran class sheet:\n${shareUrl(shareTarget)}\n\nAll class details are in this link, in shā’ Allāh.`;
+  let msg;
+  if(shareBatch){
+    msg = `Assalamu Alaikum 👋\n\n*${shareBatch.name}* — ManzilulQuran batch class:\n${batchShareUrl(shareBatch)}\n\nSign in with the email and date of birth you gave the academy, in shā’ Allāh.`;
+  } else if(shareTarget){
+    msg = `Assalamu Alaikum 👋\n\n*${shareTarget["Student Name"]}* — ManzilulQuran class sheet:\n${shareUrl(shareTarget)}\n\nAll class details are in this link, in shā’ Allāh.`;
+  } else { return; }
   window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
 };
 
 $("resetLinkBtn").onclick = () => {
+  if(shareBatch){
+    const b = shareBatch;
+    askConfirm("Reset this batch link?",
+      `The current link for ${b.name} stops working immediately, and every student signed in on it is signed out. They will need the new link and their email and date of birth.`,
+      async () => {
+        const out = await postBatch({ action: "resetBatchToken", batchId: b.batchId });
+        if(out.result !== "success") return toast(out.error || "Could not reset the link", true);
+        b.token = out.token;
+        $("shareLinkInput").value = batchShareUrl(b);
+        await loadBatches();
+        toast("New batch link created");
+      });
+    return;
+  }
   if(!shareTarget) return;
   askConfirm(
     "Reset this link?",
