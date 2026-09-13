@@ -65,6 +65,15 @@
           <div class="head-sub" id="headSub">—</div>
         </div>
 
+        <button class="ntc-bell" id="ntcBell" type="button" hidden aria-label="Notices">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/>
+          </svg>
+          <span class="ntc-count" id="ntcCount" hidden>0</span>
+        </button>
+
+        <div class="ntc-ticker" id="ntcTicker" hidden></div>
+
         <div class="status-banner" id="statusBanner">
           This class sheet is currently inactive. Please contact the academy.
         </div>
@@ -74,6 +83,7 @@
           <button class="tab active" data-tab="overview">Overview</button>
           <button class="tab" data-tab="calendar">Calendar Sheets</button>
           <button class="tab" data-tab="material" id="tabMaterial" hidden>Study Material</button>
+          <button class="tab" data-tab="notices" id="tabNotices" hidden>Notices <span class="tab-dot" id="tabNoticesDot" hidden></span></button>
           <button class="tab tab-hifz" data-tab="hifz" id="tabHifz" hidden>🕮 Hifz Report</button>
         </div>
 
@@ -149,6 +159,10 @@
         </div>
 
         <!-- Hifz Report -->
+        <div class="tab-panel" id="panel-notices">
+          <div class="ntc-list" id="ntcList"></div>
+        </div>
+
         <div class="tab-panel" id="panel-hifz">
           <div class="hifz-hero">
             <div class="hifz-crest"><img src="/logo.png" alt="ManzilulQuran" onerror="this.replaceWith(document.createTextNode('🕮'))"></div>
@@ -172,6 +186,8 @@
     <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a>
   </footer>
 
+<div class="ntc-modal" id="ntcModal" hidden></div>
+
 <!-- =================================================================
      DEMO BUILD — points at the DEMO spreadsheet, never the live one.
      The live page keeps its own copy of this line with the live URL.
@@ -184,6 +200,7 @@ window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMo
 <script src="/assets/classes/engine.v1.js"></script>
 <script src="/assets/classes/api.v1.js"></script>
 <script src="/assets/classes/catalog.v1.js"></script>
+<script src="/assets/classes/notices.v1.js"></script>
 <script>
 /* =================================================================
    ░░  CLASS SHEET (shared view) — page logic  ░░
@@ -221,8 +238,24 @@ function activateTab(name){
   if(panel) panel.classList.add('show');
 }
 document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => activateTab(tab.dataset.tab));
+  tab.addEventListener('click', () => {
+    activateTab(tab.dataset.tab);
+    // Marking read follows a deliberate tap, not activateTab itself. The
+    // announcement redirects here automatically, and a redirect the student
+    // did not ask for must not silently clear notices they have not read.
+    if(tab.dataset.tab === 'notices') noticesWereRead();
+  });
 });
+
+/* Opening the Notices tab is the student genuinely reading them, so the
+   bell clears. Anything that arrives later lights it up again. */
+function noticesWereRead(){
+  if(typeof noticeData === 'undefined' || !noticeData.length) return;
+  ntcMarkAllSeen(noticeData);
+  ntcRenderBell(noticeData);
+  ntcRenderList(noticeData);
+  updateNoticeDot();
+}
 
 /* =================================================================
    ░░  LOAD — stale-while-revalidate  ░░
@@ -370,6 +403,10 @@ function render(d){
   $('ovId').textContent     = d.studentId || '—';
   $('ovCourse').textContent = d.course || '—';
 
+  /* Notices. The server has already decided which of these belong to this
+     student — everything here is presentation. */
+  renderNotices(Array.isArray(d.notices) ? d.notices : []);
+
   /* Subjects under the course. Hidden entirely when the student has none,
      so a sheet without them looks exactly as it does today. */
   const subs = Array.isArray(d.subjects) ? d.subjects : [];
@@ -405,6 +442,40 @@ function render(d){
   renderStudyMaterial(d.studyMaterial);
   renderHifzLink(d.hifzLink);
 }
+
+/* ---------------- Notices ----------------
+   The board itself lives in notices.v1.js, shared with the batch page.
+   What stays here is how this page wires it up: which tab to reveal,
+   and what opening that tab means. */
+let noticeData = [];
+
+function renderNotices(list){
+  noticeData = list;
+
+  const tab = $('tabNotices');
+  tab.hidden = !list.length;
+  if(!list.length){
+    $('ntcTicker').hidden = true;
+    $('ntcBell').hidden = true;
+    return;
+  }
+
+  ntcRenderBell(list);
+  ntcRenderTicker(list);
+  ntcRenderList(list);
+  updateNoticeDot();
+
+  // One announcement per device per notice, after the sheet has settled
+  // so it lands on a drawn page rather than a half-built one.
+  setTimeout(() => ntcAnnounce(list, () => activateTab('notices')), 700);
+}
+
+function updateNoticeDot(){
+  const dot = $('tabNoticesDot');
+  if(dot) dot.hidden = ntcUnseen(noticeData).length === 0;
+}
+
+$('ntcBell').addEventListener('click', () => { activateTab('notices'); noticesWereRead(); });
 
 /* ---------------- Overview: calendar status line ---------------- */
 function renderCalendarStatus(){
