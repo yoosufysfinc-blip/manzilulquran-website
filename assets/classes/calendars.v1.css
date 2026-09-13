@@ -321,3 +321,13 @@
     .day-date{flex:1 1 auto}
     .day-link{flex:1 1 100%;padding-left:52px}
   }
+
+  /* ============================================================
+     THE hidden ATTRIBUTE MUST WIN.
+     A rule like `.ntc-modal{display:flex}` silently beats the
+     browser's own `[hidden]{display:none}`, because an author rule
+     outranks the user-agent stylesheet. An invisible full-screen
+     overlay then keeps swallowing every tap on the page.
+     This one line makes `hidden` mean hidden, everywhere.
+     ============================================================ */
+  [hidden]{display:none !important}
