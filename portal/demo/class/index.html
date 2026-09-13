@@ -91,6 +91,7 @@
             <div class="info-item">
               <div class="info-label">Course</div>
               <div class="info-value" id="ovCourse">—</div>
+              <div class="subj-row" id="ovSubjects" hidden></div>
             </div>
             <div class="info-item">
               <div class="info-label">Join Date</div>
@@ -368,6 +369,18 @@ function render(d){
   $('ovName').textContent   = d.studentName || '—';
   $('ovId').textContent     = d.studentId || '—';
   $('ovCourse').textContent = d.course || '—';
+
+  /* Subjects under the course. Hidden entirely when the student has none,
+     so a sheet without them looks exactly as it does today. */
+  const subs = Array.isArray(d.subjects) ? d.subjects : [];
+  const sr = $('ovSubjects');
+  if(subs.length){
+    sr.innerHTML = subs.map(x => `<span class="subj-pill">${escapeHtml(x)}</span>`).join('');
+    sr.hidden = false;
+  } else {
+    sr.innerHTML = '';
+    sr.hidden = true;
+  }
   $('ovJoin').textContent   = fmtDate(parseDate(d.joinDate) || d.joinDate);
   $('ovStatus').innerHTML   = `<span class="pill ${isActive ? 'active' : 'inactive'}">${isActive ? 'Active' : 'Inactive'}</span>`;
 
