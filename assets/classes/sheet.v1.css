@@ -849,3 +849,13 @@
   @media (prefers-reduced-motion: reduce){
     .login-card,.login-err{animation:none}
   }
+
+  /* ============================================================
+     THE hidden ATTRIBUTE MUST WIN.
+     A rule like `.ntc-modal{display:flex}` silently beats the
+     browser's own `[hidden]{display:none}`, because an author rule
+     outranks the user-agent stylesheet. An invisible full-screen
+     overlay then keeps swallowing every tap on the page.
+     This one line makes `hidden` mean hidden, everywhere.
+     ============================================================ */
+  [hidden]{display:none !important}
