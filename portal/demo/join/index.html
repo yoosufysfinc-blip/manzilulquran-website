@@ -102,11 +102,12 @@
 <!-- DEMO BUILD — demo spreadsheet only. -->
 <script>
 window.MQ_BASE       = "/portal/demo";   // live build omits this line
+window.MQ_PERF       = true;   // TEMPORARY — timing only
 window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v1.js"></script>
+<script src="/assets/classes/api.v2.js"></script>
 <script>
 spawnStars(40);
 /* =================================================================
