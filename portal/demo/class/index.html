@@ -218,11 +218,12 @@
      ================================================================= -->
 <script>
 window.MQ_BASE       = "/portal/demo";   // live build omits this line
+window.MQ_PERF       = true;   // TEMPORARY — timing only
 window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v1.js"></script>
+<script src="/assets/classes/api.v2.js"></script>
 <script src="/assets/classes/catalog.v1.js"></script>
 <script src="/assets/classes/notices.v1.js"></script>
 <script>
@@ -328,8 +329,7 @@ async function load(){
     }
     focusDate = (params.get('d') || '').trim();
     try{
-      const res = await fetch(`${mqEndpoint()}?action=getBatch&teacher=${encodeURIComponent(tTok)}`);
-      const out = await res.json();
+      const out = await fetchBatchAsTeacher(tTok);
       if(out.result === 'success'){
         renderBatch(out.data);
         showState('stateSheet');
@@ -587,9 +587,7 @@ function showLogin(batchName, message){
 async function loadBatch(){
   const session = batchSession();
   try{
-    const res = await fetch(`${mqEndpoint()}?action=getBatch&token=${encodeURIComponent(batchToken)}` +
-                            (session ? `&session=${encodeURIComponent(session)}` : ''));
-    const out = await res.json();
+    const out = await fetchBatch(batchToken, session);
 
     if(out.result === 'success'){
       renderBatch(out.data);
@@ -628,18 +626,7 @@ async function doBatchLogin(){
   btn.disabled = true;
   btn.textContent = 'Checking…';
   try{
-    const res = await fetch(mqEndpoint(), {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'batchLogin',
-        batchToken: batchToken,
-        email: email,
-        dob: dob,
-        deviceId: deviceId()
-      })
-    });
-    const out = await res.json();
+    const out = await batchLogin(batchToken, email, dob, deviceId());
 
     if(out.result === 'success'){
       saveBatchSession(out.session);
