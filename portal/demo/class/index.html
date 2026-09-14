@@ -72,6 +72,8 @@
           <span class="ntc-count" id="ntcCount" hidden>0</span>
         </button>
 
+        <div class="teacher-mark" id="teacherMark" hidden>Teacher view &middot; this link is for staff</div>
+
         <div class="ntc-ticker" id="ntcTicker" hidden></div>
 
         <div class="status-banner" id="statusBanner">
@@ -314,6 +316,33 @@ async function load(){
   const params = new URLSearchParams(window.location.search);
   const token = (params.get('t') || '').trim();
   const bTok  = (params.get('b') || '').trim();
+
+  // A ?tb= link is the teacher's door into a batch: no sign-in, no fee
+  // check. It is a separate token so it can be reset without signing out
+  // a class full of children.
+  const tTok = (params.get('tb') || '').trim();
+  if(tTok){
+    if(!mqConfigured()){
+      showError('Not configured yet', 'This class sheet system is not connected yet. Please contact the academy.');
+      return;
+    }
+    focusDate = (params.get('d') || '').trim();
+    try{
+      const res = await fetch(`${mqEndpoint()}?action=getBatch&teacher=${encodeURIComponent(tTok)}`);
+      const out = await res.json();
+      if(out.result === 'success'){
+        renderBatch(out.data);
+        showState('stateSheet');
+      } else {
+        const f = batchFail(out.error, out);
+        showError(f.title, f.text);
+      }
+    }catch(err){
+      console.error(err);
+      showError('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
+    }
+    return;
+  }
 
   // A ?b= link is a batch. Different door, same house.
   if(bTok){
@@ -638,13 +667,17 @@ $('liEmail').addEventListener('keydown', e => { if(e.key === 'Enter') $('liDob')
 function renderBatch(d){
   studentNameCache = d.studentName || 'Student';
   $('studentName').innerHTML = accentLastWord(studentNameCache);
-  $('headSub').textContent = d.batchName || 'Batch class';
+  $('headSub').textContent = d.teacher ? 'Teacher view' : (d.batchName || 'Batch class');
 
   $('ovId').textContent     = d.studentId || '—';
   $('ovCourse').textContent = d.course || '—';
   $('ovJoin').textContent   = d.batchName || '—';
   $('ovJoinLabel').textContent = 'Batch';
-  $('ovStatus').textContent = d.status || 'Active';
+  $('ovStatus').textContent = d.teacher ? 'Teacher' : (d.status || 'Active');
+
+  // A visible marker, so nobody has to guess which link they are holding.
+  const tm = $('teacherMark');
+  if(tm) tm.hidden = !d.teacher;
 
   const subs = Array.isArray(d.subjects) ? d.subjects : [];
   const sr = $('ovSubjects');
