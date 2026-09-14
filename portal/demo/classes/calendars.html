@@ -142,11 +142,12 @@
 <!-- DEMO BUILD — demo spreadsheet, demo gate password. -->
 <script>
 window.MQ_BASE       = "/portal/demo";
+window.MQ_PERF         = true;   // TEMPORARY — timing only
 window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v1.js"></script>
+<script src="/assets/classes/api.v2.js"></script>
 <script>
 /* =================================================================
    ░░  CALENDAR SHEETS ADMIN  ░░
@@ -155,6 +156,9 @@ window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMo
 const SCRIPT_URL = window.MQ_SCRIPT_URL;
 const PORTAL_PASSWORD = "mqdemo2026";       // DEMO gate — deliberately NOT the live Classes password
 const ADMIN_API_PASSWORD = "manzil2026admin";
+/* Handed to the API layer, which reads it at call time. Student pages
+   never set it, so an admin action from one sends no password. */
+window.MQ_ADMIN_PASSWORD = ADMIN_API_PASSWORD;
 const MAX_DAYS = 40;
 
 const SESSION_KEY = "mq_demo_classes_unlocked_at";  // own key — a live Classes unlock does NOT open the demo
@@ -208,9 +212,7 @@ async function load(){
   }
   $("calList").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading calendar sheets…</div></div>';
   try{
-    const url = `${SCRIPT_URL}?action=getClassAdmin&classId=${encodeURIComponent(classId)}&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`;
-    const res = await fetch(url);
-    const data = await res.json();
+    const data = await fetchClassAdmin(classId);
     if(data.result !== "success") throw new Error(data.error || "Failed to load");
 
     classInfo = data.class;
@@ -463,12 +465,7 @@ $("formSaveBtn").onclick = async () => {
       relativeTo: relativeTo
     };
 
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
+    const data = await saveCalendarApi(payload);
     if(data.result !== "success") throw new Error(data.error || "Save failed");
 
     closeModal("formModal");
@@ -509,11 +506,7 @@ document.querySelectorAll("#formModal input, #formModal select").forEach(el => {
 /* ---------------- Toggle / Move / Delete ---------------- */
 async function doToggle(c){
   try{
-    const res = await fetch(SCRIPT_URL, {
-      method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" },
-      body: JSON.stringify({ action:"toggleCalendar", password:ADMIN_API_PASSWORD, calendarId:c.calendarId, active:!c.active })
-    });
-    const data = await res.json();
+    const data = await toggleCalendarApi(c.calendarId, !c.active);
     if(data.result !== "success") throw new Error(data.error || "Failed");
     toast(c.active ? "Calendar deactivated — Join buttons are now off" : "Calendar activated");
     await load();
@@ -522,11 +515,7 @@ async function doToggle(c){
 
 async function doMove(c, direction){
   try{
-    const res = await fetch(SCRIPT_URL, {
-      method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" },
-      body: JSON.stringify({ action:"moveCalendar", password:ADMIN_API_PASSWORD, calendarId:c.calendarId, direction })
-    });
-    const data = await res.json();
+    const data = await moveCalendarApi(c.calendarId, direction);
     if(data.result !== "success") throw new Error(data.error || "Failed");
     await load();
   }catch(err){ toast(err.message, true); }
@@ -538,11 +527,7 @@ function askDelete(c){
     `“${c.name}” will be permanently removed from this student's class sheet. Old calendars are usually kept as history — consider deactivating instead.`,
     async () => {
       try{
-        const res = await fetch(SCRIPT_URL, {
-          method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" },
-          body: JSON.stringify({ action:"deleteCalendar", password:ADMIN_API_PASSWORD, calendarId:c.calendarId })
-        });
-        const data = await res.json();
+        const data = await deleteCalendarApi(c.calendarId);
         if(data.result !== "success") throw new Error(data.error || "Delete failed");
         toast("Calendar sheet deleted");
         await load();
