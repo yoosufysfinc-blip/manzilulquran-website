@@ -83,7 +83,7 @@
           <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
         </svg>
         Batch
-        <span class="ws-soon">soon</span>
+        <span class="ws-count" id="wsCountBatch">—</span>
       </button>
     </div>
 
@@ -1094,6 +1094,7 @@ async function loadBatches(){
 }
 
 function renderBatches(){
+  $("wsCountBatch").textContent  = batches.length;
   $("bStatTotal").textContent    = batches.length;
   $("bStatStudents").textContent = batches.reduce((n, b) => n + b.students, 0);
   $("bStatPaid").textContent     = batches.reduce((n, b) => n + b.allowed, 0);
