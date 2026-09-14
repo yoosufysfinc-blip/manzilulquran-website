@@ -481,11 +481,12 @@
 <!-- DEMO BUILD — demo spreadsheet, demo gate password. -->
 <script>
 window.MQ_BASE       = "/portal/demo";
+window.MQ_PERF       = true;   // TEMPORARY — timing only
 window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v1.js"></script>
+<script src="/assets/classes/api.v2.js"></script>
 <script src="/assets/classes/catalog.v1.js"></script>
 <script>
 /* =================================================================
@@ -495,7 +496,10 @@ window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMo
 // CONFIG — paste the Classes Apps Script Web App URL here
 const SCRIPT_URL = window.MQ_SCRIPT_URL;
 const PORTAL_PASSWORD = "mqdemo2026";       // DEMO gate — deliberately NOT the live Classes password
-const ADMIN_API_PASSWORD = "manzil2026admin"; // must match ADMIN_PASSWORD in apps-script-classes.gs
+const ADMIN_API_PASSWORD = "manzil2026admin";
+/* Handed to the API layer, which reads it at call time. Student pages
+   never set it, so an admin action from one sends no password. */
+window.MQ_ADMIN_PASSWORD = ADMIN_API_PASSWORD; // must match ADMIN_PASSWORD in apps-script-classes.gs
 const SHARE_BASE = window.location.origin + mqUrl("/class/");
 
 const SESSION_KEY = "mq_demo_classes_unlocked_at";  // own key — a live Classes unlock does NOT open the demo
@@ -582,8 +586,7 @@ let courses = [];
 
 async function loadCourses(){
   try{
-    const res = await fetch(`${SCRIPT_URL}?action=listCourses`);
-    const out = await res.json();
+    const out = await fetchCourses();
     courses = (out.result === "success") ? (out.courses || []) : [];
   }catch(e){
     console.error(e);
@@ -684,19 +687,12 @@ function renderCourses(){
 }
 
 async function saveCourse(courseId, name, subjects, active){
-  const res = await fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({
-      action: "saveCourse",
-      password: ADMIN_API_PASSWORD,
-      courseId: courseId || "",
-      name: name,
-      subjects: subjects,
-      active: active
-    })
+  return await saveCourseApi({
+    courseId: courseId || "",
+    name: name,
+    subjects: subjects,
+    active: active
   });
-  return await res.json();
 }
 
 $("coursesBtn").addEventListener("click", async () => {
@@ -804,8 +800,7 @@ let nType = "info";
 
 async function loadNotices(){
   try{
-    const res = await fetch(`${SCRIPT_URL}?action=listNotices&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
-    const out = await res.json();
+    const out = await fetchNotices();
     notices = (out.result === "success") ? (out.notices || []) : [];
   }catch(e){ console.error(e); notices = []; }
   renderNoticeList();
@@ -1015,12 +1010,7 @@ $("nSaveBtn").addEventListener("click", async () => {
     pinned: $("nPinned").checked
   };
 
-  const res = await fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(body)
-  });
-  const out = await res.json();
+  const out = await mqPost(body);
   if(out.result !== "success") return toast(out.error || "Could not save the notice", true);
 
   const was = editingNotice;
@@ -1069,12 +1059,7 @@ $("nList").addEventListener("click", async (e) => {
 });
 
 async function postNotice(body){
-  const res = await fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(Object.assign({ password: ADMIN_API_PASSWORD }, body))
-  });
-  return await res.json();
+  return await mqPostAdmin(body);
 }
 
 
@@ -1099,8 +1084,7 @@ function batchShareUrl(b){
 
 async function loadBatches(){
   try{
-    const res = await fetch(`${SCRIPT_URL}?action=listBatches&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
-    const out = await res.json();
+    const out = await fetchBatches();
     batches = (out.result === "success") ? (out.batches || []) : [];
   }catch(e){ console.error(e); batches = []; }
   renderBatches();
@@ -1144,12 +1128,7 @@ function renderBatches(){
 }
 
 async function postBatch(body){
-  const res = await fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(Object.assign({ password: ADMIN_API_PASSWORD }, body))
-  });
-  return await res.json();
+  return await mqPostAdmin(body);
 }
 
 /* ---------------- Batch form ---------------- */
@@ -1251,8 +1230,7 @@ $("bList").addEventListener("click", async (e) => {
   }
   if(act === "edit"){
     if(!courses.length) await loadCourses();
-    const full = await fetch(`${SCRIPT_URL}?action=getBatchAdmin&password=${encodeURIComponent(ADMIN_API_PASSWORD)}&batchId=${encodeURIComponent(b.batchId)}`);
-    const out = await full.json();
+    const out = await fetchBatchAdmin(b.batchId, "");
     if(out.result !== "success") return toast(out.error || "Could not open the batch", true);
     openBatchForm(out.batch);
     return;
@@ -1285,9 +1263,7 @@ async function openRoster(batchId){
 async function loadRoster(){
   const month = $("rMonth").value || thisMonth();
   try{
-    const res = await fetch(`${SCRIPT_URL}?action=getBatchAdmin&password=${encodeURIComponent(ADMIN_API_PASSWORD)}` +
-                            `&batchId=${encodeURIComponent(rosterBatch)}&month=${encodeURIComponent(month)}`);
-    rosterData = await res.json();
+    rosterData = await fetchBatchAdmin(rosterBatch, month);
   }catch(e){ console.error(e); rosterData = null; }
 
   if(!rosterData || rosterData.result !== "success"){
@@ -1493,8 +1469,7 @@ async function loadClasses(){
     if(!mqConfigured()){
       throw new Error("SCRIPT_URL is not set in this file yet.");
     }
-    const res = await fetch(`${SCRIPT_URL}?action=listClasses&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
-    const data = await res.json();
+    const data = await fetchClasses();
     if(data.result !== "success") throw new Error(data.error || "Failed to load");
 
     classes = data.classes || [];
@@ -1873,12 +1848,7 @@ $("formSaveBtn").onclick = async () => {
       studyMaterial: smStringify(smCollect()),
       hifzLink:      $("fHifzLink").value.trim()
     };
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
+    const data = await mqPost(payload);
     if(data.result !== "success") throw new Error(data.error || "Save failed");
 
     closeModal("formModal");
@@ -1974,12 +1944,7 @@ $("resetLinkBtn").onclick = () => {
     `The current link for ${shareTarget["Student Name"]} will stop working immediately. Anyone still using it will lose access.`,
     async () => {
       try{
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action:"resetToken", password: ADMIN_API_PASSWORD, classId: shareTarget["Class ID"] })
-        });
-        const data = await res.json();
+        const data = await resetClassToken(shareTarget["Class ID"]);
         if(data.result !== "success") throw new Error(data.error || "Reset failed");
 
         shareTarget["Share Token"] = data.token;
@@ -2000,12 +1965,7 @@ function askDelete(c){
     `${c["Student Name"]} (${c["Student ID"]}) will be permanently removed, and their share link will stop working. This cannot be undone.`,
     async () => {
       try{
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action:"deleteClass", password: ADMIN_API_PASSWORD, classId: c["Class ID"] })
-        });
-        const data = await res.json();
+        const data = await deleteClassApi(c["Class ID"]);
         if(data.result !== "success") throw new Error(data.error || "Delete failed");
         toast("Class sheet deleted");
         loadClasses();
