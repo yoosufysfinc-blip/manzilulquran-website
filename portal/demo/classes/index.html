@@ -206,6 +206,19 @@
         <p>Who is on this batch, and who has paid this month.</p>
       </div>
       <div class="modal-body">
+        <div class="t-link">
+          <div class="t-link-head">
+            <span class="t-link-title">Teacher link</span>
+            <span class="t-link-note">Opens without signing in. No fee check, no device limit.</span>
+          </div>
+          <input type="text" id="tLinkInput" readonly />
+          <div class="t-link-btns">
+            <button class="btn-outline sm" id="tCopyBtn">Copy</button>
+            <button class="btn-outline sm" id="tWaBtn">WhatsApp</button>
+            <button class="btn-ghost sm danger" id="tResetBtn">Reset</button>
+          </div>
+        </div>
+
         <div class="r-monthbar">
           <label for="rMonth">Month</label>
           <input type="month" id="rMonth" />
@@ -1282,6 +1295,7 @@ async function loadRoster(){
     return;
   }
   $("rTitle").textContent = rosterData.batch.name + " · Roster & fees";
+  renderTeacherLink();
   renderRoster();
 }
 
@@ -1389,6 +1403,47 @@ $("rAddBtn").addEventListener("click", async () => {
   ["rName","rSid","rEmail","rDob"].forEach(id => $(id).value = "");
   await loadRoster();
   toast("Student added — they still need a paid tick for this month");
+});
+
+
+/* ---------------- Teacher link ----------------
+   A second token per batch. Resetting it kills only the teacher's link —
+   students stay signed in, which matters when a teacher is replaced
+   mid-month and thirty children are mid-course. */
+function teacherLinkUrl(){
+  if(!rosterData || !rosterData.batch || !rosterData.batch.teacherToken) return "";
+  return window.location.origin + mqUrl("/class/") + "?tb=" + encodeURIComponent(rosterData.batch.teacherToken);
+}
+
+function renderTeacherLink(){
+  $("tLinkInput").value = teacherLinkUrl();
+}
+
+$("tCopyBtn").addEventListener("click", () => {
+  const v = teacherLinkUrl();
+  if(!v) return;
+  navigator.clipboard.writeText(v).then(() => toast("Teacher link copied"),
+                                        () => toast("Could not copy — select it by hand", true));
+});
+
+$("tWaBtn").addEventListener("click", () => {
+  const v = teacherLinkUrl();
+  if(!v || !rosterData) return;
+  const msg = `Assalamu Alaikum 👋\n\n*${rosterData.batch.name}* — teacher link:\n${v}\n\nThis opens the batch timetable directly, no sign-in needed.`;
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+});
+
+$("tResetBtn").addEventListener("click", () => {
+  if(!rosterData) return;
+  askConfirm("Reset the teacher link?",
+    "The current teacher link stops working immediately. Students are not affected — nobody is signed out and the student link does not change.",
+    async () => {
+      const out = await postBatch({ action: "resetTeacherToken", batchId: rosterBatch });
+      if(out.result !== "success") return toast(out.error || "Could not reset the link", true);
+      rosterData.batch.teacherToken = out.token;
+      renderTeacherLink();
+      toast("New teacher link created");
+    });
 });
 
 /* ---------------- Lock ---------------- */
