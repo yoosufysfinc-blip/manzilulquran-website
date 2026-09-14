@@ -525,6 +525,8 @@ const BATCH_SESSION_KEY = 'mq_batch_session_';
 const BATCH_DEVICE_KEY  = 'mq_device_id';
 
 let batchToken = '';
+let batchMode  = false;   // this sheet is a batch (student or teacher view)
+let batchShare = '';      // the batch's STUDENT link token, for invites
 
 /* A random id for this browser, kept locally. It is not an identifier
    of the person — it exists so the academy can cap how many devices one
@@ -665,6 +667,8 @@ $('liEmail').addEventListener('keydown', e => { if(e.key === 'Enter') $('liDob')
    where a batch genuinely differs: no join date, no per-student study
    material, and the batch name shown above the student's own. */
 function renderBatch(d){
+  batchMode = true;
+  batchShare = d.shareToken || '';
   studentNameCache = d.studentName || 'Student';
   $('studentName').innerHTML = accentLastWord(studentNameCache);
   $('headSub').textContent = d.teacher ? 'Teacher view' : (d.batchName || 'Batch class');
@@ -920,14 +924,29 @@ function renderCalBody(){
 function sendInvite(isoDay){
   const d = parseDate(isoDay);
   const pretty = d ? d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : isoDay;
-  const url = `${location.origin}${mqUrl('/join/')}?t=${encodeURIComponent(shareToken)}&dt=${encodeURIComponent(isoDay)}`;
+  /* A batch has one link for the whole group and no per-student token, so
+     a /join/ invite would carry an empty t= and land on "invalid link".
+     The batch invite points at the batch link itself instead — the student
+     still signs in, and still has to be ticked as paid. */
+  const url = batchMode
+    ? `${location.origin}${mqUrl('/class/')}?b=${encodeURIComponent(batchShare)}&d=${encodeURIComponent(isoDay)}`
+    : `${location.origin}${mqUrl('/join/')}?t=${encodeURIComponent(shareToken)}&dt=${encodeURIComponent(isoDay)}`;
 
-  const msg =
-    `Assalamu Alaikum 🌙\n\n` +
-    `*${studentNameCache}* — Quran class\n` +
-    `📅 ${pretty}\n\n` +
-    `Join here:\n${url}\n\n` +
-    `_ManzilulQuran E-learning Academy_`;
+  /* A batch message goes to a whole group, so it names the batch and says
+     plainly that a sign-in is still needed. Otherwise the first reply is
+     always "it asked me for my email". */
+  const msg = batchMode
+    ? `Assalamu Alaikum 🌙\n\n` +
+      `*${studentNameCache}* — Quran class\n` +
+      `📅 ${pretty}\n\n` +
+      `Open here:\n${url}\n\n` +
+      `Sign in with the email and date of birth given to the academy.\n\n` +
+      `_ManzilulQuran E-learning Academy_`
+    : `Assalamu Alaikum 🌙\n\n` +
+      `*${studentNameCache}* — Quran class\n` +
+      `📅 ${pretty}\n\n` +
+      `Join here:\n${url}\n\n` +
+      `_ManzilulQuran E-learning Academy_`;
 
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
 }
