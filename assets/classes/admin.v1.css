@@ -10,6 +10,9 @@
     --gold-warm:#ffb86b;
     --cream:#faf6ee;
     --cream-dim:rgba(250,246,238,0.7);
+    /* Used by the study-material label ported from the live admin, which
+       defines it but our split did not carry across. */
+    --cream-faint:rgba(250,246,238,0.45);
     --ink:#0e1a14;
     --err:#ff9999;
     --glow-warm:rgba(255,200,140,0.3);
@@ -867,3 +870,98 @@
     .sm-summary-btn{padding:10px 18px;font-size:10.5px;flex:0 0 auto}
     .sm-modal-backdrop{z-index:200}
     .sm-modal{max-width:600px}
+  /* ---------- Roster: paid-until date ---------- */
+  .r-until{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .r-until label{
+    font-size:9.5px;font-weight:700;letter-spacing:1.2px;
+    text-transform:uppercase;color:var(--gold-light);
+  }
+  .r-date{
+    padding:8px 10px;border-radius:9px;font:inherit;font-size:13px;
+    color:var(--cream);background:rgba(0,0,0,.3);
+    border:1px solid rgba(201,169,110,.25);color-scheme:dark;
+  }
+  .r-date:focus{outline:none;border-color:var(--gold)}
+  .r-plus{
+    padding:7px 11px;border-radius:9px;cursor:pointer;
+    font:inherit;font-size:11.5px;font-weight:700;
+    color:var(--gold-light);background:rgba(201,169,110,.12);
+    border:1px solid rgba(201,169,110,.28);
+  }
+  .r-plus:active{transform:translateY(1px)}
+  .r-state{
+    font-size:10.5px;font-weight:700;letter-spacing:.4px;
+    padding:4px 9px;border-radius:999px;white-space:nowrap;
+  }
+  .r-state.ok{color:var(--emerald-glow);background:rgba(45,212,164,.12)}
+  .r-state.soon{color:var(--gold-warm);background:rgba(255,184,107,.14)}
+  .r-state.over{color:var(--err);background:rgba(255,153,153,.12)}
+  .r-state.none{color:var(--cream-dim);background:rgba(255,255,255,.06)}
+  .r-monthnote{font-size:11px;color:var(--cream-dim);opacity:.75}
+
+  /* ============================================================
+     GLASS — a surface treatment, not a new palette.
+     The emerald-and-gold identity is unchanged; panels simply become
+     frosted rather than flat. Kept in one block so it can be removed
+     in one piece if it ever needs to go.
+     ============================================================ */
+  .stat, .b-card, .r-row, .crs-row, .ntc-item, .t-link,
+  .ws-empty, .ws-tab, .r-add, .b-hint, .sm-summary{
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+            backdrop-filter:blur(14px) saturate(140%);
+    background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.028));
+    border-color:rgba(255,255,255,.12);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 8px 26px rgba(0,0,0,.2);
+  }
+  .ws-tab.active{
+    background:linear-gradient(90deg,var(--gold-light),var(--gold));
+    box-shadow:0 6px 20px rgba(201,169,110,.28);
+  }
+  .modal{
+    -webkit-backdrop-filter:blur(22px) saturate(150%);
+            backdrop-filter:blur(22px) saturate(150%);
+    background:linear-gradient(165deg,rgba(18,92,68,.78),rgba(3,27,19,.9));
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14), 0 26px 70px rgba(0,0,0,.5);
+  }
+  .modal-backdrop{
+    -webkit-backdrop-filter:blur(4px);
+            backdrop-filter:blur(4px);
+  }
+  .lock-screen{
+    -webkit-backdrop-filter:blur(18px);
+            backdrop-filter:blur(18px);
+  }
+
+  /* TOUCH. Every control answers the finger immediately: no 300ms wait,
+     no blue flash, and a press state that is visible on a phone. */
+  button, .btn-gold, .btn-ghost, .btn-solid, .btn-outline, .ws-tab,
+  .subj-chip, .ntc-type, .crs-toggle, .r-plus, .sm-summary-btn{
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+    transition:transform .08s ease, filter .12s ease, background .16s ease;
+  }
+  button:active, .btn-gold:active, .btn-ghost:active, .btn-solid:active,
+  .btn-outline:active, .ws-tab:active, .subj-chip:active, .ntc-type:active,
+  .crs-toggle:active, .r-plus:active, .sm-summary-btn:active{
+    transform:scale(.97);
+    filter:brightness(1.12);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    button:active, .btn-gold:active, .btn-ghost:active, .btn-solid:active,
+    .btn-outline:active, .ws-tab:active{transform:none}
+  }
+
+  /* Blur is expensive on older phones. Where it is unsupported the
+     gradient alone still reads as a panel, so nothing breaks. */
+  @supports not (backdrop-filter: blur(1px)){
+    .stat, .b-card, .r-row, .crs-row, .ntc-item, .t-link, .modal{
+      background:rgba(3,27,19,.92);
+    }
+  }
+
+  @media (max-width:560px){
+    .r-until{width:100%}
+    .r-date{flex:1}
+  }
