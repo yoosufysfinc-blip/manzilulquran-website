@@ -679,12 +679,22 @@ function renderBatch(d){
 
   // Grace: they are in, but on last month's payment. Say so plainly rather
   // than letting the lockout arrive as a surprise in a few days.
+  /* Say it before it happens. A child locked out mid-week with no warning
+     is a phone call to the academy; a week's notice is not. */
   const banner = $('statusBanner');
+  const left = (d.daysLeft === null || d.daysLeft === undefined) ? null : d.daysLeft;
+  banner.classList.remove('show', 'warn');
+
   if(d.grace){
-    banner.textContent = `Your fee for this month hasn't been recorded yet. You can still join for the first ${d.graceDays} day${d.graceDays === 1 ? '' : 's'} — please contact the academy.`;
+    banner.textContent = d.paidUntil
+      ? `Your access ran out on ${fmtDate(d.paidUntil)}. You can still join for a few days — please contact the academy.`
+      : `Your fee for this month hasn't been recorded yet. You can still join for the first ${d.graceDays} day${d.graceDays === 1 ? '' : 's'} — please contact the academy.`;
     banner.classList.add('show', 'warn');
-  } else {
-    banner.classList.remove('show', 'warn');
+  } else if(left !== null && left <= 5){
+    banner.textContent = left === 0
+      ? `Today is your last day on this batch. Please contact the academy to continue.`
+      : `${left} day${left === 1 ? '' : 's'} left on your batch, until ${fmtDate(d.paidUntil)}. Please contact the academy to continue.`;
+    banner.classList.add('show', 'warn');
   }
 
   const wa = $('waBtn');
