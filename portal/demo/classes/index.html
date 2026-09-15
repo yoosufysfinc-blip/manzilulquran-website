@@ -409,7 +409,10 @@
           </div>
           <div class="field full">
             <label>Study Material <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— tick any courses this student may open</span></label>
-            <div class="sm-wrap" id="fSmList"></div>
+            <div class="sm-summary">
+              <span id="fSmSummaryText">No study material selected</span>
+              <button type="button" class="btn-outline sm-summary-btn" id="smOpenBtn">Add Study Material</button>
+            </div>
           </div>
           <div class="field full">
             <label>Hifz Report Link <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— paste from the Hifz Command Center (share ▸). Shows a button on the class sheet.</span></label>
@@ -425,6 +428,22 @@
       <div class="modal-foot">
         <button class="btn-outline" id="formCancelBtn">Cancel</button>
         <button class="btn-solid" id="formSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDY MATERIAL MODAL — glass popup, stacks above the class-sheet modal -->
+  <div class="modal-backdrop sm-modal-backdrop" id="smModal">
+    <div class="modal sm-modal">
+      <div class="modal-head">
+        <h3>Study <span class="accent">Material</span></h3>
+        <p>Tick any courses this student may open. Leave lessons unticked to give the whole course.</p>
+      </div>
+      <div class="modal-body">
+        <div class="sm-wrap" id="fSmList"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-solid" id="smDoneBtn">Done</button>
       </div>
     </div>
   </div>
@@ -1780,12 +1799,24 @@ function smBuild(assigned){
         !on.checked ? "" : (n === 0 ? "whole course" : n + " of " + chips.length);
       chips.forEach(c => c.closest(".sm-chk").classList.toggle("on", c.checked));
     };
-    on.onchange = sync;
-    chips.forEach(c => c.onchange = sync);
-    box.querySelector(".sm-all").onclick  = () => { chips.forEach(c => c.checked = true);  sync(); };
-    box.querySelector(".sm-none").onclick = () => { chips.forEach(c => c.checked = false); sync(); };
+    on.onchange = () => { sync(); updateSmSummary(); };
+    chips.forEach(c => c.onchange = () => { sync(); updateSmSummary(); });
+    box.querySelector(".sm-all").onclick  = () => { chips.forEach(c => c.checked = true);  sync(); updateSmSummary(); };
+    box.querySelector(".sm-none").onclick = () => { chips.forEach(c => c.checked = false); sync(); updateSmSummary(); };
     sync();
   });
+  updateSmSummary();
+}
+
+/* Short label for the summary row shown in the main form */
+function smSummaryLabel(){
+  const list = smCollect();
+  if(!list.length) return "No study material selected";
+  if(list.length === 1) return (SM_CATALOG[list[0].course] || {}).title || "1 course selected";
+  return list.length + " courses selected";
+}
+function updateSmSummary(){
+  $("fSmSummaryText").textContent = smSummaryLabel();
 }
 
 /* Read the picker back out */
@@ -1823,6 +1854,11 @@ function openForm(c){
 }
 
 $("formCancelBtn").onclick = () => closeModal("formModal");
+
+/* The picker is its own modal now, stacked above the class-sheet form.
+   Done only closes it — nothing is saved until the form itself is saved. */
+$("smOpenBtn").onclick = () => openModal("smModal");
+$("smDoneBtn").onclick = () => { updateSmSummary(); closeModal("smModal"); };
 
 $("formSaveBtn").onclick = async () => {
   if(!validateForm()) return;
