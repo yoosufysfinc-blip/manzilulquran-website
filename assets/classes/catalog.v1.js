@@ -9,6 +9,10 @@
    in the admin copy asked whoever edited it to remember the other.
    This is the one copy. Add a course here and it appears in both.
 
+   UPDATED to match the live admin: 13 books, not 4. The live pages had
+   moved ahead of the demo while the split was being built, so this file
+   was re-taken from live/class/index.html rather than hand-merged.
+
    NOTE ON THE KEYS. Two of them do not match their folder names:
      "tharbiya-level-2"              -> a file in foundation-of-islamic-studies/
      "foundation-of-islamic-studies" -> a file in tharbiya-level-2/
@@ -87,7 +91,177 @@ const SM_CATALOG = {
       "Manners of Speech",
       "Conduct with Friends"
     ]
-  }
+  },
+  "first-ayat": {
+    title: "My First Ayat",
+    path : "/portal/study-material/foundation-of-islamic-studies/first-ayat.html",
+    lessons: [
+      "Letters Hold Hands",
+      "One Letter, Three Faces",
+      "From Letters to Words",
+      "Al-Fatihah",
+      "Three Short Surahs"
+    ]
+  },
+  "qasas-ul-anbiya": {
+    title: "Qasas ul-Anbiya",
+    path : "/portal/study-material/tharbiya-level-2/qasas-ul-anbiya.html",
+    lessons: [
+      "Adam and the Names",
+      "Nuh and the Ark",
+      "Ibrahim and the Fire",
+      "Yusuf and His Brothers",
+      "Musa and Fir'awn",
+      "Dawud and the Giant",
+      "Sulayman and the Ant",
+      "Yunus in the Deep",
+      "Maryam and Isa",
+      "Muhammad ﷺ — Mercy to the Worlds"
+    ]
+  },
+  "dua-adhkar": {
+    title: "Dua wa Adhkar",
+    path : "/portal/study-material/tharbiya-level-2/dua-adhkar.html",
+    lessons: [
+      "Waking Up & Going to Sleep",
+      "Eating & Drinking",
+      "Home, Bathroom & Clothes",
+      "Travel & the Road",
+      "Morning Adhkar",
+      "Evening Adhkar",
+      "After Every Salah",
+      "When You Are Afraid, Sad or Sick",
+      "For Parents, Teachers & Friends",
+      "Rabbana — Duas from the Qur'an"
+    ]
+  },
+  "salah-complete": {
+    title: "Salah Complete",
+    path : "/portal/study-material/thazkiya-level-3/salah-complete.html",
+    lessons: [
+      "Why Salah",
+      "The Five Prayers",
+      "Conditions Before You Stand",
+      "Adhan and Iqamah",
+      "Niyyah for Every Prayer",
+      "Takbir to Ruku",
+      "Sujud to Salam",
+      "What We Recite",
+      "After the Salam",
+      "Sujud as-Sahw",
+      "What Breaks the Prayer",
+      "Missed Prayers and Qada'",
+      "Travelling",
+      "Praying Behind an Imam",
+      "Jumuah",
+      "Sunnah and Nafl",
+      "Prayers for Special Times",
+      "Khushu",
+      "Minor Ritual Impurity",
+      "Major Ritual Impurity",
+      "Janabah — Causes and Rulings",
+      "Hayd and Nifas",
+      "When There Is No Water"
+    ]
+  },
+  "akhirah": {
+    title: "The Last Journey",
+    path : "/portal/study-material/thazkiya-level-3/akhirah.html",
+    lessons: [
+      "The Moment Itself",
+      "The Barzakh",
+      "The Two Questioners",
+      "A Garden or a Pit",
+      "The Horn",
+      "Standing Again",
+      "The Gathering",
+      "The Long Wait",
+      "The Great Intercession",
+      "The Hawd",
+      "The Books Given Out",
+      "The Reckoning",
+      "The Scales",
+      "The Bridge",
+      "The Fire",
+      "The Garden, and What Is Better"
+    ]
+  },
+  "arabic-language": {
+    title: "Arabic for Beginners",
+    path : "/portal/study-material/thazkiya-level-3/arabic-language.html",
+    lessons: [
+      "Greetings and Names",
+      "This and That",
+      "My Family",
+      "In the House",
+      "Colours",
+      "Numbers",
+      "Asking Questions",
+      "What I Do Every Day",
+      "School and Masjid",
+      "Talking Together"
+    ]
+  },
+  "seerah": {
+    title: "As-Sirah an-Nabawiyyah",
+    path : "/portal/study-material/thazkiya-level-3/seerah.html",
+    lessons: [
+      "Before the Light",
+      "The Orphan of Makkah",
+      "Al-Amin",
+      "Read",
+      "The First Believers",
+      "The Years of Pain",
+      "The Year of Sorrow",
+      "The Night Journey",
+      "The Hijrah",
+      "Building Madinah",
+      "Badr",
+      "Uhud and the Trench",
+      "The Treaty and the Opening",
+      "The Farewell",
+      "Until We Meet Him"
+    ]
+  },
+  "makarim-al-akhlaq": {
+    title: "Makarim al-Akhlaq",
+    path : "/portal/study-material/thazkiya-level-3/makarim-al-akhlaq.html",
+    lessons: [
+      "For Allah Alone",
+      "Modesty",
+      "Humility",
+      "Keeping the Family Tie",
+      "Charity Begins at Home",
+      "And Charity Beyond It",
+      "Thinking Well of People",
+      "Swallowing Anger",
+      "Pardoning",
+      "Keeping Your Word",
+      "Gratitude",
+      "Justice, Even Against Yourself"
+    ]
+  },
+  "halal-haram": {
+    title: "Halal and Haram",
+    path : "/portal/study-material/thazkiya-level-3/halal-haram.html",
+    lessons: [
+      "The Default Is Permission",
+      "The Five Rulings",
+      "The Doubtful Middle",
+      "What Makes Meat Halal",
+      "What Is Forbidden to Eat",
+      "Labels, Gelatine and Eating Out",
+      "Intoxicants",
+      "What Is Impure",
+      "Dogs — Najis, But Not Untouchable",
+      "Purifying and Cleaning",
+      "Halal Earning",
+      "Clothing and Adornment",
+      "Screens",
+      "Boundaries",
+      "When You Are Not Sure"
+    ]
+  },
 };
 
 function smParse(raw){
@@ -130,4 +304,3 @@ function smBlock(entry, n, many){
     <div class="sm-list">${rows}</div>
   </div>`;
 }
-
