@@ -1,21 +1,22 @@
 /* admin.v1.css — extracted verbatim from the single-file build. Published files are immutable; create .v2 to change. */
   :root{
-    --emerald-deepest:#031b13;
-    --emerald-deep:#0a3d2e;
-    --emerald:#125c44;
-    --emerald-light:#1a7a5a;
-    --emerald-glow:#2dd4a4;
+    /* PREMIUM DARK GLASSMORPHISM — charcoal base, emerald highlight,
+       gold accent. Names kept, values changed, for the same reason as the
+       student sheet: the rules below already use these tokens. */
+    --emerald-deepest:#07090a;
+    --emerald-deep:#0b0e10;
+    --emerald:#111517;
+    --emerald-light:#181d20;
+    --emerald-glow:#10b981;
     --gold:#c9a961;
     --gold-light:#e4c987;
     --gold-warm:#ffb86b;
-    --cream:#faf6ee;
-    --cream-dim:rgba(250,246,238,0.7);
-    /* Used by the study-material label ported from the live admin, which
-       defines it but our split did not carry across. */
-    --cream-faint:rgba(250,246,238,0.45);
-    --ink:#0e1a14;
+    --cream:#f4f1ea;
+    --cream-dim:rgba(244,241,234,0.68);
+    --cream-faint:rgba(244,241,234,0.42);
+    --ink:#07090a;
     --err:#ff9999;
-    --glow-warm:rgba(255,200,140,0.3);
+    --glow-warm:rgba(201,169,97,0.28);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   body{
@@ -645,25 +646,25 @@
   }
   .ntc-phone{
     padding:14px;border-radius:22px;
-    background:linear-gradient(165deg,#0e1e3a,#070f22);
-    border:1px solid rgba(140,180,255,.2);
+    background:linear-gradient(165deg,#111517,#07090a);
+    border:1px solid rgba(94,234,212,.2);
   }
   .ntc-prev-card{
     padding:18px 15px;border-radius:16px;text-align:center;
-    background:linear-gradient(165deg,#132546,#0b1830);
-    border:1px solid rgba(140,180,255,.26);
+    background:linear-gradient(165deg,#111517,#0b0e10);
+    border:1px solid rgba(94,234,212,.26);
   }
   .ntc-prev-kind{
     font-size:9.5px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;
-    color:rgba(214,228,255,.55);margin-bottom:6px;
+    color:rgba(244,241,234,.55);margin-bottom:6px;
   }
-  .ntc-prev-title{font-size:16px;font-weight:800;color:#eaf1ff;line-height:1.3}
-  .ntc-prev-msg{margin-top:8px;font-size:13px;line-height:1.6;color:rgba(214,228,255,.75);
+  .ntc-prev-title{font-size:16px;font-weight:800;color:#f4f1ea;line-height:1.3}
+  .ntc-prev-msg{margin-top:8px;font-size:13px;line-height:1.6;color:rgba(244,241,234,.75);
                 word-break:break-word}
   .ntc-prev-btn{
     margin-top:15px;padding:10px;border-radius:11px;
-    font-size:13px;font-weight:800;color:#04101f;
-    background:linear-gradient(135deg,#8fd0ff,#5b9dff);
+    font-size:13px;font-weight:800;color:#06120d;
+    background:linear-gradient(135deg,#5eead4,#10b981);
   }
   .ntc-p-urgent{border-color:rgba(255,154,166,.42)}
   .ntc-p-urgent .ntc-prev-btn{background:linear-gradient(135deg,#ffc2cb,#ff9aa6)}
@@ -964,4 +965,100 @@
   @media (max-width:560px){
     .r-until{width:100%}
     .r-date{flex:1}
+  }
+
+  /* ============================================================
+     MOSQUE HEADER
+     A blurred architectural image across the TOP of the page only,
+     fading to nothing by roughly a third of the way down, so the page
+     below stays plain charcoal and text never fights the picture.
+
+     THE IMAGE IS OPTIONAL. Drop a file at /assets/mosque.jpg and it
+     appears. With no file, the layer below still draws a soft emerald
+     dome-and-arch silhouette in pure CSS, so the page never looks
+     broken or half-loaded.
+
+     It is fixed, pointer-events:none and behind everything, so it can
+     never intercept a tap — the mistake the notice overlay made.
+     ============================================================ */
+  .mosque-bg{
+    position:fixed;
+    top:0;left:0;right:0;
+    height:46vh;
+    z-index:0;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .mosque-bg::before{
+    content:"";
+    position:absolute;inset:0;
+    background-image:var(--mosque-img, none);
+    background-size:cover;
+    background-position:center 28%;
+    filter:blur(2.5px) saturate(85%) brightness(.55);
+    opacity:.5;
+    transform:scale(1.06);   /* hides the soft edge the blur leaves */
+  }
+  /* The CSS-only fallback: a dome and two arches, drawn in emerald. */
+  .mosque-bg::after{
+    content:"";
+    position:absolute;inset:0;
+    background:
+      radial-gradient(60% 46% at 50% 82%, rgba(16,185,129,.16), transparent 70%),
+      radial-gradient(16% 26% at 50% 60%, rgba(201,169,97,.12), transparent 72%),
+      radial-gradient(9%  20% at 30% 74%, rgba(16,185,129,.10), transparent 74%),
+      radial-gradient(9%  20% at 70% 74%, rgba(16,185,129,.10), transparent 74%);
+    filter:blur(10px);
+  }
+  /* The fade. Charcoal at the bottom edge, so the image dissolves into
+     the page instead of stopping at a line. */
+  .mosque-veil{
+    position:fixed;
+    top:0;left:0;right:0;
+    height:46vh;
+    z-index:0;
+    pointer-events:none;
+    background:linear-gradient(180deg,
+      rgba(7,9,10,.30) 0%,
+      rgba(7,9,10,.55) 45%,
+      rgba(7,9,10,.85) 78%,
+      rgba(7,9,10,1)  100%);
+  }
+  /* Everything the person reads sits above it. */
+  .wrap, .sheet, .admin, .lock-screen, .state, .modal-backdrop,
+  .ntc-modal, .login-card, .toast{ position:relative; z-index:1; }
+
+  @media (max-width:520px){
+    .mosque-bg, .mosque-veil{ height:38vh; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .mosque-bg::before{ transform:none; }
+  }
+
+  /* ============================================================
+     TRANSLUCENT RINGS
+     A hairline highlight along the top edge of a glass panel is what
+     makes it read as a lit sheet of glass rather than a flat grey box.
+     Applied with an inset shadow, so it costs no extra element and
+     cannot affect layout.
+     ============================================================ */
+  .card, .info-item, .cal-card, .day, .ntc-card, .login-card,
+  .ntc-modal-card, .stat, .b-card, .r-row, .crs-row, .ntc-item,
+  .t-link, .ws-empty, .r-add, .modal, .sm-summary{
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.14),
+      inset 0 0 0 1px rgba(255,255,255,.045),
+      0 10px 34px rgba(0,0,0,.34);
+  }
+  /* A gold hairline on the things that matter most. */
+  .modal, .login-card, .ntc-modal-card{
+    box-shadow:
+      inset 0 1px 0 rgba(228,201,135,.24),
+      inset 0 0 0 1px rgba(255,255,255,.05),
+      0 26px 70px rgba(0,0,0,.55);
+  }
+  /* Ringed controls: pills with a visible glass edge. */
+  .pill, .ws-tab, .tab, .subj-chip, .ntc-type, .r-state, .r-flag,
+  .ntc-badge, .ntc-status, .crs-sub{
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
   }
