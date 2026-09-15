@@ -220,10 +220,11 @@
         </div>
 
         <div class="r-monthbar">
-          <label for="rMonth">Month</label>
+          <label for="rMonth">Billing month</label>
           <input type="month" id="rMonth" />
-          <button class="btn-outline sm" id="rCopyPrev">Copy last month</button>
-          <button class="btn-solid sm" id="rSaveAccess">Save ticks</button>
+          <span class="r-monthnote">for the record only — access is the date on each row</span>
+          <button class="btn-outline sm" id="rExtendAll">Extend all +30 days</button>
+          <button class="btn-solid sm" id="rSaveAccess">Save dates</button>
         </div>
         <div id="rList"><div class="loading"><div class="loading-spin"></div><div>Loading roster…</div></div></div>
 
@@ -1300,26 +1301,52 @@ function renderRoster(){
     $("rList").innerHTML = '<div class="empty-state">Nobody on this batch yet. Add the first student below.</div>';
     return;
   }
-  $("rList").innerHTML = r.map(st => `
+
+  /* One date per student, not one tick per month. A class that starts on
+     the 15th runs to the 15th, and each child keeps their own cycle. */
+  $("rList").innerHTML = r.map(st => {
+    const left = st.daysLeft;
+    let state = "none", label = "No access set";
+    if(st.paidUntil){
+      if(left > 7)      { state = "ok";   label = `${left} days left`; }
+      else if(left >= 0){ state = "soon"; label = left === 0 ? "Last day" : `${left} day${left === 1 ? '' : 's'} left`; }
+      else              { state = "over"; label = `Expired ${Math.abs(left)} day${Math.abs(left) === 1 ? '' : 's'} ago`; }
+    } else if(st.allowed){
+      state = "ok"; label = "Ticked for this month";
+    }
+    return `
     <div class="r-row${st.active ? '' : ' off'}" data-sid="${escapeHtml(st.studentId)}">
-      <label class="r-tick">
-        <input type="checkbox" class="r-allow"${st.allowed ? " checked" : ""}>
-        <span>Paid</span>
-      </label>
       <div class="r-who">
         <div class="r-name">${escapeHtml(st.studentName)}</div>
         <div class="r-meta">${escapeHtml(st.studentId)} · ${escapeHtml(st.email)} · ${escapeHtml(st.dob)}</div>
       </div>
+      <div class="r-until">
+        <label>Paid until</label>
+        <input type="date" class="r-date" value="${escapeHtml(st.paidUntil || '')}" />
+        <button class="r-plus" data-act="plus30" title="Add 30 days">+30d</button>
+      </div>
       <div class="r-flags">
-        ${st.lastMonth ? '<span class="r-flag">paid last month</span>' : ''}
+        <span class="r-state ${state}">${escapeHtml(label)}</span>
         <span class="r-flag${st.devices >= 2 ? ' full' : ''}">${st.devices}/2 devices</span>
       </div>
       <div class="r-btns">
         <button class="btn-ghost sm" data-act="devices">Reset devices</button>
         <button class="btn-ghost sm danger" data-act="remove">Remove</button>
       </div>
-    </div>`).join("");
+    </div>`;
+  }).join("");
 }
+
+/* Dates are handled as plain yyyy-mm-dd strings throughout — never as Date
+   objects, which is what turned the month column into a date and broke
+   every tick. */
+function addDaysStr(dateStr, n){
+  const base = dateStr ? new Date(dateStr + "T00:00:00Z") : new Date();
+  if(isNaN(base.getTime())) return "";
+  base.setUTCDate(base.getUTCDate() + n);
+  return base.toISOString().slice(0, 10);
+}
+function todayISO(){ return new Date().toISOString().slice(0, 10); }
 
 $("rMonth").addEventListener("change", loadRoster);
 $("rCloseBtn").addEventListener("click", async () => {
@@ -1327,22 +1354,34 @@ $("rCloseBtn").addEventListener("click", async () => {
   await loadBatches();      // the card counts will have moved
 });
 
-$("rCopyPrev").addEventListener("click", () => {
+/* Adds 30 days to everyone at once. From their existing date if it has
+   not passed, otherwise from today — so a lapsed student does not get
+   credited for the weeks they were locked out. On screen only; nothing is
+   written until Save dates. */
+$("rExtendAll").addEventListener("click", () => {
   if(!rosterData) return;
-  // Ticks only — nothing is written until Save ticks is pressed.
+  const today = todayISO();
   $("rList").querySelectorAll(".r-row").forEach(row => {
-    const st = rosterData.roster.find(x => x.studentId === row.dataset.sid);
-    if(st) row.querySelector(".r-allow").checked = st.lastMonth;
+    const inp = row.querySelector(".r-date");
+    const from = (inp.value && inp.value >= today) ? inp.value : today;
+    inp.value = addDaysStr(from, 30);
   });
-  toast("Copied last month — press Save ticks to apply");
+  toast("Extended by 30 days — press Save dates to apply");
 });
 
 $("rSaveAccess").addEventListener("click", async () => {
   if(!rosterData) return;
-  const entries = [...$("rList").querySelectorAll(".r-row")].map(row => ({
-    studentId: row.dataset.sid,
-    allowed: row.querySelector(".r-allow").checked
-  }));
+  const today = todayISO();
+  const entries = [...$("rList").querySelectorAll(".r-row")].map(row => {
+    const until = row.querySelector(".r-date").value || "";
+    return {
+      studentId: row.dataset.sid,
+      paidUntil: until,
+      // The legacy tick is kept in step, so anything still reading it
+      // agrees with the date.
+      allowed: !!until && until >= today
+    };
+  });
   const out = await postBatch({
     action: "setAccess",
     batchId: rosterBatch,
@@ -1361,6 +1400,13 @@ $("rList").addEventListener("click", async (e) => {
   const sid = row.dataset.sid;
   const act = e.target.dataset.act;
 
+  if(act === "plus30"){
+    const inp = row.querySelector(".r-date");
+    const today = todayISO();
+    const from = (inp.value && inp.value >= today) ? inp.value : today;
+    inp.value = addDaysStr(from, 30);
+    return;                       // Save dates writes it
+  }
   if(act === "devices"){
     const out = await postBatch({ action: "resetDevices", batchId: rosterBatch, studentId: sid });
     if(out.result !== "success") return toast(out.error || "Could not reset", true);
