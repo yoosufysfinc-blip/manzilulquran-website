@@ -13,8 +13,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="/assets/classes/sheet.v1.css?b=1" />
+<style>
+  /* Set the header image here. Comment this line out, or delete the file,
+     and the CSS silhouette takes over with no other change. */
+  :root{ --mosque-img: url("/assets/mosque.jpg"); }
+</style>
 </head>
 <body>
+<!-- Mosque header. Purely decorative: fixed, behind everything, and
+     pointer-events:none so it can never intercept a tap. Drop a file at
+     /assets/mosque.jpg to use a photo; without one, a CSS silhouette
+     shows instead. -->
+<div class="mosque-bg" aria-hidden="true"></div>
+<div class="mosque-veil" aria-hidden="true"></div>
+
 
   <div class="aurora" aria-hidden="true"></div>
   <div class="sky" id="sky" aria-hidden="true"></div>
