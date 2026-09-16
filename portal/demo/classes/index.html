@@ -219,12 +219,35 @@
           </div>
         </div>
 
-        <div class="r-monthbar">
-          <label for="rMonth">Billing month</label>
-          <input type="month" id="rMonth" />
-          <span class="r-monthnote">for the record only — access is the date on each row</span>
-          <button class="btn-outline sm" id="rExtendAll">Start next session for all</button>
-          <button class="btn-solid sm" id="rSaveAccess">Save dates</button>
+        <div class="r-session">
+          <div class="r-session-head">
+            <span class="r-session-title">Batch session <b id="rSesNo">—</b></span>
+            <span class="r-session-sub" id="rSesLine">One window for the whole batch. Everyone on the roster sits inside it.</span>
+          </div>
+          <div class="r-session-grid">
+            <div class="r-fld">
+              <label>Start</label>
+              <input type="date" id="rSesStart" />
+            </div>
+            <div class="r-fld r-fld-days">
+              <label>Days</label>
+              <input type="number" id="rSesDays" min="1" max="400" placeholder="30" />
+            </div>
+            <div class="r-fld">
+              <label>Ends</label>
+              <div class="r-end" id="rSesEnd">—</div>
+            </div>
+          </div>
+          <div class="r-session-btns">
+            <button class="btn-outline sm" id="rSesSave">Save dates</button>
+            <button class="btn-gold sm" id="rSesNext">Start next session</button>
+          </div>
+          <div class="r-session-warn">Starting the next session unticks everyone. Last session's record is kept.</div>
+        </div>
+
+        <div class="r-ticksbar">
+          <span id="rPaidCount">—</span>
+          <button class="btn-solid sm" id="rSaveAccess">Save ticks</button>
         </div>
         <div id="rList"><div class="loading"><div class="loading-spin"></div><div>Loading roster…</div></div></div>
 
@@ -1275,13 +1298,14 @@ function thisMonth(){
 
 async function openRoster(batchId){
   rosterBatch = batchId;
-  if(!$("rMonth").value) $("rMonth").value = thisMonth();
   openModal("rosterModal");
   await loadRoster();
 }
 
 async function loadRoster(){
-  const month = $("rMonth").value || thisMonth();
+  /* The billing month is only a filing label now — access is decided by
+     the batch session, not by the month. */
+  const month = thisMonth();
   try{
     rosterData = await fetchBatchAdmin(rosterBatch, month);
   }catch(e){ console.error(e); rosterData = null; }
@@ -1292,6 +1316,7 @@ async function loadRoster(){
   }
   $("rTitle").textContent = rosterData.batch.name + " · Roster & fees";
   renderTeacherLink();
+  renderSession();
   renderRoster();
 }
 
@@ -1304,47 +1329,32 @@ function renderRoster(){
 
   /* One date per student, not one tick per month. A class that starts on
      the 15th runs to the 15th, and each child keeps their own cycle. */
-  $("rList").innerHTML = r.map(st => {
-    const left = st.daysLeft;
-    let state = "none", label = "No access set";
-    if(st.paidUntil){
-      if(left > 7)      { state = "ok";   label = `${left} days left`; }
-      else if(left >= 0){ state = "soon"; label = left === 0 ? "Last day" : `${left} day${left === 1 ? '' : 's'} left`; }
-      else              { state = "over"; label = `Expired ${Math.abs(left)} day${Math.abs(left) === 1 ? '' : 's'} ago`; }
-    } else if(st.allowed){
-      state = "ok"; label = "Ticked for this month";
-    }
-    return `
+  $("rList").innerHTML = r.map(st => `
     <div class="r-row${st.active ? '' : ' off'}" data-sid="${escapeHtml(st.studentId)}">
+      <label class="r-tick">
+        <input type="checkbox" class="r-allow"${st.allowed ? " checked" : ""}>
+        <span>Paid</span>
+      </label>
       <div class="r-who">
         <div class="r-name">${escapeHtml(st.studentName)}</div>
         <div class="r-meta">${escapeHtml(st.studentId)} · ${escapeHtml(st.email)} · ${escapeHtml(st.dob)}</div>
       </div>
-      <div class="r-until">
-        <div class="r-fld">
-          <label>Session start</label>
-          <input type="date" class="r-start" value="${escapeHtml(st.sessionStart || '')}" />
-        </div>
-        <div class="r-fld r-fld-days">
-          <label>Days</label>
-          <input type="number" class="r-days" min="1" max="400" value="${st.sessionDays || ''}" placeholder="30" />
-        </div>
-        <div class="r-fld">
-          <label>Ends</label>
-          <div class="r-end" data-end>${st.paidUntil ? escapeHtml(fmtDate(st.paidUntil)) : '—'}</div>
-        </div>
-      </div>
       <div class="r-flags">
-        <span class="r-state ${state}">${escapeHtml(label)}</span>
         <span class="r-flag${st.devices >= 2 ? ' full' : ''}">${st.devices}/2 devices</span>
       </div>
       <div class="r-btns">
-        <button class="btn-ghost sm" data-act="renew">Next session</button>
         <button class="btn-ghost sm" data-act="devices">Reset devices</button>
         <button class="btn-ghost sm danger" data-act="remove">Remove</button>
       </div>
-    </div>`;
-  }).join("");
+    </div>`).join("");
+
+  updatePaidCount();
+}
+
+function updatePaidCount(){
+  const boxes = [...$("rList").querySelectorAll(".r-allow")];
+  const n = boxes.filter(b => b.checked).length;
+  $("rPaidCount").textContent = `${n} of ${boxes.length} paid for this session`;
 }
 
 /* Dates are handled as plain yyyy-mm-dd strings throughout — never as Date
@@ -1378,13 +1388,9 @@ function addDaysStr(dateStr, n){
 }
 function todayISO(){ return new Date().toISOString().slice(0, 10); }
 
-$("rList").addEventListener("input", (e) => {
-  if(e.target.classList.contains("r-start") || e.target.classList.contains("r-days")){
-    refreshRowEnd(e.target.closest(".r-row"));
-  }
-});
 
-$("rMonth").addEventListener("change", loadRoster);
+
+
 $("rCloseBtn").addEventListener("click", async () => {
   closeModal("rosterModal");
   await loadBatches();      // the card counts will have moved
@@ -1394,40 +1400,17 @@ $("rCloseBtn").addEventListener("click", async () => {
    not passed, otherwise from today — so a lapsed student does not get
    credited for the weeks they were locked out. On screen only; nothing is
    written until Save dates. */
-$("rExtendAll").addEventListener("click", () => {
-  if(!rosterData) return;
-  const today = todayISO();
-  $("rList").querySelectorAll(".r-row").forEach(row => {
-    const st = row.querySelector(".r-start"), dy = row.querySelector(".r-days");
-    const days = parseInt(dy.value, 10) || 30;
-    const end = sessionEndStr(st.value, days);
-    st.value = (end && end >= today) ? addDaysStr(end, 1) : today;
-    dy.value = days;
-    refreshRowEnd(row);
-  });
-  toast("Next session started for everyone — press Save dates to apply");
-});
+
 
 $("rSaveAccess").addEventListener("click", async () => {
   if(!rosterData) return;
-  const today = todayISO();
-  const entries = [...$("rList").querySelectorAll(".r-row")].map(row => {
-    const start = row.querySelector(".r-start").value || "";
-    const days  = row.querySelector(".r-days").value || "";
-    const until = sessionEndStr(start, days);
-    return {
-      studentId: row.dataset.sid,
-      sessionStart: start,
-      sessionDays: days,
-      paidUntil: until,
-      // The legacy tick is kept in step, so anything still reading it agrees.
-      allowed: !!until && until >= today
-    };
-  });
+  const entries = [...$("rList").querySelectorAll(".r-row")].map(row => ({
+    studentId: row.dataset.sid,
+    allowed: row.querySelector(".r-allow").checked
+  }));
   const out = await postBatch({
     action: "setAccess",
     batchId: rosterBatch,
-    month: $("rMonth").value || thisMonth(),
     entries: entries
   });
   if(out.result !== "success") return toast(out.error || "Could not save", true);
@@ -1442,21 +1425,6 @@ $("rList").addEventListener("click", async (e) => {
   const sid = row.dataset.sid;
   const act = e.target.dataset.act;
 
-  if(act === "renew"){
-    /* Start the next session the day after this one ends, so sessions run
-       back to back with no gap and no overlap. If the last one already
-       lapsed, start today instead — nobody is credited for weeks they
-       were locked out. */
-    const row_start = row.querySelector(".r-start");
-    const row_days  = row.querySelector(".r-days");
-    const days = parseInt(row_days.value, 10) || 30;
-    const end  = sessionEndStr(row_start.value, days);
-    const today = todayISO();
-    row_start.value = (end && end >= today) ? addDaysStr(end, 1) : today;
-    row_days.value  = days;
-    refreshRowEnd(row);
-    return;                       // Save dates writes it
-  }
   if(act === "devices"){
     const out = await postBatch({ action: "resetDevices", batchId: rosterBatch, studentId: sid });
     if(out.result !== "success") return toast(out.error || "Could not reset", true);
@@ -1535,6 +1503,93 @@ $("tResetBtn").addEventListener("click", () => {
       renderTeacherLink();
       toast("New teacher link created");
     });
+});
+
+
+/* ---------------- Batch session ----------------
+   ONE window for the whole batch. Students sit inside it whether they
+   joined on day 1 or day 20, and each pays for the same window. Starting
+   the next session issues a new number on the server, which is what
+   unticks everyone — last session's record is kept, not wiped. */
+function renderSession(){
+  const ses = rosterData && rosterData.session;
+  if(ses){
+    $("rSesNo").textContent   = "#" + ses.no;
+    $("rSesStart").value      = ses.start;
+    $("rSesDays").value       = ses.days;
+    $("rSesEnd").textContent  = fmtDate(ses.end);
+    const left = Math.round((new Date(ses.end + "T00:00:00Z") - new Date(todayISO() + "T00:00:00Z")) / 86400000);
+    $("rSesLine").textContent = left >= 0
+      ? `${ses.days} days from ${fmtDate(ses.start)} · ${left} day${left === 1 ? '' : 's'} left`
+      : `Ended ${Math.abs(left)} day${Math.abs(left) === 1 ? '' : 's'} ago — start the next session`;
+  } else {
+    $("rSesNo").textContent   = "—";
+    $("rSesStart").value      = "";
+    $("rSesDays").value       = "";
+    $("rSesEnd").textContent  = "—";
+    $("rSesLine").textContent = "No session yet. Set a start date and length, then Save dates.";
+  }
+  refreshSesEnd();
+}
+
+/* The end date is shown, never typed, and derived exactly as the server
+   derives it — so what the admin sees and what the door enforces cannot
+   drift apart. Inclusive of the first day. */
+function sessionEndStr(start, days){
+  const n = parseInt(days, 10);
+  if(!start || isNaN(n) || n < 1) return "";
+  const d = new Date(start + "T00:00:00Z");
+  if(isNaN(d.getTime())) return "";
+  d.setUTCDate(d.getUTCDate() + n - 1);
+  return d.toISOString().slice(0, 10);
+}
+function refreshSesEnd(){
+  const end = sessionEndStr($("rSesStart").value, $("rSesDays").value);
+  $("rSesEnd").textContent = end ? fmtDate(end) : "—";
+}
+["rSesStart","rSesDays"].forEach(id => $(id).addEventListener("input", refreshSesEnd));
+
+async function saveSession(advance){
+  const start = $("rSesStart").value, days = $("rSesDays").value;
+  if(!start || !days) return toast("A session needs a start date and a length", true);
+
+  const out = await postBatch({
+    action: "setBatchSession",
+    batchId: rosterBatch,
+    sessionStart: start,
+    sessionDays: days,
+    advance: advance === true
+  });
+  if(out.result !== "success") return toast(out.error || "Could not save the session", true);
+
+  await loadRoster();
+  toast(out.reset ? "New session started — everyone is unticked" : "Session dates saved");
+}
+
+$("rSesSave").addEventListener("click", () => saveSession(false));
+$("rSesNext").addEventListener("click", () => {
+  const cur = rosterData && rosterData.session;
+  // The next session begins the day after this one ends, so sessions run
+  // back to back with no gap and no overlap.
+  const nextStart = cur ? (function(){
+    const d = new Date(cur.end + "T00:00:00Z");
+    d.setUTCDate(d.getUTCDate() + 1);
+    return d.toISOString().slice(0, 10);
+  })() : todayISO();
+  const days = (cur && cur.days) || 30;
+
+  askConfirm("Start the next session?",
+    `The new session runs ${days} days from ${fmtDate(nextStart)}. Every student becomes unticked and must be marked paid again. This session's record is kept.`,
+    async () => {
+      $("rSesStart").value = nextStart;
+      $("rSesDays").value = days;
+      refreshSesEnd();
+      await saveSession(true);
+    });
+});
+
+$("rList").addEventListener("change", (e) => {
+  if(e.target.classList.contains("r-allow")) updatePaidCount();
 });
 
 /* ---------------- Lock ---------------- */
