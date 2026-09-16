@@ -12,20 +12,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="/assets/classes/admin.v1.css" />
-<style>
-  /* Set the header image here. Comment this line out, or delete the file,
-     and the CSS silhouette takes over with no other change. */
-  :root{ --mosque-img: url("/assets/mosque.jpg"); }
-</style>
 </head>
 <body>
-<!-- Mosque header. Purely decorative: fixed, behind everything, and
-     pointer-events:none so it can never intercept a tap. Drop a file at
-     /assets/mosque.jpg to use a photo; without one, a CSS silhouette
-     shows instead. -->
-<div class="mosque-bg" aria-hidden="true"></div>
-<div class="mosque-veil" aria-hidden="true"></div>
-
 
   <!-- LOCK -->
   <div class="lock-screen" id="lockScreen">
@@ -235,7 +223,7 @@
           <label for="rMonth">Billing month</label>
           <input type="month" id="rMonth" />
           <span class="r-monthnote">for the record only — access is the date on each row</span>
-          <button class="btn-outline sm" id="rExtendAll">Extend all +30 days</button>
+          <button class="btn-outline sm" id="rExtendAll">Start next session for all</button>
           <button class="btn-solid sm" id="rSaveAccess">Save dates</button>
         </div>
         <div id="rList"><div class="loading"><div class="loading-spin"></div><div>Loading roster…</div></div></div>
@@ -1333,15 +1321,25 @@ function renderRoster(){
         <div class="r-meta">${escapeHtml(st.studentId)} · ${escapeHtml(st.email)} · ${escapeHtml(st.dob)}</div>
       </div>
       <div class="r-until">
-        <label>Paid until</label>
-        <input type="date" class="r-date" value="${escapeHtml(st.paidUntil || '')}" />
-        <button class="r-plus" data-act="plus30" title="Add 30 days">+30d</button>
+        <div class="r-fld">
+          <label>Session start</label>
+          <input type="date" class="r-start" value="${escapeHtml(st.sessionStart || '')}" />
+        </div>
+        <div class="r-fld r-fld-days">
+          <label>Days</label>
+          <input type="number" class="r-days" min="1" max="400" value="${st.sessionDays || ''}" placeholder="30" />
+        </div>
+        <div class="r-fld">
+          <label>Ends</label>
+          <div class="r-end" data-end>${st.paidUntil ? escapeHtml(fmtDate(st.paidUntil)) : '—'}</div>
+        </div>
       </div>
       <div class="r-flags">
         <span class="r-state ${state}">${escapeHtml(label)}</span>
         <span class="r-flag${st.devices >= 2 ? ' full' : ''}">${st.devices}/2 devices</span>
       </div>
       <div class="r-btns">
+        <button class="btn-ghost sm" data-act="renew">Next session</button>
         <button class="btn-ghost sm" data-act="devices">Reset devices</button>
         <button class="btn-ghost sm danger" data-act="remove">Remove</button>
       </div>
@@ -1352,6 +1350,26 @@ function renderRoster(){
 /* Dates are handled as plain yyyy-mm-dd strings throughout — never as Date
    objects, which is what turned the month column into a date and broke
    every tick. */
+/* The end date is shown, never typed. It is derived the same way the
+   server derives it, so what the admin sees and what the door enforces
+   cannot drift apart. Inclusive of the first day. */
+function sessionEndStr(start, days){
+  const n = parseInt(days, 10);
+  if(!start || isNaN(n) || n < 1) return "";
+  const d = new Date(start + "T00:00:00Z");
+  if(isNaN(d.getTime())) return "";
+  d.setUTCDate(d.getUTCDate() + n - 1);
+  return d.toISOString().slice(0, 10);
+}
+
+function refreshRowEnd(row){
+  const start = row.querySelector(".r-start").value;
+  const days  = row.querySelector(".r-days").value;
+  const end   = sessionEndStr(start, days);
+  row.querySelector("[data-end]").textContent = end ? fmtDate(end) : "—";
+  return end;
+}
+
 function addDaysStr(dateStr, n){
   const base = dateStr ? new Date(dateStr + "T00:00:00Z") : new Date();
   if(isNaN(base.getTime())) return "";
@@ -1359,6 +1377,12 @@ function addDaysStr(dateStr, n){
   return base.toISOString().slice(0, 10);
 }
 function todayISO(){ return new Date().toISOString().slice(0, 10); }
+
+$("rList").addEventListener("input", (e) => {
+  if(e.target.classList.contains("r-start") || e.target.classList.contains("r-days")){
+    refreshRowEnd(e.target.closest(".r-row"));
+  }
+});
 
 $("rMonth").addEventListener("change", loadRoster);
 $("rCloseBtn").addEventListener("click", async () => {
@@ -1374,23 +1398,29 @@ $("rExtendAll").addEventListener("click", () => {
   if(!rosterData) return;
   const today = todayISO();
   $("rList").querySelectorAll(".r-row").forEach(row => {
-    const inp = row.querySelector(".r-date");
-    const from = (inp.value && inp.value >= today) ? inp.value : today;
-    inp.value = addDaysStr(from, 30);
+    const st = row.querySelector(".r-start"), dy = row.querySelector(".r-days");
+    const days = parseInt(dy.value, 10) || 30;
+    const end = sessionEndStr(st.value, days);
+    st.value = (end && end >= today) ? addDaysStr(end, 1) : today;
+    dy.value = days;
+    refreshRowEnd(row);
   });
-  toast("Extended by 30 days — press Save dates to apply");
+  toast("Next session started for everyone — press Save dates to apply");
 });
 
 $("rSaveAccess").addEventListener("click", async () => {
   if(!rosterData) return;
   const today = todayISO();
   const entries = [...$("rList").querySelectorAll(".r-row")].map(row => {
-    const until = row.querySelector(".r-date").value || "";
+    const start = row.querySelector(".r-start").value || "";
+    const days  = row.querySelector(".r-days").value || "";
+    const until = sessionEndStr(start, days);
     return {
       studentId: row.dataset.sid,
+      sessionStart: start,
+      sessionDays: days,
       paidUntil: until,
-      // The legacy tick is kept in step, so anything still reading it
-      // agrees with the date.
+      // The legacy tick is kept in step, so anything still reading it agrees.
       allowed: !!until && until >= today
     };
   });
@@ -1412,11 +1442,19 @@ $("rList").addEventListener("click", async (e) => {
   const sid = row.dataset.sid;
   const act = e.target.dataset.act;
 
-  if(act === "plus30"){
-    const inp = row.querySelector(".r-date");
+  if(act === "renew"){
+    /* Start the next session the day after this one ends, so sessions run
+       back to back with no gap and no overlap. If the last one already
+       lapsed, start today instead — nobody is credited for weeks they
+       were locked out. */
+    const row_start = row.querySelector(".r-start");
+    const row_days  = row.querySelector(".r-days");
+    const days = parseInt(row_days.value, 10) || 30;
+    const end  = sessionEndStr(row_start.value, days);
     const today = todayISO();
-    const from = (inp.value && inp.value >= today) ? inp.value : today;
-    inp.value = addDaysStr(from, 30);
+    row_start.value = (end && end >= today) ? addDaysStr(end, 1) : today;
+    row_days.value  = days;
+    refreshRowEnd(row);
     return;                       // Save dates writes it
   }
   if(act === "devices"){
