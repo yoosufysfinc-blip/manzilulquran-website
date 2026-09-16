@@ -4,16 +4,16 @@
     --night-deep:#080d1f;
     --night:#0e1630;
     --slate:#16224a;
-    --azure:#10b981;
-    --azure-light:#5eead4;
-    --azure-glow:rgba(16,185,129,0.35);
+    --azure:#5b9dff;
+    --azure-light:#8fd0ff;
+    --azure-glow:rgba(91,157,255,0.35);
     --iris:#8b7fd4;
     --frost:#e9eefc;
-    --frost-dim:rgba(244,241,234,0.62);
-    --frost-faint:rgba(244,241,234,0.32);
+    --frost-dim:rgba(233,238,252,0.62);
+    --frost-faint:rgba(233,238,252,0.32);
     --silver:#a9b8d8;
     --rose:#ff9aa6;
-    --mint:#5eead4;
+    --mint:#8fd0ff;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   body{
@@ -32,8 +32,8 @@
   .aurora{
     position:fixed;inset:-25%;pointer-events:none;z-index:0;
     background:
-      radial-gradient(ellipse 45% 38% at 22% 28%, rgba(16,185,129,0.18), transparent 62%),
-      radial-gradient(ellipse 42% 34% at 78% 18%, rgba(15,118,110,0.14), transparent 62%);
+      radial-gradient(ellipse 45% 38% at 22% 28%, rgba(91,157,255,0.18), transparent 62%),
+      radial-gradient(ellipse 42% 34% at 78% 18%, rgba(139,127,212,0.14), transparent 62%);
     filter:blur(46px);
     animation:auroraDrift 26s ease-in-out infinite alternate;
   }
@@ -69,7 +69,7 @@
   }
   .ring{position:absolute;inset:0;transform:rotate(-90deg)}
   .ring circle{fill:none;stroke-width:2.5;stroke-linecap:round}
-  .ring .track{stroke:rgba(16,185,129,0.15)}
+  .ring .track{stroke:rgba(91,157,255,0.15)}
   .ring .prog{
     stroke:url(#ringGrad);
     stroke-dasharray:440;
@@ -86,7 +86,7 @@
   @keyframes logoIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
   @keyframes breathe{
     0%,100%{box-shadow:0 0 44px -8px var(--azure-glow)}
-    50%{box-shadow:0 0 62px -6px rgba(16,185,129,0.55)}
+    50%{box-shadow:0 0 62px -6px rgba(91,157,255,0.55)}
   }
   .logo-circle img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
 
@@ -135,7 +135,7 @@
   }
 
   .rule{display:flex;align-items:center;justify-content:center;gap:12px;margin:26px auto 22px;max-width:250px}
-  .rule i{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(16,185,129,0.4),transparent)}
+  .rule i{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(91,157,255,0.4),transparent)}
   .rule span{
     font-size:8.5px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
     color:var(--frost-faint);white-space:nowrap;
@@ -214,12 +214,12 @@
   .btn-meet{
     background:linear-gradient(135deg,var(--azure) 0%,var(--iris) 100%);
     border-color:transparent;
-    color:#06120d;
+    color:#04101f;
     font-weight:800;
     box-shadow:0 6px 22px var(--azure-glow);
   }
   .btn-meet:hover{filter:brightness(1.07)}
-  .btn-meet svg{stroke:#06120d}
+  .btn-meet svg{stroke:#04101f}
 
   .renew-note{
     margin-top:14px;padding:12px 14px;border-radius:12px;
@@ -261,16 +261,16 @@
   .login-card, .ntc-modal-card{
     -webkit-backdrop-filter:blur(24px) saturate(150%);
             backdrop-filter:blur(24px) saturate(150%);
-    background:linear-gradient(165deg,rgba(17,21,23,.72),rgba(11,14,16,.82));
+    background:linear-gradient(165deg,rgba(19,37,70,.72),rgba(11,24,48,.82));
     box-shadow:inset 0 1px 0 rgba(255,255,255,.14), 0 24px 64px rgba(0,0,0,.5);
   }
   .day.spotlight, .day.today{
-    background:linear-gradient(160deg,rgba(16,185,129,.16),rgba(16,185,129,.06));
-    border-color:rgba(16,185,129,.4);
+    background:linear-gradient(160deg,rgba(91,157,255,.16),rgba(91,157,255,.06));
+    border-color:rgba(91,157,255,.4);
   }
   .tab.active{
-    background:linear-gradient(135deg,rgba(143,208,255,.9),rgba(16,185,129,.9));
-    box-shadow:0 6px 20px rgba(16,185,129,.3);
+    background:linear-gradient(135deg,rgba(143,208,255,.9),rgba(91,157,255,.9));
+    box-shadow:0 6px 20px rgba(91,157,255,.3);
   }
 
   /* TOUCH — immediate answer to a finger, no 300ms wait, no blue flash. */
@@ -294,74 +294,6 @@
 
   @supports not (backdrop-filter: blur(1px)){
     .card, .info-item, .cal-card, .day, .ntc-card, .login-card, .ntc-modal-card{
-      background:rgba(11,14,16,.9);
+      background:rgba(11,24,48,.9);
     }
-  }
-
-  /* ============================================================
-     MOSQUE HEADER
-     A blurred architectural image across the TOP of the page only,
-     fading to nothing by roughly a third of the way down, so the page
-     below stays plain charcoal and text never fights the picture.
-
-     THE IMAGE IS OPTIONAL. Drop a file at /assets/mosque.jpg and it
-     appears. With no file, the layer below still draws a soft emerald
-     dome-and-arch silhouette in pure CSS, so the page never looks
-     broken or half-loaded.
-
-     It is fixed, pointer-events:none and behind everything, so it can
-     never intercept a tap — the mistake the notice overlay made.
-     ============================================================ */
-  .mosque-bg{
-    position:fixed;
-    top:0;left:0;right:0;
-    height:46vh;
-    z-index:0;
-    pointer-events:none;
-    overflow:hidden;
-  }
-  .mosque-bg::before{
-    content:"";
-    position:absolute;inset:0;
-    background-image:var(--mosque-img, none);
-    background-size:cover;
-    background-position:center 28%;
-    filter:blur(2.5px) saturate(85%) brightness(.55);
-    opacity:.5;
-    transform:scale(1.06);   /* hides the soft edge the blur leaves */
-  }
-  /* The CSS-only fallback: a dome and two arches, drawn in emerald. */
-  .mosque-bg::after{
-    content:"";
-    position:absolute;inset:0;
-    background:
-      radial-gradient(60% 46% at 50% 82%, rgba(16,185,129,.16), transparent 70%),
-      radial-gradient(16% 26% at 50% 60%, rgba(201,169,97,.12), transparent 72%),
-      radial-gradient(9%  20% at 30% 74%, rgba(16,185,129,.10), transparent 74%),
-      radial-gradient(9%  20% at 70% 74%, rgba(16,185,129,.10), transparent 74%);
-    filter:blur(10px);
-  }
-  /* The fade. Charcoal at the bottom edge, so the image dissolves into
-     the page instead of stopping at a line. */
-  .mosque-veil{
-    position:fixed;
-    top:0;left:0;right:0;
-    height:46vh;
-    z-index:0;
-    pointer-events:none;
-    background:linear-gradient(180deg,
-      rgba(7,9,10,.30) 0%,
-      rgba(7,9,10,.55) 45%,
-      rgba(7,9,10,.85) 78%,
-      rgba(7,9,10,1)  100%);
-  }
-  /* Everything the person reads sits above it. */
-  .wrap, .sheet, .admin, .lock-screen, .state, .modal-backdrop,
-  .ntc-modal, .login-card, .toast{ position:relative; z-index:1; }
-
-  @media (max-width:520px){
-    .mosque-bg, .mosque-veil{ height:38vh; }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .mosque-bg::before{ transform:none; }
   }
