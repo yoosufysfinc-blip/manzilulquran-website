@@ -1,22 +1,21 @@
 /* admin.v1.css — extracted verbatim from the single-file build. Published files are immutable; create .v2 to change. */
   :root{
-    /* PREMIUM DARK GLASSMORPHISM — charcoal base, emerald highlight,
-       gold accent. Names kept, values changed, for the same reason as the
-       student sheet: the rules below already use these tokens. */
-    --emerald-deepest:#07090a;
-    --emerald-deep:#0b0e10;
-    --emerald:#111517;
-    --emerald-light:#181d20;
-    --emerald-glow:#10b981;
+    /* Emerald and gold — restored. The charcoal re-skin is reverted; the
+       glass surface, rings and touch feedback stay. */
+    --emerald-deepest:#031b13;
+    --emerald-deep:#0a3d2e;
+    --emerald:#125c44;
+    --emerald-light:#1a7a5a;
+    --emerald-glow:#2dd4a4;
     --gold:#c9a961;
     --gold-light:#e4c987;
     --gold-warm:#ffb86b;
-    --cream:#f4f1ea;
-    --cream-dim:rgba(244,241,234,0.68);
-    --cream-faint:rgba(244,241,234,0.42);
-    --ink:#07090a;
+    --cream:#faf6ee;
+    --cream-dim:rgba(250,246,238,0.7);
+    --cream-faint:rgba(250,246,238,0.45);
+    --ink:#0e1a14;
     --err:#ff9999;
-    --glow-warm:rgba(201,169,97,0.28);
+    --glow-warm:rgba(255,200,140,0.3);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   body{
@@ -646,30 +645,30 @@
   }
   .ntc-phone{
     padding:14px;border-radius:22px;
-    background:linear-gradient(165deg,#111517,#07090a);
+    background:linear-gradient(165deg,#0a3d2e,#031b13);
     border:1px solid rgba(94,234,212,.2);
   }
   .ntc-prev-card{
     padding:18px 15px;border-radius:16px;text-align:center;
-    background:linear-gradient(165deg,#111517,#0b0e10);
+    background:linear-gradient(165deg,#0a3d2e,#031b13);
     border:1px solid rgba(94,234,212,.26);
   }
   .ntc-prev-kind{
     font-size:9.5px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;
     color:rgba(244,241,234,.55);margin-bottom:6px;
   }
-  .ntc-prev-title{font-size:16px;font-weight:800;color:#f4f1ea;line-height:1.3}
+  .ntc-prev-title{font-size:16px;font-weight:800;color:#faf6ee;line-height:1.3}
   .ntc-prev-msg{margin-top:8px;font-size:13px;line-height:1.6;color:rgba(244,241,234,.75);
                 word-break:break-word}
   .ntc-prev-btn{
     margin-top:15px;padding:10px;border-radius:11px;
     font-size:13px;font-weight:800;color:#06120d;
-    background:linear-gradient(135deg,#5eead4,#10b981);
+    background:linear-gradient(135deg,#8fd0ff,#5b9dff);
   }
   .ntc-p-urgent{border-color:rgba(255,154,166,.42)}
   .ntc-p-urgent .ntc-prev-btn{background:linear-gradient(135deg,#ffc2cb,#ff9aa6)}
   .ntc-p-celebration{border-color:rgba(94,234,212,.4)}
-  .ntc-p-celebration .ntc-prev-btn{background:linear-gradient(135deg,#b9f5e9,#5eead4)}
+  .ntc-p-celebration .ntc-prev-btn{background:linear-gradient(135deg,#b9f5e9,#2dd4a4)}
   .ntc-p-holiday{border-color:rgba(232,210,154,.36)}
   .ntc-p-holiday .ntc-prev-btn{background:linear-gradient(135deg,#f3e4bd,#d9bd79)}
   .ntc-prev-reach{margin-top:11px;text-align:center;font-size:12px;color:var(--cream-dim)}
@@ -695,7 +694,7 @@
   }
   .ntc-b-urgent{color:#ff9aa6;background:rgba(255,154,166,.13)}
   .ntc-b-holiday{color:#e8d29a;background:rgba(232,210,154,.13)}
-  .ntc-b-celebration{color:#5eead4;background:rgba(94,234,212,.13)}
+  .ntc-b-celebration{color:#2dd4a4;background:rgba(94,234,212,.13)}
   .ntc-status{
     font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
     padding:3px 8px;border-radius:999px;border:1px solid currentColor;
@@ -877,19 +876,21 @@
     font-size:9.5px;font-weight:700;letter-spacing:1.2px;
     text-transform:uppercase;color:var(--gold-light);
   }
-  .r-date{
+  .r-fld{display:flex;flex-direction:column;gap:4px}
+  .r-fld-days{max-width:82px}
+  .r-start, .r-days{
     padding:8px 10px;border-radius:9px;font:inherit;font-size:13px;
     color:var(--cream);background:rgba(0,0,0,.3);
     border:1px solid rgba(201,169,110,.25);color-scheme:dark;
   }
-  .r-date:focus{outline:none;border-color:var(--gold)}
-  .r-plus{
-    padding:7px 11px;border-radius:9px;cursor:pointer;
-    font:inherit;font-size:11.5px;font-weight:700;
-    color:var(--gold-light);background:rgba(201,169,110,.12);
-    border:1px solid rgba(201,169,110,.28);
+  .r-start:focus, .r-days:focus{outline:none;border-color:var(--gold)}
+  /* Derived, never typed — shown as text so it cannot be edited into
+     disagreeing with start + days. */
+  .r-end{
+    padding:8px 10px;border-radius:9px;font-size:13px;font-weight:700;
+    color:var(--gold-light);background:rgba(201,169,110,.08);
+    border:1px dashed rgba(201,169,110,.28);white-space:nowrap;
   }
-  .r-plus:active{transform:translateY(1px)}
   .r-state{
     font-size:10.5px;font-weight:700;letter-spacing:.4px;
     padding:4px 9px;border-radius:999px;white-space:nowrap;
@@ -965,74 +966,6 @@
   @media (max-width:560px){
     .r-until{width:100%}
     .r-date{flex:1}
-  }
-
-  /* ============================================================
-     MOSQUE HEADER
-     A blurred architectural image across the TOP of the page only,
-     fading to nothing by roughly a third of the way down, so the page
-     below stays plain charcoal and text never fights the picture.
-
-     THE IMAGE IS OPTIONAL. Drop a file at /assets/mosque.jpg and it
-     appears. With no file, the layer below still draws a soft emerald
-     dome-and-arch silhouette in pure CSS, so the page never looks
-     broken or half-loaded.
-
-     It is fixed, pointer-events:none and behind everything, so it can
-     never intercept a tap — the mistake the notice overlay made.
-     ============================================================ */
-  .mosque-bg{
-    position:fixed;
-    top:0;left:0;right:0;
-    height:46vh;
-    z-index:0;
-    pointer-events:none;
-    overflow:hidden;
-  }
-  .mosque-bg::before{
-    content:"";
-    position:absolute;inset:0;
-    background-image:var(--mosque-img, none);
-    background-size:cover;
-    background-position:center 28%;
-    filter:blur(2.5px) saturate(85%) brightness(.55);
-    opacity:.5;
-    transform:scale(1.06);   /* hides the soft edge the blur leaves */
-  }
-  /* The CSS-only fallback: a dome and two arches, drawn in emerald. */
-  .mosque-bg::after{
-    content:"";
-    position:absolute;inset:0;
-    background:
-      radial-gradient(60% 46% at 50% 82%, rgba(16,185,129,.16), transparent 70%),
-      radial-gradient(16% 26% at 50% 60%, rgba(201,169,97,.12), transparent 72%),
-      radial-gradient(9%  20% at 30% 74%, rgba(16,185,129,.10), transparent 74%),
-      radial-gradient(9%  20% at 70% 74%, rgba(16,185,129,.10), transparent 74%);
-    filter:blur(10px);
-  }
-  /* The fade. Charcoal at the bottom edge, so the image dissolves into
-     the page instead of stopping at a line. */
-  .mosque-veil{
-    position:fixed;
-    top:0;left:0;right:0;
-    height:46vh;
-    z-index:0;
-    pointer-events:none;
-    background:linear-gradient(180deg,
-      rgba(7,9,10,.30) 0%,
-      rgba(7,9,10,.55) 45%,
-      rgba(7,9,10,.85) 78%,
-      rgba(7,9,10,1)  100%);
-  }
-  /* Everything the person reads sits above it. */
-  .wrap, .sheet, .admin, .lock-screen, .state, .modal-backdrop,
-  .ntc-modal, .login-card, .toast{ position:relative; z-index:1; }
-
-  @media (max-width:520px){
-    .mosque-bg, .mosque-veil{ height:38vh; }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .mosque-bg::before{ transform:none; }
   }
 
   /* ============================================================
