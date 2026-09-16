@@ -878,19 +878,54 @@
   }
   .r-fld{display:flex;flex-direction:column;gap:4px}
   .r-fld-days{max-width:82px}
-  .r-start, .r-days{
-    padding:8px 10px;border-radius:9px;font:inherit;font-size:13px;
+  .r-fld input{
+    padding:9px 11px;border-radius:9px;font:inherit;font-size:13.5px;
     color:var(--cream);background:rgba(0,0,0,.3);
     border:1px solid rgba(201,169,110,.25);color-scheme:dark;
   }
-  .r-start:focus, .r-days:focus{outline:none;border-color:var(--gold)}
-  /* Derived, never typed — shown as text so it cannot be edited into
-     disagreeing with start + days. */
+  .r-fld input:focus{outline:none;border-color:var(--gold)}
+  .r-fld label{
+    font-size:9.5px;font-weight:700;letter-spacing:1.2px;
+    text-transform:uppercase;color:var(--gold-light);
+  }
+  /* Derived, never typed, so it cannot disagree with start + days. */
   .r-end{
-    padding:8px 10px;border-radius:9px;font-size:13px;font-weight:700;
+    padding:9px 11px;border-radius:9px;font-size:13.5px;font-weight:700;
     color:var(--gold-light);background:rgba(201,169,110,.08);
     border:1px dashed rgba(201,169,110,.28);white-space:nowrap;
   }
+
+  /* ---------- The batch session panel ---------- */
+  .r-session{
+    padding:15px;border-radius:14px;margin-bottom:14px;
+    background:rgba(201,169,110,.05);
+    border:1px solid rgba(201,169,110,.22);
+  }
+  .r-session-title{
+    font-size:10.5px;font-weight:700;letter-spacing:1.8px;
+    text-transform:uppercase;color:var(--gold-light);
+  }
+  .r-session-title b{color:var(--cream);letter-spacing:0}
+  .r-session-sub{display:block;margin-top:3px;font-size:12.5px;color:var(--cream-dim);line-height:1.5}
+  .r-session-grid{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:flex-end}
+  .r-session-btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .r-session-warn{
+    margin-top:10px;font-size:11.5px;line-height:1.5;
+    color:var(--gold-warm);opacity:.85;
+  }
+
+  .r-ticksbar{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding-bottom:12px;margin-bottom:12px;
+    border-bottom:1px solid rgba(201,169,110,.14);
+    font-size:12.5px;color:var(--cream-dim);
+  }
+  .r-ticksbar .btn-solid{margin-left:auto}
+
+  .r-tick{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+  .r-tick input{accent-color:var(--emerald-glow);width:19px;height:19px;cursor:pointer}
+  .r-tick span{font-size:9.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--cream-dim)}
+
   .r-state{
     font-size:10.5px;font-weight:700;letter-spacing:.4px;
     padding:4px 9px;border-radius:999px;white-space:nowrap;
