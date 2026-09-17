@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/explainer/explainer.v1.css" />
 <style>
   :root{
     --ink:#06392B;
@@ -19,17 +20,32 @@
     --t:3s; /* night transition length */
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%;overflow:hidden}
+
+  /* CHANGED: the page now scrolls so the explainer can sit below the card.
+     Was: html,body{height:100%;overflow:hidden} */
+  html{scroll-behavior:smooth}
   body{
+    min-height:100%;
     font-family:'Poppins',sans-serif;color:var(--cream);
     background:radial-gradient(circle at 25% 20%,#0E5A43 0%,#073325 55%,#04231A 100%);
-    display:grid;place-items:center;position:relative;
-    transition:background var(--t) ease-in-out
+    background-attachment:fixed;
+    position:relative;
+    transition:background var(--t) ease-in-out;
+    overflow-x:hidden;
   }
-  body.night{background:radial-gradient(circle at 50% 30%,#063524 0%,#02130D 55%,#00060499 100%),#010C07}
+  body.night{background:radial-gradient(circle at 50% 30%,#063524 0%,#02130D 55%,#00060499 100%),#010C07;background-attachment:fixed}
 
-  /* drifting clouds */
-  .cloud{position:absolute;border-radius:50%;filter:blur(80px);z-index:0;transition:opacity var(--t) ease}
+  /* CHANGED: the card used to be centred by body{display:grid;place-items:center}.
+     That job now belongs to .hero, so the card looks identical on first paint. */
+  .hero{
+    position:relative;z-index:2;
+    min-height:100svh;min-height:100vh;
+    display:grid;place-items:center;
+    padding:clamp(20px,5vh,40px) 0 clamp(64px,10vh,90px);
+  }
+
+  /* CHANGED: fixed, so they stay as backdrop across the whole scroll */
+  .cloud{position:fixed;border-radius:50%;filter:blur(80px);z-index:0;transition:opacity var(--t) ease}
   .cloud.c1{width:420px;height:420px;background:rgba(27,122,90,.55);top:-100px;left:-120px;animation:drift1 34s ease-in-out infinite}
   .cloud.c2{width:380px;height:380px;background:rgba(201,169,110,.40);bottom:-130px;right:-110px;animation:drift2 42s ease-in-out infinite}
   .cloud.c3{width:300px;height:300px;background:rgba(14,124,88,.45);top:60%;left:55%;animation:drift3 38s ease-in-out infinite}
@@ -133,11 +149,41 @@
   body.night .ribbon{text-shadow:0 0 16px rgba(196,232,255,.55)}
   .brand{margin-top:8px;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(251,247,239,.55)}
 
+  /* ---- NEW: scroll cue at the foot of the hero ---- */
+  .scroll-cue{
+    position:absolute;left:50%;bottom:clamp(18px,4vh,34px);transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:7px;
+    color:rgba(251,247,239,.62);text-decoration:none;
+    font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+    min-height:44px;justify-content:flex-end;
+    animation:cueIn .8s 1.4s cubic-bezier(.2,.8,.3,1) both
+  }
+  .scroll-cue:hover{color:var(--gold-bright)}
+  .scroll-cue i{display:block;width:1px;height:26px;background:linear-gradient(to bottom,transparent,var(--gold));animation:cueDrop 2s ease-in-out infinite}
+  @keyframes cueIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+  @keyframes cueDrop{0%,100%{opacity:.35;transform:translateY(-4px)}50%{opacity:1;transform:translateY(4px)}}
+
+  /* ---- NEW: the explainer band ---- */
+  .explainer-band{
+    position:relative;z-index:5;
+    padding:clamp(28px,6vh,64px) 0 clamp(48px,9vh,96px);
+  }
+  .band-head{text-align:center;margin-bottom:clamp(16px,3vh,28px);padding:0 16px}
+  .band-head .k{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+  .band-head h2{
+    font-family:'Cormorant Garamond',serif;font-weight:700;color:#fff;
+    font-size:clamp(1.7rem,6vw,2.8rem);line-height:1.05;margin-top:6px;
+    text-shadow:0 0 24px rgba(240,217,168,.35)
+  }
+  .band-head p{color:rgba(251,247,239,.62);font-weight:300;font-size:clamp(.8rem,2.3vw,.95rem);margin-top:7px}
+
   @media (max-height:600px){ h1{font-size:clamp(2.6rem,9vh,4rem)} .stats{margin:12px 0} .note-wrap{height:clamp(92px,17vh,116px)} }
   @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
     .cloud,.flake{animation:none}
     .note .ch{animation:none;opacity:1;filter:none;transform:none}
     .note-night{animation:none;background-position:0 0}
+    .scroll-cue,.scroll-cue i{animation:none}
   }
 
   /* Back-to-hub link (top-left corner, subtle) */
@@ -175,27 +221,43 @@
   <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
   <div class="snow" id="snow" aria-hidden="true"></div>
 
-  <main class="card">
-    <div class="bismillah">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
-    <div class="eyebrow">ManzilulQuran E-learning Academy</div>
-    <h1>Hifz</h1>
-    <div class="ar-title">حِفْظُ القُرآن</div>
-    <div class="sub">Qur'an Memorisation Programme</div>
+  <div class="hero">
+    <main class="card">
+      <div class="bismillah">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+      <div class="eyebrow">ManzilulQuran E-learning Academy</div>
+      <h1>Hifz</h1>
+      <div class="ar-title">حِفْظُ القُرآن</div>
+      <div class="sub">Qur'an Memorisation Programme</div>
 
-    <div class="stats">
-      <div class="chip"><div class="v">&#8377;3000</div><div class="k">Monthly Fees</div></div>
-      <div class="chip"><div class="v">6 <small>days</small></div><div class="k">Weekly Class</div></div>
-      <div class="chip"><div class="v">50 <small>min</small></div><div class="k">Per Session</div></div>
+      <div class="stats">
+        <div class="chip"><div class="v">&#8377;3000</div><div class="k">Monthly Fees</div></div>
+        <div class="chip"><div class="v">6 <small>days</small></div><div class="k">Weekly Class</div></div>
+        <div class="chip"><div class="v">50 <small>min</small></div><div class="k">Per Session</div></div>
+      </div>
+
+      <div class="note-wrap">
+        <span class="note" id="note"></span><span class="caret" id="caret"></span>
+        <span class="note-night" id="noteNight" aria-hidden="true"></span>
+      </div>
+
+      <div class="ribbon">وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ</div>
+      <div class="brand">Personal Mentorship · Quality-Focused Retention</div>
+    </main>
+
+    <a href="#how-it-works" class="scroll-cue">
+      <span>How it works</span>
+      <i></i>
+    </a>
+  </div>
+
+  <section class="explainer-band" id="how-it-works">
+    <div class="band-head">
+      <div class="k">Inside the programme</div>
+      <h2>How our Hifz system works</h2>
+      <p>Two minutes on the method, the revision cycle and how progress is tracked.</p>
     </div>
-
-    <div class="note-wrap">
-      <span class="note" id="note"></span><span class="caret" id="caret"></span>
-      <span class="note-night" id="noteNight" aria-hidden="true"></span>
-    </div>
-
-    <div class="ribbon">وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ</div>
-    <div class="brand">Personal Mentorship · Quality-Focused Retention</div>
-  </main>
+    <div id="course-explainer"></div>
+  </section>
 
 <script>
   const text = "Complete Hifz or a selected Surah — personal mentorship, scientific memorisation, strong recall, monthly tests, daily parent reports, and quality-focused retention.";
@@ -252,5 +314,8 @@
     requestAnimationFrame(function(){ document.body.classList.add('night'); });
   }, 10000);
 </script>
+
+<script src="../assets/explainer/engine.v1.js" defer></script>
+<script src="../assets/explainer/hifz.v1.js" defer></script>
 </body>
 </html>
