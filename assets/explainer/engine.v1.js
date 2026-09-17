@@ -376,6 +376,12 @@
     var vignette = el('div', 'xp-vignette');
     var flash = el('div', 'xp-flash');
 
+    var poster = el('button', 'xp-poster');
+    poster.type = 'button';
+    poster.setAttribute('aria-label', 'Play');
+    var disc = el('div', 'disc'); disc.appendChild(el('i'));
+    add(poster, disc, el('div', 'txt', cfg.posterLabel || 'Watch'));
+
     var caps = el('div', 'xp-caps');
     var capwrap = el('div', 'xp-capwrap');
     var capline = el('div', 'xp-capline');
@@ -383,7 +389,7 @@
     var capsweep = el('div', 'xp-capsweep');
     add(capwrap, capline, capbar, capsweep);
     caps.appendChild(capwrap);
-    add(stage, streak, vignette, flash, caps);
+    add(stage, streak, vignette, flash, caps, poster);
 
     /* controls */
     var bar = el('div', 'xp-bar');
@@ -541,19 +547,30 @@
 
     function tick(ts) {
       var dt = (ts - last) / 1000; last = ts;
+      if (dt > 0.25) dt = 0.25;                 /* never jump after a stall */
       if (playing) { vt += dt; if (vt >= END) { vt = END; setPlaying(false); } }
       render(now());
       raf = requestAnimationFrame(tick);
+    }
+    function startLoop() {
+      if (raf) return;
+      raf = requestAnimationFrame(function (ts) { last = ts; tick(ts); });
+    }
+    function stopLoop() {
+      if (!raf) return;
+      cancelAnimationFrame(raf); raf = null;
     }
 
     function setPlaying(on) {
       playing = on;
       play.textContent = on ? '❚❚ Pause' : '▶ Play';
       play.setAttribute('aria-label', on ? 'Pause' : 'Play');
+      poster.hidden = on;
     }
+    poster.onclick = function () { if (vt >= END) vt = 0; setPlaying(true); };
 
-    play.onclick = function () { if (!playing && vt >= END) vt = 0; setPlaying(!playing); };
-    replay.onclick = function () { vt = 0; activeCue = -1; setPlaying(true); };
+    play.onclick = function () { startLoop(); if (!playing && vt >= END) vt = 0; setPlaying(!playing); };
+    replay.onclick = function () { startLoop(); vt = 0; activeCue = -1; setPlaying(true); };
 
     function seek(clientX) {
       var r = track.getBoundingClientRect();
@@ -575,21 +592,30 @@
     });
     global.addEventListener('resize', function () { activeWord = null; });
 
-    /* pause when scrolled out of view — this sits below the fold */
+    /* Only animate while the player is actually on screen. It sits below the
+       fold, so without this the loop burns frames during the hero. */
     if ('IntersectionObserver' in global) {
       new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) { if (!en.isIntersecting && playing) setPlaying(false); });
-      }, { threshold: 0.25 }).observe(stage);
+        entries.forEach(function (en) {
+          if (en.isIntersecting) startLoop();
+          else { if (playing) setPlaying(false); stopLoop(); }
+        });
+      }, { threshold: 0.2 }).observe(stage);
+    } else {
+      startLoop();
     }
+    global.addEventListener('visibilitychange', function () {
+      if (document.hidden) { setPlaying(false); stopLoop(); }
+    });
 
     render(0);
-    raf = requestAnimationFrame(function (ts) { last = ts; tick(ts); });
+    setPlaying(false);
 
     return {
-      play: function () { setPlaying(true); },
+      play: function () { startLoop(); setPlaying(true); },
       pause: function () { setPlaying(false); },
       seek: function (t) { vt = clamp01(t / END) * END; activeCue = -1; render(vt); },
-      destroy: function () { if (raf) cancelAnimationFrame(raf); root.removeChild(wrap); }
+      destroy: function () { stopLoop(); root.removeChild(wrap); }
     };
   }
 
