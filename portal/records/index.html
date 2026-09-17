@@ -315,10 +315,70 @@
     .list-table td.actions button:last-child{margin-right:0}
   }
 
+  /* ---- Progress report detail + editor ---- */
+  .pr-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;margin-bottom:18px}
+  .pr-meta div{background:rgba(255,255,255,.03);padding:9px 12px}
+  .pr-meta .k{font-size:9px;letter-spacing:.9px;text-transform:uppercase;opacity:.6}
+  .pr-meta .v{font-size:13px;font-weight:500;word-break:break-word}
+  .pr-att{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:18px;
+    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+    border-radius:10px;padding:14px 16px}
+  .pr-ring{width:78px;height:78px;position:relative;flex-shrink:0}
+  .pr-ring svg{transform:rotate(-90deg)}
+  .pr-ring .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:700}
+  .pr-am{flex:1;min-width:160px;display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:9px}
+  .pr-am .k{font-size:9px;letter-spacing:.9px;text-transform:uppercase;opacity:.6}
+  .pr-am .v{font-size:15px;font-weight:600}
+  .pr-rates{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+  .pr-rate{border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:9px 12px;
+    background:rgba(255,255,255,.03)}
+  .pr-rt{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+  .pr-rl{font-size:12px;font-weight:500}
+  .pr-pill{font-size:9.5px;font-weight:700;color:#fff;padding:3px 9px;border-radius:99px;white-space:nowrap}
+  .pr-meter{height:6px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
+  .pr-meter i{display:block;height:100%;border-radius:99px}
+  .pr-cmt{font-size:11px;opacity:.7;font-style:italic;margin-top:5px}
+  .pr-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  .pr-chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--accent);
+    padding:5px 12px;border-radius:99px;font-size:12px;font-weight:500}
+  .pr-chip .st{font-size:9px;opacity:.6;font-weight:400}
+  .pr-chip button{background:none;border:none;color:inherit;opacity:.6;cursor:pointer;
+    font-size:15px;line-height:1;padding:0 2px}
+  .pr-chip button:hover{opacity:1;color:#ff9999}
+  .pr-sec{font-size:10.5px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;
+    color:var(--accent);margin:20px 0 10px}
+  .pr-pending{font-size:11px;color:#ffb86b}
+
+  .pr-edit label{display:block;font-size:11px;letter-spacing:.4px;opacity:.65;margin-bottom:5px}
+  .pr-edit input,.pr-edit select,.pr-edit textarea{width:100%;padding:9px 12px;
+    background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.14);border-radius:9px;
+    color:inherit;font-family:inherit;font-size:13px}
+  .pr-edit input:focus,.pr-edit select:focus,.pr-edit textarea:focus{outline:none;border-color:var(--accent)}
+  .pr-edit input[readonly]{background:rgba(0,0,0,.14);color:var(--accent);font-weight:600}
+  .pr-edit textarea{resize:vertical;min-height:60px;line-height:1.6}
+  .pr-edit option{background:#12291f;color:#faf6ee}
+  .pr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .pr-full{grid-column:1/-1}
+  .pr-add{display:flex;gap:7px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px}
+  .pr-add>div{flex:1;min-width:110px}
+  .pr-add button{padding:9px 16px;border-radius:9px;border:none;cursor:pointer;
+    background:var(--accent);color:#22180a;font-family:inherit;font-weight:600;font-size:12.5px}
+  @media(max-width:640px){
+    .pr-meta{grid-template-columns:1fr 1fr}
+    .pr-rates,.pr-grid{grid-template-columns:1fr}
+  }
+
   @media print{
     body{background:#fff;color:#000;padding:0}
+    .pr-edit,.pr-chip button{display:none !important}
+    .pr-meta div,.pr-att,.pr-rate{background:#faf6ee !important;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .pr-meter{background:#ddd !important}
     .admin,.modal-backdrop{position:static;background:#fff;display:block !important}
     .modal-actions,.list-wrap,.admin-head,.tabs,.stats,.crumb,.lock-screen{display:none !important}
+    .pr-meta .k,.pr-am .k,.pr-cmt{opacity:1;color:#4a5a54}
     .modal-backdrop{background:#fff;padding:0;overflow:visible}
     .modal{box-shadow:none;max-width:100%;border-radius:0;animation:none}
     .detail{padding:20px 30px}
@@ -390,6 +450,8 @@
       <div class="detail" id="detailContent"></div>
       <div class="modal-actions">
         <button class="btn-outline" id="closeModalBtn">Close</button>
+        <button class="btn-outline" id="prEditBtn" style="display:none">Edit</button>
+        <button class="btn-outline" id="prSaveBtn" style="display:none">Save changes</button>
         <button class="btn-solid" id="downloadBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Download PDF
@@ -403,13 +465,19 @@
    ░░  RECORDS  ░░
    Every submission the academy receives, in one place.
 
-   Two different backends sit behind this page — the four forms live in
-   the main spreadsheet, evaluations live in their own. The tabs hide
-   that: you just pick a record type and it loads.
+   Three different backends sit behind this page — the four forms live in
+   the main spreadsheet, evaluations live in their own, and progress
+   reports in a third. The tabs hide that: you just pick a record type
+   and it loads.
+
+   Progress reports are the only tab that WRITES back (attendance and
+   corrections are added here, never on the teacher's form), so they are
+   also the only tab with an Edit button.
    ================================================================= */
 
 const SCRIPT_MASTER = "https://script.google.com/macros/s/AKfycbzhCGlnBG6LthyJW3b-o1qERqvKY3ULuvOyCik6469tpHsRL9bJ2pJgqw6Rnkf9S84pYg/exec";
 const SCRIPT_EVAL   = "https://script.google.com/macros/s/AKfycbzSEfI9CEPSMmQLdPP_oWiT0f61jCfQBl5uNIlU9EXxNuVpIH4Y7PLBKJDgGg70O2YKqA/exec";
+const SCRIPT_PROGRESS = "https://script.google.com/macros/s/AKfycbxl0MeNhyGm7QuVFaX86LGXd58c9FsrIi53xbenYttQ_CV-XNpUh8OBqOsZYEi33wPN/exec";
 
 const PORTAL_PASSWORD = "manzil2026";
 const ADMIN_API_PASSWORD = "manzil2026admin";
@@ -430,8 +498,18 @@ const TABS = [
   { key:'complaint',  label:'Complaints',    accent:'#ff9aa6', api:'master',
     title:'Complaint',            listCols:['Timestamp','Student Name','Phone','Complaint Type'] },
   { key:'evaluation', label:'Evaluations',   accent:'#a78bfa', api:'eval',
-    title:'Class Evaluation',     listCols:[] }
+    title:'Class Evaluation',     listCols:[] },
+  { key:'progress',   label:'Progress Reports', accent:'#ffb86b', api:'progress',
+    title:'Student Progress Report', listCols:[] }
 ];
+
+/* Rating vocabulary used by the progress report form. Kept here so the
+   detail view can colour a rating and the editor can offer the same four
+   options. Changing the form's RATINGS means changing this too. */
+const PR_RATINGS = ['Excellent','Very Good','Good','Developing'];
+const PR_COLOR = { 'Excellent':'#2dd4a4','Very Good':'#5eead4','Good':'#e4c987','Developing':'#ffb86b' };
+const PR_PCT   = { 'Excellent':100,'Very Good':78,'Good':56,'Developing':34 };
+const PR_SURAHS = ["Al-Fatihah","Al-Baqarah","Aal-e-Imran","An-Nisa","Al-Ma'idah","Al-An'am","Al-A'raf","Al-Anfal","At-Tawbah","Yunus","Hud","Yusuf","Ar-Ra'd","Ibrahim","Al-Hijr","An-Nahl","Al-Isra","Al-Kahf","Maryam","Ta-Ha","Al-Anbiya","Al-Hajj","Al-Mu'minun","An-Nur","Al-Furqan","Ash-Shu'ara","An-Naml","Al-Qasas","Al-Ankabut","Ar-Rum","Luqman","As-Sajdah","Al-Ahzab","Saba","Fatir","Ya-Sin","As-Saffat","Sad","Az-Zumar","Ghafir","Fussilat","Ash-Shura","Az-Zukhruf","Ad-Dukhan","Al-Jathiyah","Al-Ahqaf","Muhammad","Al-Fath","Al-Hujurat","Qaf","Adh-Dhariyat","At-Tur","An-Najm","Al-Qamar","Ar-Rahman","Al-Waqi'ah","Al-Hadid","Al-Mujadila","Al-Hashr","Al-Mumtahanah","As-Saff","Al-Jumu'ah","Al-Munafiqun","At-Taghabun","At-Talaq","At-Tahrim","Al-Mulk","Al-Qalam","Al-Haqqah","Al-Ma'arij","Nuh","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyamah","Al-Insan","Al-Mursalat","An-Naba","An-Nazi'at","Abasa","At-Takwir","Al-Infitar","Al-Mutaffifin","Al-Inshiqaq","Al-Buruj","At-Tariq","Al-A'la","Al-Ghashiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Ad-Duha","Ash-Sharh","At-Tin","Al-Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-Adiyat","Al-Qari'ah","At-Takathur","Al-Asr","Al-Humazah","Al-Fil","Quraysh","Al-Ma'un","Al-Kawthar","Al-Kafirun","An-Nasr","Al-Masad","Al-Ikhlas","Al-Falaq","An-Nas"];
 
 /* The evaluation form's questions, with every option it offered. Needed so
    the report can show what was NOT picked as well as what was — a lone
@@ -453,6 +531,8 @@ let current = TABS[0];
 let headers = [];      // forms: column names
 let rows = [];         // forms: arrays  |  evaluations: objects
 let detail = null;
+let prFull = null;    // full progress report (master + answers + surahs)
+let prDraft = null;   // editable copy while the Edit pane is open
 
 /* ---------------- Lock ---------------- */
 function isUnlocked(){
@@ -505,8 +585,9 @@ function renderTabs(){
     });
   });
   document.documentElement.style.setProperty('--accent', current.accent);
-  $("searchInput").placeholder = current.key === 'evaluation'
-    ? 'Search by student, teacher, or rating (e.g. 5)…'
+  $("searchInput").placeholder =
+      current.key === 'evaluation' ? 'Search by student, teacher, or rating (e.g. 5)…'
+    : current.key === 'progress'   ? 'Search by student, teacher, course or report ID…'
     : 'Search by name or phone number…';
 }
 
@@ -523,6 +604,15 @@ async function load(){
       if(d.result !== 'success') throw new Error(d.error || 'Failed to load');
       headers = [];
       rows = d.evaluations || [];
+    } else if(current.api === 'progress'){
+      // Returns KEYED OBJECTS, like the evaluation script — a progress
+      // report is nested (master + answers + surahs) so the master
+      // script's positional-array shape cannot represent it.
+      const res = await fetch(`${SCRIPT_PROGRESS}?action=list&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
+      const d = await res.json();
+      if(d.result !== 'success') throw new Error(d.error || 'Failed to load');
+      headers = [];
+      rows = d.reports || [];
     } else {
       const res = await fetch(`${SCRIPT_MASTER}?action=list&formType=${current.key}&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
       const d = await res.json();
@@ -558,9 +648,14 @@ function renderStats(){
                <span class="mini">${'★'.repeat(filled)}<span style="opacity:.25">${'★'.repeat(5-filled)}</span></span>
              </div></div>`;
   }
+  if(current.key === 'progress' && rows.length){
+    const pending = rows.filter(r => !String(r.attendancePercent || '').trim()).length;
+    html += `<div class="stat"><div class="stat-label">Attendance pending</div>
+             <div class="stat-value">${pending}</div></div>`;
+  }
   if(rows.length){
-    const latest = current.key === 'evaluation'
-      ? rows[0].timestamp
+    const latest = current.key === 'evaluation' ? rows[0].timestamp
+      : current.key === 'progress' ? rows[0].submittedAt
       : rows[0][headers.indexOf('Timestamp')];
     html += `<div class="stat"><div class="stat-label">Most recent</div>
              <div class="stat-value" style="font-size:15px">${fmtDate(latest, true)}</div></div>`;
@@ -585,12 +680,25 @@ function renderList(items){
     return;
   }
 
-  const head = current.key === 'evaluation'
-    ? '<th>Date</th><th>Student</th><th>Teacher</th><th>Rating</th>'
+  const head =
+      current.key === 'evaluation' ? '<th>Date</th><th>Student</th><th>Teacher</th><th>Rating</th>'
+    : current.key === 'progress'   ? '<th>Date</th><th>Student</th><th>Course</th><th>Attendance</th>'
     : current.listCols.map(c => `<th>${esc(c === 'Timestamp' ? 'Date' : c)}</th>`).join('');
 
   const body = items.map(item => {
     const i = rows.indexOf(item);
+    if(current.key === 'progress'){
+      const att = String(item.attendancePercent || '').trim();
+      return `<tr data-i="${i}">
+        <td class="date" data-label="Date">${esc(fmtDateOnly(item.reportDate))}</td>
+        <td data-label="Student">${esc(item.studentName || '—')}</td>
+        <td data-label="Course">${esc(item.courseName || '—')}</td>
+        <td data-label="Attendance">${att ? esc(att) : '<span class="pr-pending">Pending</span>'}</td>
+        <td class="actions">
+          <button data-a="view" data-i="${i}">View</button>
+          <button data-a="dl" data-i="${i}">Download</button>
+        </td></tr>`;
+    }
     if(current.key === 'evaluation'){
       const r = parseInt(item.rating,10) || 0;
       return `<tr data-i="${i}">
@@ -624,8 +732,11 @@ function renderList(items){
   $("listContent").querySelectorAll('button[data-a]').forEach(b => {
     b.addEventListener('click', e => {
       e.stopPropagation();
-      openDetail(+b.dataset.i);
-      if(b.dataset.a === 'dl') setTimeout(()=>window.print(), 200);
+      // openDetail is async for progress reports (it fetches the full
+      // record), so wait before printing or the modal is still empty.
+      Promise.resolve(openDetail(+b.dataset.i)).then(() => {
+        if(b.dataset.a === 'dl') setTimeout(()=>window.print(), 200);
+      });
     });
   });
   $("listContent").querySelectorAll('tr[data-i]').forEach(tr => {
@@ -639,7 +750,11 @@ $("searchInput").addEventListener('input', e => {
   if(!q){ renderList(rows); setCount(rows.length); return; }
 
   let out;
-  if(current.key === 'evaluation'){
+  if(current.key === 'progress'){
+    out = rows.filter(r =>
+      [r.studentName, r.studentId, r.teacherName, r.courseName, r.reportId]
+        .some(v => String(v || '').toLowerCase().includes(q)));
+  } else if(current.key === 'evaluation'){
     out = rows.filter(r =>
       (r.studentName||'').toLowerCase().includes(q) ||
       (r.teacherName||'').toLowerCase().includes(q) ||
@@ -658,10 +773,35 @@ $("searchInput").addEventListener('input', e => {
 });
 
 /* ---------------- Detail ---------------- */
-function openDetail(i){
+async function openDetail(i){
   const item = rows[i];
   if(!item) return;
   detail = item;
+  prFull = null; prDraft = null;
+  $("prEditBtn").style.display = 'none';
+  $("prSaveBtn").style.display = 'none';
+
+  if(current.key === 'progress'){
+    $("detailContent").innerHTML =
+      '<div class="loading"><div class="loading-spin"></div><div>Loading report…</div></div>';
+    $("modal").classList.add("show");
+    document.body.style.overflow = "hidden";
+    try{
+      const res = await fetch(`${SCRIPT_PROGRESS}?action=getReport&id=${encodeURIComponent(item.reportId)}&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
+      const d = await res.json();
+      if(d.result !== 'success') throw new Error(d.error || 'Failed to load');
+      prFull = d.report;
+      prDraft = JSON.parse(JSON.stringify(prFull));
+      $("detailContent").innerHTML = progressDetail(prFull);
+      $("prEditBtn").style.display = '';
+      $("prEditBtn").textContent = 'Edit';
+    }catch(err){
+      $("detailContent").innerHTML =
+        `<div class="empty-state">Couldn't load this report.<br><br>
+         <small style="color:#ff9999">Error: ${esc(err.message)}</small></div>`;
+    }
+    return;
+  }
 
   const html = current.key === 'evaluation' ? evalDetail(item) : formDetail(item);
   $("detailContent").innerHTML = html;
@@ -739,10 +879,306 @@ function evalDetail(e){
   return shell(current.title, 'Submitted ' + fmtDate(e.timestamp, true), inner);
 }
 
+/* ---------------- Progress report: view ---------------- */
+/* Rendered inside the same shell() as every other record, so the print
+   stylesheet and the house letterhead apply unchanged. */
+function progressDetail(r){
+  const pct = parseFloat(String(r.attendancePercent || '').replace('%','')) || 0;
+  const answers = r.answers || [];
+  const surahs  = (r.surahs || []).filter(x => x.entryType === 'Surah');
+  const juz     = (r.surahs || []).filter(x => x.entryType === 'Juz');
+
+  const ratings = answers.filter(a => a.type === 'rating');
+  const longs   = answers.filter(a => a.type === 'textarea');
+  const facts   = answers.filter(a => a.type !== 'rating' && a.type !== 'textarea');
+
+  let inner = `<div class="pr-meta">
+    ${prCell('Student', r.studentName)}
+    ${prCell('Student ID', r.studentId)}
+    ${prCell('Course', r.courseName)}
+    ${prCell('Teacher', r.teacherName)}
+    ${prCell('Class Schedule', r.classSchedule)}
+    ${prCell('Report ID', r.reportId)}
+  </div>`;
+
+  if(r.classesScheduled || r.classesAttended || pct){
+    const C = 2 * Math.PI * 32;
+    inner += `<div class="pr-sec">Attendance</div>
+      <div class="pr-att">
+        <div class="pr-ring">
+          <svg width="78" height="78" viewBox="0 0 78 78">
+            <circle cx="39" cy="39" r="32" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="8"/>
+            <circle cx="39" cy="39" r="32" fill="none" stroke="var(--accent)" stroke-width="8"
+              stroke-linecap="round" stroke-dasharray="${C}"
+              stroke-dashoffset="${C - C * Math.min(pct,100) / 100}"/>
+          </svg>
+          <div class="pct">${pct ? pct + '%' : '—'}</div>
+        </div>
+        <div class="pr-am">
+          <div><div class="k">Scheduled</div><div class="v">${esc(r.classesScheduled || '—')}</div></div>
+          <div><div class="k">Attended</div><div class="v">${esc(r.classesAttended || '—')}</div></div>
+          <div><div class="k">Leave / Resch.</div><div class="v">${esc(r.leaveRescheduled || '—')}</div></div>
+        </div>
+      </div>`;
+  } else {
+    inner += `<div class="pr-sec">Attendance</div>
+      <div class="detail-free pr-pending">Attendance has not been added yet.
+      Use <b>Edit</b> to record it.</div>`;
+  }
+
+  if(facts.length){
+    inner += `<div class="pr-sec">Current Position &amp; Progress</div>`;
+    facts.forEach(a => {
+      inner += `<div class="detail-row"><b>${esc(a.label)}</b><span>${esc(a.value)}${
+        a.comment ? ` <span class="pr-cmt">— ${esc(a.comment)}</span>` : ''}</span></div>`;
+    });
+  }
+
+  if(surahs.length || juz.length){
+    inner += `<div class="pr-sec">Portions Completed</div>`;
+    if(surahs.length){
+      inner += `<div class="pr-chips">` + surahs.map(x =>
+        `<span class="pr-chip">${esc(x.number + '. ' + x.name)}<span class="st">${esc(x.status)}</span></span>`
+      ).join('') + `</div>`;
+    }
+    if(juz.length){
+      inner += `<div class="pr-chips">` + juz.map(x =>
+        `<span class="pr-chip">${esc(x.name)}<span class="st">${esc(x.status)}</span></span>`
+      ).join('') + `</div>`;
+    }
+  }
+
+  if(ratings.length){
+    inner += `<div class="pr-sec">Performance Assessment</div><div class="pr-rates">` +
+      ratings.map(a => {
+        const v = String(a.value);
+        const col = PR_COLOR[v] || '#9aa';
+        return `<div class="pr-rate">
+          <div class="pr-rt"><span class="pr-rl">${esc(a.label)}</span>
+          <span class="pr-pill" style="background:${col}">${esc(v)}</span></div>
+          <div class="pr-meter"><i style="width:${PR_PCT[v] || 20}%;background:${col}"></i></div>
+          ${a.comment ? `<div class="pr-cmt">${esc(a.comment)}</div>` : ''}
+        </div>`;
+      }).join('') + `</div>`;
+  }
+
+  const bySec = {};
+  longs.forEach(a => { (bySec[a.sectionTitle] = bySec[a.sectionTitle] || []).push(a); });
+  Object.keys(bySec).forEach(sec => {
+    inner += `<div class="pr-sec">${esc(sec)}</div>`;
+    bySec[sec].forEach(a => {
+      inner += `<div class="detail-q"><div class="detail-q-title">${esc(a.label)}</div>
+                <div class="detail-free">${esc(a.value)}</div></div>`;
+    });
+  });
+
+  if(r.teacherRemarks){
+    inner += `<div class="pr-sec">Additional Remarks</div>
+              <div class="detail-free">${esc(r.teacherRemarks)}</div>`;
+  }
+
+  return shell(current.title,
+    (r.studentName || 'Student') + ' · ' + fmtDateOnly(r.reportDate), inner);
+}
+function prCell(k, v){
+  return `<div><div class="k">${esc(k)}</div><div class="v">${esc(v || '—')}</div></div>`;
+}
+
+/* ---------------- Progress report: edit ----------------
+   The teacher's form never collects attendance — it is entered here,
+   along with any correction to the report itself. */
+function progressEdit(r){
+  let h = `<div class="pr-edit">
+    <div class="detail-h1" style="font-size:20px;margin-bottom:4px">Edit Report</div>
+    <div class="detail-sub" style="margin-bottom:18px">${esc(r.reportId)}</div>
+
+    <div class="pr-sec">Report Details</div>
+    <div class="pr-grid">
+      ${prField('reportDate','Report Date','date',r.reportDate)}
+      ${prField('studentName','Student Name','text',r.studentName)}
+      ${prField('studentId','Student ID','text',r.studentId)}
+      ${prField('teacherName','Teacher Name','text',r.teacherName)}
+    </div>
+
+    <div class="pr-sec">Attendance &amp; Schedule</div>
+    <div class="pr-grid">
+      ${prField('classSchedule','Class Schedule','text',r.classSchedule)}
+      ${prField('leaveRescheduled','Leave / Rescheduled','text',r.leaveRescheduled)}
+      ${prField('classesScheduled','Total Classes Scheduled','number',r.classesScheduled)}
+      ${prField('classesAttended','Classes Attended','number',r.classesAttended)}
+      <div><label>Attendance Percentage (calculated)</label>
+        <input type="text" id="pr_attendancePercent" readonly value="${esc(r.attendancePercent || '—')}"></div>
+    </div>
+
+    <div class="pr-sec">Portions Completed</div>
+    <div class="pr-add">
+      <div><label>Type</label><select id="pr_addType">
+        <option value="Surah">Surah</option><option value="Juz">Juz</option></select></div>
+      <div><label>Select</label><select id="pr_addWhich"></select></div>
+      <div><label>Status</label><select id="pr_addStatus">
+        <option>Completed</option><option>In Progress</option><option>Revised</option></select></div>
+      <button type="button" id="pr_addBtn">Add</button>
+    </div>
+    <div class="pr-chips" id="pr_chips"></div>`;
+
+  const bySec = {};
+  (r.answers || []).forEach((a, i) => { (bySec[a.sectionTitle] = bySec[a.sectionTitle] || []).push({a,i}); });
+
+  Object.keys(bySec).forEach(sec => {
+    h += `<div class="pr-sec">${esc(sec)}</div><div class="pr-grid">`;
+    bySec[sec].forEach(({a,i}) => {
+      h += `<div class="pr-full"><label>${esc(a.label)}</label>${prAnswerInput(a,i)}
+        <input type="text" data-prcmt="${i}" placeholder="Comment (optional)"
+          value="${esc(a.comment || '')}" style="margin-top:6px;font-size:12px"></div>`;
+    });
+    h += `</div>`;
+  });
+
+  h += `<div class="pr-sec">Additional Remarks</div>
+    <div class="pr-grid"><div class="pr-full">
+      <label>Teacher Remarks</label>
+      <textarea id="pr_teacherRemarks" rows="2">${esc(r.teacherRemarks || '')}</textarea>
+    </div></div></div>`;
+  return h;
+}
+function prField(key,label,type,val){
+  return `<div><label>${esc(label)}</label>
+    <input type="${type}" id="pr_${key}" value="${esc(val || '')}"></div>`;
+}
+function prAnswerInput(a,i){
+  if(a.type === 'rating'){
+    return `<select data-prans="${i}">` + PR_RATINGS.map(v =>
+      `<option${String(a.value) === v ? ' selected' : ''}>${esc(v)}</option>`).join('') + `</select>`;
+  }
+  if(a.type === 'textarea'){
+    return `<textarea data-prans="${i}" rows="3">${esc(a.value || '')}</textarea>`;
+  }
+  return `<input type="text" data-prans="${i}" value="${esc(a.value || '')}">`;
+}
+
+function bindProgressEdit(){
+  const recalc = () => {
+    const sc = Number($("pr_classesScheduled").value), at = Number($("pr_classesAttended").value);
+    $("pr_attendancePercent").value =
+      (sc > 0 && !isNaN(at)) ? (Math.round((at/sc)*1000)/10) + '%' : '—';
+  };
+  $("pr_classesScheduled").addEventListener('input', recalc);
+  $("pr_classesAttended").addEventListener('input', recalc);
+
+  const fillWhich = () => {
+    $("pr_addWhich").innerHTML = $("pr_addType").value === 'Surah'
+      ? PR_SURAHS.map((x,i) => `<option value="${i+1}">${i+1}. ${esc(x)}</option>`).join('')
+      : Array.from({length:30}, (_,i) => `<option value="${i+1}">Juz ${i+1}</option>`).join('');
+  };
+  $("pr_addType").onchange = fillWhich;
+  fillWhich();
+
+  $("pr_addBtn").onclick = () => {
+    const t = $("pr_addType").value, num = Number($("pr_addWhich").value);
+    const name = t === 'Surah' ? PR_SURAHS[num-1] : ('Juz ' + num);
+    prDraft.surahs = prDraft.surahs || [];
+    if(prDraft.surahs.some(x => x.entryType === t && Number(x.number) === num)) return;
+    prDraft.surahs.push({ entryType:t, number:num, name:name, status:$("pr_addStatus").value, note:'' });
+    prDraft.surahs.sort((a,b) => a.entryType === b.entryType
+      ? a.number - b.number : (a.entryType === 'Surah' ? -1 : 1));
+    renderPrChips();
+  };
+  renderPrChips();
+}
+
+function renderPrChips(){
+  const arr = (prDraft && prDraft.surahs) || [];
+  $("pr_chips").innerHTML = arr.length ? arr.map((x,i) =>
+    `<span class="pr-chip">${esc(x.entryType === 'Surah' ? x.number + '. ' + x.name : x.name)}
+      <span class="st">${esc(x.status)}</span>
+      <button type="button" data-prdel="${i}" title="Remove">&times;</button></span>`).join('')
+    : '<span style="font-size:12px;opacity:.55">No portions recorded.</span>';
+  $("pr_chips").querySelectorAll('[data-prdel]').forEach(b => {
+    b.onclick = () => { prDraft.surahs.splice(+b.dataset.prdel,1); renderPrChips(); };
+  });
+}
+
+/* Toggle between the report and the editor */
+$("prEditBtn").onclick = () => {
+  if(!prDraft) return;
+  const editing = $("prSaveBtn").style.display !== 'none';
+  if(editing){
+    $("detailContent").innerHTML = progressDetail(prDraft);
+    $("prSaveBtn").style.display = 'none';
+    $("prEditBtn").textContent = 'Edit';
+  } else {
+    $("detailContent").innerHTML = progressEdit(prDraft);
+    bindProgressEdit();
+    $("prSaveBtn").style.display = '';
+    $("prEditBtn").textContent = 'Back to report';
+  }
+};
+
+$("prSaveBtn").onclick = async () => {
+  if(!prDraft) return;
+
+  const common = {
+    reportDate:       $("pr_reportDate").value,
+    studentName:      $("pr_studentName").value.trim(),
+    studentId:        $("pr_studentId").value.trim(),
+    teacherName:      $("pr_teacherName").value.trim(),
+    classSchedule:    $("pr_classSchedule").value.trim(),
+    classesScheduled: $("pr_classesScheduled").value,
+    classesAttended:  $("pr_classesAttended").value,
+    leaveRescheduled: $("pr_leaveRescheduled").value.trim(),
+    teacherRemarks:   $("pr_teacherRemarks").value.trim()
+  };
+
+  document.querySelectorAll('[data-prans]').forEach(el => {
+    const i = +el.dataset.prans;
+    if(prDraft.answers[i]) prDraft.answers[i].value = el.value;
+  });
+  document.querySelectorAll('[data-prcmt]').forEach(el => {
+    const i = +el.dataset.prcmt;
+    if(prDraft.answers[i]) prDraft.answers[i].comment = el.value.trim();
+  });
+
+  Object.assign(prDraft, common);
+  prDraft.attendancePercent = $("pr_attendancePercent").value === '—'
+    ? '' : $("pr_attendancePercent").value;
+
+  $("prSaveBtn").disabled = true;
+  $("prSaveBtn").textContent = 'Saving…';
+
+  try{
+    const res = await fetch(SCRIPT_PROGRESS, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'updateReport',
+        password: ADMIN_API_PASSWORD,
+        reportId: prDraft.reportId,
+        common: common,
+        answers: prDraft.answers,
+        surahs: prDraft.surahs || []
+      })
+    });
+    let out; try{ out = await res.json(); }catch(_){ out = { result:'success' }; }
+    if(out.result !== 'success') throw new Error(out.error || 'Save failed');
+
+    $("detailContent").innerHTML = progressDetail(prDraft);
+    $("prSaveBtn").style.display = 'none';
+    $("prEditBtn").textContent = 'Edit';
+    load();
+  }catch(err){
+    alert("Couldn't save the report.\n\n" + err.message);
+  }finally{
+    $("prSaveBtn").disabled = false;
+    $("prSaveBtn").textContent = 'Save changes';
+  }
+};
+
 function closeDetail(){
   $("modal").classList.remove("show");
   document.body.style.overflow = "";
-  detail = null;
+  detail = null; prFull = null; prDraft = null;
+  $("prEditBtn").style.display = 'none';
+  $("prSaveBtn").style.display = 'none';
 }
 $("closeModalBtn").onclick = closeDetail;
 $("modal").addEventListener('click', e => { if(e.target === $("modal")) closeDetail(); });
@@ -753,8 +1189,9 @@ document.addEventListener('keydown', e => {
 $("downloadBtn").onclick = () => {
   const t = document.title;
   if(detail){
-    const who = current.key === 'evaluation'
-      ? detail.studentName
+    const who =
+        current.key === 'evaluation' ? detail.studentName
+      : current.key === 'progress'   ? (detail.studentName || 'report')
       : (detail[colIdx('First Name')] || detail[colIdx('Student Name')] || 'record');
     document.title = `${current.title} - ${who}`;
   }
