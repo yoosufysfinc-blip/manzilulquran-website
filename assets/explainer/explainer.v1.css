@@ -39,7 +39,7 @@
 
 /* ================= STAGE ================= */
 .xp-stage{
-  position:relative; width:100%; aspect-ratio:4/5; max-height:78vh;
+  position:relative; width:100%; aspect-ratio:4/5; max-height:70svh;
   border-radius:var(--xp-r); overflow:hidden; isolation:isolate;
   background:
     radial-gradient(120% 90% at 18% 6%, rgba(27,122,90,.30), transparent 58%),
@@ -48,7 +48,33 @@
   border:1px solid var(--xp-line);
   box-shadow:0 30px 80px -30px rgba(0,0,0,.75), inset 0 0 40px rgba(240,217,168,.05);
 }
-@media (min-width:640px){ .xp-stage{aspect-ratio:16/9; max-height:none} }
+@media (min-width:640px){ .xp-stage{aspect-ratio:16/9; max-height:min(66svh,560px)} }
+
+/* big centred play control — the primary affordance, always visible while paused */
+.xp-poster{
+  position:absolute; inset:0; z-index:8; border:0; padding:0; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px;
+  background:radial-gradient(60% 60% at 50% 50%, rgba(4,35,26,.35), rgba(4,35,26,.62));
+  font-family:var(--xp-ui); color:var(--xp-ink);
+  transition:opacity .35s var(--xp-out), visibility 0s;
+}
+.xp-poster[hidden]{opacity:0; visibility:hidden; pointer-events:none; display:flex}
+.xp-poster .disc{
+  width:clamp(62px,14vw,84px); height:clamp(62px,14vw,84px); border-radius:50%;
+  display:grid; place-items:center;
+  background:linear-gradient(135deg,var(--xp-gold),var(--xp-gold2));
+  box-shadow:0 0 0 0 var(--xp-glow), 0 14px 40px -10px rgba(0,0,0,.6);
+  animation:xpDisc 2.4s var(--xp-out) infinite;
+}
+@keyframes xpDisc{0%{box-shadow:0 0 0 0 var(--xp-glow),0 14px 40px -10px rgba(0,0,0,.6)}
+  70%{box-shadow:0 0 0 22px rgba(240,217,168,0),0 14px 40px -10px rgba(0,0,0,.6)}
+  100%{box-shadow:0 0 0 0 rgba(240,217,168,0),0 14px 40px -10px rgba(0,0,0,.6)}}
+.xp-poster .disc i{
+  width:0;height:0;border-left:19px solid #20160a;
+  border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:6px
+}
+.xp-poster .txt{font-size:clamp(11px,2.3vw,13px); letter-spacing:.2em; text-transform:uppercase;
+  color:var(--xp-mut)}
 
 .xp-stage::before{
   content:""; position:absolute; inset:-38%; z-index:0; pointer-events:none;
