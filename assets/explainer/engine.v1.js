@@ -78,18 +78,35 @@
     return { node: node, media: media };
   };
 
-  /* ---- tiles: headline facts ---- */
+  /* ---- tiles: headline facts, with a focus that travels across them ---- */
   BUILD.tiles = function (d) {
-    var node = el('div', 'xp-scene');
+    var node = el('div', 'xp-scene'), tiles = [], bigs = [];
     if (d.eyebrow) node.appendChild(el('div', 'xp-eyebrow xp-rise xp-d1', d.eyebrow));
     var wrap = el('div', 'xp-tiles n' + (d.items.length));
     d.items.forEach(function (it, i) {
       var tile = el('div', 'xp-tile xp-shine xp-rise xp-d' + Math.min(5, i + 2));
-      add(tile, el('div', 'big', it.big), el('div', 'cap', it.cap));
-      wrap.appendChild(tile);
+      var big = el('div', 'big', it.big);
+      add(tile, big, el('div', 'cap', it.cap));
+      wrap.appendChild(tile); tiles.push(tile); bigs.push(big);
     });
     node.appendChild(wrap);
-    return { node: node };
+
+    var from = d.from, step = d.step || 2.2, hold = d.hold || step;
+    if (from == null) return { node: node };
+    return {
+      node: node,
+      update: function (t) {
+        tiles.forEach(function (tile, i) {
+          var a = from + i * step;
+          tile.classList.toggle('act', t >= a && t < a + hold);
+          var it = d.items[i];
+          if (typeof it.count === 'number') {
+            var k = easeOut(seg(t, a, a + Math.min(1.5, hold)));
+            bigs[i].textContent = Math.round(k * it.count).toLocaleString('en-IN');
+          }
+        });
+      }
+    };
   };
 
   /* ---- rows: numbered areas, revealed one at a time ---- */
@@ -106,11 +123,15 @@
       wrap.appendChild(row); rows.push(row);
     });
     node.appendChild(wrap);
-    var from = d.from || 0, step = d.step || 2.2;
+    var from = d.from || 0, step = d.step || 2.2, hold = d.hold || step;
     return {
       node: node,
       update: function (t) {
-        rows.forEach(function (r, i) { r.classList.toggle('lit', t >= from + i * step); });
+        rows.forEach(function (r, i) {
+          var a = from + i * step;
+          r.classList.toggle('lit', t >= a);
+          r.classList.toggle('act', t >= a && t < a + hold);
+        });
       }
     };
   };
@@ -314,6 +335,131 @@
     };
   };
 
+  /* ---- ladder: a staged progression, e.g. letters → joining → reading ---- */
+  BUILD.ladder = function (d) {
+    var node = el('div', 'xp-scene'), steps = [];
+    if (d.eyebrow) node.appendChild(el('div', 'xp-eyebrow xp-rise xp-d1', d.eyebrow));
+    var wrap = el('div', 'xp-ladder');
+    var spine = el('div', 'xp-spine'); wrap.appendChild(spine);
+    d.steps.forEach(function (st, i) {
+      var s = el('div', 'xp-step xp-shine');
+      var dot = el('div', 'xp-sdot', String(i + 1));
+      var body = el('div', 'xp-sbody');
+      var ar = el('div', 'xp-sar', st.ar);
+      ar.setAttribute('dir', 'rtl');
+      ar.setAttribute('lang', 'ar');
+      add(body, ar, st.label ? el('div', 'xp-slab', st.label) : null);
+      add(s, dot, body);
+      wrap.appendChild(s); steps.push(s);
+    });
+    node.appendChild(wrap);
+    var from = d.from || 0, step = d.step || 4;
+    var span = step * (d.steps.length - 1) + step * 0.6;
+    return {
+      node: node,
+      update: function (t) {
+        steps.forEach(function (s, i) {
+          var a = from + i * step;
+          s.classList.toggle('lit', t >= a);
+          s.classList.toggle('act', t >= a && t < a + step);
+        });
+        spine.style.transform = 'scaleY(' + easeOut(seg(t, from, from + span)).toFixed(3) + ')';
+      }
+    };
+  };
+
+  /* ---- pricing: side-by-side tiers ---- */
+  BUILD.pricing = function (d) {
+    var node = el('div', 'xp-scene'), tiers = [];
+    if (d.eyebrow) node.appendChild(el('div', 'xp-eyebrow xp-rise xp-d1', d.eyebrow));
+    var wrap = el('div', 'xp-pricing');
+    d.tiers.forEach(function (tr) {
+      var c = el('div', 'xp-tier xp-shine');
+      if (tr.badge) c.appendChild(el('div', 'xp-tbadge', tr.badge));
+      var price = el('div', 'xp-tprice', tr.price);
+      add(c, el('div', 'xp-tdays', tr.days), price,
+             tr.per ? el('div', 'xp-tper', tr.per) : null);
+      wrap.appendChild(c); tiers.push({ node: c, price: price, count: tr.count });
+    });
+    node.appendChild(wrap);
+    var from = d.from || 0, step = d.step || 1.6;
+    return {
+      node: node,
+      update: function (t) {
+        tiers.forEach(function (c, i) {
+          var a = from + i * step;
+          c.node.classList.toggle('lit', t >= a);
+          c.node.classList.toggle('act', t >= a && t < a + step * 1.6);
+          if (typeof c.count === 'number') {
+            var k = easeOut(seg(t, a, a + 1.4));
+            c.price.textContent = '\u20B9' + Math.round(k * c.count).toLocaleString('en-IN');
+          }
+        });
+      }
+    };
+  };
+
+  /* ---- waveform: a live recitation wave with markers that light in turn ---- */
+  BUILD.waveform = function (d) {
+    var node = el('div', 'xp-scene');
+    if (d.eyebrow) node.appendChild(el('div', 'xp-eyebrow xp-rise xp-d1', d.eyebrow));
+
+    var wrap = el('div', 'xp-wave xp-rise xp-d2');
+    var s = svg('svg', { viewBox: '0 0 600 200', preserveAspectRatio: 'none' });
+    var defs = svg('defs', {});
+    var uid = 'xpw' + Math.random().toString(36).slice(2, 8);
+    var g = svg('linearGradient', { id: uid, x1: 0, y1: 0, x2: 1, y2: 0 });
+    add(g, svg('stop', { offset: 0, 'stop-color': '#2fae7f', 'stop-opacity': .25 }),
+           svg('stop', { offset: .5, 'stop-color': '#F0D9A8' }),
+           svg('stop', { offset: 1, 'stop-color': '#C9A96E', 'stop-opacity': .25 }));
+    defs.appendChild(g);
+    var back = svg('path', { fill: 'none', stroke: 'rgba(255,255,255,.10)', 'stroke-width': 2 });
+    var main = svg('path', { fill: 'none', stroke: 'url(#' + uid + ')', 'stroke-width': 3.2,
+                             'stroke-linecap': 'round' });
+    add(s, defs, back, main);
+
+    var marks = [];
+    (d.marks || []).forEach(function (m) {
+      var c = svg('circle', { r: 7, cx: m.x * 600, cy: 100, fill: '#F0D9A8', opacity: .18 });
+      s.appendChild(c); marks.push(c);
+    });
+    wrap.appendChild(s); node.appendChild(wrap);
+
+    var labs = [];
+    if (d.marks) {
+      var lg = el('div', 'xp-wlabs xp-rise xp-d3');
+      d.marks.forEach(function (m) {
+        var b = el('div', 'xp-wlab');
+        add(b, el('div', 'ar', m.ar || ''), el('div', 'cap', m.label || ''));
+        lg.appendChild(b); labs.push(b);
+      });
+      node.appendChild(lg);
+    }
+
+    function path(amp, k, ph, el2) {
+      var dd = 'M0 ' + (100 + amp * Math.sin(ph)).toFixed(1);
+      for (var x = 10; x <= 600; x += 10) dd += ' L' + x + ' ' + (100 + amp * Math.sin(k * x + ph)).toFixed(1);
+      el2.setAttribute('d', dd);
+    }
+    var from = d.from || 0, step = d.step || 3;
+    var k1 = 2 * Math.PI * 3.5 / 600, k2 = 2 * Math.PI * 2.4 / 600;
+    return {
+      node: node,
+      update: function (t) {
+        var ph = (t - from) * 1.9;
+        path(30, k1, ph, main);
+        path(19, k2, -ph * 0.75 + 1.4, back);
+        marks.forEach(function (c, i) {
+          var a = from + i * step, on = t >= a;
+          c.setAttribute('opacity', on ? '1' : '.18');
+          c.setAttribute('r', on ? '9.5' : '7');
+          c.setAttribute('cy', (100 + 30 * Math.sin(k1 * (d.marks[i].x * 600) + ph)).toFixed(1));
+          if (labs[i]) labs[i].classList.toggle('lit', on);
+        });
+      }
+    };
+  };
+
   /* ---- phone: the parent's view ---- */
   BUILD.phone = function (d) {
     var node = el('div', 'xp-scene');
@@ -367,6 +513,15 @@
       if (!maker) { if (global.console) console.warn('Explainer: unknown scene type', d.type); return; }
       var built = maker(d);
       built.node.dataset.scene = key;
+      built.node.dataset.type = d.type;
+      /* Wrap the scene's contents so they can drift slowly for as long as the
+         scene is on stage. Without this, a scene that finishes its entry
+         animation sits perfectly still until the next cut. */
+      if (d.type !== 'presenter') {
+        var inner = el('div', 'xp-inner');
+        while (built.node.firstChild) inner.appendChild(built.node.firstChild);
+        built.node.appendChild(inner);
+      }
       stage.appendChild(built.node);
       scenes[key] = built;
       if (built.media) mediaEls.push({ el: built.media, scene: key, start: d.start || 0 });
