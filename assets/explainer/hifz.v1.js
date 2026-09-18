@@ -58,17 +58,18 @@
 
       format: {
         type: 'tiles', eyebrow: 'How the class runs',
+        from: 13.6, step: 2.5, hold: 2.7,
         items: [
           { big: 'Live', cap: 'Not recorded' },
           { big: '1:1',  cap: 'One teacher, one child' },
-          { big: '6',    cap: 'Days a week' },
-          { big: '50',   cap: 'Minutes a session' }
+          { big: '6',    count: 6,  cap: 'Days a week' },
+          { big: '50',   count: 50, cap: 'Minutes a session' }
         ]
       },
 
       areas: {
         type: 'rows', eyebrow: 'Every class · three areas',
-        from: 25.4, step: 2.6,
+        from: 25.4, step: 2.6, hold: 2.6,
         items: [
           { t: 'New Lesson',       s: 'The portion committed to memory today' },
           { t: 'Sabq (Revision)',  s: 'What was memorised in recent days' },
@@ -141,11 +142,15 @@
       }
     },
 
-    /* One continuous narration track covering everything between the two
-       presenter clips. Uncomment once recorded. */
+    /* Narration. Two tracks, because the presenter's own voice covers the
+       gap between them. Uncomment once recorded.
+         narration-a  → 12.6s to 90.8s   (format … parent)
+         narration-b  → 101.0s to 108.5s (cta)                          */
     // media: [
-    //   { src: '../assets/explainer/media/hifz/narration-en.mp3', start: 12.6,
-    //     scenes: ['format','areas','loop','beat','exam','juz','report','parent'] }
+    //   { src: '../assets/explainer/media/hifz/narration-a-en.mp3', start: 12.6,
+    //     scenes: ['format','areas','loop','beat','exam','juz','report','parent'] },
+    //   { src: '../assets/explainer/media/hifz/narration-b-en.mp3', start: 101.0,
+    //     scenes: ['cta'] }
     // ],
 
     langs: [
