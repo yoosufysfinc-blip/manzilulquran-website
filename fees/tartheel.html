@@ -8,7 +8,8 @@
 <title>Tartheelul Qur'an — ManzilulQuran Academy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+Malayalam:wght@300;400;500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/explainer/explainer.v1.css" />
 <style>
   :root{
     --indigo:#0b1442; --indigo2:#16215e; --royal:#27338f; --plum:#2a1a55;
@@ -16,12 +17,20 @@
     --cream:#FBF4E2;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%;overflow:hidden}
+  /* CHANGED: page scrolls so the explainer can sit below the card */
+  html{scroll-behavior:smooth}
   body{
-    font-family:'Poppins',sans-serif;color:var(--cream);position:relative;
-    display:grid;place-items:center;
-    background:radial-gradient(circle at 50% 18%,#1d2a73 0%,#101a52 42%,#0a1038 78%,#070a26 100%)
+    min-height:100%;
+    font-family:'Poppins','Noto Sans Malayalam',sans-serif;color:var(--cream);position:relative;
+    overflow-x:hidden;
+    background:radial-gradient(circle at 50% 18%,#1d2a73 0%,#101a52 42%,#0a1038 78%,#070a26 100%);
+    background-attachment:fixed
   }
+  /* CHANGED: centring moved off body so the card renders identically */
+  .hero{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
+    padding:clamp(24px,5vh,44px) 0 clamp(14px,2.5vh,22px)}
+  /* CHANGED: decorative layers fixed, so they stay put while scrolling */
+  .glow,.waves,.corner{position:fixed}
   /* warm center glow */
   .glow{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:120vw;height:80vh;z-index:0;
     background:radial-gradient(ellipse at center,rgba(233,196,106,.16),transparent 60%)}
@@ -127,6 +136,35 @@
     .back-hub{top:14px;left:14px;width:12px;height:12px}
   }
 
+
+  /* ---- explainer theme: this page is indigo, not emerald ---- */
+  .xp{
+    --xp-bg:#070a26; --xp-bg2:#101a52;
+    --xp-panel:rgba(29,42,115,.52); --xp-panel2:rgba(16,26,82,.42);
+    --xp-line:rgba(233,196,106,.18); --xp-line2:rgba(233,196,106,.38);
+    --xp-em:#3b5bdb; --xp-em2:#7d9bff;
+    --xp-gold:#E9C46A; --xp-gold2:#F6DF9B; --xp-glow:rgba(233,196,106,.30);
+    --xp-glowA:rgba(59,91,219,.30); --xp-glowB:rgba(233,196,106,.16);
+    --xp-ink:#FBF4E2; --xp-mut:rgba(251,244,226,.70); --xp-dim:rgba(251,244,226,.44);
+  }
+  .scroll-cue{display:flex;flex-direction:column;align-items:center;gap:6px;
+    margin-top:clamp(14px,2.6vh,24px);color:rgba(251,244,226,.62);text-decoration:none;
+    font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+    min-height:44px;justify-content:center;animation:cueIn .8s 1.2s cubic-bezier(.2,.8,.3,1) both}
+  .scroll-cue:hover{color:var(--gold-br)}
+  .scroll-cue i{display:block;width:1px;height:20px;
+    background:linear-gradient(to bottom,transparent,var(--gold));animation:cueDrop 2s ease-in-out infinite}
+  @keyframes cueIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes cueDrop{0%,100%{opacity:.35;transform:translateY(-4px)}50%{opacity:1;transform:translateY(4px)}}
+  .explainer-band{position:relative;z-index:5;padding:clamp(10px,2vh,20px) 0 clamp(36px,6vh,64px)}
+  .band-head{text-align:center;margin-bottom:clamp(12px,2.2vh,20px);padding:0 16px}
+  .band-head .k{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+  .band-head h2{font-family:'Cormorant Garamond','Noto Sans Malayalam',serif;font-weight:700;color:#fff;
+    font-size:clamp(1.7rem,6vw,2.8rem);line-height:1.05;margin-top:6px;
+    text-shadow:0 0 24px rgba(233,196,106,.35)}
+  .band-head p{color:rgba(251,244,226,.62);font-weight:300;
+    font-size:clamp(.8rem,2.3vw,.95rem);margin-top:7px}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.scroll-cue,.scroll-cue i{animation:none}}
 </style>
 </head>
 <body>
@@ -142,6 +180,7 @@
   <div class="corner bl" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2"><path d="M6,6 H70 M6,6 V70"/><path d="M6,40 C30,40 40,30 40,6"/><path d="M16,16 C16,44 44,16 16,16 Z" stroke-width="1.6"/><circle cx="54" cy="54" r="5"/><path d="M6,86 C6,70 14,64 26,64 M86,6 C70,6 64,14 64,26"/></svg></div>
   <div class="corner br" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2"><path d="M6,6 H70 M6,6 V70"/><path d="M6,40 C30,40 40,30 40,6"/><path d="M16,16 C16,44 44,16 16,16 Z" stroke-width="1.6"/><circle cx="54" cy="54" r="5"/><path d="M6,86 C6,70 14,64 26,64 M86,6 C70,6 64,14 64,26"/></svg></div>
 
+  <div class="hero">
   <main class="card">
     <div class="topline">
       <span class="ar">تَرْتِيلُ القُرآن</span>
@@ -181,6 +220,18 @@
     </div>
   </main>
 
+    <a href="#how-it-works" class="scroll-cue"><span>How it works</span><i></i></a>
+  </div>
+
+  <section class="explainer-band" id="how-it-works">
+    <div class="band-head">
+      <div class="k">Inside the course</div>
+      <h2>Tarteel — എങ്ങനെ പഠിപ്പിക്കുന്നു</h2>
+      <p>Base മുതൽ Advanced വരെ — രീതി, തജ്‌വീദ്, സമയം, ഫീസ്.</p>
+    </div>
+    <div id="course-explainer"></div>
+  </section>
+
 <script>
   // flowing recitation waves
   (function(){
@@ -194,7 +245,16 @@
     }
     var k1=2*Math.PI*4/W, k2=2*Math.PI*3/W, p=0;
     if(reduce){ build(w1,34,k1,0); build(w2,22,k2,1.5); return; }
-    (function frame(){ p+=0.03; build(w1,34,k1,p); build(w2,22,k2,-p*0.8+1.5); requestAnimationFrame(frame); })();
+    var wavesOn = true, rafId = null;
+    function frame(){ p+=0.03; build(w1,34,k1,p); build(w2,22,k2,-p*0.8+1.5); rafId=requestAnimationFrame(frame); }
+    frame();
+    // stop painting the waves once the hero scrolls away
+    if ('IntersectionObserver' in window){
+      new IntersectionObserver(function(es){ es.forEach(function(e){
+        if (e.isIntersecting && !rafId) frame();
+        else if (!e.isIntersecting && rafId){ cancelAnimationFrame(rafId); rafId=null; }
+      }); }, {threshold:0.05}).observe(document.querySelector('.hero'));
+    }
   })();
 
   function countUp(el){
@@ -210,5 +270,7 @@
   var msg="Assalamu Alaikum! I'm interested in the Tartheelul Qur'an course (Recitation with Tajwīd) at ManzilulQuran E-learning Academy and would like to book a FREE demo class.\n\nLevel: Base / Advanced (please advise)\nFormat: 5 days (₹2699) or 3 days (₹2000) per week.\n\nPlease share the available time slots. Jazak Allah Khair.";
   document.getElementById('demoBtn').href='https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
 </script>
+<script src="../assets/explainer/engine.v1.js" defer></script>
+<script src="../assets/explainer/tartheel.v1.js" defer></script>
 </body>
 </html>
