@@ -372,7 +372,7 @@
   BUILD.pricing = function (d) {
     var node = el('div', 'xp-scene'), tiers = [];
     if (d.eyebrow) node.appendChild(el('div', 'xp-eyebrow xp-rise xp-d1', d.eyebrow));
-    var wrap = el('div', 'xp-pricing');
+    var wrap = el('div', 'xp-pricing n' + d.tiers.length);
     d.tiers.forEach(function (tr) {
       var c = el('div', 'xp-tier xp-shine');
       if (tr.badge) c.appendChild(el('div', 'xp-tbadge', tr.badge));
@@ -456,6 +456,79 @@
           c.setAttribute('cy', (100 + 30 * Math.sin(k1 * (d.marks[i].x * 600) + ph)).toFixed(1));
           if (labs[i]) labs[i].classList.toggle('lit', on);
         });
+      }
+    };
+  };
+
+  /* ---- chips: a set of subjects lighting up one after another ---- */
+  BUILD.chips = function (d) {
+    var node = el('div', 'xp-scene'), chips = [];
+    if (d.eyebrow) node.appendChild(el('div', 'xp-eyebrow xp-rise xp-d1', d.eyebrow));
+    var wrap = el('div', 'xp-chips');
+    d.items.forEach(function (it) {
+      var c = el('div', 'xp-chip2');
+      if (it.ar) {
+        var a = el('span', 'ar', it.ar);
+        a.setAttribute('dir', 'rtl'); a.setAttribute('lang', 'ar');
+        c.appendChild(a);
+      }
+      c.appendChild(el('span', 'tx', it.t));
+      wrap.appendChild(c); chips.push(c);
+    });
+    node.appendChild(wrap);
+    var from = d.from || 0, step = d.step || 1.5, hold = d.hold || step * 1.4;
+    return {
+      node: node,
+      update: function (t) {
+        chips.forEach(function (c, i) {
+          var a = from + i * step;
+          c.classList.toggle('lit', t >= a);
+          c.classList.toggle('act', t >= a && t < a + hold);
+        });
+      }
+    };
+  };
+
+  /* ---- timeband: an available-hours window with a sweeping marker ---- */
+  BUILD.timeband = function (d) {
+    var node = el('div', 'xp-scene');
+    if (d.eyebrow) node.appendChild(el('div', 'xp-eyebrow xp-rise xp-d1', d.eyebrow));
+
+    var wrap = el('div', 'xp-band xp-rise xp-d2');
+    var ends = el('div', 'xp-bends');
+    add(ends, el('span', null, d.start || ''), el('span', null, d.end || ''));
+    var track = el('div', 'xp-btrack');
+    var ticks = el('div', 'xp-bticks');
+    var n = d.ticks || 18;
+    for (var i = 0; i < n; i++) {
+      var tk = el('i');
+      tk.style.left = (i / (n - 1) * 100) + '%';
+      ticks.appendChild(tk);
+    }
+    var glow = el('div', 'xp-bglow');
+    var mark = el('div', 'xp-bmark');
+    add(track, ticks, glow, mark);
+    add(wrap, ends, track);
+    node.appendChild(wrap);
+
+    var slots = [], slotWrap = null;
+    if (d.slots) {
+      slotWrap = el('div', 'xp-bslots xp-rise xp-d3');
+      d.slots.forEach(function (sl) {
+        var s = el('div', 'xp-bslot', sl.label);
+        slotWrap.appendChild(s); slots.push({ node: s, at: sl.at });
+      });
+      node.appendChild(slotWrap);
+    }
+
+    var from = d.from || 0, to = d.to || (from + 8);
+    return {
+      node: node,
+      update: function (t) {
+        var p = easeOut(seg(t, from, to));
+        mark.style.left = (p * 100) + '%';
+        glow.style.width = (p * 100) + '%';
+        slots.forEach(function (s) { s.node.classList.toggle('lit', p >= s.at); });
       }
     };
   };
