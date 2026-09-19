@@ -2,869 +2,655 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="/og-image.jpg">
-<title>Alif-Ba for Little Ones · ManzilulQuran</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Alif Bā Tā · أَلِف بَاء تَاء — ManzilulQuran</title>
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#FFF9EF;
-  --sky:#58C7E0;
-  --sun:#FFC94D;
-  --coral:#FF8A65;
-  --mint:#6BCB77;
-  --grape:#A78BDB;
-  --ink:#3A3560;
-  --fatha:#E8543F;   /* red-orange = fatha */
-  --kasra:#2E9E63;   /* green = kasra */
-  --damma:#2E7CD6;   /* blue = damma */
-  --madd:#8E5BD6;    /* purple = madd */
-  --sukoon:#5C6BC0;  /* indigo = sukoon (no vowel) */
-  --card:#FFFFFF;
+  --paper:#FBF6EA; --card:#FFFDF7; --line:#E8DFC8;
+  --ink:#1F3A30; --soft:#6C8478;
+  --em:#0B4D3B; --em-l:#DCEDE4; --gold:#C9A96E; --gold-l:#F6E9CC;
+  --fatha:#E8543F; --kasra:#2E7CD6; --damma:#3EA96B;
+  --coral:#F2705B; --sky:#4FA8DE; --mint:#54C3A0; --grape:#9B7BD4; --pink:#EE7FA8;
+  --ui:'Nunito',system-ui,-apple-system,sans-serif;
+  --disp:'Baloo 2','Nunito',cursive;
+  --ar:'Amiri',serif;
+  --r:20px;
+  --sh:0 14px 32px -20px rgba(11,77,59,.55);
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{
-  font-family:'Baloo Bhaijaan 2','Comic Sans MS',system-ui,sans-serif;
-  background:var(--bg);
-  color:var(--ink);
-  min-height:100vh;
-  background-image:
-    radial-gradient(circle at 8% 12%, rgba(88,199,224,.14) 0 90px, transparent 91px),
-    radial-gradient(circle at 92% 8%, rgba(255,201,77,.20) 0 110px, transparent 111px),
-    radial-gradient(circle at 85% 90%, rgba(167,139,219,.12) 0 100px, transparent 101px),
-    radial-gradient(circle at 10% 88%, rgba(255,138,101,.12) 0 80px, transparent 81px);
-}
-header{text-align:center;padding:22px 12px 6px}
-header .big-title{
-  font-size:clamp(2rem,6vw,3.2rem);
-  font-weight:800;
-  line-height:1.1;
-}
-header .big-title .a{color:var(--coral)}
-header .big-title .b{color:var(--sky)}
-header .big-title .c{color:var(--mint)}
-header .sub{font-size:1.05rem;color:#7a75a0;font-weight:700;margin-top:2px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:var(--ui);color:var(--ink);line-height:1.6;min-height:100vh;
+  background:
+    radial-gradient(760px 360px at 104% -6%,rgba(201,169,110,.22),transparent 60%),
+    radial-gradient(680px 340px at -10% 12%,rgba(220,237,228,.7),transparent 58%),
+    var(--paper);
+  background-attachment:fixed;padding-bottom:88px}
 
-/* ---------- NAV ---------- */
-nav{
-  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
-  padding:14px 10px;position:sticky;top:0;z-index:50;
-  background:rgba(255,249,239,.94);backdrop-filter:blur(4px);
-}
-nav button{
-  border:none;cursor:pointer;
-  font-family:inherit;font-weight:800;font-size:1rem;
-  padding:9px 16px;border-radius:999px;color:#fff;
-  box-shadow:0 4px 0 rgba(0,0,0,.12);
-  transition:transform .12s;
-}
-nav button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.12)}
-nav button.active{outline:4px solid rgba(58,53,96,.25);transform:scale(1.06)}
-nav button:focus-visible{outline:4px solid var(--ink)}
-.n-all{background:var(--sun);color:#6b4b00}
-.n-g1{background:var(--coral)}
-.n-g2{background:var(--sky)}
-.n-g3{background:var(--mint)}
-.n-g4{background:var(--grape)}
-.n-g5{background:#F06292}
-.n-madd{background:var(--madd)}
-.n-book{background:#26A69A}
-.n-colour{background:#8D6E63}
+/* ---------------- header ---------------- */
+.bar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:10px;
+  padding:calc(9px + env(safe-area-inset-top)) 14px 9px;
+  background:rgba(251,246,234,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar .home{width:42px;height:42px;min-height:42px;flex:0 0 auto;border:0;border-radius:13px;
+  background:linear-gradient(140deg,var(--em),#07301f);color:#fff;font-size:17px;cursor:pointer;
+  display:grid;place-items:center;transition:.18s}
+.bar .home:hover{transform:translateY(-2px)}
+.bar .ttl{min-width:0;flex:1}
+.bar .ttl h1{font-family:var(--disp);font-size:17px;font-weight:700;color:var(--em);
+  line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .ttl .sub{font-size:11px;color:var(--soft);white-space:nowrap}
 
-main{max-width:900px;margin:0 auto;padding:8px 14px 70px}
-section.screen{display:none;animation:pop .3s ease}
-section.screen.show{display:block}
-@keyframes pop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+/* transliteration switch */
+.trsw{flex:0 0 auto;display:flex;align-items:center;gap:7px;border:1.5px solid var(--line);
+  background:var(--card);border-radius:100px;padding:5px 9px 5px 11px;cursor:pointer;min-height:42px}
+.trsw .lab{font-family:var(--disp);font-size:12.5px;font-weight:700;color:var(--soft);line-height:1}
+.trsw .knob{width:38px;height:22px;border-radius:100px;background:var(--em);position:relative;transition:.22s}
+.trsw .knob::after{content:"";position:absolute;top:3px;left:19px;width:16px;height:16px;
+  border-radius:50%;background:#fff;transition:.22s}
+body.no-tr .trsw .knob{background:#C6CFC9}
+body.no-tr .trsw .knob::after{left:3px}
+body.no-tr .trsw .lab{color:#A8B4AD}
 
-.screen-title{
-  text-align:center;font-size:1.5rem;font-weight:800;margin:14px 0 4px;
-}
-.screen-hint{text-align:center;color:#8b86ad;font-weight:700;margin-bottom:16px;font-size:1rem}
+/* what the switch hides */
+.say,.tr,.wtr,.legend,.hint-tr,.nm{transition:opacity .15s}
+body.no-tr .say,body.no-tr .tr,body.no-tr .wtr,body.no-tr .legend,
+body.no-tr .hint-tr,body.no-tr .nm{display:none}
+/* tiles keep their shape once the names come off */
+body.no-tr .tile{padding:14px 6px}
+body.no-tr .cletter{padding:15px 4px 12px}
+body.no-tr .who{font-family:var(--ar);font-size:22px}
 
-/* ---------- ALL LETTERS GRID ---------- */
-.all-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));
-  gap:12px;direction:rtl;
-}
-.tile{
-  background:var(--card);border:none;cursor:pointer;
-  border-radius:22px;padding:10px 4px 6px;text-align:center;
-  box-shadow:0 6px 0 rgba(58,53,96,.10);
-  font-family:inherit;color:var(--ink);
-  transition:transform .12s;
-}
-.tile:active{transform:scale(.92)}
-.tile:focus-visible{outline:4px solid var(--sky)}
-.tile .ar{font-size:2.6rem;font-weight:800;line-height:1.15;display:block}
-.tile .nm{font-size:.85rem;font-weight:700;color:#8b86ad;display:block}
-.tile.wob{animation:wob .5s}
-@keyframes wob{25%{transform:rotate(-6deg) scale(1.1)}55%{transform:rotate(5deg) scale(1.1)}100%{transform:rotate(0)}}
+.wrap{max-width:860px;margin:0 auto;padding:18px 14px 20px}
 
-/* rainbow tile borders */
-.tile:nth-child(6n+1){border-bottom:5px solid var(--coral)}
-.tile:nth-child(6n+2){border-bottom:5px solid var(--sun)}
-.tile:nth-child(6n+3){border-bottom:5px solid var(--mint)}
-.tile:nth-child(6n+4){border-bottom:5px solid var(--sky)}
-.tile:nth-child(6n+5){border-bottom:5px solid var(--grape)}
-.tile:nth-child(6n+6){border-bottom:5px solid #F06292}
+/* ---------------- map ---------------- */
+.hero{text-align:center;padding:26px 20px 28px;border-radius:var(--r);margin-bottom:20px;
+  background:linear-gradient(165deg,#fff,var(--em-l) 62%,var(--gold-l));
+  border:1px solid var(--line);box-shadow:var(--sh)}
+.hero .ar-t{font-family:var(--ar);font-size:clamp(1.9rem,8vw,2.7rem);font-weight:700;color:var(--em);line-height:1.4}
+.hero h2{font-family:var(--disp);font-size:clamp(1.15rem,4.6vw,1.5rem);color:var(--ink);margin-top:2px}
+.hero p{font-size:14.5px;color:var(--soft);max-width:44ch;margin:8px auto 0}
+.hero .prog{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-size:12.5px;
+  font-weight:800;color:#6a5015;background:var(--gold-l);border:1px solid rgba(142,111,46,.3);
+  border-radius:100px;padding:6px 15px}
 
-/* ---------- GROUP LETTER ROW ---------- */
-.group-row{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
-  gap:12px;direction:rtl;margin-bottom:18px;
-}
-.group-row .tile .ar{font-size:3rem}
-.tile.selected{outline:5px solid var(--sun);transform:scale(1.05)}
+.stage-h{font-family:var(--disp);font-size:13px;font-weight:700;letter-spacing:1.4px;
+  text-transform:uppercase;color:var(--gold);margin:20px 4px 9px}
+.steps{display:grid;gap:11px}
+.step{display:flex;align-items:center;gap:13px;width:100%;text-align:left;cursor:pointer;
+  background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:13px 15px;
+  font-family:inherit;transition:.18s;min-height:44px}
+.step:hover{transform:translateY(-2px);border-color:var(--em);box-shadow:var(--sh)}
+.step .n{width:42px;height:42px;flex:0 0 auto;border-radius:13px;display:grid;place-items:center;
+  font-family:var(--disp);font-size:18px;font-weight:800;color:#fff}
+.step.c-em .n{background:linear-gradient(140deg,var(--em),#07301f)}
+.step.c-coral .n{background:linear-gradient(140deg,var(--coral),#C9412C)}
+.step.c-sky .n{background:linear-gradient(140deg,var(--sky),#2B7FB0)}
+.step.c-mint .n{background:linear-gradient(140deg,var(--mint),#2E8E6E)}
+.step.c-grape .n{background:linear-gradient(140deg,var(--grape),#6D4FAC)}
+.step.c-pink .n{background:linear-gradient(140deg,var(--pink),#C9547C)}
+.step.c-gold .n{background:linear-gradient(140deg,var(--gold),#8E6F2E)}
+.step .tx{flex:1;min-width:0}
+.step .tx b{font-family:var(--disp);font-size:16px;font-weight:700;display:block;line-height:1.25}
+.step .tx span{font-size:12.5px;color:var(--soft)}
+.step .go{flex:0 0 auto;font-size:18px;color:var(--soft)}
+.step.done .go{color:var(--mint)}
 
-/* ---------- HARAKA STAGE ---------- */
-.stage{
-  background:var(--card);border-radius:28px;
-  box-shadow:0 8px 0 rgba(58,53,96,.10);
-  padding:18px 14px 20px;text-align:center;margin-bottom:22px;
-}
-.stage .who{font-size:1.15rem;font-weight:800;color:#8b86ad;margin-bottom:8px}
-.haraka-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;direction:rtl}
-.hcard{
-  flex:1 1 100px;max-width:160px;
-  border:none;cursor:pointer;font-family:inherit;
-  border-radius:22px;padding:12px 6px 10px;
-  transition:transform .12s;
-}
-.hcard:active{transform:scale(.9)}
-.hcard:focus-visible{outline:4px solid var(--ink)}
-.hcard .ar{font-size:3.4rem;font-weight:800;line-height:1.2;display:block;color:#fff}
-.hcard .say{font-size:1.05rem;font-weight:800;color:rgba(255,255,255,.95);display:block}
-.hcard.f{background:var(--fatha);box-shadow:0 6px 0 #b23a2a}
-.hcard.k{background:var(--kasra);box-shadow:0 6px 0 #1f7047}
-.hcard.d{background:var(--damma);box-shadow:0 6px 0 #1e58a0}
-.legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:12px;font-weight:800;font-size:.95rem}
-.legend span{display:flex;align-items:center;gap:6px}
-.dot{width:14px;height:14px;border-radius:50%;display:inline-block}
+/* ---------------- screens ---------------- */
+.screen{display:none}
+.screen.show{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.s-title{font-family:var(--disp);font-size:clamp(1.3rem,5.2vw,1.7rem);text-align:center;color:var(--em)}
+.s-hint{text-align:center;font-size:14px;color:var(--soft);margin:4px auto 16px;max-width:46ch}
 
-/* ---------- READING PRACTICE ---------- */
-.practice{
-  background:linear-gradient(135deg,#FFF3D6,#FFE9F0);
-  border-radius:28px;padding:16px 14px 20px;margin-bottom:10px;
-  box-shadow:0 8px 0 rgba(58,53,96,.08);
-}
-.practice h3{text-align:center;font-size:1.25rem;margin-bottom:2px}
-.practice p{text-align:center;color:#8b86ad;font-weight:700;font-size:.95rem;margin-bottom:12px}
-.combo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;direction:rtl}
-.combo{
-  background:#fff;border:none;cursor:pointer;font-family:inherit;
-  border-radius:20px;padding:12px 6px;text-align:center;color:var(--ink);
-  box-shadow:0 5px 0 rgba(58,53,96,.12);
-  transition:transform .12s;
-}
-.combo:active{transform:scale(.9)}
-.combo:focus-visible{outline:4px solid var(--coral)}
-.combo .ar{font-size:2.7rem;font-weight:800;display:block;line-height:1.3}
-.combo .tr{font-size:.95rem;font-weight:800;color:#8b86ad}
-.shuffle{
-  display:block;margin:16px auto 0;border:none;cursor:pointer;
-  font-family:inherit;font-weight:800;font-size:1.05rem;
-  background:var(--sun);color:#6b4b00;padding:10px 24px;border-radius:999px;
-  box-shadow:0 5px 0 #d9a52e;transition:transform .12s;
-}
-.shuffle:active{transform:translateY(3px);box-shadow:0 1px 0 #d9a52e}
+.tile{background:var(--card);border:1.5px solid var(--line);border-radius:15px;padding:11px 6px 8px;
+  cursor:pointer;font-family:inherit;transition:.15s;display:flex;flex-direction:column;
+  align-items:center;gap:2px;min-height:44px}
+.tile:hover{border-color:var(--em);transform:translateY(-2px)}
+.tile.selected{border-color:var(--em);background:var(--em-l);box-shadow:0 0 0 3px rgba(11,77,59,.12)}
+.tile .ar{font-family:var(--ar);font-size:30px;font-weight:700;color:var(--em);line-height:1.5}
+.tile .nm{font-size:11px;font-weight:700;color:var(--soft)}
+.all-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:9px}
+.group-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:9px;margin-bottom:16px}
 
-/* ---------- MADD ---------- */
-.madd-cards{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;direction:rtl;margin-bottom:20px}
-.mcard{
-  flex:1 1 150px;max-width:220px;background:#fff;border-radius:26px;
-  padding:16px 10px;text-align:center;
-  box-shadow:0 8px 0 rgba(58,53,96,.10);
-  border-top:8px solid var(--madd);
-}
-.mcard .big{font-size:3.6rem;font-weight:800;color:var(--madd);line-height:1.25}
-.mcard .rule{font-weight:800;font-size:1rem;color:var(--ink);margin-top:4px}
-.mcard .long{font-size:1.1rem;font-weight:800;color:#8b86ad}
-.mcard button{
-  margin-top:8px;border:none;cursor:pointer;font-family:inherit;font-weight:800;
-  background:var(--madd);color:#fff;border-radius:999px;padding:6px 18px;font-size:1rem;
-  box-shadow:0 4px 0 #6a41a5;
-}
-.mcard button:active{transform:translateY(3px)}
+.stage{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);
+  padding:18px 16px;margin-bottom:16px}
+.who{font-family:var(--disp);font-size:17px;text-align:center;color:var(--em);margin-bottom:12px}
+.haraka-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px}
+.hcard{border-radius:16px;border:2px solid;background:#fff;padding:13px 8px;cursor:pointer;
+  font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:44px}
+.hcard .ar{font-family:var(--ar);font-size:34px;font-weight:700;line-height:1.5;direction:rtl}
+.hcard .say{font-family:var(--disp);font-size:15px;font-weight:700}
+.hcard.f{border-color:var(--fatha)} .hcard.f .ar,.hcard.f .say{color:var(--fatha)}
+.hcard.k{border-color:var(--kasra)} .hcard.k .ar,.hcard.k .say{color:var(--kasra)}
+.hcard.d{border-color:var(--damma)} .hcard.d .ar,.hcard.d .say{color:var(--damma)}
+.hcard.s{border-color:var(--soft)} .hcard.s .ar,.hcard.s .say{color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:13px;
+  font-size:12.5px;color:var(--soft)}
+.legend .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
 
-.tip{
-  max-width:560px;margin:0 auto 16px;background:#EAF7FF;border-radius:20px;
-  padding:12px 16px;font-weight:700;color:#3d6e85;text-align:center;font-size:1rem;
-}
+.practice{background:linear-gradient(160deg,#fff,var(--gold-l));border:1.5px solid rgba(142,111,46,.25);
+  border-radius:var(--r);padding:18px 16px;margin-bottom:16px}
+.practice h3{font-family:var(--disp);font-size:17px;color:#8E6F2E;text-align:center}
+.practice p{text-align:center;font-size:13px;color:var(--soft);margin-bottom:12px}
+.combo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:10px}
+.combo{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px 6px;
+  cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:44px}
+.combo .ar{font-family:var(--ar);font-size:29px;font-weight:700;color:var(--em);direction:rtl;line-height:1.6}
+.combo .tr{font-family:var(--disp);font-size:13px;font-weight:700;color:var(--gold)}
+.shuffle{display:block;margin:14px auto 0;background:linear-gradient(135deg,var(--gold),#8E6F2E);
+  color:#fff;border:0;border-radius:100px;padding:11px 26px;font-family:var(--disp);
+  font-size:15px;font-weight:700;cursor:pointer;min-height:44px}
 
-/* ---------- MARKS: sukoon · tanween · shaddah ---------- */
-.n-marks{background:var(--sukoon)}
-.mark-h{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  font-size:1.2rem;font-weight:800;color:var(--ink);margin:22px 0 4px;
-}
-.mark-h .sym{font-size:2rem;line-height:1;color:var(--sukoon)}
-.mark-note{text-align:center;color:#8b86ad;font-weight:700;font-size:.92rem;margin-bottom:12px}
-.hcard.s{background:var(--sukoon);box-shadow:0 6px 0 #3d4a9e}
-.rest-note{
-  max-width:560px;margin:14px auto 0;background:#FFF3E0;border-radius:20px;
-  padding:12px 16px;font-weight:700;color:#8a5a12;text-align:center;font-size:.95rem;
-}
-.mark-rule{
-  max-width:560px;margin:0 auto 14px;background:#F3F0FF;border-radius:20px;
-  padding:12px 16px;font-weight:700;color:#5b4b8a;text-align:center;font-size:.95rem;
-}
-@media (max-width:480px){
-  .mark-h{font-size:1.05rem}
-  .mark-h .sym{font-size:1.7rem}
-}
+.tip,.rest-note,.mark-rule{background:var(--em-l);border-left:4px solid var(--em);border-radius:0 12px 12px 0;
+  padding:11px 14px;font-size:13.5px;color:var(--ink);margin-bottom:14px}
+.mark-h{font-family:var(--disp);font-size:16px;color:var(--em);margin:16px 0 3px;
+  display:flex;align-items:center;gap:8px}
+.mark-h .sym{font-family:var(--ar);font-size:24px;direction:rtl}
+.mark-note{font-size:13px;color:var(--soft);margin-bottom:9px}
+.mark-rule{margin-top:10px;font-size:13px}
 
-/* ---------- TEXT BOOK (A4 pages) ---------- */
-.a4page{
-  background:#fff;border-radius:14px;
-  aspect-ratio:210/297;width:100%;max-width:640px;
-  margin:0 auto 26px;padding:26px 22px;
-  box-shadow:0 10px 24px rgba(58,53,96,.15);
-  border:6px solid #FFE9B8;
-  display:flex;flex-direction:column;position:relative;overflow:hidden;
-}
-.a4page .pg-head{
-  text-align:center;font-weight:800;font-size:1.3rem;margin-bottom:10px;
-  color:var(--ink);
-}
-.a4page .pg-head small{display:block;font-size:.85rem;color:#8b86ad}
-.word-grid{
-  flex:1;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;
-  gap:12px;direction:rtl;
-}
-.wcard{
-  border-radius:18px;text-align:center;padding:8px 4px;
-  display:flex;flex-direction:column;justify-content:center;
-  border:3px dashed #E8DFF5;background:#FDFBFF;
-  cursor:pointer;user-select:none;transition:transform .12s;position:relative;overflow:visible;
-}
-.wcard:active{transform:scale(.95)}
-.wcard .pic{font-size:2.6rem;line-height:1.1;display:inline-block}
-.wcard .wr{font-size:2rem;font-weight:800;color:var(--ink);line-height:1.4}
-.wcard .wm{font-size:.9rem;font-weight:800;color:#8b86ad}
+.madd-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+.mcard{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:16px 10px;text-align:center}
+.mcard .big{font-family:var(--ar);font-size:44px;font-weight:700;color:var(--em);direction:rtl;line-height:1.5}
+.mcard .rule{font-size:12px;color:var(--soft);margin-top:4px}
+.mcard .long{font-family:var(--disp);font-size:16px;font-weight:700;color:var(--gold);margin-top:2px}
 
-/* ---- object animations (tap a word card) ---- */
-.anim-bounce{animation:a-bounce .9s ease}
-@keyframes a-bounce{0%,100%{transform:translateY(0)}30%{transform:translateY(-20px) scale(1.12)}55%{transform:translateY(0)}72%{transform:translateY(-9px)}88%{transform:translateY(0)}}
-.anim-wave{animation:a-wave 1s ease;transform-origin:70% 90%}
-@keyframes a-wave{0%,100%{transform:rotate(0)}20%{transform:rotate(24deg)}40%{transform:rotate(-18deg)}60%{transform:rotate(18deg)}80%{transform:rotate(-9deg)}}
-.anim-swim{animation:a-swim 1.4s ease}
-@keyframes a-swim{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-16px) translateY(-6px) rotate(-9deg)}50%{transform:translateX(0) translateY(2px)}75%{transform:translateX(16px) translateY(-6px) rotate(9deg)}}
-.anim-walk{animation:a-walk 1.5s ease}
-@keyframes a-walk{0%,100%{transform:translateX(0) rotate(0)}15%{transform:translateX(-10px) rotate(-4deg) translateY(-3px)}30%{transform:translateX(-20px) rotate(3deg)}50%{transform:translateX(-26px) rotate(-3deg) translateY(-3px)}70%{transform:translateX(-14px) rotate(3deg)}85%{transform:translateX(-5px) rotate(-2deg)}}
-.anim-flap{animation:a-flap .8s ease}
-@keyframes a-flap{0%,100%{transform:rotate(0) translateY(0)}15%{transform:rotate(-12deg) translateY(-10px)}30%{transform:rotate(10deg) translateY(-16px)}50%{transform:rotate(-10deg) translateY(-10px)}70%{transform:rotate(8deg) translateY(-4px)}}
-.anim-spin{animation:a-spin 1s ease}
-@keyframes a-spin{from{transform:rotateY(0)}to{transform:rotateY(720deg)}}
-.anim-sway{animation:a-sway 1.3s ease;transform-origin:50% 100%}
-@keyframes a-sway{0%,100%{transform:rotate(0)}20%{transform:rotate(9deg)}45%{transform:rotate(-8deg)}70%{transform:rotate(6deg)}88%{transform:rotate(-3deg)}}
-.anim-glow{animation:a-glow 1.2s ease}
-@keyframes a-glow{0%,100%{transform:scale(1);filter:brightness(1)}35%{transform:scale(1.25);filter:brightness(1.7) drop-shadow(0 0 14px #FFC94D)}65%{transform:scale(1.15);filter:brightness(1.5) drop-shadow(0 0 8px #FFC94D)}}
-.anim-stomp{animation:a-stomp .9s ease}
-@keyframes a-stomp{0%,100%{transform:translateY(0) scale(1)}25%{transform:translateY(-14px)}40%{transform:translateY(4px) scale(1.15,.85)}55%{transform:translateY(-8px) scale(1)}70%{transform:translateY(3px) scale(1.1,.9)}}
-.anim-pour{animation:a-pour 1.2s ease;transform-origin:50% 80%}
-@keyframes a-pour{0%,100%{transform:rotate(0)}30%{transform:rotate(-38deg) translateY(-4px)}60%{transform:rotate(-38deg) translateY(-4px)}}
-.anim-open{animation:a-open 1.2s ease;transform-origin:15% 50%}
-@keyframes a-open{0%,100%{transform:perspective(300px) rotateY(0)}35%{transform:perspective(300px) rotateY(-55deg)}65%{transform:perspective(300px) rotateY(-55deg)}}
-.anim-rain{animation:a-rain 1.2s ease}
-@keyframes a-rain{0%,100%{transform:translateY(0)}20%{transform:translateY(6px)}40%{transform:translateY(-3px)}60%{transform:translateY(6px)}80%{transform:translateY(-2px)}}
-.anim-flutter{animation:a-flutter 1.5s ease}
-@keyframes a-flutter{0%{transform:translateY(-18px) rotate(0)}25%{transform:translateY(-8px) rotate(14deg) translateX(8px)}50%{transform:translateY(0px) rotate(-12deg) translateX(-8px)}75%{transform:translateY(6px) rotate(8deg) translateX(4px)}100%{transform:translateY(0) rotate(0) translateX(0)}}
-.anim-splash{animation:a-splash 1.2s ease}
-@keyframes a-splash{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-24px) rotate(-14deg)}55%{transform:translateY(4px) rotate(6deg)}75%{transform:translateY(-6px) rotate(-3deg)}}
-/* rooster crows: crouch, rear back, puff chest and tremble, then settle */
-.anim-crow{animation:a-crow 1.6s ease}
-@keyframes a-crow{
-  0%,100%{transform:translateY(0) rotate(0) scale(1)}
-  14%{transform:translateY(3px) rotate(3deg) scale(1.05,.9)}
-  30%{transform:translateY(-11px) rotate(-15deg) scale(1.2)}
-  40%{transform:translateY(-12px) rotate(-18deg) scale(1.22)}
-  47%{transform:translateY(-11px) rotate(-13deg) scale(1.22)}
-  54%{transform:translateY(-12px) rotate(-18deg) scale(1.22)}
-  61%{transform:translateY(-11px) rotate(-14deg) scale(1.2)}
-  80%{transform:translateY(1px) rotate(1deg) scale(1.02,.96)}
-}
-.crow-note{
-  position:absolute;top:4px;right:12px;font-size:1.3rem;pointer-events:none;
-  animation:a-note 1.6s ease forwards;
-}
-@keyframes a-note{
-  0%,20%{opacity:0;transform:translateY(10px) scale(.5) rotate(0)}
-  35%{opacity:1;transform:translateY(0) scale(1) rotate(-8deg)}
-  100%{opacity:0;transform:translateY(-30px) scale(1.35) rotate(14deg)}
-}
-.pg-num{
-  position:absolute;bottom:8px;left:0;right:0;text-align:center;
-  font-weight:800;color:#c9c3e6;font-size:.9rem;
-}
+.a4page{background:#fff;border:1.5px solid var(--line);border-radius:var(--r);padding:20px 16px;margin-bottom:16px}
+.pg-head{font-family:var(--disp);font-size:18px;color:var(--em);text-align:center;margin-bottom:14px}
+.pg-head small{display:block;font-family:var(--ui);font-size:12px;color:var(--soft);font-weight:600}
+.word-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:11px}
+.wcard{border:1.5px solid var(--line);border-radius:15px;padding:13px 8px;text-align:center;
+  cursor:pointer;position:relative;overflow:hidden;background:var(--card);min-height:44px}
+.wcard .pic{font-size:40px;line-height:1.2;display:inline-block}
+.wcard .wr{font-family:var(--ar);font-size:26px;font-weight:700;color:var(--em);direction:rtl;line-height:1.7}
+.wcard .wtr{font-family:var(--disp);font-size:12.5px;font-weight:700;color:var(--gold)}
+.wcard .wmn{font-size:12px;color:var(--soft)}
+.pg-num{text-align:center;font-size:12px;color:var(--soft);margin-top:12px}
 
-/* ---------- COLOURING ---------- */
-.palette{
-  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
-  position:sticky;top:64px;z-index:40;
-  background:rgba(255,249,239,.95);padding:10px;border-radius:20px;margin-bottom:14px;
-}
-.crayon{
-  width:42px;height:42px;border-radius:50%;border:4px solid #fff;cursor:pointer;
-  box-shadow:0 3px 0 rgba(0,0,0,.15);transition:transform .12s;
-}
-.crayon:active{transform:scale(.85)}
-.crayon.picked{outline:5px solid var(--ink);transform:scale(1.15)}
-.crayon:focus-visible{outline:5px solid var(--ink)}
-.crayon.eraser{background:#fff;font-size:1.3rem;line-height:1}
-.colour-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
-  gap:14px;direction:rtl;
-}
-.cletter{
-  background:#fff;border:none;cursor:pointer;font-family:inherit;
-  border-radius:22px;padding:6px 2px 2px;text-align:center;
-  box-shadow:0 6px 0 rgba(58,53,96,.10);
-  transition:transform .12s;
-}
-.cletter:active{transform:scale(.93)}
-.cletter:focus-visible{outline:4px solid var(--sun)}
-.cletter .big{
-  font-size:4.2rem;font-weight:800;line-height:1.2;display:block;
-  color:transparent;
-  -webkit-text-stroke:2.5px var(--ink);
-  paint-order:stroke fill;
-}
-.cletter .nm{font-size:.85rem;font-weight:700;color:#8b86ad;display:block;padding-bottom:4px}
+.palette{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-bottom:16px}
+.crayon{width:42px;height:42px;border-radius:50%;border:3px solid #fff;cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);transition:.15s}
+.crayon.picked{transform:scale(1.18);box-shadow:0 0 0 3px var(--em)}
+.crayon.eraser{background:#fff;font-size:19px;display:grid;place-items:center}
+.colour-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px}
+.cletter{background:#fff;border:2px dashed var(--line);border-radius:15px;padding:12px 4px 8px;
+  cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;min-height:44px}
+.cletter .big{font-family:var(--ar);font-size:38px;font-weight:700;color:transparent;
+  -webkit-text-stroke:1.5px var(--soft);line-height:1.4;transition:color .15s}
+.cletter .nm{font-size:11px;font-weight:700;color:var(--soft)}
 
-/* ---------- PRINT (book + colouring on real A4) ---------- */
-@media print{
-  nav,header,footer,.palette,.shuffle,.screen-hint{display:none!important}
-  body{background:#fff}
-  section.screen{display:none!important}
-  section.screen.show{display:block!important}
-  .a4page{box-shadow:none;border-color:#eee;page-break-after:always;max-width:100%}
-  .cletter{box-shadow:none;border:1px solid #eee}
-}
+/* ---------------- footer nav ---------------- */
+.foot{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;gap:10px;
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(0deg,var(--paper) 62%,transparent)}
+.foot button{min-height:46px;border:1.5px solid var(--line);background:var(--card);color:var(--em);
+  font-family:var(--disp);font-weight:700;font-size:15px;border-radius:14px;padding:11px 18px;cursor:pointer}
+.foot button:hover:not(:disabled){background:var(--em);color:#fff;border-color:var(--em)}
+.foot button:disabled{opacity:.3;cursor:default}
+.foot .mid{flex:1;text-align:center;font-size:12.5px;color:var(--soft);font-weight:700}
+body.at-map .foot{display:none}
 
-footer{text-align:center;color:#b9b4d4;font-weight:700;padding:20px;font-size:.9rem}
+.wob{animation:wob .4s}
+@keyframes wob{0%,100%{transform:none}25%{transform:rotate(-6deg) scale(1.08)}75%{transform:rotate(6deg) scale(1.08)}}
 
-@media (max-width:480px){
-  .tile .ar{font-size:2.2rem}
-  .group-row .tile .ar{font-size:2.5rem}
-  .hcard .ar{font-size:2.8rem}
+@media(max-width:520px){
+  .wrap{padding:14px 11px 16px}
+  .bar .ttl .sub{display:none}
+  .all-grid,.group-row{grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:7px}
+  .tile .ar{font-size:26px}
+  .hcard .ar{font-size:30px}
+  .colour-grid{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}
 }
-@media (prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important}
-}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
 </style>
 </head>
-<body>
+<body class="at-map">
 
-<header>
-  <div class="big-title"><span class="a">أَلِف</span> <span class="b">بَاء</span> <span class="c">تَاء</span> 🌈</div>
-  <div class="sub">Learn 📚 · Read 👀 · Colour 🖍️ — for little stars ⭐</div>
-</header>
+<div class="bar">
+  <button class="home" id="homeBtn" aria-label="Back to the map">🏠</button>
+  <div class="ttl"><h1 id="barTitle">Alif Bā Tā</h1><div class="sub" id="barSub">Foundation · Level 1</div></div>
+  <button class="trsw" id="trBtn" aria-label="Show or hide the sound spellings">
+    <span class="lab">Aa</span><span class="knob"></span>
+  </button>
+</div>
 
-<nav id="nav"></nav>
+<div class="wrap">
 
-<main id="main"></main>
+  <!-- ========== MAP ========== -->
+  <section class="screen show" id="map">
+    <div class="hero">
+      <div class="ar-t">أَلِف بَاء تَاء</div>
+      <h2>Let's learn to read Arabic!</h2>
+      <p>Ten steps. Start at the top and work your way down — tap any step to open it.</p>
+      <div class="prog" id="progPill">⭐ 0 of 10 steps opened</div>
+    </div>
+    <div id="mapBody"></div>
+  </section>
 
-<footer>ManzilulQuran E-learning Academy 🌙 Made with love for little readers</footer>
+  <main id="main"></main>
+</div>
+
+<div class="foot" id="foot">
+  <button id="prevBtn">‹ Back</button>
+  <div class="mid" id="footMid"></div>
+  <button id="nextBtn">Next ›</button>
+</div>
 
 <script>
+"use strict";
+
 /* ================= DATA ================= */
 const LETTERS=[
- {ch:'ا',name:'Alif',tr:'a',alif:true},
- {ch:'ب',name:'Ba',tr:'b'},
- {ch:'ت',name:'Ta',tr:'t'},
- {ch:'ث',name:'Tha',tr:'th'},
- {ch:'ج',name:'Jeem',tr:'j'},
- {ch:'ح',name:'Ḥa',tr:'ḥ'},
- {ch:'خ',name:'Kha',tr:'kh'},
- {ch:'د',name:'Dal',tr:'d'},
- {ch:'ذ',name:'Dhal',tr:'dh'},
- {ch:'ر',name:'Ra',tr:'r'},
- {ch:'ز',name:'Zay',tr:'z'},
- {ch:'س',name:'Seen',tr:'s'},
- {ch:'ش',name:'Sheen',tr:'sh'},
- {ch:'ص',name:'Ṣad',tr:'ṣ'},
- {ch:'ض',name:'Ḍad',tr:'ḍ'},
- {ch:'ط',name:'Ṭa',tr:'ṭ'},
- {ch:'ظ',name:'Ẓa',tr:'ẓ'},
- {ch:'ع',name:'Ain',tr:'ʿ'},
- {ch:'غ',name:'Ghain',tr:'gh'},
- {ch:'ف',name:'Fa',tr:'f'},
- {ch:'ق',name:'Qaf',tr:'q'},
- {ch:'ك',name:'Kaf',tr:'k'},
- {ch:'ل',name:'Lam',tr:'l'},
- {ch:'م',name:'Meem',tr:'m'},
- {ch:'ن',name:'Noon',tr:'n'},
- {ch:'ه',name:'Ha',tr:'h'},
- {ch:'و',name:'Waw',tr:'w'},
+ {ch:'ا',name:'Alif',tr:'a',alif:true},{ch:'ب',name:'Ba',tr:'b'},{ch:'ت',name:'Ta',tr:'t'},
+ {ch:'ث',name:'Tha',tr:'th'},{ch:'ج',name:'Jeem',tr:'j'},{ch:'ح',name:'Ḥa',tr:'ḥ'},
+ {ch:'خ',name:'Kha',tr:'kh'},{ch:'د',name:'Dal',tr:'d'},{ch:'ذ',name:'Dhal',tr:'dh'},
+ {ch:'ر',name:'Ra',tr:'r'},{ch:'ز',name:'Zay',tr:'z'},{ch:'س',name:'Seen',tr:'s'},
+ {ch:'ش',name:'Sheen',tr:'sh'},{ch:'ص',name:'Ṣad',tr:'ṣ'},{ch:'ض',name:'Ḍad',tr:'ḍ'},
+ {ch:'ط',name:'Ṭa',tr:'ṭ'},{ch:'ظ',name:'Ẓa',tr:'ẓ'},{ch:'ع',name:'Ain',tr:'ʿ'},
+ {ch:'غ',name:'Ghain',tr:'gh'},{ch:'ف',name:'Fa',tr:'f'},{ch:'ق',name:'Qaf',tr:'q'},
+ {ch:'ك',name:'Kaf',tr:'k'},{ch:'ل',name:'Lam',tr:'l'},{ch:'م',name:'Meem',tr:'m'},
+ {ch:'ن',name:'Noon',tr:'n'},{ch:'ه',name:'Ha',tr:'h'},{ch:'و',name:'Waw',tr:'w'},
  {ch:'ي',name:'Ya',tr:'y'}
 ];
-const FATHA='\u064E', KASRA='\u0650', DAMMA='\u064F';
+const FATHA='\u064E',KASRA='\u0650',DAMMA='\u064F';
+const SUKOON='\u0652',FATHATAN='\u064B',KASRATAN='\u064D',DAMMATAN='\u064C',SHADDA='\u0651';
 const HARAKAT=[
  {mark:FATHA,cls:'f',v:'a',label:'Fatha'},
  {mark:KASRA,cls:'k',v:'i',label:'Kasra'},
  {mark:DAMMA,cls:'d',v:'u',label:'Damma'}
 ];
 const GROUPS=[[0,6],[6,12],[12,18],[18,24],[24,28]];
-const GROUP_COLORS=['coral','sky','mint','grape','pink'];
+const GCOL=['c-coral','c-sky','c-mint','c-grape','c-pink'];
 
-/* ================= AUDIO (speech) ================= */
+/* ========== AUDIO — step 1 (All 28 Letters) only ========== */
 let arVoice=null;
-function pickVoice(){
-  try{
-    const vs=speechSynthesis.getVoices();
-    arVoice=vs.find(v=>v.lang&&v.lang.startsWith('ar'))||null;
-  }catch(e){}
-}
-if('speechSynthesis' in window){
-  pickVoice();
-  speechSynthesis.onvoiceschanged=pickVoice;
-}
-function say(text){
+function pickVoice(){try{arVoice=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.startsWith('ar'))||null;}catch(e){}}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
+function say(t){
   try{
     if(!('speechSynthesis' in window))return;
     speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text);
-    u.lang='ar-SA';
-    if(arVoice)u.voice=arVoice;
-    u.rate=0.75;u.pitch=1.1;
+    const u=new SpeechSynthesisUtterance(t);
+    u.lang='ar-SA'; if(arVoice)u.voice=arVoice; u.rate=.75; u.pitch=1.1;
     speechSynthesis.speak(u);
   }catch(e){}
 }
-/* fun tap feedback used everywhere audio was removed */
-function popIt(elm){elm.classList.remove('wob');void elm.offsetWidth;elm.classList.add('wob');}
 
 /* ================= HELPERS ================= */
-function el(html){const d=document.createElement('div');d.innerHTML=html.trim();return d.firstChild;}
-function harakaChar(L,mark){
-  // Alif with harakat is shown as bare alif + mark (simple qaida style)
-  return L.ch+mark;
-}
-function trSyll(L,v){ return (L.alif?'':L.tr)+v; }
-function rand(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function el(h){const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;}
+function pop(e){e.classList.remove('wob');void e.offsetWidth;e.classList.add('wob');}
+function rand(a){return a[Math.floor(Math.random()*a.length)];}
+function trSyll(L,v){return (L.alif?'':L.tr)+v;}
 
-/* ================= NAV & SCREENS ================= */
-const nav=document.getElementById('nav');
+/* ================= STEP REGISTRY ================= */
 const main=document.getElementById('main');
-const screens=[];
+const STEPS=[];   /* {id,label,note,colour,sec} */
 
-function addScreen(id,btnLabel,btnClass){
-  const s=el(`<section class="screen" id="${id}"></section>`);
-  main.appendChild(s);
-  const b=el(`<button class="${btnClass}">${btnLabel}</button>`);
-  b.addEventListener('click',()=>showScreen(id,b));
-  nav.appendChild(b);
-  screens.push({id,btn:b,sec:s});
-  return s;
-}
-/* deep links from the course page / class sheet: #lesson3 opens group 3 */
-function openFromHash(){
-  const h=(location.hash||'').replace('#','');
-  const m=h.match(/^(?:lesson|group|g)(\d+)$/i);
-  if(m){ const gi=Math.max(1,Math.min(5,parseInt(m[1],10)))-1; showScreen('g'+gi); }
-}
-window.addEventListener('hashchange',openFromHash);
-function showScreen(id){
-  screens.forEach(s=>{
-    s.sec.classList.toggle('show',s.id===id);
-    s.btn.classList.toggle('active',s.id===id);
-  });
-  window.scrollTo({top:0,behavior:'smooth'});
+function addStep(id,label,note,colour){
+  const sec=el(`<section class="screen" id="${id}"></section>`);
+  main.appendChild(sec);
+  STEPS.push({id,label,note,colour,sec});
+  return sec;
 }
 
-/* ================= SCREEN 1: ALL LETTERS ================= */
+/* ================= STEP 1 — ALL LETTERS ================= */
 (function(){
-  const s=addScreen('all','🌟 All Letters','n-all');
-  s.appendChild(el(`<h2 class="screen-title">All 28 Letters 🎉</h2>`));
-  s.appendChild(el(`<p class="screen-hint">Tap a letter to hear its name!</p>`));
+  const s=addStep('letters','All 28 Letters','Meet every letter — tap to hear its name','c-em');
+  s.appendChild(el(`<h2 class="s-title">All 28 Letters</h2>`));
+  s.appendChild(el(`<p class="s-hint">Tap a letter to hear its name. Say it back out loud!</p>`));
   const g=el(`<div class="all-grid"></div>`);
   LETTERS.forEach(L=>{
     const t=el(`<button class="tile"><span class="ar">${L.ch}</span><span class="nm">${L.name}</span></button>`);
-    t.addEventListener('click',()=>{
-      t.classList.remove('wob');void t.offsetWidth;t.classList.add('wob');
-      say(L.ch);
-    });
+    t.addEventListener('click',()=>{pop(t);say(L.ch);});
     g.appendChild(t);
   });
   s.appendChild(g);
 })();
 
-/* ================= GROUP SCREENS ================= */
+/* ================= STEPS 2–6 — LETTER GROUPS ================= */
 GROUPS.forEach((range,gi)=>{
   const letters=LETTERS.slice(range[0],range[1]);
-  const navCls='n-g'+(gi+1);
-  const s=addScreen('g'+gi,`${gi+1}️⃣ Letters ${range[0]+1}–${range[1]}`,navCls);
+  const s=addStep('g'+gi,`Group ${gi+1}`,`Letters ${range[0]+1}–${range[1]} with fatha, kasra, damma`,GCOL[gi]);
 
-  s.appendChild(el(`<h2 class="screen-title">Group ${gi+1} 🎈</h2>`));
-  s.appendChild(el(`<p class="screen-hint">Tap a letter, then tap its sounds below! 👇</p>`));
+  s.appendChild(el(`<h2 class="s-title">Group ${gi+1}</h2>`));
+  s.appendChild(el(`<p class="s-hint">Tap a letter, then read each sound underneath out loud.</p>`));
 
-  /* letter row */
-  const row=el(`<div class="group-row"></div>`);
-  s.appendChild(row);
-
-  /* haraka stage */
+  const row=el(`<div class="group-row"></div>`); s.appendChild(row);
   const stage=el(`<div class="stage">
-    <div class="who" id="who-${gi}">Pick a letter! ☝️</div>
-    <div class="haraka-row" id="hr-${gi}"></div>
+    <div class="who">Pick a letter</div>
+    <div class="haraka-row"></div>
     <div class="legend">
-      <span><span class="dot" style="background:var(--fatha)"></span> Fatha = "a"</span>
-      <span><span class="dot" style="background:var(--kasra)"></span> Kasra = "i"</span>
-      <span><span class="dot" style="background:var(--damma)"></span> Damma = "u"</span>
+      <span><span class="dot" style="background:var(--fatha)"></span>Fatha = a</span>
+      <span><span class="dot" style="background:var(--kasra)"></span>Kasra = i</span>
+      <span><span class="dot" style="background:var(--damma)"></span>Damma = u</span>
     </div>
   </div>`);
   s.appendChild(stage);
+  const who=stage.querySelector('.who'), hr=stage.querySelector('.haraka-row');
 
-  const who=stage.querySelector('#who-'+gi);
-  const hr=stage.querySelector('#hr-'+gi);
-
-  function selectLetter(L,tileEl){
+  function select(L,tile){
     row.querySelectorAll('.tile').forEach(t=>t.classList.remove('selected'));
-    tileEl.classList.add('selected');
-    who.textContent=`${L.name} ( ${L.ch} ) says...`;
+    if(tile)tile.classList.add('selected');
+    who.textContent = document.body.classList.contains('no-tr') ? L.ch : `${L.name}  ${L.ch}  says…`;
     hr.innerHTML='';
     HARAKAT.forEach(H=>{
-      const syll=harakaChar(L,H.mark);
       const c=el(`<button class="hcard ${H.cls}">
-        <span class="ar">${syll}</span>
-        <span class="say">${trSyll(L,H.v)}</span>
-      </button>`);
-      c.addEventListener('click',()=>popIt(c));
+        <span class="ar">${L.ch+H.mark}</span><span class="say">${trSyll(L,H.v)}</span></button>`);
+      c.addEventListener('click',()=>pop(c));
       hr.appendChild(c);
     });
   }
-
   letters.forEach((L,i)=>{
     const t=el(`<button class="tile"><span class="ar">${L.ch}</span><span class="nm">${L.name}</span></button>`);
-    t.addEventListener('click',()=>selectLetter(L,t));
+    t.addEventListener('click',()=>select(L,t));
     row.appendChild(t);
-    if(i===0){ /* preselect first letter without audio */
-      setTimeout(()=>{
-        t.classList.add('selected');
-        who.textContent=`${L.name} ( ${L.ch} ) says...`;
-        HARAKAT.forEach(H=>{
-          const syll=harakaChar(L,H.mark);
-          const c=el(`<button class="hcard ${H.cls}">
-            <span class="ar">${syll}</span>
-            <span class="say">${trSyll(L,H.v)}</span>
-          </button>`);
-          c.addEventListener('click',()=>popIt(c));
-          hr.appendChild(c);
-        });
-      },0);
-    }
+    if(i===0) setTimeout(()=>select(L,t),0);
   });
 
-  /* reading practice: 2-letter combos */
-  const prac=el(`<div class="practice">
-    <h3>🎯 Reading Time!</h3>
-    <p>Just for fun — tap and read two letters together!</p>
-    <div class="combo-grid" id="cg-${gi}"></div>
-  </div>`);
+  const prac=el(`<div class="practice"><h3>Reading Time</h3>
+    <p>Read the two letters together, then tap.</p><div class="combo-grid"></div></div>`);
   s.appendChild(prac);
-  const cg=prac.querySelector('#cg-'+gi);
-
-  function makeCombos(){
+  const cg=prac.querySelector('.combo-grid');
+  function build(){
     cg.innerHTML='';
-    // avoid alif as first letter of a combo (it carries the sound oddly for beginners)
-    const pool=letters.filter(L=>!L.alif);
-    const first=pool.length?pool:letters;
+    const pool=letters.filter(L=>!L.alif); const use=pool.length?pool:letters;
     for(let i=0;i<6;i++){
-      const L1=rand(first), L2=rand(letters.filter(L=>!L.alif).length?letters.filter(L=>!L.alif):letters);
-      const H1=rand(HARAKAT), H2=rand(HARAKAT);
-      const txt=L1.ch+H1.mark+L2.ch+H2.mark;
-      const tr=trSyll(L1,H1.v)+trSyll(L2,H2.v);
-      const c=el(`<button class="combo"><span class="ar">${txt}</span><span class="tr">${tr}</span></button>`);
-      c.addEventListener('click',()=>popIt(c));
+      const L1=rand(use),L2=rand(use),H1=rand(HARAKAT),H2=rand(HARAKAT);
+      const ar=L1.ch+H1.mark+L2.ch+H2.mark;
+      const c=el(`<button class="combo"><span class="ar">${ar}</span>
+        <span class="tr">${trSyll(L1,H1.v)+trSyll(L2,H2.v)}</span></button>`);
+      c.addEventListener('click',()=>pop(c));
       cg.appendChild(c);
     }
   }
-  makeCombos();
-  const sh=el(`<button class="shuffle">🎲 New letters!</button>`);
-  sh.addEventListener('click',makeCombos);
-  prac.appendChild(sh);
+  build();
+  const sh=el(`<button class="shuffle">🎲 New letters</button>`);
+  sh.addEventListener('click',build); prac.appendChild(sh);
 });
 
-/* ================= MARKS SCREEN — sukoon · tanween · shaddah ================= */
-const SUKOON='\u0652', FATHATAN='\u064B', KASRATAN='\u064D', DAMMATAN='\u064C', SHADDA='\u0651';
+/* ================= STEP 7 — MORE MARKS ================= */
 (function(){
-  const s=addScreen('marks','\u27b0 More Marks','n-marks');
-  s.appendChild(el(`<h2 class="screen-title">Three More Marks! \u27b0</h2>`));
-  s.appendChild(el(`<p class="screen-hint">Tap a letter \u2014 see it with sukoon, tanween and shaddah! \ud83d\udc47</p>`));
-
-  /* alif does not carry these marks */
+  const s=addStep('marks','More Marks','Sukoon, tanween and shaddah','c-gold');
+  s.appendChild(el(`<h2 class="s-title">Three More Marks</h2>`));
+  s.appendChild(el(`<p class="s-hint">Tap a letter and read it with each mark.</p>`));
   const POOL=LETTERS.filter(L=>!L.alif);
 
-  /* letter row */
-  const row=el(`<div class="group-row"></div>`);
-  s.appendChild(row);
-
-  const stage=el(`<div class="stage">
-    <div class="who" id="who-marks">Pick a letter! \u261d\ufe0f</div>
-    <div id="marks-body"></div>
-  </div>`);
+  const row=el(`<div class="group-row"></div>`); s.appendChild(row);
+  const stage=el(`<div class="stage"><div class="who">Pick a letter</div><div class="body"></div></div>`);
   s.appendChild(stage);
-  s.appendChild(el(`<div class="rest-note">\ud83d\ude34 Alif <b>\u0627</b> rests \u2014 it does not take these three marks.</div>`));
-
-  const who=stage.querySelector('#who-marks');
-  const body=stage.querySelector('#marks-body');
+  s.appendChild(el(`<div class="rest-note">Alif <b>ا</b> rests — it does not take these three marks.</div>`));
+  const who=stage.querySelector('.who'), body=stage.querySelector('.body');
 
   function cards(list){
     const r=el(`<div class="haraka-row"></div>`);
     list.forEach(o=>{
-      const c=el(`<button class="hcard ${o.cls}">
-        <span class="ar">${o.ar}</span>
-        <span class="say">${o.say}</span>
-      </button>`);
-      c.addEventListener('click',()=>popIt(c));
+      const c=el(`<button class="hcard ${o.cls}"><span class="ar">${o.ar}</span><span class="say">${o.say}</span></button>`);
+      c.addEventListener('click',()=>pop(c));
       r.appendChild(c);
     });
     return r;
   }
-
   function render(L){
     body.innerHTML='';
-
-    /* 1. SUKOON */
-    body.appendChild(el(`<div class="mark-h"><span class="sym">\u25cc\u0652</span> Sukoon \u2014 stop!</div>`));
+    body.appendChild(el(`<div class="mark-h"><span class="sym">◌${SUKOON}</span>Sukoon — stop</div>`));
     body.appendChild(el(`<div class="mark-note">No vowel. The sound stops right there.</div>`));
-    body.appendChild(cards([
-      {cls:'s', ar:'\u0623\u064e'+L.ch+SUKOON, say:'a'+L.tr}
-    ]));
-    body.appendChild(el(`<div class="mark-rule">\ud83e\udde9 A sukoon letter never stands alone \u2014 a vowel letter comes first, then it closes the sound.</div>`));
+    body.appendChild(cards([{cls:'s',ar:'أَ'+L.ch+SUKOON,say:'a'+L.tr}]));
+    body.appendChild(el(`<div class="mark-rule">A sukoon letter never stands alone — a vowel comes first, then it closes the sound.</div>`));
 
-    /* 2. TANWEEN */
-    body.appendChild(el(`<div class="mark-h"><span class="sym">\u25cc\u064b</span> Tanween \u2014 double marks</div>`));
-    body.appendChild(el(`<div class="mark-note">Two fathas, two kasras, two dammas \u2014 add an <b>n</b> at the end.</div>`));
+    body.appendChild(el(`<div class="mark-h"><span class="sym">◌${FATHATAN}</span>Tanween — double marks</div>`));
+    body.appendChild(el(`<div class="mark-note">Two fathas, two kasras, two dammas — add an <b>n</b> at the end.</div>`));
     body.appendChild(cards([
-      {cls:'f', ar:L.ch+FATHATAN, say:L.tr+'an'},
-      {cls:'k', ar:L.ch+KASRATAN, say:L.tr+'in'},
-      {cls:'d', ar:L.ch+DAMMATAN, say:L.tr+'un'}
-    ]));
-    body.appendChild(el(`<div class="mark-rule">\ud83d\udcd6 In the Qur'an, tanween fath usually carries an alif too: <b>${L.ch+FATHATAN}\u0627</b></div>`));
+      {cls:'f',ar:L.ch+FATHATAN,say:L.tr+'an'},
+      {cls:'k',ar:L.ch+KASRATAN,say:L.tr+'in'},
+      {cls:'d',ar:L.ch+DAMMATAN,say:L.tr+'un'}]));
+    body.appendChild(el(`<div class="mark-rule">In the Qur'an, tanween fath usually carries an alif too: <b>${L.ch+FATHATAN}ا</b></div>`));
 
-    /* 3. SHADDAH */
-    body.appendChild(el(`<div class="mark-h"><span class="sym">\u25cc\u0651</span> Shaddah \u2014 press it twice</div>`));
+    body.appendChild(el(`<div class="mark-h"><span class="sym">◌${SHADDA}</span>Shaddah — press it twice</div>`));
     body.appendChild(el(`<div class="mark-note">Say the letter <b>twice</b>, holding it strong.</div>`));
     body.appendChild(cards([
-      {cls:'f', ar:L.ch+SHADDA+FATHA, say:L.tr+'\u00b7'+L.tr+'a'},
-      {cls:'k', ar:L.ch+SHADDA+KASRA, say:L.tr+'\u00b7'+L.tr+'i'},
-      {cls:'d', ar:L.ch+SHADDA+DAMMA, say:L.tr+'\u00b7'+L.tr+'u'}
-    ]));
+      {cls:'f',ar:L.ch+SHADDA+FATHA,say:L.tr+'·'+L.tr+'a'},
+      {cls:'k',ar:L.ch+SHADDA+KASRA,say:L.tr+'·'+L.tr+'i'},
+      {cls:'d',ar:L.ch+SHADDA+DAMMA,say:L.tr+'·'+L.tr+'u'}]));
   }
-
-  function selectLetter(L,tileEl){
+  function select(L,tile){
     row.querySelectorAll('.tile').forEach(t=>t.classList.remove('selected'));
-    tileEl.classList.add('selected');
-    who.textContent=`${L.name} ( ${L.ch} ) with the marks...`;
+    if(tile)tile.classList.add('selected');
+    who.textContent = document.body.classList.contains('no-tr') ? L.ch : `${L.name}  ${L.ch}  with the marks…`;
     render(L);
   }
-
   POOL.forEach((L,i)=>{
     const t=el(`<button class="tile"><span class="ar">${L.ch}</span><span class="nm">${L.name}</span></button>`);
-    t.addEventListener('click',()=>selectLetter(L,t));
+    t.addEventListener('click',()=>select(L,t));
     row.appendChild(t);
-    if(i===0){
-      setTimeout(()=>{
-        t.classList.add('selected');
-        who.textContent=`${L.name} ( ${L.ch} ) with the marks...`;
-        render(L);
-      },0);
-    }
+    if(i===0) setTimeout(()=>select(L,t),0);
   });
 
-  /* mixed practice */
-  const prac=el(`<div class="practice">
-    <h3>\ud83c\udfaf Mixed Marks Practice!</h3>
-    <p>Read each one out loud, then tap it.</p>
-    <div class="combo-grid" id="cg-marks"></div>
-  </div>`);
+  const prac=el(`<div class="practice"><h3>Mixed Marks</h3>
+    <p>Read each one out loud, then tap it.</p><div class="combo-grid"></div></div>`);
   s.appendChild(prac);
-  const cg=prac.querySelector('#cg-marks');
-
+  const cg=prac.querySelector('.combo-grid');
   const TANW=[{m:FATHATAN,v:'an'},{m:KASRATAN,v:'in'},{m:DAMMATAN,v:'un'}];
   const HRK=[{m:FATHA,v:'a'},{m:KASRA,v:'i'},{m:DAMMA,v:'u'}];
-
-  function makeMarks(){
+  function build(){
     cg.innerHTML='';
     for(let i=0;i<9;i++){
-      const L=rand(POOL);
-      const kind=i%3;
-      let ar,tr;
-      if(kind===0){
-        ar='\u0623\u064e'+L.ch+SUKOON; tr='a'+L.tr;
-      } else if(kind===1){
-        const T=rand(TANW); ar=L.ch+T.m; tr=L.tr+T.v;
-      } else {
-        const H=rand(HRK); ar=L.ch+SHADDA+H.m; tr=L.tr+'\u00b7'+L.tr+H.v;
-      }
+      const L=rand(POOL); let ar,tr;
+      if(i%3===0){ar='أَ'+L.ch+SUKOON;tr='a'+L.tr;}
+      else if(i%3===1){const T=rand(TANW);ar=L.ch+T.m;tr=L.tr+T.v;}
+      else {const H=rand(HRK);ar=L.ch+SHADDA+H.m;tr=L.tr+'·'+L.tr+H.v;}
       const c=el(`<button class="combo"><span class="ar">${ar}</span><span class="tr">${tr}</span></button>`);
-      c.addEventListener('click',()=>popIt(c));
+      c.addEventListener('click',()=>pop(c));
       cg.appendChild(c);
     }
   }
-  makeMarks();
-  const sh=el(`<button class="shuffle">\ud83c\udfb2 New marks!</button>`);
-  sh.addEventListener('click',makeMarks);
-  prac.appendChild(sh);
+  build();
+  const sh=el(`<button class="shuffle">🎲 New marks</button>`);
+  sh.addEventListener('click',build); prac.appendChild(sh);
 })();
 
-/* ================= MADD SCREEN ================= */
+/* ================= STEP 8 — MADD ================= */
 (function(){
-  const s=addScreen('madd','🎈 Madd  ا و ي','n-madd');
-  s.appendChild(el(`<h2 class="screen-title">Madd — Looong Sounds! 🐘</h2>`));
-  s.appendChild(el(`<p class="screen-hint">Three magic letters make sounds streeeetch: ا و ي</p>`));
-
-  s.appendChild(el(`<div class="tip">🧸 Stretch the sound like pulling chewing gum — “baaaa”!</div>`));
+  const s=addStep('madd','Madd','Long stretched sounds — ا و ي','c-sky');
+  s.appendChild(el(`<h2 class="s-title">Madd — Long Sounds</h2>`));
+  s.appendChild(el(`<p class="s-hint">Three letters make a sound stretch: ا و ي</p>`));
+  s.appendChild(el(`<div class="tip">Stretch the sound like pulling chewing gum — “baaaa”.</div>`));
 
   const cards=el(`<div class="madd-cards"></div>`);
-  const MADD=[
-    {big:'بَا',rule:'Fatha + ا',long:'baaa 🔴',v:'aa'},
-    {big:'بُو',rule:'Damma + و',long:'buuu 🔵',v:'uu'},
-    {big:'بِي',rule:'Kasra + ي',long:'biii 🟢',v:'ii'}
-  ];
-  MADD.forEach(M=>{
-    const c=el(`<div class="mcard">
-      <div class="big">${M.big}</div>
-      <div class="rule">${M.rule}</div>
-      <div class="long">${M.long}</div>
-    </div>`);
-    cards.appendChild(c);
+  [{big:'بَا',rule:'Fatha + ا',long:'baa'},
+   {big:'بُو',rule:'Damma + و',long:'buu'},
+   {big:'بِي',rule:'Kasra + ي',long:'bii'}].forEach(M=>{
+    cards.appendChild(el(`<div class="mcard"><div class="big">${M.big}</div>
+      <div class="rule">${M.rule}</div><div class="long tr">${M.long}</div></div>`));
   });
   s.appendChild(cards);
 
-  /* madd practice */
-  const prac=el(`<div class="practice">
-    <h3>🎯 Long Reading Time!</h3>
-    <p>Tap and stretch the sound!</p>
-    <div class="combo-grid" id="cg-madd"></div>
-  </div>`);
+  const prac=el(`<div class="practice"><h3>Long Reading Time</h3>
+    <p>Tap and stretch the sound.</p><div class="combo-grid"></div></div>`);
   s.appendChild(prac);
-  const cg=prac.querySelector('#cg-madd');
-  const MADDSET=[
-    {mark:FATHA,tail:'ا',v:'aa'},
-    {mark:DAMMA,tail:'و',v:'uu'},
-    {mark:KASRA,tail:'ي',v:'ii'}
-  ];
-  function makeMadd(){
+  const cg=prac.querySelector('.combo-grid');
+  const SET=[{mark:FATHA,tail:'ا',v:'aa'},{mark:DAMMA,tail:'و',v:'uu'},{mark:KASRA,tail:'ي',v:'ii'}];
+  function build(){
     cg.innerHTML='';
     const pool=LETTERS.filter(L=>!L.alif&&L.ch!=='و'&&L.ch!=='ي');
     for(let i=0;i<6;i++){
-      const L=rand(pool), M=rand(MADDSET);
-      const txt=L.ch+M.mark+M.tail;
-      const c=el(`<button class="combo"><span class="ar">${txt}</span><span class="tr">${L.tr+M.v}</span></button>`);
-      c.addEventListener('click',()=>popIt(c));
+      const L=rand(pool),M=rand(SET),ar=L.ch+M.mark+M.tail;
+      const c=el(`<button class="combo"><span class="ar">${ar}</span><span class="tr">${L.tr+M.v}</span></button>`);
+      c.addEventListener('click',()=>pop(c));
       cg.appendChild(c);
     }
   }
-  makeMadd();
-  const sh=el(`<button class="shuffle">🎲 New sounds!</button>`);
-  sh.addEventListener('click',makeMadd);
-  prac.appendChild(sh);
+  build();
+  const sh=el(`<button class="shuffle">🎲 New sounds</button>`);
+  sh.addEventListener('click',build); prac.appendChild(sh);
 })();
 
-/* ================= TEXT BOOK SCREEN ================= */
+/* ================= STEP 9 — FIRST WORDS ================= */
 (function(){
-  const s=addScreen('book','📖 Book','n-book');
-  s.appendChild(el(`<h2 class="screen-title">My First Words Book 📖</h2>`));
-  s.appendChild(el(`<p class="screen-hint">Read the word, then tap the card — the picture comes alive! 🎬 (Printable pages 🖨️)</p>`));
+  const s=addStep('book','My First Words','Eighteen real words to read','c-mint');
+  s.appendChild(el(`<h2 class="s-title">My First Words</h2>`));
+  s.appendChild(el(`<p class="s-hint">Read the word out loud, then tap the card — the picture wiggles.</p>`));
 
   const WORDS=[
-    {ar:'أَبٌ',pic:'👨',tr:'Abun',mn:'Father',anim:'wave'},
-    {ar:'يَدٌ',pic:'✋',tr:'Yadun',mn:'Hand',anim:'wave'},
-    {ar:'بَابٌ',pic:'🚪',tr:'Baabun',mn:'Door',anim:'open'},
-    {ar:'تُوتٌ',pic:'🫐',tr:'Tootun',mn:'Berry',anim:'bounce'},
-    {ar:'جَمَلٌ',pic:'🐪',tr:'Jamalun',mn:'Camel',anim:'walk'},
-    {ar:'حُوتٌ',pic:'🐋',tr:'Ḥootun',mn:'Whale',anim:'splash'},
-    {ar:'دِيكٌ',pic:'🐓',tr:'Deekun',mn:'Rooster',anim:'crow'},
-    {ar:'ذَهَبٌ',pic:'🪙',tr:'Dhahabun',mn:'Gold',anim:'spin'},
-    {ar:'سَمَكٌ',pic:'🐟',tr:'Samakun',mn:'Fish',anim:'swim'},
-    {ar:'شَجَرٌ',pic:'🌳',tr:'Shajarun',mn:'Tree',anim:'sway'},
-    {ar:'عِنَبٌ',pic:'🍇',tr:'Inabun',mn:'Grapes',anim:'bounce'},
-    {ar:'فِيلٌ',pic:'🐘',tr:'Feelun',mn:'Elephant',anim:'stomp'},
-    {ar:'قَمَرٌ',pic:'🌙',tr:'Qamarun',mn:'Moon',anim:'glow'},
-    {ar:'كُوبٌ',pic:'🥤',tr:'Koobun',mn:'Cup',anim:'pour'},
-    {ar:'لَبَنٌ',pic:'🥛',tr:'Labanun',mn:'Milk',anim:'pour'},
-    {ar:'مَطَرٌ',pic:'🌧️',tr:'Maṭarun',mn:'Rain',anim:'rain'},
-    {ar:'نُورٌ',pic:'💡',tr:'Noorun',mn:'Light',anim:'glow'},
-    {ar:'وَرَقٌ',pic:'📄',tr:'Waraqun',mn:'Paper',anim:'flutter'}
+    {ar:'أَبٌ',pic:'👨',tr:'abun',mn:'Father'},{ar:'يَدٌ',pic:'✋',tr:'yadun',mn:'Hand'},
+    {ar:'بَابٌ',pic:'🚪',tr:'baabun',mn:'Door'},{ar:'تُوتٌ',pic:'🫐',tr:'tootun',mn:'Berry'},
+    {ar:'جَمَلٌ',pic:'🐪',tr:'jamalun',mn:'Camel'},{ar:'حُوتٌ',pic:'🐋',tr:'ḥootun',mn:'Whale'},
+    {ar:'دِيكٌ',pic:'🐓',tr:'deekun',mn:'Rooster'},{ar:'ذَهَبٌ',pic:'🪙',tr:'dhahabun',mn:'Gold'},
+    {ar:'سَمَكٌ',pic:'🐟',tr:'samakun',mn:'Fish'},{ar:'شَجَرٌ',pic:'🌳',tr:'shajarun',mn:'Tree'},
+    {ar:'عِنَبٌ',pic:'🍇',tr:'ʿinabun',mn:'Grapes'},{ar:'فِيلٌ',pic:'🐘',tr:'feelun',mn:'Elephant'},
+    {ar:'قَمَرٌ',pic:'🌙',tr:'qamarun',mn:'Moon'},{ar:'كُوبٌ',pic:'🥤',tr:'koobun',mn:'Cup'},
+    {ar:'لَبَنٌ',pic:'🥛',tr:'labanun',mn:'Milk'},{ar:'مَطَرٌ',pic:'🌧️',tr:'maṭarun',mn:'Rain'},
+    {ar:'نُورٌ',pic:'💡',tr:'noorun',mn:'Light'},{ar:'وَرَقٌ',pic:'📄',tr:'waraqun',mn:'Paper'}
   ];
-
-  const PER_PAGE=6;
-  const titles=['Easy Words! 🌟','More Words! 🎈','You Can Read! 🏆'];
-  for(let p=0;p*PER_PAGE<WORDS.length;p++){
-    const page=el(`<div class="a4page">
-      <div class="pg-head">${titles[p]||'More Words!'}<small>Read the word, find the picture!</small></div>
-      <div class="word-grid"></div>
-      <div class="pg-num">— ${p+1} —</div>
-    </div>`);
+  const titles=['Easy Words','More Words','You Can Read!'];
+  for(let p=0;p*6<WORDS.length;p++){
+    const page=el(`<div class="a4page"><div class="pg-head">${titles[p]||'More Words'}
+      <small>Read the word, find the picture</small></div>
+      <div class="word-grid"></div><div class="pg-num">— ${p+1} —</div></div>`);
     const grid=page.querySelector('.word-grid');
-    WORDS.slice(p*PER_PAGE,(p+1)*PER_PAGE).forEach(W=>{
-      const card=el(`<div class="wcard" role="button" tabindex="0">
-        <div class="pic">${W.pic}</div>
-        <div class="wr">${W.ar}</div>
-        <div class="wm">${W.tr} · ${W.mn}</div>
-      </div>`);
-      const pic=card.querySelector('.pic');
-      const play=()=>{
-        pic.className='pic';void pic.offsetWidth;
-        pic.classList.add('anim-'+W.anim);
-        if(W.anim==='crow'){
-          const note=el(`<span class="crow-note">🎵🎶</span>`);
-          card.appendChild(note);
-          note.addEventListener('animationend',()=>note.remove());
-        }
-      };
-      card.addEventListener('click',play);
-      card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play();}});
-      grid.appendChild(card);
+    WORDS.slice(p*6,(p+1)*6).forEach(W=>{
+      const c=el(`<div class="wcard" role="button" tabindex="0">
+        <div class="pic">${W.pic}</div><div class="wr">${W.ar}</div>
+        <div class="wtr">${W.tr}</div><div class="wmn">${W.mn}</div></div>`);
+      const play=()=>pop(c.querySelector('.pic'));
+      c.addEventListener('click',play);
+      c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play();}});
+      grid.appendChild(c);
     });
     s.appendChild(page);
   }
 })();
 
-/* ================= COLOURING SCREEN ================= */
+/* ================= STEP 10 — COLOURING ================= */
 (function(){
-  const s=addScreen('colour','🖍️ Colouring','n-colour');
-  s.appendChild(el(`<h2 class="screen-title">Colour the Letters! 🖍️</h2>`));
-  s.appendChild(el(`<p class="screen-hint">Pick a crayon, then tap the letters to colour them! (Or print for real crayons 🖨️)</p>`));
+  const s=addStep('colour','Colour the Letters','Pick a crayon and fill them in','c-grape');
+  s.appendChild(el(`<h2 class="s-title">Colour the Letters</h2>`));
+  s.appendChild(el(`<p class="s-hint">Pick a crayon, then tap the letters to colour them.</p>`));
 
   const COLORS=['#E8543F','#FF9F1C','#FFC94D','#6BCB77','#58C7E0','#2E7CD6','#A78BDB','#F06292','#8D6E63'];
   let picked=COLORS[0];
-
   const pal=el(`<div class="palette"></div>`);
   COLORS.forEach((col,i)=>{
-    const b=el(`<button class="crayon${i===0?' picked':''}" style="background:${col}" aria-label="Colour ${col}"></button>`);
-    b.addEventListener('click',()=>{
-      picked=col;
-      pal.querySelectorAll('.crayon').forEach(x=>x.classList.remove('picked'));
-      b.classList.add('picked');
-    });
+    const b=el(`<button class="crayon${i===0?' picked':''}" style="background:${col}" aria-label="Colour"></button>`);
+    b.addEventListener('click',()=>{picked=col;pal.querySelectorAll('.crayon').forEach(x=>x.classList.remove('picked'));b.classList.add('picked');});
     pal.appendChild(b);
   });
-  const eraser=el(`<button class="crayon eraser" aria-label="Eraser">🧽</button>`);
-  eraser.addEventListener('click',()=>{
-    picked=null;
-    pal.querySelectorAll('.crayon').forEach(x=>x.classList.remove('picked'));
-    eraser.classList.add('picked');
-  });
-  pal.appendChild(eraser);
-  s.appendChild(pal);
+  const er=el(`<button class="crayon eraser" aria-label="Eraser">🧽</button>`);
+  er.addEventListener('click',()=>{picked=null;pal.querySelectorAll('.crayon').forEach(x=>x.classList.remove('picked'));er.classList.add('picked');});
+  pal.appendChild(er); s.appendChild(pal);
 
   const grid=el(`<div class="colour-grid"></div>`);
   LETTERS.forEach(L=>{
     const c=el(`<button class="cletter"><span class="big">${L.ch}</span><span class="nm">${L.name}</span></button>`);
     const big=c.querySelector('.big');
-    c.addEventListener('click',()=>{
-      popIt(c);
-      big.style.color=picked?picked:'transparent';
-    });
+    c.addEventListener('click',()=>{pop(c);big.style.color=picked||'transparent';});
     grid.appendChild(c);
   });
   s.appendChild(grid);
 })();
 
-/* start on All Letters */
-showScreen('all');
+/* ================= MAP ================= */
+const mapBody=document.getElementById('mapBody');
+const progPill=document.getElementById('progPill');
+let seen={};
+try{seen=JSON.parse(localStorage.getItem('alifba_seen')||'{}');}catch(e){seen={};}
+
+const STAGES=[
+  {h:'Start here',from:0,to:1},
+  {h:'The five groups',from:1,to:6},
+  {h:'Extra marks',from:6,to:8},
+  {h:'Time to read',from:8,to:10}
+];
+function paintMap(){
+  mapBody.innerHTML='';
+  STAGES.forEach(S=>{
+    mapBody.appendChild(el(`<div class="stage-h">${S.h}</div>`));
+    const box=el(`<div class="steps"></div>`);
+    for(let i=S.from;i<S.to && i<STEPS.length;i++){
+      const st=STEPS[i];
+      const b=el(`<button class="step ${st.colour}${seen[st.id]?' done':''}">
+        <span class="n">${i+1}</span>
+        <span class="tx"><b>${st.label}</b><span>${st.note}</span></span>
+        <span class="go">${seen[st.id]?'✓':'›'}</span></button>`);
+      b.addEventListener('click',()=>go(i));
+      box.appendChild(b);
+    }
+    mapBody.appendChild(box);
+  });
+  const n=Object.keys(seen).length;
+  progPill.textContent=`⭐ ${n} of ${STEPS.length} steps opened`;
+}
+
+/* ================= NAVIGATION ================= */
+const mapSec=document.getElementById('map');
+const barTitle=document.getElementById('barTitle'), barSub=document.getElementById('barSub');
+const prevBtn=document.getElementById('prevBtn'), nextBtn=document.getElementById('nextBtn'),
+      footMid=document.getElementById('footMid');
+let cur=-1;   /* -1 = map */
+
+function go(i,fromHash){
+  cur=i;
+  mapSec.classList.toggle('show',i<0);
+  document.body.classList.toggle('at-map',i<0);
+  STEPS.forEach((s,k)=>s.sec.classList.toggle('show',k===i));
+  if(i<0){
+    barTitle.textContent='Alif Bā Tā'; barSub.textContent='Foundation · Level 1';
+    paintMap();
+    if(!fromHash && location.hash) history.replaceState(null,'','#map');
+  }else{
+    const st=STEPS[i];
+    barTitle.textContent=st.label; barSub.textContent=`Step ${i+1} of ${STEPS.length}`;
+    footMid.textContent=`${i+1} / ${STEPS.length}`;
+    prevBtn.disabled=false; nextBtn.disabled=(i===STEPS.length-1);
+    seen[st.id]=1;
+    try{localStorage.setItem('alifba_seen',JSON.stringify(seen));}catch(e){}
+    if(!fromHash) history.replaceState(null,'','#'+hashFor(i));
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+/* groups keep the #lesson1–#lesson5 contract used by the class sheet */
+function hashFor(i){ return (i>=1&&i<=5) ? 'lesson'+i : STEPS[i].id; }
+
+document.getElementById('homeBtn').addEventListener('click',()=>go(-1));
+prevBtn.addEventListener('click',()=>go(cur-1<0?-1:cur-1));
+nextBtn.addEventListener('click',()=>{ if(cur<STEPS.length-1) go(cur+1); });
+document.addEventListener('keydown',e=>{
+  if(cur<0)return;
+  if(e.key==='ArrowRight'&&cur<STEPS.length-1)go(cur+1);
+  if(e.key==='ArrowLeft')go(cur-1<0?-1:cur-1);
+});
+
+function openFromHash(){
+  const h=(location.hash||'').replace('#','').toLowerCase();
+  if(!h||h==='map'){go(-1,true);return;}
+  const m=h.match(/^(?:lesson|group|g)(\d+)$/);
+  if(m){ const gi=Math.max(1,Math.min(5,parseInt(m[1],10))); go(gi,true); return; }
+  const k=STEPS.findIndex(s=>s.id===h);
+  go(k>=0?k:-1,true);
+}
+window.addEventListener('hashchange',openFromHash);
+
+/* ================= TRANSLITERATION SWITCH ================= */
+const trBtn=document.getElementById('trBtn');
+function paintTr(){
+  const off=document.body.classList.contains('no-tr');
+  trBtn.setAttribute('aria-pressed',String(!off));
+  trBtn.title = off ? 'Sound spellings are hidden — tap to show' : 'Sound spellings are showing — tap to hide';
+}
+try{ if(localStorage.getItem('alifba_tr')==='off') document.body.classList.add('no-tr'); }catch(e){}
+trBtn.addEventListener('click',()=>{
+  document.body.classList.toggle('no-tr');
+  try{localStorage.setItem('alifba_tr',document.body.classList.contains('no-tr')?'off':'on');}catch(e){}
+  paintTr();
+  /* the selected-letter line carries a roman name, so refresh it in place */
+  document.querySelectorAll('.screen.show .tile.selected').forEach(t=>t.click());
+});
+paintTr();
+
+paintMap();
 openFromHash();
 </script>
 </body>
