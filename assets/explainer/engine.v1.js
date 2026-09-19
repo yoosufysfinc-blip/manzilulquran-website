@@ -533,6 +533,73 @@
     };
   };
 
+  /* ---- group: a batch ring rotating around one teacher ---- */
+  BUILD.group = function (d) {
+    var node = el('div', 'xp-scene');
+    if (d.eyebrow) node.appendChild(el('div', 'xp-eyebrow xp-rise xp-d1', d.eyebrow));
+
+    var wrap = el('div', 'xp-group xp-rise xp-d2');
+    var s = svg('svg', { viewBox: '0 0 200 200' });
+    var lines = svg('g', { 'class': 'xp-glines' });
+    var nodes = svg('g', {});
+    var n = d.count || 6, R = d.radius || 68;
+
+    var ring = svg('circle', { cx: 100, cy: 100, r: R, fill: 'none',
+      stroke: 'rgba(255,255,255,.10)', 'stroke-width': 1, 'stroke-dasharray': '2 7' });
+
+    var ln = [], nd = [];
+    for (var i = 0; i < n; i++) {
+      var l = svg('line', { x1: 100, y1: 100, stroke: 'url(#xpgl)', 'stroke-width': 1.2, opacity: 0 });
+      lines.appendChild(l); ln.push(l);
+      var c = svg('circle', { r: 8, fill: 'var(--xp-gold2)', opacity: 0 });
+      nodes.appendChild(c); nd.push(c);
+    }
+    var defs = svg('defs', {});
+    var g = svg('linearGradient', { id: 'xpgl', x1: 0, y1: 0, x2: 1, y2: 1 });
+    add(g, svg('stop', { offset: 0, 'stop-color': 'var(--xp-em2)' }),
+           svg('stop', { offset: 1, 'stop-color': 'var(--xp-gold2)' }));
+    defs.appendChild(g);
+
+    var core = svg('circle', { cx: 100, cy: 100, r: 17, fill: 'var(--xp-em2)', opacity: .9 });
+    var halo = svg('circle', { cx: 100, cy: 100, r: 25, fill: 'none',
+      stroke: 'var(--xp-gold)', 'stroke-width': 1, opacity: .5 });
+    add(s, defs, ring, lines, halo, core, nodes);
+    wrap.appendChild(s);
+    node.appendChild(wrap);
+
+    if (d.legend) {
+      var lg = el('div', 'xp-legend xp-rise xp-d3');
+      d.legend.forEach(function (L) {
+        var sp = el('span'), b = el('b');
+        b.style.background = L.color;
+        add(sp, b, document.createTextNode(L.label));
+        lg.appendChild(sp);
+      });
+      node.appendChild(lg);
+    }
+
+    var from = d.from || 0, step = d.step || 0.7, spin = d.spin || 0.22;
+    return {
+      node: node,
+      update: function (t) {
+        var base = (t - from) * spin;
+        for (var i = 0; i < n; i++) {
+          var ang = base + (i / n) * Math.PI * 2;
+          var x = 100 + R * Math.cos(ang), y = 100 + R * Math.sin(ang);
+          nd[i].setAttribute('cx', x.toFixed(2));
+          nd[i].setAttribute('cy', y.toFixed(2));
+          ln[i].setAttribute('x2', x.toFixed(2));
+          ln[i].setAttribute('y2', y.toFixed(2));
+          var o = clamp01((t - (from + i * step)) / 0.5);
+          nd[i].setAttribute('opacity', o.toFixed(2));
+          ln[i].setAttribute('opacity', (o * 0.5).toFixed(2));
+          nd[i].setAttribute('r', (6 + 2.4 * Math.sin(base * 2 + i)).toFixed(2));
+        }
+        halo.setAttribute('r', (25 + 3 * Math.sin(base * 1.6)).toFixed(2));
+      }
+    };
+  };
+
   /* ---- phone: the parent's view ---- */
   BUILD.phone = function (d) {
     var node = el('div', 'xp-scene');
@@ -567,6 +634,36 @@
     return { node: node };
   };
 
+
+  /* ---- Islamic geometric ornament: two counter-rotating layers ----
+     A 16-point rosette over an 8-point khatam star. Drawn faintly behind
+     every scene so the frame is never visually empty.                   */
+  function ornament() {
+    var s = svg('svg', { viewBox: '-100 -100 200 200' });
+    var gA = svg('g', { 'class': 'xp-ornA' });
+    var gB = svg('g', { 'class': 'xp-ornB' });
+    for (var i = 0; i < 16; i++) {
+      gA.appendChild(svg('path', {
+        d: 'M0,-88 L9,-64 L0,-40 L-9,-64 Z',
+        transform: 'rotate(' + (i * 22.5) + ')',
+        fill: 'none', stroke: 'currentColor', 'stroke-width': 1
+      }));
+    }
+    gA.appendChild(svg('circle', { r: 92, fill: 'none', stroke: 'currentColor',
+      'stroke-width': 1, 'stroke-dasharray': '1 9' }));
+    [0, 45].forEach(function (r) {
+      gB.appendChild(svg('rect', { x: -33, y: -33, width: 66, height: 66, fill: 'none',
+        stroke: 'currentColor', 'stroke-width': 1, transform: 'rotate(' + r + ')' }));
+    });
+    gB.appendChild(svg('circle', { r: 47, fill: 'none', stroke: 'currentColor',
+      'stroke-width': 1, 'stroke-dasharray': '2 6' }));
+    gB.appendChild(svg('circle', { r: 20, fill: 'none', stroke: 'currentColor', 'stroke-width': 1 }));
+    add(s, gA, gB);
+    var box = el('div', 'xp-orn');
+    box.appendChild(s);
+    return box;
+  }
+
   /* =====================================================================
      MOUNT
      ================================================================== */
@@ -576,6 +673,7 @@
     var wrap = el('div', 'xp');
     var stage = el('div', 'xp-stage');
     var motes = el('div', 'xp-motes');
+    stage.appendChild(ornament());
     stage.appendChild(motes);
 
     /* build scenes from data */
@@ -587,6 +685,7 @@
       var built = maker(d);
       built.node.dataset.scene = key;
       built.node.dataset.type = d.type;
+      if (d.camera) built.node.dataset.cam = d.camera;
       /* Wrap the scene's contents so they can drift slowly for as long as the
          scene is on stage. Without this, a scene that finishes its entry
          animation sits perfectly still until the next cut. */
