@@ -8,15 +8,24 @@
 <title>Individual Madrasa Classes — ManzilulQuran Academy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Baloo+2:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Baloo+2:wght@500;600;700&family=Noto+Sans+Malayalam:wght@300;400;500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/explainer/explainer.v1.css" />
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%;overflow:hidden}
+  /* CHANGED: page scrolls so the explainer can sit below the card */
+  html{scroll-behavior:smooth}
   body{
-    font-family:'Poppins',sans-serif;color:#fff;position:relative;
-    display:grid;place-items:center;
+    min-height:100%;
+    font-family:'Poppins','Noto Sans Malayalam',sans-serif;color:#fff;position:relative;
+    overflow-x:hidden;
     background:linear-gradient(to bottom,#05081c 0%,#0b1233 30%,#1b2150 52%,#37305f 70%,#5a4566 84%,#7a5450 96%);
+    background-attachment:fixed;
   }
+  /* CHANGED: centring moved off body so the card renders identically */
+  .hero{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
+    padding:clamp(24px,5vh,44px) 0 clamp(14px,2.5vh,22px)}
+  /* CHANGED: night sky layers fixed so they stay put while scrolling */
+  .horizon,.stars,.moon{position:fixed}
 
   /* horizon desert glow */
   .horizon{position:absolute;left:50%;bottom:0;transform:translateX(-50%);
@@ -136,6 +145,36 @@
     .back-hub{top:14px;left:14px;width:12px;height:12px}
   }
 
+
+  /* ---- explainer theme: desert night ---- */
+  .xp{
+    --xp-bg:#05081c; --xp-bg2:#141a3e;
+    --xp-panel:rgba(27,33,80,.56); --xp-panel2:rgba(90,69,102,.40);
+    --xp-line:rgba(244,213,141,.18); --xp-line2:rgba(244,213,141,.40);
+    --xp-em:#5a4566; --xp-em2:#c99ac0;
+    --xp-gold:#EBAA5F; --xp-gold2:#F4D58D; --xp-glow:rgba(235,170,95,.32);
+    --xp-glowA:rgba(122,84,80,.36); --xp-glowB:rgba(235,170,95,.18);
+    --xp-ink:#ffffff; --xp-mut:rgba(255,255,255,.72); --xp-dim:rgba(255,255,255,.46);
+    --xp-disp:'Baloo 2','Noto Sans Malayalam',cursive;
+  }
+  .scroll-cue{display:flex;flex-direction:column;align-items:center;gap:6px;
+    margin-top:clamp(14px,2.6vh,24px);color:rgba(255,255,255,.62);text-decoration:none;
+    font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+    min-height:44px;justify-content:center;animation:cueIn .8s 1.2s cubic-bezier(.2,.8,.3,1) both}
+  .scroll-cue:hover{color:#F4D58D}
+  .scroll-cue i{display:block;width:1px;height:20px;
+    background:linear-gradient(to bottom,transparent,#EBAA5F);animation:cueDrop 2s ease-in-out infinite}
+  @keyframes cueIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes cueDrop{0%,100%{opacity:.35;transform:translateY(-4px)}50%{opacity:1;transform:translateY(4px)}}
+  .explainer-band{position:relative;z-index:5;padding:clamp(10px,2vh,20px) 0 clamp(36px,6vh,64px)}
+  .band-head{text-align:center;margin-bottom:clamp(12px,2.2vh,20px);padding:0 16px}
+  .band-head .k{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:#EBAA5F}
+  .band-head h2{font-family:'Baloo 2',cursive;font-weight:700;color:#fff;
+    font-size:clamp(1.7rem,6vw,2.8rem);line-height:1.1;margin-top:6px;
+    text-shadow:0 0 24px rgba(235,170,95,.4)}
+  .band-head p{color:rgba(255,255,255,.64);font-weight:300;
+    font-size:clamp(.8rem,2.3vw,.95rem);margin-top:7px}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.scroll-cue,.scroll-cue i{animation:none}}
 </style>
 </head>
 <body>
@@ -200,6 +239,7 @@
     </svg>
   </div>
 
+  <div class="hero">
   <main class="card">
     <div class="topline">
       <span class="ar">مَدْرَسَة</span>
@@ -241,6 +281,18 @@
     </div>
   </main>
 
+    <a href="#how-it-works" class="scroll-cue"><span>How it works</span><i></i></a>
+  </div>
+
+  <section class="explainer-band" id="how-it-works">
+    <div class="band-head">
+      <div class="k">Inside the class</div>
+      <h2>How the Individual Madrasa Class works</h2>
+      <p>What your child learns, how the schedule bends around you, and what it costs.</p>
+    </div>
+    <div id="course-explainer"></div>
+  </section>
+
 <script>
   // stars
   (function(){
@@ -274,5 +326,7 @@
   document.getElementById('demoBtn').href=wa;
   document.getElementById('demoBadge').href=wa;
 </script>
+<script src="../assets/explainer/engine.v1.js" defer></script>
+<script src="../assets/explainer/madrasa-individual.v1.js" defer></script>
 </body>
 </html>
