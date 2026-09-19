@@ -376,6 +376,55 @@
 .xp-tag{font-size:clamp(10.5px,2.2vw,13px); color:var(--xp-mut); letter-spacing:.05em; text-align:center}
 
 
+
+/* ---------- chips (subjects) ---------- */
+.xp-chips{display:flex; flex-wrap:wrap; gap:clamp(6px,1.6vw,11px); justify-content:center;
+  width:min(100%,560px)}
+.xp-chip2{
+  display:inline-flex; align-items:center; gap:7px;
+  border:1px solid var(--xp-line); border-radius:99px;
+  padding:clamp(7px,1.7vw,11px) clamp(12px,2.6vw,18px);
+  background:linear-gradient(140deg,var(--xp-panel),var(--xp-panel2));
+  font-size:clamp(11px,2.4vw,14px); color:var(--xp-mut); white-space:nowrap;
+  opacity:0; filter:blur(12px); transform:translateY(14px) scale(.88);
+  transition:opacity .45s var(--xp-out), filter .45s var(--xp-out),
+             transform .6s var(--xp-spring), border-color .45s,
+             box-shadow .45s, color .45s, background .45s;
+}
+.xp-chip2.lit{opacity:1; filter:blur(0); transform:none; color:var(--xp-ink)}
+.xp-chip2.act{border-color:var(--xp-line2); color:var(--xp-gold2);
+  transform:translateY(-4px) scale(1.07);
+  background:linear-gradient(140deg,var(--xp-panel2),var(--xp-panel));
+  box-shadow:0 0 30px -8px var(--xp-glow)}
+.xp-chip2 .ar{font-family:var(--xp-ar); font-size:1.12em; color:var(--xp-gold);
+  transition:color .45s}
+.xp-chip2.act .ar{color:var(--xp-gold2)}
+
+/* ---------- timeband ---------- */
+.xp-band{width:min(100%,520px)}
+.xp-bends{display:flex; justify-content:space-between; margin-bottom:9px;
+  font-size:clamp(11px,2.4vw,14px); color:var(--xp-gold2); letter-spacing:.06em}
+.xp-btrack{position:relative; height:clamp(34px,7vw,48px); border-radius:99px;
+  border:1px solid var(--xp-line); background:rgba(255,255,255,.05); overflow:hidden}
+.xp-bticks{position:absolute; inset:0}
+.xp-bticks i{position:absolute; top:50%; width:1px; height:9px; margin-top:-4.5px;
+  background:rgba(255,255,255,.2)}
+.xp-bglow{position:absolute; left:0; top:0; bottom:0; width:0;
+  background:linear-gradient(90deg,transparent,var(--xp-glow));
+  border-radius:99px}
+.xp-bmark{position:absolute; top:50%; left:0; width:clamp(16px,3.4vw,22px);
+  height:clamp(16px,3.4vw,22px); margin-top:calc(clamp(16px,3.4vw,22px) / -2);
+  margin-left:calc(clamp(16px,3.4vw,22px) / -2); border-radius:50%;
+  background:linear-gradient(135deg,var(--xp-gold),var(--xp-gold2));
+  box-shadow:0 0 0 5px rgba(240,217,168,.16), 0 0 22px var(--xp-glow)}
+.xp-bslots{display:flex; gap:clamp(7px,1.8vw,13px); flex-wrap:wrap; justify-content:center}
+.xp-bslot{font-size:clamp(9.5px,2vw,11.5px); color:var(--xp-mut);
+  border:1px solid var(--xp-line); border-radius:99px; padding:5px 12px;
+  opacity:.32; transform:translateY(5px);
+  transition:opacity .45s var(--xp-out), transform .55s var(--xp-spring),
+             border-color .45s, color .45s}
+.xp-bslot.lit{opacity:1; transform:none; color:var(--xp-gold2); border-color:var(--xp-line2)}
+
 /* ---------- ladder (staged progression) ---------- */
 .xp-ladder{width:min(100%,470px); display:flex; flex-direction:column; gap:clamp(7px,1.6vw,11px); position:relative}
 .xp-step{display:flex; align-items:center; gap:clamp(11px,2.6vw,16px);
@@ -396,7 +445,13 @@
 .xp-slab{font-size:clamp(10px,2.1vw,12px); color:var(--xp-mut); margin-top:3px; text-align:left}
 
 /* ---------- pricing tiers ---------- */
-.xp-pricing{display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(9px,2.2vw,16px); width:min(100%,480px)}
+.xp-pricing{display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(8px,2vw,15px); width:min(100%,520px)}
+.xp-pricing.n3{grid-template-columns:repeat(3,1fr); gap:clamp(6px,1.6vw,12px)}
+@media (max-width:420px){ .xp-pricing.n3{grid-template-columns:repeat(3,1fr)}
+  .xp-pricing.n3 .xp-tier{padding:clamp(12px,2.8vw,18px) clamp(5px,1.4vw,10px)}
+  .xp-pricing.n3 .xp-tprice{font-size:clamp(17px,4.6vw,24px)}
+  .xp-pricing.n3 .xp-tdays{font-size:clamp(8.5px,1.9vw,10px)}
+  .xp-pricing.n3 .xp-tbadge{font-size:7px; padding:2px 7px; letter-spacing:.1em} }
 .xp-tier{position:relative; text-align:center; border:1px solid var(--xp-line);
   border-radius:var(--xp-r2); padding:clamp(15px,3.2vw,22px) clamp(10px,2.2vw,16px);
   background:linear-gradient(150deg,var(--xp-panel),var(--xp-panel2));
