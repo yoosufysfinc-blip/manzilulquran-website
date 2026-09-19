@@ -8,7 +8,8 @@
 <title>Madrasa Batch Class — ManzilulQuran Academy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Sans+Malayalam:wght@300;400;500&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/explainer/explainer.v1.css" />
 <style>
   :root{
     --teal:#0E7C7B; --teal-d:#0B5E5D; --turq:#19A7A3;
@@ -16,18 +17,23 @@
     --ink:#0B3B3A;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%;overflow:hidden}
+  /* CHANGED: page scrolls so the explainer can sit below the card */
+  html{scroll-behavior:smooth}
   body{
     font-family:'Poppins',sans-serif;color:var(--ink);position:relative;
-    display:grid;place-items:center;
-    background:linear-gradient(165deg,#E8F8F4 0%,#CDEEEA 45%,#AFE3DD 100%)
+    min-height:100%;overflow-x:hidden;
+    background:linear-gradient(165deg,#E8F8F4 0%,#CDEEEA 45%,#AFE3DD 100%);
+    background-attachment:fixed
   }
 
   /* zellige tile pattern */
-  .tiles{position:absolute;inset:0;z-index:0}
+  /* CHANGED: centring moved off body so the card renders identically */
+  .hero{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
+    padding:clamp(24px,5vh,44px) 0 clamp(14px,2.5vh,22px)}
+  .tiles{position:fixed;inset:0;z-index:0}
   .tiles svg{width:100%;height:100%}
   /* moving soft sheen */
-  .sheen{position:absolute;inset:-25%;z-index:0;mix-blend-mode:soft-light;pointer-events:none;
+  .sheen{position:fixed;inset:-25%;z-index:0;mix-blend-mode:soft-light;pointer-events:none;
     background:radial-gradient(circle at 32% 30%,rgba(255,255,255,.7),transparent 46%);
     animation:sheen 17s ease-in-out infinite}
   @keyframes sheen{0%,100%{transform:translate(0,0)}50%{transform:translate(42%,28%)}}
@@ -127,6 +133,36 @@
     .back-hub{top:14px;left:14px;width:12px;height:12px}
   }
 
+
+  /* ---- explainer theme: a deep teal jewel-box on a light page ---- */
+  .xp{
+    --xp-bg:#021a17; --xp-bg2:#06322c;
+    --xp-panel:rgba(11,94,93,.44); --xp-panel2:rgba(14,124,123,.28);
+    --xp-line:rgba(233,185,73,.22); --xp-line2:rgba(233,185,73,.44);
+    --xp-em:#0E7C7B; --xp-em2:#19A7A3;
+    --xp-gold:#E9B949; --xp-gold2:#F7DE9A; --xp-glow:rgba(233,185,73,.34);
+    --xp-glowA:rgba(25,167,163,.30); --xp-glowB:rgba(233,185,73,.20);
+    --xp-ink:#FFF9EF; --xp-mut:rgba(255,249,239,.74); --xp-dim:rgba(255,249,239,.46);
+    --xp-disp:'Fraunces','Noto Sans Malayalam',serif;
+  }
+  .xp-orn{opacity:.14}
+  .scroll-cue{display:flex;flex-direction:column;align-items:center;gap:6px;
+    margin-top:clamp(14px,2.6vh,24px);color:rgba(11,59,58,.62);text-decoration:none;
+    font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+    min-height:44px;justify-content:center;animation:cueIn .8s 1.2s cubic-bezier(.2,.8,.3,1) both}
+  .scroll-cue:hover{color:#0E7C7B}
+  .scroll-cue i{display:block;width:1px;height:20px;
+    background:linear-gradient(to bottom,transparent,#0E7C7B);animation:cueDrop 2s ease-in-out infinite}
+  @keyframes cueIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes cueDrop{0%,100%{opacity:.35;transform:translateY(-4px)}50%{opacity:1;transform:translateY(4px)}}
+  .explainer-band{position:relative;z-index:5;padding:clamp(10px,2vh,20px) 0 clamp(36px,6vh,64px)}
+  .band-head{text-align:center;margin-bottom:clamp(12px,2.2vh,20px);padding:0 16px}
+  .band-head .k{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:#0E7C7B}
+  .band-head h2{font-family:'Fraunces',serif;font-weight:700;color:#0B3B3A;
+    font-size:clamp(1.7rem,6vw,2.8rem);line-height:1.08;margin-top:6px}
+  .band-head p{color:rgba(11,59,58,.66);font-weight:300;
+    font-size:clamp(.8rem,2.3vw,.95rem);margin-top:7px}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.scroll-cue,.scroll-cue i{animation:none}}
 </style>
 </head>
 <body>
@@ -161,6 +197,7 @@
   <div class="accent a1" aria-hidden="true"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><rect x="22" y="22" width="56" height="56"/><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)"/></svg></div>
   <div class="accent a2" aria-hidden="true"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><rect x="22" y="22" width="56" height="56"/><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)"/></svg></div>
 
+  <div class="hero">
   <main class="card">
     <div class="topline">
       <span class="ar">مَدْرَسَة</span>
@@ -201,6 +238,18 @@
     </div>
   </main>
 
+    <a href="#how-it-works" class="scroll-cue"><span>How it works</span><i></i></a>
+  </div>
+
+  <section class="explainer-band" id="how-it-works">
+    <div class="band-head">
+      <div class="k">Inside the class</div>
+      <h2>How the Madrasa Batch works</h2>
+      <p>The syllabus, the batch system, the timings and the fee.</p>
+    </div>
+    <div id="course-explainer"></div>
+  </section>
+
 <script>
   function countUp(el){
     var target=+el.dataset.count, dur=1100, t0=null;
@@ -215,5 +264,7 @@
   var msg="Assalamu Alaikum! I'm interested in the Madrasa Batch Class (5 days/week, ₹799/month) at ManzilulQuran E-learning Academy and would like to book a FREE demo class.\n\nPlease share the available batch timings.\n\nJazak Allah Khair.";
   document.getElementById('demoBtn').href='https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
 </script>
+<script src="../assets/explainer/engine.v1.js" defer></script>
+<script src="../assets/explainer/madrasa-batch.v1.js" defer></script>
 </body>
 </html>
