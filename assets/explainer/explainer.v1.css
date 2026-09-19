@@ -49,6 +49,7 @@
     linear-gradient(170deg,var(--xp-bg2),var(--xp-bg));
   border:1px solid var(--xp-line);
   box-shadow:0 30px 80px -30px rgba(0,0,0,.75), inset 0 0 40px rgba(240,217,168,.05);
+  perspective:1400px; perspective-origin:50% 45%;
 }
 @media (min-width:640px){ .xp-stage{aspect-ratio:16/9; max-height:min(66svh,560px)} }
 
@@ -377,6 +378,62 @@
 
 
 
+
+/* ---------- Islamic ornament ---------- */
+.xp-orn{position:absolute; inset:0; z-index:0; pointer-events:none;
+  display:grid; place-items:center; color:var(--xp-gold); opacity:.10}
+.xp-orn svg{width:min(118%,760px); aspect-ratio:1; overflow:visible}
+.xp-ornA{animation:xpSpin 78s linear infinite; transform-origin:0 0}
+.xp-ornB{animation:xpSpinR 54s linear infinite; transform-origin:0 0}
+@keyframes xpSpinR{to{transform:rotate(-360deg)}}
+
+/* ---------- camera moves ---------- */
+.xp-inner{transform-style:preserve-3d}
+.xp-scene.on[data-cam="push"] .xp-inner{animation:xpCamPush 17s linear both}
+@keyframes xpCamPush{from{transform:translateZ(-110px) translateY(12px)}
+  to{transform:translateZ(60px) translateY(-10px)}}
+
+.xp-scene.on[data-cam="pull"] .xp-inner{animation:xpCamPull 17s linear both}
+@keyframes xpCamPull{from{transform:translateZ(80px) scale(1.02)}
+  to{transform:translateZ(-90px) scale(.99)}}
+
+.xp-scene.on[data-cam="panL"] .xp-inner{animation:xpCamPanL 19s linear both}
+@keyframes xpCamPanL{from{transform:translateX(34px) rotateY(7deg) translateZ(-40px)}
+  to{transform:translateX(-28px) rotateY(-5deg) translateZ(30px)}}
+
+.xp-scene.on[data-cam="panR"] .xp-inner{animation:xpCamPanR 19s linear both}
+@keyframes xpCamPanR{from{transform:translateX(-32px) rotateY(-7deg) translateZ(-40px)}
+  to{transform:translateX(26px) rotateY(5deg) translateZ(30px)}}
+
+.xp-scene.on[data-cam="tilt"] .xp-inner{animation:xpCamTilt 18s linear both}
+@keyframes xpCamTilt{from{transform:rotateX(7deg) translateY(20px) translateZ(-70px)}
+  to{transform:rotateX(-3deg) translateY(-12px) translateZ(40px)}}
+
+.xp-scene.on[data-cam="orbit"] .xp-inner{animation:xpCamOrbit 22s ease-in-out both}
+@keyframes xpCamOrbit{
+  0%{transform:rotateY(-9deg) rotateX(4deg) translateZ(-80px)}
+  50%{transform:rotateY(4deg) rotateX(-2deg) translateZ(30px)}
+  100%{transform:rotateY(-6deg) rotateX(3deg) translateZ(-20px)}}
+
+/* ---------- 3D entries ---------- */
+.xp-scene.on .xp-rise{animation:xpPop3d .78s var(--xp-spring) both}
+@keyframes xpPop3d{
+  0%{opacity:0; filter:blur(14px); transform:translateY(30px) translateZ(-140px) rotateX(16deg)}
+  58%{opacity:1; filter:blur(0)}
+  100%{opacity:1; filter:blur(0); transform:none}
+}
+.xp-tile, .xp-chip2, .xp-tier, .xp-step, .xp-row{transform-style:preserve-3d}
+.xp-chip2{transform:translateY(14px) translateZ(-70px) rotateY(24deg) scale(.9)}
+.xp-chip2.lit{transform:none}
+
+/* ---------- group (batch ring) ---------- */
+.xp-group{width:clamp(190px,44vw,290px); aspect-ratio:1}
+.xp-group svg{width:100%; height:100%; display:block; overflow:visible;
+  filter:drop-shadow(0 0 16px var(--xp-glow))}
+
+/* single-tier pricing */
+.xp-pricing.n1{grid-template-columns:1fr; max-width:270px; margin:0 auto}
+
 /* ---------- chips (subjects) ---------- */
 .xp-chips{display:flex; flex-wrap:wrap; gap:clamp(6px,1.6vw,11px); justify-content:center;
   width:min(100%,560px)}
@@ -529,7 +586,7 @@
 @media (prefers-reduced-motion:reduce){
   .xp *{animation:none !important; transition:opacity .2s linear !important;
         filter:none !important; transform:none !important}
-  .xp-streak,.xp-motes,.xp-capsweep,.xp-capbar{display:none}
+  .xp-streak,.xp-motes,.xp-capsweep,.xp-capbar,.xp-orn{display:none}
   .xp-scene.on .xp-inner{animation:none !important}
   .xp-scene{opacity:0} .xp-scene.on{opacity:1}
   .xp-capline w{opacity:.3} .xp-capline w.lit{opacity:1}
