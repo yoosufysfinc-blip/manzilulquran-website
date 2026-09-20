@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v5.js. v5: saves the prepaid due-date choice. */
+/* Academic Service — forms-actions.v6.js. v6: full-page row view with zoom. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -305,6 +305,22 @@ const Actions = {
     render();
   },
   "lmore": (id, el) => { const l = el.dataset.lid; UI.limit[l] = (UI.limit[l] || 25) + 25; render(); },
+  /* open one row as a full page — nothing clipped, and the text can be zoomed */
+  "lfull": (id, el) => {
+    const lid = el.dataset.lid, k = lid + "::" + el.dataset.k;
+    const row = el.closest(".lrow");
+    const title = row ? (row.querySelector(".lt") || {}).textContent || "Details" : "Details";
+    UI.open[lid] = k; render();
+    setTimeout(function(){
+      const openRow = Array.prototype.slice.call(document.querySelectorAll('.lrow[data-lid="' + lid + '"]'))
+        .filter(r => r.dataset.k === el.dataset.k)[0];
+      const det = openRow ? openRow.nextElementSibling : null;
+      if (det && det.classList.contains("ldet")) openFullView(title.trim(), det.innerHTML);
+      else toast("Could not open the full view", "bad");
+    }, 30);
+  },
+  "fv-zoom": (id) => fullViewZoom(id === "0" ? 0 : id === "+" ? 0.15 : -0.15),
+  "fv-close": () => closeFullView(),
   "lsort": (id, el) => { UI.sort[el.dataset.lid] = el.value; render(); },
   "pf-tab": (id, el) => { State.profile.tab = el.dataset.t; render(); },
   "profile-open": (id) => { State.profile.studentId = id; State.profile.tab = "fees"; go("profile"); },
