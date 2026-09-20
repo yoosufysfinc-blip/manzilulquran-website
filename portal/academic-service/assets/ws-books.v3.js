@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-books.v2.js. v2: per-student teacher pay lines with month overrides. */
+/* Academic Service — ws-books.v3.js. v3: start-fresh and import-records buttons in Settings. */
 /* one line per individual student on a teacher's month — rule, amount and an Override button */
 function payLinesHtml(pv){
   const L = (pv && pv.indLines) || [];
@@ -1138,6 +1138,11 @@ Pages.settings = function(){
         '<button class="btn" data-act="restore" style="font-size:13.5px">⬆️ Import backup (JSON file)</button>' +
       '</div>' +
       '<div style="margin:10px auto 0; max-width:520px; font-size:12px; color:#9fd8b6">A JSON file is a full offline copy of everything — handy to keep on your computer.</div>' +
+      '<div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:14px; padding-top:14px; border-top:1px solid rgba(143,211,174,.2)">' +
+        '<button class="btn" data-act="data-import" style="font-size:13.5px">📥 Import records (JSON)</button>' +
+        '<button class="btn btn-danger" data-act="data-wipe" style="font-size:13.5px">🗑️ Delete all records</button>' +
+      '</div>' +
+      '<div style="margin:10px auto 0; max-width:520px; font-size:12px; color:#9fd8b6">Import adds or updates records by ID and saves them to Supabase. Delete removes every academy record everywhere (password + DELETE).</div>' +
     '</div>' +
   '</div>' +
   '<div class="card"><div class="card-hd"><h3>Academy details</h3></div><div class="card-bd">' +
@@ -1274,4 +1279,3 @@ Pages.settings = function(){
     '</div>' +
   '</div></div>';
 };
-
