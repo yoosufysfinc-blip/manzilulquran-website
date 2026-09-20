@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v4.js. v4: delete-all reads Supabase itself, shows live progress and a verified result. */
+/* Academic Service — forms-actions.v5.js. v5: saves the prepaid due-date choice. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -1556,7 +1556,7 @@ Object.assign(Actions, {
   "settings-save": () => {
     const patch = {};
     ["academyName","academyTagline","website","email","contactPhone","whatsappNumber","currency","countryCode",
-     "defaultDueDay","defaultFeeMethod","billingMode","advanceDays","teacherLinkBase","apiUrl",
+     "defaultDueDay","defaultFeeMethod","billingMode","advanceDays","prepaidDue","teacherLinkBase","apiUrl",
      "syncKey","syncEvery","admissionFeeDefault"].forEach(k => {
       const el = $("#set_" + k); if (el) patch[k] = el.value;
     });
