@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-books.v4.js. v4: prepaid due-date choice in Settings. */
+/* Academic Service — ws-books.v5.js. v5: shorter list lines, "undefined" pay label fixed, dashboard shows new students and joiners. */
 /* one line per individual student on a teacher's month — rule, amount and an Override button */
 function payLinesHtml(pv){
   const L = (pv && pv.indLines) || [];
@@ -36,6 +36,29 @@ Pages.overview = function(){
   const students = DataService.getStudents().filter(x => x.status === "Active");
   const advance = DataService.getPayments().filter(x => x.date < monthStart(x.month))
     .reduce((x, p) => x + (+p.amount || 0), 0);
+
+  /* who joined this month, who still has no plan, who is on hold — the dashboard is not only money */
+  const monthS = monthStart(m), monthE = monthEnd(m);
+  const joinedThis = students.filter(x => x.joiningDate && x.joiningDate >= monthS && x.joiningDate <= monthE);
+  const holdIds = {};
+  DataService.getHolds ? (DataService.getHolds() || []).forEach(h => { if (m >= (h.from || "") && m <= (h.to || "9999-99")) holdIds[h.studentId] = true; }) : null;
+  const viewsThis = Logic.feeViews({ month: m });
+  const peopleRows = students.map(function(x){
+    const pl2 = DataService.getPlans({ studentId: x.id }).filter(p => p.status === "Active")[0];
+    const te = pl2 ? DataService.getTeacher(pl2.teacherId) : null;
+    const v = viewsThis.filter(z => z.studentId === x.id);
+    const owing = v.reduce((a, z) => a + z.balance, 0);
+    const isNew = joinedThis.indexOf(x) >= 0;
+    const tag = isNew ? "New" : holdIds[x.id] ? "On hold" : !pl2 ? "No plan" : owing > 0 ? "Owing" : "";
+    return { id: x.id, name: x.name, phone: x.whatsapp || x.phone, joiningDate: x.joiningDate,
+      course: pl2 ? pl2.course : "", teacher: te ? te.name : "", fee: pl2 ? +pl2.rate || 0 : 0,
+      dueDay: pl2 ? pl2.dueDay : "", tag: tag,
+      feeStatus: v.length ? v.map(z => z.status).join(", ") : "no fee raised",
+      paidEver: DataService.getPayments({ studentId: x.id }).reduce((a, p) => a + (+p.amount || 0), 0),
+      line: [isNew ? "joined " + fmtDate(x.joiningDate) : "", pl2 ? pl2.course : "no class plan",
+        te ? te.name : ""].filter(Boolean).join(" · "),
+      rank: (isNew ? 0 : !pl2 ? 1 : owing > 0 ? 2 : 3) };
+  }).sort((a, b) => a.rank - b.rank || String(a.name).localeCompare(String(b.name)));
 
   /* six month trend + a 30 day collection heat strip */
   const trend = [];
@@ -145,7 +168,29 @@ Pages.overview = function(){
     kpi("Receivable", money(all.balance), num(all.count - all.paidN) + " students owing", "a-warn") +
     kpi("Overdue", money(all.overdueAmt), num(all.overdueN) + " past the due date", "a-bad") +
     kpi("Payable to teachers", money(payPending), esc(monthLabel(m)), "a-acc") +
+    kpi("New students", num(joinedThis.length), "joined in " + monthShort(m), joinedThis.length ? "a-ok" : "") +
   '</div>' +
+
+  /* ---- who joined, who has no plan, who is on hold ---- */
+  '<div class="section-title">Students</div>' +
+  '<div class="card"><div class="card-bd tight">' +
+    renderList("dashStudents", peopleRows, {
+      key: r => r.id, head: ["Student", "Monthly fee"],
+      title: r => esc(r.name) + " " + idchip(r.id),
+      sub: r => esc(r.line),
+      amount: r => r.fee ? money(r.fee) : "—",
+      badge: r => badge(r.tag, { "New": "b-ok", "No plan": "b-warn", "On hold": "b-idle", "Owing": "b-bad" }),
+      detail: r => dl([
+        ["Student ID", idchip(r.id)], ["Joined", esc(fmtDate(r.joiningDate) || "—")],
+        ["Course", esc(r.course || "—")], ["Teacher", esc(r.teacher || "—")],
+        ["Monthly fee", r.fee ? money(r.fee) : "—"], ["Due day", esc(r.dueDay || "—")],
+        [monthShort(m) + " status", esc(r.feeStatus)], ["Paid so far", money(r.paidEver)],
+        ["Phone", '<span class="mono">' + esc(r.phone || "—") + '</span>']
+      ]) + acts('<button class="btn btn-sm" data-act="profile-open" data-id="' + r.id + '">Open profile</button>'),
+      emptyTitle: "No students to show",
+      pageSize: 12
+    }) +
+  '</div></div>' +
 
   /* ---- colour infographics ---- */
   '<div class="section-title">This month in detail</div>' +
@@ -334,8 +379,10 @@ Pages.teachers = function(){
     renderList("teachers", rows, {
       key: t => t.id, head: ["Teacher", monthShort(m) + " payable"],
       title: t => esc(t.name) + " " + idchip(t.id),
-      sub: t => esc(t.batches.length + " batches · " + t.plans.length + " individual plans · " +
-        Logic.indRateLabel(t.indRateType) + " / " + Logic.batchPayLabel(t.batchPayType)),
+      /* short enough for a phone: the rest is in the row details / full view */
+      sub: t => esc([t.plans.length ? t.plans.length + (t.plans.length === 1 ? " student" : " students") : "",
+        t.batches.length ? t.batches.length + (t.batches.length === 1 ? " batch" : " batches") : "",
+        t.indRateType ? Logic.indRateLabel(t.indRateType) : "no pay rule"].filter(Boolean).join(" · ")),
       amount: t => money(t.pv.payable) + '<small>' + (t.pv.balance > 0 ? money(t.pv.balance) + " unpaid" : "settled") + '</small>',
       badge: t => badge(t.pv.status, FEE_BADGE),
       detail: t => dl([
