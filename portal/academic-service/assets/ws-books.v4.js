@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-books.v3.js. v3: start-fresh and import-records buttons in Settings. */
+/* Academic Service — ws-books.v4.js. v4: prepaid due-date choice in Settings. */
 /* one line per individual student on a teacher's month — rule, amount and an Override button */
 function payLinesHtml(pv){
   const L = (pv && pv.indLines) || [];
@@ -1215,6 +1215,11 @@ Pages.settings = function(){
                  { value: "postpaid", label: "Postpaid — bill after the classes" }], s.billingMode || "prepaid") + '</select>') +
       field("Days before the month that fees fall due",
         '<input class="input" type="number" min="0" max="31" id="set_advanceDays" value="' + esc(s.advanceDays || 0) + '">') +
+      field("Prepaid due date", '<select class="input" id="set_prepaidDue">' +
+        optList([{ value: "studentDay", label: "Each student's own day, in the month before" },
+                 { value: "advance",    label: "Same day for everyone, X days before the month" }],
+                s.prepaidDue || "studentDay") + '</select>') +
+      '<div class="field span2"><span class="hint">With the student\'s own day, someone who joined on the 22nd pays on 22 October for November. The "days before" box is then ignored.</span></div>' +
     '</div>' +
     '<p class="hint" style="margin-top:8px">A ' + esc(monthLabel(addMonths(currentMonth(), 1))) +
       ' fee would fall due on <b>' + esc(fmtDate(Logic.feeDueDate(addMonths(currentMonth(), 1), s.defaultDueDay))) + '</b>.</p>' +
