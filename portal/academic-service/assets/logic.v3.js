@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — logic.v2.js. v2 adds the fee / teacher-pay rule engine (hybrids, manual, per-student pay, overrides). */
+/* Academic Service — logic.v3.js. v3: prepaid months fall due on each student's own day in the month before. */
 /* ==========================================================================
    LOGIC
    ========================================================================== */
@@ -115,9 +115,14 @@ const Logic = {
     return out;
   },
   prepaid(){ return (Settings().billingMode || "prepaid") === "prepaid"; },
-  /* Prepaid: the month is due BEFORE it starts. Postpaid: due inside the month. */
+  /* Prepaid: the month is due BEFORE it starts. Postpaid: due inside the month.
+     Prepaid has two ways of fixing the date:
+       "studentDay" (default) — each student's own day in the month before. A student who
+         joined on the 22nd pays on 22 October for November. This is how the academy works.
+       "advance" — the same date for everyone, a set number of days before the month starts. */
   feeDueDate(month, dueDay){
     if (!Logic.prepaid()) return dueDateFor(month, dueDay);
+    if ((Settings().prepaidDue || "studentDay") === "studentDay") return dueDateFor(addMonths(month, -1), dueDay);
     const d = parseYMD(monthStart(month));
     d.setDate(d.getDate() - (parseInt(Settings().advanceDays, 10) || 0));
     return ymd(d);
@@ -748,4 +753,3 @@ function downloadCSV(name, headers, rows){
     toast("Downloaded " + name, "ok");
   } catch (e) { toast("Could not create the file here", "bad"); }
 }
-
