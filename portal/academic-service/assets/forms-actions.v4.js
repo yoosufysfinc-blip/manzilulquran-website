@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v3.js. v3: start-fresh delete, JSON record import, WhatsApp country-code fix on edit. */
+/* Academic Service — forms-actions.v4.js. v4: delete-all reads Supabase itself, shows live progress and a verified result. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -1086,12 +1086,23 @@ const Actions = {
       } });
   },
   "rule-ui": (g, el) => ruleUI(el.closest("form"), g),
+  "wipe-backup": () => {
+    if (!WIPE_SNAPSHOT) return;
+    try {
+      const blob = new Blob([JSON.stringify(WIPE_SNAPSHOT, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = "manzilulquran-deleted-trial-" + today() + ".json";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+    } catch (e) { toast("Could not create the file here", "bad"); }
+  },
   /* ---- start fresh: remove every academy record (Supabase + this device). Settings and money accounts stay. ---- */
   "data-wipe": () => {
     const n = WIPE_COLLS.reduce((a, c) => a + (DB[c] || []).length, 0);
     openModal({ title: "Delete all academy records", submitText: "Delete everything",
       body: '<div class="note">This removes <b>' + n + '</b> records — students, teachers, batches, plans, classes, attendance, fees, payments, income, expenses and payroll — from Supabase and this device. ' +
-        'A backup JSON downloads first. Settings, course lists and the money accounts (Cash / Bank / UPI) are kept. The Google Sheet backup is not touched.</div>' +
+        'Settings, course lists and the money accounts (Cash / Bank / UPI) are kept. The Google Sheet backup is not touched. ' +
+        'When it finishes you get a result screen with a button to download a backup of what was deleted.</div>' +
         '<div class="form-grid">' +
         field("Password", '<input class="input" type="password" name="pw" autocomplete="off">') +
         field("Type DELETE to confirm", '<input class="input" name="confirm" autocomplete="off">') + '</div>',
@@ -1637,21 +1648,57 @@ async function supaUpsert(coll, recs, deleted){
   return rows.length;
 }
 function supaReady(){ return typeof Supa !== "undefined" && Supa.on() && (Supa.st.ready || Supa.init()); }
+let WIPE_SNAPSHOT = null;
+function wipeScreen(title, html, done){
+  openModal({ title: title, submitText: done ? "Close" : "Working…",
+    body: '<div id="wipeBody">' + html + '</div>' +
+      (done && WIPE_SNAPSHOT ? '<div style="margin-top:12px"><button type="button" class="btn" data-act="wipe-backup">⬇️ Download backup of the deleted data</button></div>' : "") });
+  const b = document.querySelector('#mForm button[type="submit"]'); if (b) b.disabled = !done;
+}
+/* Deletes from what Supabase actually holds (not only what this device has), then reads Supabase again to prove it. */
 async function wipeAll(){
-  Actions["backup"]();
-  let n = 0;
+  WIPE_SNAPSHOT = DataService.exportAll();
+  const rows = [], problems = [];
+  const line = () => rows.map(r => '<div class="minirow"><span>' + esc(r[0]) + '</span><b>' + esc(r[1]) + '</b></div>').join("");
+  wipeScreen("Deleting records…", '<div class="note">Keep this page open.</div>', false);
+  const set = h => { const el = document.getElementById("wipeBody"); if (el) el.innerHTML = h; };
   if (supaReady()) {
     Supa.paint("busy", "deleting records");
-    try { for (const c of WIPE_COLLS) n += await supaUpsert(c, DB[c] || [], true); }
-    catch (e) { Supa.paint("err", String(e.message || e)); toast("Stopped — Supabase refused: " + (e.message || e) + ". Nothing was removed on this device.", "bad", 8000); return; }
-    Supa.paint("ok", "deleted");
-  } else { toast("Supabase is not connected — only this device was cleared", "warn", 6000); }
+    for (const c of WIPE_COLLS) {
+      set('<div class="note">Keep this page open — removing <b>' + esc(c) + '</b>…</div>' + line());
+      try {
+        const { data, error } = await Supa.client.from(SUPA_TABLE[c]).select("id,data,deleted").limit(10000);
+        if (error) throw new Error(error.message);
+        const live = (data || []).filter(r => !r.deleted);
+        const recs = live.map(r => Object.assign({}, r.data || {}, { id: r.id }));
+        if (recs.length) await supaUpsert(c, recs, true);
+        rows.push([c, recs.length + " removed"]);
+      } catch (e) { rows.push([c, "FAILED"]); problems.push(c + ": " + (e.message || e)); }
+    }
+    /* verify: read every table back */
+    const left = [];
+    for (const c of WIPE_COLLS) {
+      try {
+        const { data, error } = await Supa.client.from(SUPA_TABLE[c]).select("id,data,deleted").limit(10000);
+        if (error) throw new Error(error.message);
+        const n = (data || []).filter(r => !r.deleted).length;
+        if (n) left.push(c + ": " + n);
+      } catch (e) { left.push(c + ": could not check (" + (e.message || e) + ")"); }
+    }
+    if (left.length) problems.push("Still in Supabase → " + left.join(", "));
+    Supa.paint(problems.length ? "err" : "ok", problems.length ? problems[0] : "deleted");
+  } else problems.push("Supabase is not connected — only this device was cleared.");
   WIPE_COLLS.forEach(c => DB[c] = []);
   persist();
   UI.open = {}; UI.limit = {};
   $("#globalMonth").innerHTML = monthOpts(State.month, "");
-  toast("All academy records deleted" + (n ? " (" + n + " removed from Supabase)" : "") + ". Ready for your real data.", "ok", 6000);
   render();
+  wipeScreen(problems.length ? "Delete finished with problems" : "All academy records deleted",
+    (problems.length
+      ? '<div class="note" style="border-color:#e0776b">' + problems.map(esc).join("<br>") + '</div>'
+      : '<div class="note">✅ Checked: Supabase now holds 0 academy records. Settings and money accounts were kept.</div>') +
+    line() + '<div class="note" style="margin-top:10px">Next: Settings → 📥 Import records (JSON) to load the real data.</div>', true);
+  toast(problems.length ? "Delete finished with problems — see the result screen" : "All academy records deleted", problems.length ? "bad" : "ok", 6000);
 }
 async function importRecords(plan){
   plan.forEach(function(p){
