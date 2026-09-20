@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ui.v2.js. v2: "Needs amount" status, override marker, hybrid fee basis. */
+/* Academic Service — ui.v3.js. v3: full-page view for any row (with zoom), tidier row markup. */
 /* ==========================================================================
    UI KIT
    ========================================================================== */
@@ -117,6 +117,8 @@ function renderList(lid, rows, o){
         '<span class="lright">' +
           (o.amount ? '<span class="lamt">' + o.amount(r) + '</span>' : "") +
           (o.badge ? o.badge(r) : "") +
+          '<span class="lfull" role="button" tabindex="0" title="Open full view" aria-label="Open full view" ' +
+            'data-act="lfull" data-lid="' + lid + '" data-k="' + esc(k) + '">⤢</span>' +
         '</span></button>' +
       (isOpen ? '<div class="ldet">' + o.detail(r) + '</div>' : "");
   }).join("");
@@ -983,3 +985,42 @@ function duesPage(source, key){
   '</div></div>';
 }
 
+
+/* ---- full page view ----
+   The row list has to stay short on a phone, so every row can be opened as a full page
+   where nothing is clipped, with zoom for small print. */
+function closeFullView(){
+  const el = document.getElementById("fullView");
+  if (el) el.remove();
+  document.body.style.overflow = "";
+}
+function fullViewZoom(step){
+  UI.zoom = step === 0 ? 1 : Math.round(Math.min(2, Math.max(0.8, (UI.zoom || 1) + step)) * 100) / 100;
+  const bd = document.getElementById("fullViewBody"), out = document.getElementById("fullViewZoom");
+  if (bd) bd.style.fontSize = (UI.zoom * 100) + "%";
+  if (out) out.textContent = Math.round(UI.zoom * 100) + "%";
+}
+function openFullView(title, html){
+  closeFullView();
+  const wrap = document.createElement("div");
+  wrap.className = "fullview"; wrap.id = "fullView";
+  wrap.innerHTML =
+    '<div class="fullview-hd">' +
+      '<h3>' + esc(title) + '</h3>' +
+      '<button type="button" class="zoombtn" data-act="fv-zoom" data-id="-">−</button>' +
+      '<span class="zoomval" id="fullViewZoom">100%</span>' +
+      '<button type="button" class="zoombtn" data-act="fv-zoom" data-id="+">+</button>' +
+      '<button type="button" class="btn btn-sm" data-act="fv-zoom" data-id="0">Reset</button>' +
+      '<button type="button" class="btn btn-sm" data-act="fv-close">Close</button>' +
+    '</div>' +
+    '<div class="fullview-bd" id="fullViewBody">' + html + '</div>';
+  document.body.appendChild(wrap);
+  document.body.style.overflow = "hidden";
+  fullViewZoom(0);
+  /* buttons copied in here still work; the page behind redraws, so the sheet closes after the tap */
+  wrap.addEventListener("click", function(ev){
+    const t = ev.target.closest("[data-act]");
+    if (!t || /^fv-/.test(t.dataset.act)) return;
+    setTimeout(closeFullView, 0);
+  });
+}
