@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — core.v1.js (split from index.html). Immutable: edit a copy as v2. */
+/* Academic Service — core.v2.js. v2: every change reaches Supabase (payments, fee builds, payroll adjustments were only saved on the device). */
 /* ==========================================================================
    ManzilulQuran — Academy Manager (single file)
 
@@ -77,6 +77,7 @@ const Storage = {
 let DB = {};
 function persist(){
   Cache.clear();
+  if (typeof SupaTrack !== "undefined") SupaTrack.schedule();
   if (typeof Sync !== "undefined" && Sync._hash) { Sync.stamp(); Sync.nudge(); }
   Storage.save(DB);
 }
@@ -210,6 +211,7 @@ const Supa = {
         }
       });
       Cache.clear(); Storage.save(DB);
+      SupaTrack.reset();
       this.st.at = Date.now(); this.paint("ok", "loaded from Supabase");
       return { ok:true };
     } catch (e) {
@@ -227,6 +229,7 @@ const Supa = {
       const row = { id: String(rec.id), data: rec, deleted: !!rec._d };
       const { error } = await this.client.from(table).upsert(row, { onConflict: "id" });
       if (error) throw new Error(error.message);
+      SupaTrack.mark(coll, rec);
       this.st.at = Date.now(); this.paint("ok", "saved");
     } catch (e) {
       this.st.pending++; this.st.err = String(e.message || e); this.paint("err", this.st.err);
@@ -287,6 +290,66 @@ const Supa = {
   }
 };
 
+
+/* ---- change tracker ----
+   Many saves (payments, refunds, teacher payments, payroll adjustments, monthly fee builds,
+   reconciliation) write straight into DB and never called Supa.put, so they lived only on the
+   device and vanished at the next Supabase load. After every persist() this compares each record
+   with what Supabase last held and sends only what changed (and marks removed records deleted).
+   It starts only after a successful load from Supabase, so a stale device copy is never pushed. */
+const SupaTrack = {
+  base: null, timer: 0, busy: false, again: false,
+  reset(){
+    const b = {};
+    SUPA_COLLS.forEach(function(c){
+      if (c === "settings") return;
+      const m = b[c] = {};
+      (DB[c] || []).forEach(r => { if (r && r.id) m[r.id] = JSON.stringify(r); });
+    });
+    this.base = b;
+  },
+  mark(c, rec){
+    if (!this.base || !this.base[c] || !rec || !rec.id) return;
+    if (rec._d) delete this.base[c][rec.id]; else this.base[c][rec.id] = JSON.stringify(rec);
+  },
+  schedule(){
+    if (!this.base) return;
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.flush(), 600);
+  },
+  async flush(){
+    if (!this.base || typeof Supa === "undefined" || !Supa.on() || (!Supa.st.ready && !Supa.init())) return;
+    if (this.busy) { this.again = true; return; }
+    this.busy = true;
+    try {
+      for (const c of SUPA_COLLS) {
+        if (c === "settings") continue;
+        const base = this.base[c] = this.base[c] || {}, seen = {}, rows = [], sigs = {};
+        (DB[c] || []).forEach(function(r){
+          if (!r || !r.id) return;
+          const id = String(r.id), sig = JSON.stringify(r);
+          seen[id] = true;
+          if (base[id] !== sig) { rows.push({ id: id, data: r, deleted: false }); sigs[id] = sig; }
+        });
+        Object.keys(base).forEach(function(id){
+          if (!seen[id]) rows.push({ id: id, data: JSON.parse(base[id]), deleted: true });
+        });
+        for (let j = 0; j < rows.length; j += 200) {
+          const chunk = rows.slice(j, j + 200);
+          const { error } = await Supa.client.from(SUPA_TABLE[c]).upsert(chunk, { onConflict: "id" });
+          if (error) throw new Error(c + ": " + error.message);
+          chunk.forEach(r => { if (r.deleted) delete base[r.id]; else base[r.id] = sigs[r.id]; });
+        }
+      }
+      Supa.st.at = Date.now(); Supa.paint("ok", "saved");
+    } catch (e) {
+      Supa.st.err = String(e.message || e); Supa.paint("err", Supa.st.err);  /* kept as changed — retried on the next save */
+    } finally {
+      this.busy = false;
+      if (this.again) { this.again = false; this.schedule(); }
+    }
+  }
+};
 
 /* Derived data is cached and dropped on every write, so nothing can go stale. */
 const Cache = {
