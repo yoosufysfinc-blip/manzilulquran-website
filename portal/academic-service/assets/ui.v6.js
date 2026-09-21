@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ui.v4.js. v4: whole-list full page view, Teacher pay in the menu, clearer load failure. */
+/* Academic Service — ui.v6.js. v6: the list full view opens closed rows; colours fixed inside the full page. */
 /* ==========================================================================
    UI KIT
    ========================================================================== */
@@ -994,21 +994,37 @@ function duesPage(source, key){
 
 
 /* ---- full page view ----
-   The row list has to stay short on a phone, so every row can be opened as a full page
-   where nothing is clipped, with zoom for small print. */
+   A row — or a whole list — opens as a full page. Two fingers pinch to zoom,
+   one finger drags around, exactly like a spreadsheet. */
+const FV = { scale: 1, min: 0.4, max: 4, startDist: 0, startScale: 1, lastTap: 0 };
 function closeFullView(){
   const el = document.getElementById("fullView");
   if (el) el.remove();
   document.body.style.overflow = "";
 }
+function fvApply(){
+  const canvas = document.getElementById("fvCanvas"), wrap = document.getElementById("fvWrap"),
+        out = document.getElementById("fullViewZoom");
+  if (!canvas || !wrap) return;
+  canvas.style.transform = "scale(" + FV.scale + ")";
+  /* the sizer keeps the scrollable area as big as the zoomed content, so any corner can be reached */
+  const bw = parseFloat(canvas.style.width) || canvas.offsetWidth || canvas.scrollWidth;
+  const bh = canvas.scrollHeight || canvas.offsetHeight;
+  if (bw) wrap.style.width = Math.round(bw * FV.scale) + "px";
+  if (bh) wrap.style.height = Math.round(bh * FV.scale) + "px";
+  if (out) out.textContent = Math.round(FV.scale * 100) + "%";
+}
 function fullViewZoom(step){
-  UI.zoom = step === 0 ? 1 : Math.round(Math.min(2, Math.max(0.8, (UI.zoom || 1) + step)) * 100) / 100;
-  const bd = document.getElementById("fullViewBody"), out = document.getElementById("fullViewZoom");
-  if (bd) bd.style.fontSize = Math.round(UI.zoom * 100) + "%";
-  if (out) out.textContent = Math.round(UI.zoom * 100) + "%";
+  FV.scale = step === 0 ? 1 : Math.min(FV.max, Math.max(FV.min, Math.round((FV.scale + step) * 100) / 100));
+  fvApply();
+}
+function fvDist(t){
+  const dx = t[0].clientX - t[1].clientX, dy = t[0].clientY - t[1].clientY;
+  return Math.sqrt(dx * dx + dy * dy);
 }
 function openFullView(title, html){
   closeFullView();
+  FV.scale = 1;
   const wrap = document.createElement("div");
   wrap.className = "fullview"; wrap.id = "fullView";
   wrap.innerHTML =
@@ -1020,11 +1036,40 @@ function openFullView(title, html){
       '<button type="button" class="btn btn-sm" data-act="fv-zoom" data-id="0">Reset</button>' +
       '<button type="button" class="btn btn-sm" data-act="fv-close">Close</button>' +
     '</div>' +
-    '<div class="fullview-bd" id="fullViewBody">' + html + '</div>';
+    '<div class="fullview-bd" id="fullViewBody"><div class="fv-wrap" id="fvWrap">' +
+      '<div class="fv-canvas" id="fvCanvas">' + html + '</div></div></div>' +
+    '<div class="fullview-ft">Pinch with two fingers to zoom · drag to move · double tap to reset</div>';
   document.body.appendChild(wrap);
   document.body.style.overflow = "hidden";
-  fullViewZoom(0);
-  /* buttons copied in here still work; the page behind redraws, so the sheet closes after the tap */
+  const bd = document.getElementById("fullViewBody"), canvas = document.getElementById("fvCanvas");
+  canvas.style.width = Math.max(320, bd.clientWidth - 24) + "px";
+  fvApply();
+
+  bd.addEventListener("touchstart", function(ev){
+    if (ev.touches.length === 2) { FV.startDist = fvDist(ev.touches); FV.startScale = FV.scale; ev.preventDefault(); }
+    else if (ev.touches.length === 1) {
+      const now = Date.now();
+      if (now - FV.lastTap < 320) { fullViewZoom(0); FV.lastTap = 0; } else FV.lastTap = now;
+    }
+  }, { passive: false });
+  bd.addEventListener("touchmove", function(ev){
+    if (ev.touches.length !== 2 || !FV.startDist) return;
+    ev.preventDefault();
+    const mx = (ev.touches[0].clientX + ev.touches[1].clientX) / 2 + bd.scrollLeft;
+    const my = (ev.touches[0].clientY + ev.touches[1].clientY) / 2 + bd.scrollTop;
+    const before = FV.scale;
+    FV.scale = Math.min(FV.max, Math.max(FV.min, FV.startScale * (fvDist(ev.touches) / FV.startDist)));
+    fvApply();
+    const k = FV.scale / before;
+    bd.scrollLeft += mx * (k - 1);
+    bd.scrollTop += my * (k - 1);
+  }, { passive: false });
+  bd.addEventListener("touchend", function(ev){ if (ev.touches.length < 2) FV.startDist = 0; });
+  bd.addEventListener("wheel", function(ev){
+    if (!ev.ctrlKey) return;
+    ev.preventDefault(); fullViewZoom(ev.deltaY < 0 ? 0.1 : -0.1);
+  }, { passive: false });
+
   wrap.addEventListener("click", function(ev){
     const t = ev.target.closest("[data-act]");
     if (!t || /^fv-/.test(t.dataset.act)) return;
@@ -1033,18 +1078,21 @@ function openFullView(title, html){
 }
 
 /* ---- the whole list as one full page ----
-   Every row is printed with its details already open, so nothing has to be tapped. */
+   The whole list, every row, nothing cut off. Rows start closed — tap one to open it
+   right here, without leaving the full page. */
 function fullListHtml(lid){
   const L = UI.lists[lid];
   if (!L) return "";
   const o = L.o;
-  return L.rows.map(function(r){
-    return '<div class="fl-item">' +
-      '<div class="fl-hd"><span class="fl-t">' + o.title(r) + '</span>' +
+  return L.rows.map(function(r, i){
+    return '<div class="fl-item" id="flItem' + i + '">' +
+      '<button type="button" class="fl-hd-btn" data-act="fv-row" data-id="' + i + '">' +
+        '<span class="fl-hd"><span class="fl-t"><span class="fl-chev">›</span>' + o.title(r) + '</span>' +
         '<span class="fl-r">' + (o.amount ? '<span class="lamt">' + o.amount(r) + '</span>' : "") +
-        (o.badge ? o.badge(r) : "") + '</span></div>' +
-      (o.sub ? '<div class="fl-s">' + o.sub(r) + '</div>' : "") +
-      (o.detail ? '<div class="fl-d">' + o.detail(r) + '</div>' : "") +
+        (o.badge ? o.badge(r) : "") + '</span></span>' +
+        (o.sub ? '<span class="fl-s">' + o.sub(r) + '</span>' : "") +
+      '</button>' +
+      (o.detail ? '<div class="fl-d" hidden>' + o.detail(r) + '</div>' : "") +
     '</div>';
   }).join("");
 }
