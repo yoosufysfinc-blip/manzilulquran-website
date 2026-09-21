@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — core.v3.js. v3: the Supabase message is kept so it can be read on screen. */
+/* Academic Service — core.v4.js. v4: payments and teacher payments can be voided (kept, but out of every total). */
 /* ==========================================================================
    ManzilulQuran — Academy Manager (single file)
 
@@ -361,7 +361,7 @@ const Cache = {
   paymentsFor(feeId){
     if (Cache._p === null || Cache._pLen !== DB.payments.length) {
       const idx = {};
-      DB.payments.forEach(p => (idx[p.feeId] = idx[p.feeId] || []).push(p));
+      DB.payments.forEach(p => { if (!p.voided) (idx[p.feeId] = idx[p.feeId] || []).push(p); });
       Cache._p = idx; Cache._pLen = DB.payments.length;
     }
     return Cache._p[feeId] || [];
@@ -748,8 +748,10 @@ const DataService = {
   },
 
   /* --- money --- */
+  /* voided payments stay on record but are left out of balances, dues, income and accounts —
+     ask for them explicitly with { voided: true } (only the voided ones) */
   getPayments(f){
-    let r = DB.payments.slice();
+    let r = DB.payments.filter(p => (f && f.voided) ? !!p.voided : !p.voided);
     if (!f) return r;
     if (f.studentId) r = r.filter(p => p.studentId === f.studentId);
     if (f.feeId)     r = r.filter(p => p.feeId === f.feeId);
@@ -765,13 +767,22 @@ const DataService = {
   getExpenses(){ return DB.expenses.slice(); },
   saveExpense(x){ return upsert("expenses", x, "EXP"); },
   getTeacherPayments(f){
-    let r = DB.teacherPayments.slice();
+    let r = DB.teacherPayments.filter(p => (f && f.voided) ? !!p.voided : !p.voided);
     if (!f) return r;
     if (f.teacherId) r = r.filter(p => p.teacherId === f.teacherId);
     if (f.month)     r = r.filter(p => p.month === f.month);
     return r;
   },
   saveTeacherPayment(p){ p.id = uid("TPY", DB.teacherPayments); DB.teacherPayments.push(p); persist(); return p.id; },
+  /* a payment entered by mistake: marked void with a reason, never removed, IDs never reused */
+  voidPayment(id, reason){
+    const p = DB.payments.find(x => x.id === id); if (!p || p.voided) return null;
+    p.voided = true; p.voidReason = reason || ""; p.voidAt = new Date().toISOString(); persist(); return p;
+  },
+  voidTeacherPayment(id, reason){
+    const p = DB.teacherPayments.find(x => x.id === id); if (!p || p.voided) return null;
+    p.voided = true; p.voidReason = reason || ""; p.voidAt = new Date().toISOString(); persist(); return p;
+  },
   getAdjust(teacherId, month){ return DB.teacherAdjust.find(a => a.teacherId === teacherId && a.month === month) || null; },
   saveAdjust(a){
     const f = DB.teacherAdjust.find(x => x.teacherId === a.teacherId && x.month === a.month);
