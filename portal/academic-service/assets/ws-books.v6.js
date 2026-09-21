@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-books.v5.js. v5: shorter list lines, "undefined" pay label fixed, dashboard shows new students and joiners. */
+/* Academic Service — ws-books.v6.js. v6: Void buttons on payments and teacher payments, and a voided list on each page. */
 /* one line per individual student on a teacher's month — rule, amount and an Override button */
 function payLinesHtml(pv){
   const L = (pv && pv.indLines) || [];
@@ -521,7 +521,8 @@ Pages.payments = function(){
           acts('<button class="btn btn-sm" data-act="receipt" data-id="' + x.id + '">Receipt</button>' +
             '<button class="btn btn-sm btn-wa" data-act="wa-received" data-id="' + x.id + '">WhatsApp</button>' +
             '<button class="btn btn-sm btn-danger" data-act="refund-new" data-id="' + x.id + '">Refund</button>' +
-            '<button class="btn btn-sm" data-act="profile-open" data-id="' + x.studentId + '">Open student</button>');
+            '<button class="btn btn-sm" data-act="profile-open" data-id="' + x.studentId + '">Open student</button>' +
+            '<button class="btn btn-sm btn-danger" data-act="pay-void" data-id="' + x.id + '">Void (entered by mistake)</button>');
       },
       sorts: [{ key: "date", label: "Newest first", val: x => x.date + x.id, desc: true },
               { key: "amt", label: "Largest first", val: x => +x.amount, desc: true },
@@ -530,6 +531,10 @@ Pages.payments = function(){
       emptyAction: '<button class="btn btn-primary" data-act="pay-new">+ Record payment</button>'
     }) +
   '</div></div>' +
+  voidedSection(DataService.getPayments({ voided: true }).filter(x => !p.month || x.month === p.month).map(function(x){
+      const s = DataService.getStudent(x.studentId);
+      return Object.assign({}, x, { who: s ? s.name : x.studentId });
+    }), "paysVoid") +
   (refunds.length ? '<div class="section-title">Refunds</div><div class="card"><div class="card-bd tight">' +
     renderList("refunds", refunds, {
       key: r => r.id,
@@ -706,10 +711,15 @@ Pages.tpay = function(){
       detail: x => dl([["Payment", idchip(x.id)], ["Teacher", esc(x.teacherName) + " " + idchip(x.teacherId)],
         ["For month", monthLabel(x.month)], ["Date", fmtDate(x.date)], ["Amount", money(x.amount)],
         ["Paid from", badge(x.account)], ["Type", esc(x.category || "Teacher Payment")],
-        x.remarks ? ["Remarks", esc(x.remarks)] : null]),
+        x.remarks ? ["Remarks", esc(x.remarks)] : null]) +
+        acts('<button class="btn btn-sm btn-danger" data-act="tpay-void" data-id="' + x.id + '">Void (entered by mistake)</button>'),
       emptyTitle: "Nothing paid yet for " + monthLabel(m), emptyText: "Use Pay teacher above."
     }) +
-  '</div></div>';
+  '</div></div>' +
+  voidedSection(DataService.getTeacherPayments({ voided: true, month: m }).map(function(x){
+    const t = DataService.getTeacher(x.teacherId);
+    return Object.assign({}, x, { who: t ? t.name : x.teacherId });
+  }), "tpayVoid");
 };
 
 Pages.accounts = function(){
@@ -1331,3 +1341,20 @@ Pages.settings = function(){
     '</div>' +
   '</div></div>';
 };
+
+/* voided payments: shown for the record, struck through, never counted */
+function voidedSection(rows, lid){
+  if (!rows.length) return "";
+  return '<div class="section-title">Voided (' + rows.length + ')</div><div class="card"><div class="card-bd tight">' +
+    renderList(lid, rows, {
+      key: x => x.id,
+      title: x => '<s>' + esc(x.who) + ' · ' + money(x.amount) + '</s>',
+      sub: x => "voided " + fmtDate(String(x.voidAt || "").slice(0, 10)) + " · " + esc(x.voidReason || "no reason") + " · " + esc(x.id),
+      amount: x => '<s class="muted">' + money(x.amount) + '</s>',
+      badge: x => badge("Voided", { "Voided": "b-idle" }),
+      detail: x => dl([["Payment", idchip(x.id)], ["Amount", money(x.amount)], ["Paid on", fmtDate(x.date)],
+        ["For month", monthLabel(x.month)], ["Account", esc(x.account || "—")],
+        ["Voided on", fmtDate(String(x.voidAt || "").slice(0, 10))], ["Reason", esc(x.voidReason || "—")]]),
+      pageSize: 10
+    }) + '</div></div>';
+}
