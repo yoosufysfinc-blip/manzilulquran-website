@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v7.js. v7: whole-list full page view. */
+/* Academic Service — forms-actions.v9.js. v9: rows open inside the full page view. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -326,6 +326,15 @@ const Actions = {
     const title = ($("#pageTitle") || {}).textContent || "All records";
     openFullView(title.trim() + " · " + L.rows.length + " records", fullListHtml(lid));
   },
+  /* open / close one row inside the full page, without leaving it */
+  "fv-row": (id) => {
+    const item = document.getElementById("flItem" + id); if (!item) return;
+    const det = item.querySelector(".fl-d"); if (!det) return;
+    const open = det.hasAttribute("hidden");
+    if (open) det.removeAttribute("hidden"); else det.setAttribute("hidden", "");
+    item.classList.toggle("is-open", open);
+    fvApply();
+  },
   "fv-zoom": (id) => fullViewZoom(id === "0" ? 0 : id === "+" ? 0.15 : -0.15),
   "fv-close": () => closeFullView(),
   "lsort": (id, el) => { UI.sort[el.dataset.lid] = el.value; render(); },
@@ -477,8 +486,22 @@ const Actions = {
   /* ---------------- sync ---------------- */
   "sync-panel": () => {
     const st = Sync.st, box = Sync.on() ? Sync.outbox() : { count: 0 };
-    openModal({ title: "Google Sheets sync", hideSubmit: true, cancelText: "Close",
-      body: (Sync.on() ? "" : '<div class="note">Sync is switched off. Add the web app URL and key in Settings, ' +
+    const ss = (typeof Supa !== "undefined" ? Supa.st : {}) || {};
+    const when = t => t ? fmtDate(ymd(new Date(t))) + " " + pad2(new Date(t).getHours()) + ":" + pad2(new Date(t).getMinutes()) : "—";
+    openModal({ title: "Saving & sync", hideSubmit: true, cancelText: "Close",
+      body:
+        '<div class="sub-hd">Supabase — where your records are kept</div>' +
+        dl([["Status", esc(ss.kind === "err" ? "Problem" : ss.kind === "busy" ? "Working" : ss.ready ? "Connected" : "Not connected")],
+            ["Last message", '<span style="word-break:break-word">' + esc(ss.msg || "—") + '</span>'],
+            ["Last saved", esc(when(ss.at))],
+            ["Last problem", '<span style="word-break:break-word">' + esc(ss.err || "—") + (ss.errAt ? " · " + esc(when(ss.errAt)) : "") + '</span>']]) +
+        '<div class="btn-row" style="margin-bottom:14px">' +
+          '<button type="button" class="btn btn-primary" data-act="supa-retry">Try saving again</button>' +
+          '<button type="button" class="btn" data-act="supa-copy-err">Copy the message</button>' +
+          '<button type="button" class="btn" data-act="supa-test">Test the connection</button>' +
+        '</div>' +
+        '<div class="sub-hd">Google Sheet — backup copy</div>' +
+        (Sync.on() ? "" : '<div class="note">Sync is switched off. Add the web app URL and key in Settings, ' +
           'tick the box, and this browser will keep both spreadsheets in step.</div>') +
         dl([["Status", Sync.on() ? esc(st.status === "err" ? "Problem" : st.status === "busy" ? "Working" : "Connected") : "Off"],
             ["Last message", esc(st.msg || "—")],
@@ -493,6 +516,19 @@ const Actions = {
           '<button type="button" class="btn" data-act="sync-full">Push everything</button>' +
           '<button type="button" class="btn" data-act="goto" data-page="settings">Settings</button>' +
         '</div>' });
+  },
+  "supa-retry": async () => {
+    if (typeof SupaTrack === "undefined" || !SupaTrack.base) { toast("Nothing is waiting to be saved yet", "warn"); return; }
+    toast("Saving again…", "ok", 1800);
+    await SupaTrack.flush();
+    const ss = Supa.st;
+    toast(ss.kind === "err" ? "Still failing: " + (ss.err || "") : "Saved to Supabase", ss.kind === "err" ? "bad" : "ok", 7000);
+  },
+  "supa-copy-err": () => {
+    const ss = (typeof Supa !== "undefined" ? Supa.st : {}) || {};
+    const txt = "Supabase: " + (ss.err || ss.msg || "no message");
+    if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast("Message copied", "ok"), () => toast(txt, "warn", 9000));
+    else toast(txt, "warn", 9000);
   },
   "supa-test": async () => {
     if (!Settings().supabaseUrl || !Settings().supabaseKey) { toast("Add the Supabase URL and key first, then Save", "bad"); return; }
