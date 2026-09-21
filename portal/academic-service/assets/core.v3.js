@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — core.v2.js. v2: every change reaches Supabase (payments, fee builds, payroll adjustments were only saved on the device). */
+/* Academic Service — core.v3.js. v3: the Supabase message is kept so it can be read on screen. */
 /* ==========================================================================
    ManzilulQuran — Academy Manager (single file)
 
@@ -281,6 +281,9 @@ const Supa = {
   },
 
   paint(kind, msg){
+    /* keep the message: a tooltip cannot be read on a phone, so the sync panel shows it */
+    this.st.kind = kind; this.st.msg = msg || ""; this.st.msgAt = Date.now();
+    if (kind === "err") { this.st.err = msg || ""; this.st.errAt = Date.now(); }
     const chip = document.getElementById("syncChip"); if (!chip) return;
     /* Supabase drives the chip now; the sheet mirror runs quietly behind it */
     chip.className = "syncchip " + (kind === "ok" ? "ok" : kind === "busy" ? "busy" : kind === "err" ? "err" : "off");
