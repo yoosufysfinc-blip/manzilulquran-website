@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v9.js. v9: rows open inside the full page view. */
+/* Academic Service — forms-actions.v10.js. v10: void a fee payment or teacher payment entered by mistake. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -335,6 +335,10 @@ const Actions = {
     item.classList.toggle("is-open", open);
     fvApply();
   },
+  /* ---- void: for a payment typed in by mistake (wrong student, wrong amount, entered twice).
+     Not for real money going back — that is a refund. ---- */
+  "pay-void": (id) => voidDialog("payment", id),
+  "tpay-void": (id) => voidDialog("teacher", id),
   "fv-zoom": (id) => fullViewZoom(id === "0" ? 0 : id === "+" ? 0.15 : -0.15),
   "fv-close": () => closeFullView(),
   "lsort": (id, el) => { UI.sort[el.dataset.lid] = el.value; render(); },
@@ -1775,4 +1779,29 @@ async function importRecords(plan){
     catch (e) { Supa.paint("err", String(e.message || e)); toast("Imported on this device, but Supabase refused: " + (e.message || e), "bad", 8000); render(); return; }
   }
   toast(total + " records imported", "ok", 4200); render();
+}
+
+function voidDialog(kind, id){
+  const isT = kind === "teacher";
+  const p = (isT ? DB.teacherPayments : DB.payments).find(x => x.id === id);
+  if (!p) { toast("Payment not found", "bad"); return; }
+  if (p.voided) { toast("Already voided", "warn"); return; }
+  const who = isT ? DataService.getTeacher(p.teacherId) : DataService.getStudent(p.studentId);
+  openModal({ title: "Void payment " + id, submitText: "Void payment",
+    body: '<div class="note">Use this only for a payment <b>entered by mistake</b> — wrong ' + (isT ? "teacher" : "student") +
+      ', wrong amount, or entered twice. It is taken out of every total but stays in the history as voided.' +
+      (isT ? "" : ' If the money really went back to the family, use <b>Refund</b> instead.') + '</div>' +
+      dl([[isT ? "Teacher" : "Student", esc(who ? who.name : (p.teacherId || p.studentId))],
+          ["Amount", money(p.amount)], ["Date", fmtDate(p.date)], ["For month", monthLabel(p.month)],
+          ["Account", esc(p.account || "—")]]) +
+      '<div class="form-grid">' +
+      '<div class="field span2"><label>Reason *</label><input class="input" name="reason" placeholder="e.g. entered twice, wrong student" required></div>' +
+      field("Password", '<input class="input" type="password" name="pw" autocomplete="off">') +
+      '</div>',
+    onSubmit: function(d){
+      if (!String(d.reason || "").trim()) { toast("Give a reason", "bad"); return false; }
+      if (d.pw !== SHEET_LOCK_PW) { toast("Wrong password", "bad"); return false; }
+      if (isT) DataService.voidTeacherPayment(id, d.reason.trim()); else DataService.voidPayment(id, d.reason.trim());
+      toast(money(p.amount) + " voided — taken out of the totals", "ok", 4200); render();
+    } });
 }
