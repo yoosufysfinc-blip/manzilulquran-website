@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v6.js. v6: full-page row view with zoom. */
+/* Academic Service — forms-actions.v7.js. v7: whole-list full page view. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -318,6 +318,13 @@ const Actions = {
       if (det && det.classList.contains("ldet")) openFullView(title.trim(), det.innerHTML);
       else toast("Could not open the full view", "bad");
     }, 30);
+  },
+  /* the whole list as one page: every row with its details already open */
+  "lfullpage": (id, el) => {
+    const lid = el.dataset.lid, L = UI.lists[lid];
+    if (!L || !L.rows.length) { toast("Nothing to show here yet", "warn"); return; }
+    const title = ($("#pageTitle") || {}).textContent || "All records";
+    openFullView(title.trim() + " · " + L.rows.length + " records", fullListHtml(lid));
   },
   "fv-zoom": (id) => fullViewZoom(id === "0" ? 0 : id === "+" ? 0.15 : -0.15),
   "fv-close": () => closeFullView(),
