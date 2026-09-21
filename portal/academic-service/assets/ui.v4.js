@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ui.v3.js. v3: full-page view for any row (with zoom), tidier row markup. */
+/* Academic Service — ui.v4.js. v4: whole-list full page view, Teacher pay in the menu, clearer load failure. */
 /* ==========================================================================
    UI KIT
    ========================================================================== */
@@ -82,7 +82,7 @@ function streamChip(src){
 }
 
 /* ---- THE ROW LIST: one line per record, details open in place ---- */
-const UI = { open: {}, limit: {}, sort: {} };
+const UI = { open: {}, limit: {}, sort: {}, lists: {} };
 function renderList(lid, rows, o){
   o = o || {};
   const sorts = o.sorts || [];
@@ -99,6 +99,8 @@ function renderList(lid, rows, o){
     return '<div class="empty"><h4>' + esc(o.emptyTitle || "Nothing here yet") + '</h4>' +
       '<p>' + esc(o.emptyText || "") + '</p>' + (o.emptyAction || "") + '</div>';
   }
+  /* keep what this list is showing, so the whole thing can be opened as one full page */
+  UI.lists[lid] = { rows: rows, o: o };
   const limit = UI.limit[lid] || o.pageSize || 25;
   const shown = rows.slice(0, limit);
   const openKey = UI.open[lid];
@@ -133,7 +135,10 @@ function renderList(lid, rows, o){
       esc(s.label) + '</option>').join("") + '</select>' +
     '<span class="push" style="margin-left:auto">' + num(rows.length) + ' records</span></div>' : "";
 
-  return '<div class="list">' + head + body + more + '</div>' + foot + sortBar;
+  const bar = '<div class="lbar no-print"><span>' + num(rows.length) + (rows.length === 1 ? " record" : " records") +
+    (rows.length > limit ? " · showing " + shown.length : "") + '</span>' +
+    '<button type="button" class="btn btn-sm" data-act="lfullpage" data-lid="' + lid + '">⤢ Full view</button></div>';
+  return bar + '<div class="list">' + head + body + more + '</div>' + foot + sortBar;
 }
 function dl(pairs){
   return '<dl class="dl">' + pairs.filter(Boolean).map(p =>
@@ -647,7 +652,7 @@ const WS = {
     ["Overview", [["overview", "◱", "Academy overview", "Dashboard"]]],
     ["People", [["students", "☺", "Students", "Students"], ["teachers", "✎", "Teachers", "Teachers"], ["staff", "◉", "Other staff", "Staff"]]],
     ["Money in", [["payments", "◈", "All payments", "Payments"], ["income", "↑", "Other income", "Income"]]],
-    ["Money out", [["expenses", "↓", "Expenses", "Expenses"]]],
+    ["Money out", [["expenses", "↓", "Expenses", "Expenses"], ["tpay", "◇", "Teacher pay", "Teacher pay"]]],
     ["Books", [["accounts", "▦", "Accounts", "Accounts"], ["ledger", "☰", "Ledger", "Ledger"],
       ["reports", "▥", "Reports", "Reports"]]],
     ["System", [["settings", "⚙", "Settings", "Settings"]]]
@@ -747,7 +752,9 @@ function go(page){
 }
 function render(){
   const fn = Pages[State.page];
-  $("#view").innerHTML = fn ? fn() : '<div class="empty"><h4>Page not found</h4></div>';
+  $("#view").innerHTML = fn ? fn() : '<div class="empty"><h4>This part did not load</h4>' +
+    '<p>The page file did not reach the browser. Pull down to reload — if it keeps happening, the upload is incomplete.</p>' +
+    '<button class="btn btn-primary" onclick="location.reload(true)">Reload</button></div>';
   chrome();
   restoreFocus();
 }
@@ -997,7 +1004,7 @@ function closeFullView(){
 function fullViewZoom(step){
   UI.zoom = step === 0 ? 1 : Math.round(Math.min(2, Math.max(0.8, (UI.zoom || 1) + step)) * 100) / 100;
   const bd = document.getElementById("fullViewBody"), out = document.getElementById("fullViewZoom");
-  if (bd) bd.style.fontSize = (UI.zoom * 100) + "%";
+  if (bd) bd.style.fontSize = Math.round(UI.zoom * 100) + "%";
   if (out) out.textContent = Math.round(UI.zoom * 100) + "%";
 }
 function openFullView(title, html){
@@ -1023,4 +1030,21 @@ function openFullView(title, html){
     if (!t || /^fv-/.test(t.dataset.act)) return;
     setTimeout(closeFullView, 0);
   });
+}
+
+/* ---- the whole list as one full page ----
+   Every row is printed with its details already open, so nothing has to be tapped. */
+function fullListHtml(lid){
+  const L = UI.lists[lid];
+  if (!L) return "";
+  const o = L.o;
+  return L.rows.map(function(r){
+    return '<div class="fl-item">' +
+      '<div class="fl-hd"><span class="fl-t">' + o.title(r) + '</span>' +
+        '<span class="fl-r">' + (o.amount ? '<span class="lamt">' + o.amount(r) + '</span>' : "") +
+        (o.badge ? o.badge(r) : "") + '</span></div>' +
+      (o.sub ? '<div class="fl-s">' + o.sub(r) + '</div>' : "") +
+      (o.detail ? '<div class="fl-d">' + o.detail(r) + '</div>' : "") +
+    '</div>';
+  }).join("");
 }
