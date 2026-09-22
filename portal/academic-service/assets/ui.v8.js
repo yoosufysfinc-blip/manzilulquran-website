@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ui.v7.js. v7: the unused sample-data generator removed. */
+/* Academic Service — ui.v8.js. v8: sort choice moved to the top of every list; empty values always sort last. */
 /* ==========================================================================
    UI KIT
    ========================================================================== */
@@ -91,7 +91,11 @@ function renderList(lid, rows, o){
     const s = sorts.find(x => x.key === key) || sorts[0];
     rows = rows.slice().sort(function(a, b){
       const A = s.val(a), B = s.val(b);
-      const r = (typeof A === "number" && typeof B === "number") ? A - B : String(A).localeCompare(String(B));
+      /* a missing date of birth or joining date goes to the bottom whichever way you sort */
+      const ea = A === "" || A === null || A === undefined, eb = B === "" || B === null || B === undefined;
+      if (ea || eb) return ea === eb ? 0 : ea ? 1 : -1;
+      const r = (typeof A === "number" && typeof B === "number") ? A - B
+        : String(A).localeCompare(String(B), undefined, { numeric: true, sensitivity: "base" });
       return s.desc ? -r : r;
     });
   }
@@ -129,16 +133,15 @@ function renderList(lid, rows, o){
     ? '<button class="more no-print" data-act="lmore" data-lid="' + lid + '">Show ' +
       Math.min(25, rows.length - limit) + ' more · ' + num(rows.length - limit) + ' left</button>' : "";
   const foot = o.foot ? '<div class="lfoot">' + o.foot + '</div>' : "";
-  const sortBar = sorts.length > 1 ? '<div class="lfoot no-print"><span>Sort by</span>' +
-    '<select class="select" style="max-width:220px;min-height:34px" data-act="lsort" data-lid="' + lid + '">' +
-    sorts.map(s => '<option value="' + s.key + '"' + ((UI.sort[lid] || sorts[0].key) === s.key ? " selected" : "") + '>' +
-      esc(s.label) + '</option>').join("") + '</select>' +
-    '<span class="push" style="margin-left:auto">' + num(rows.length) + ' records</span></div>' : "";
-
+  /* sort sits at the top next to the count and Full view, where it can be seen */
+  const sortSel = sorts.length > 1
+    ? '<label class="lsort"><span>Sort</span><select class="select" data-act="lsort" data-lid="' + lid + '">' +
+      sorts.map(s => '<option value="' + s.key + '"' + ((UI.sort[lid] || sorts[0].key) === s.key ? " selected" : "") + '>' +
+        esc(s.label) + '</option>').join("") + '</select></label>' : "";
   const bar = '<div class="lbar no-print"><span>' + num(rows.length) + (rows.length === 1 ? " record" : " records") +
-    (rows.length > limit ? " · showing " + shown.length : "") + '</span>' +
+    (rows.length > limit ? " · showing " + shown.length : "") + '</span>' + sortSel +
     '<button type="button" class="btn btn-sm" data-act="lfullpage" data-lid="' + lid + '">⤢ Full view</button></div>';
-  return bar + '<div class="list">' + head + body + more + '</div>' + foot + sortBar;
+  return bar + '<div class="list">' + head + body + more + '</div>' + foot;
 }
 function dl(pairs){
   return '<dl class="dl">' + pairs.filter(Boolean).map(p =>
