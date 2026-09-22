@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v12.js. v12: Record payment explains what to do when a student has no fee yet. */
+/* Academic Service — forms-actions.v13.js. v13: type-to-find boxes for student and teacher instead of long dropdowns. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -119,13 +119,30 @@ function ruleUI(form, g){
   const h = form.querySelector('[data-rh="' + g + '"]'); if (h) h.textContent = RULE_HINT[s.value] || "";
 }
 const RULE_NUM = ["feeBase", "feeIncluded", "feeMin", "feeMax", "payRate", "payBase", "payIncluded", "payMin", "payMax"];
+/* ---- type-to-find box ----
+   A dropdown with 105 students is hopeless on a phone. This is a text box with the full
+   list behind it: type a few letters of the name or the ID and pick from the suggestions. */
+function pickBox(label, name, value, rows, placeholder){
+  const listId = "pick_" + name;
+  const cur = rows.find(r => r.id === value);
+  return '<div class="field"><label>' + esc(label) + '</label>' +
+    '<input class="input" name="' + name + '" list="' + listId + '" value="' + esc(value || "") + '" ' +
+      'placeholder="' + esc(placeholder || "Type a name or ID") + '" autocomplete="off" data-act="pick-name" data-id="' + name + '">' +
+    '<datalist id="' + listId + '">' +
+      rows.map(r => '<option value="' + esc(r.id) + '">' + esc(r.name) + " · " + esc(r.id) + '</option>').join("") +
+    '</datalist>' +
+    '<span class="hint" data-pick="' + name + '">' + (cur ? esc(cur.name) : "Start typing, then pick from the list") + '</span></div>';
+}
+function pickStudents(){ return DataService.getStudents().slice().sort((a, b) => String(a.name).localeCompare(String(b.name))); }
+function pickTeachers(){ return DataService.getTeachers().filter(t => t.kind !== "staff").slice().sort((a, b) => String(a.name).localeCompare(String(b.name))); }
+
 function planForm(p, presetStudent){
   p = p || {};
   const set = Settings();
   return '<div class="form-grid">' +
     field("Plan ID", '<input class="input mono" name="id" value="' + esc(p.id || "") + '" readonly placeholder="Generated automatically">') +
-    field("Student", sel("studentId", studentOpts(p.studentId || presetStudent || "", "Select student"))) +
-    field("Teacher", sel("teacherId", teacherOpts(p.teacherId, "Select teacher"))) +
+    pickBox("Student", "studentId", p.studentId || presetStudent || "", pickStudents(), "Type a student name or ID") +
+    pickBox("Teacher", "teacherId", p.teacherId || "", pickTeachers(), "Type a teacher name or ID") +
     field("Use a course format", '<select class="select" data-act="apply-format" data-formats="' + esc(formatDataAttr()) + '">' + formatOpts("individual", "") + '</select>') +
     field("Course", sel("course", courseOpts(p.course, "Select course"))) +
     '<div class="field span2"><label>Class days</label><div>' + dayBoxes(p.days) + '</div></div>' +
@@ -423,7 +440,7 @@ const Actions = {
     title: "New enrolment",
     body: '<div class="note">If the student is already in a batch, that enrolment is closed as Transferred — nothing is deleted.</div>' +
       '<div class="form-grid">' +
-      field("Student", sel("studentId", studentOpts("", "Select student"))) +
+      pickBox("Student", "studentId", "", pickStudents(), "Type a student name or ID") +
       field("Batch", sel("batchId", batchOpts(batchId || "", "Select batch", false), 'data-act="enrol-batch"')) +
       '<div class="field"><label>Sub-class</label><select class="select" name="subClassId">' +
         optList(DataService.getSubclasses({ batchId: batchId || "" }).map(x => ({ value: x.id, label: x.name })), "", "Whole batch") +
@@ -919,7 +936,8 @@ const Actions = {
   /* ---------------- plans + classes ---------------- */
   "plan-new": (studentId) => openModal({ title: "New class plan", wide: true, body: planForm({}, studentId), submitText: "Save plan",
     onSubmit: function(d, form){
-      if (!d.studentId) { toast("Pick a student", "bad"); return false; }
+      if (!DataService.getStudent(d.studentId)) { toast("Pick a student from the list", "bad"); return false; }
+      if (d.teacherId && !DataService.getTeacher(d.teacherId)) { toast("That teacher was not found — pick one from the list", "bad"); return false; }
       d.days = readDays(form);
       d.perWeek = d.days.length;
       ["duration","rate","discount","dueDay"].concat(RULE_NUM).forEach(k => d[k] = +d[k] || 0);
@@ -1285,6 +1303,19 @@ Object.assign(Actions, {
         setTimeout(() => Actions["receipt"](pid), 220);
       }
     });
+  },
+  /* show the name under the box as it is typed, so a wrong ID is obvious before saving */
+  "pick-name": (name, el) => {
+    const form = el.closest("form"); if (!form) return;
+    const hint = form.querySelector('[data-pick="' + name + '"]'); if (!hint) return;
+    const v = String(el.value || "").trim();
+    const rows = name === "teacherId" ? DataService.getTeachers() : DataService.getStudents();
+    const hit = rows.find(r => r.id === v) ||
+      (v.length > 1 ? rows.filter(r => String(r.name).toLowerCase().indexOf(v.toLowerCase()) === 0) : []).slice(0, 1)[0];
+    if (!v) { hint.textContent = "Start typing, then pick from the list"; hint.style.color = ""; return; }
+    if (hit && hit.id !== v) { el.value = hit.id; }       /* typed the name: keep the ID */
+    hint.textContent = hit ? hit.name + " · " + hit.id : "No match — pick one from the list";
+    hint.style.color = hit ? "" : "var(--bad)";
   },
   "pay-to-plan": (sid) => { closeModal(); setTimeout(() => Actions["plan-new"](sid), 60); },
   "pay-to-batch": (sid) => { closeModal(); setTimeout(() => Actions["student-assign"](sid), 60); },
