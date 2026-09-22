@@ -262,6 +262,16 @@ button,input,select,textarea{ font:inherit; color:inherit; }
 .lbar{ flex-wrap:wrap; }
 .lbar button{ margin-left:auto; }
 .lsort{ display:flex; align-items:center; gap:6px; margin:0; font-size:11.5px; color:var(--muted); }
+/* type-to-find box */
+.pickwrap{ position:relative; }
+.pickmenu{ position:absolute; left:0; right:0; top:calc(100% - 16px); z-index:40; max-height:250px; overflow:auto;
+  background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 14px 34px rgba(0,0,0,.18); padding:4px; }
+.pickitem{ display:block; width:100%; text-align:left; border:0; background:transparent; padding:9px 10px; border-radius:9px;
+  cursor:pointer; color:var(--text); font:inherit; }
+.pickitem:hover,.pickitem:focus{ background:var(--card-2); }
+.pickitem b{ display:block; font-size:13.5px; font-weight:600; }
+.pickitem span{ display:block; font-size:11.5px; color:var(--muted); margin-top:1px; }
+.pickmore{ padding:8px 10px; font-size:11.5px; color:var(--muted-2); }
 .lsort select{ min-height:32px; max-width:230px; font-size:12.5px; padding:4px 26px 4px 9px; }
 @media (max-width:560px){ .lsort{ order:3; flex:1 1 100%; } .lsort select{ max-width:none; flex:1 1 auto; } }
 /* the whole list, opened as one page */
