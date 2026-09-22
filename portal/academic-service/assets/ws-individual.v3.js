@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-individual.v2.js. v2: plan fee rule + teacher pay per student shown. */
+/* Academic Service — ws-individual.v3.js. v3: class plans sort by student ID and start date too. */
 /* ==========================================================================
    INDIVIDUAL WORKSPACE
    ========================================================================== */
@@ -111,7 +111,11 @@ Pages.plans = function(){
         '<button class="btn btn-sm" data-act="class-new" data-id="' + p.id + '">Record class</button>' +
         '<button class="btn btn-sm" data-act="cls-range" data-id="' + p.id + '">Log a range</button>' +
         '<button class="btn btn-sm" data-act="profile-open" data-id="' + p.studentId + '">Open student</button>'),
-      sorts: [{ key: "name", label: "Student name", val: p => p.studentName },
+      sorts: [{ key: "name", label: "Student name A–Z", val: p => p.studentName },
+              { key: "sid", label: "Student ID", val: p => p.studentId },
+              { key: "startNew", label: "Started — newest first", val: p => p.startDate || "", desc: true },
+              { key: "startOld", label: "Started — oldest first", val: p => p.startDate || "" },
+              { key: "teacher", label: "Teacher", val: p => p.teacherName },
               { key: "fee", label: "Highest fee first", val: p => p.thisMonth, desc: true },
               { key: "bal", label: "Largest balance first", val: p => p.balance, desc: true }],
       emptyTitle: "No class plans match", emptyText: "Create a plan to start billing individual classes.",
@@ -219,4 +223,3 @@ Pages.iReports = function(){
     }) +
   '</div></div>';
 };
-
