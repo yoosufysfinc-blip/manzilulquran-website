@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-books.v7.js. v7: Settings tidied — Sheet is send-only, risky imports and bulk Supabase buttons removed. */
+/* Academic Service — ws-books.v8.js. v8: more ways to sort students, teachers and staff (joining date, ID, date of birth). */
 /* one line per individual student on a teacher's month — rule, amount and an Override button */
 function payLinesHtml(pv){
   const L = (pv && pv.indLines) || [];
@@ -352,7 +352,14 @@ Pages.students = function(){
         '<button class="btn btn-sm" data-act="plan-new" data-id="' + s.id + '">Individual plan</button>' +
         '<button class="btn btn-sm" data-act="hold-new" data-id="' + s.id + '">⏸ Hold / Leave</button>' +
         (s.due > 0 ? '<button class="btn btn-sm btn-wa" data-act="wa-student" data-id="' + s.id + '">WhatsApp</button>' : "")),
-      sorts: [{ key: "name", label: "Name", val: s => s.name }, { key: "id", label: "Student ID", val: s => s.id },
+      sorts: [{ key: "name", label: "Name A–Z", val: s => s.name },
+              { key: "nameZ", label: "Name Z–A", val: s => s.name, desc: true },
+              { key: "id", label: "Student ID (oldest first)", val: s => s.id },
+              { key: "idNew", label: "Student ID (newest first)", val: s => s.id, desc: true },
+              { key: "joinNew", label: "Joined — newest first", val: s => s.joiningDate || "", desc: true },
+              { key: "joinOld", label: "Joined — oldest first", val: s => s.joiningDate || "" },
+              { key: "dobYoung", label: "Date of birth — youngest first", val: s => s.dob || "", desc: true },
+              { key: "dobOld", label: "Date of birth — oldest first", val: s => s.dob || "" },
               { key: "due", label: "Most outstanding first", val: s => s.due, desc: true }],
       emptyTitle: "No students match", emptyText: "Change the filters, or register the student.",
       emptyAction: '<button class="btn btn-primary" data-act="student-new">+ Add student</button>'
@@ -409,7 +416,12 @@ Pages.teachers = function(){
         (t.pv.balance > 0 ? '<button class="btn btn-sm btn-primary" data-act="tpay-new" data-id="' + t.id + '">Pay ' + money(t.pv.balance) + '</button>' : "") +
         '<button class="btn btn-sm" data-act="tadj-edit" data-id="' + t.id + '">Bonus / deduction</button>' +
         '<button class="btn btn-sm" data-act="tstatement" data-id="' + t.id + '">Statement</button>'),
-      sorts: [{ key: "name", label: "Name", val: t => t.name },
+      sorts: [{ key: "name", label: "Name A–Z", val: t => t.name },
+              { key: "nameZ", label: "Name Z–A", val: t => t.name, desc: true },
+              { key: "id", label: "Teacher ID (oldest first)", val: t => t.id },
+              { key: "idNew", label: "Teacher ID (newest first)", val: t => t.id, desc: true },
+              { key: "joinNew", label: "Joined — newest first", val: t => t.joiningDate || "", desc: true },
+              { key: "joinOld", label: "Joined — oldest first", val: t => t.joiningDate || "" },
               { key: "pay", label: "Highest payable first", val: t => t.pv.payable, desc: true },
               { key: "bal", label: "Most unpaid first", val: t => t.pv.balance, desc: true }],
       emptyTitle: "No teachers yet", emptyText: "Add a teacher and set how they are paid across the two streams.",
@@ -465,7 +477,9 @@ Pages.staff = function(){
         (t.pv.balance > 0 ? '<button class="btn btn-sm btn-primary" data-act="tpay-new" data-id="' + t.id + '">Pay ' + money(t.pv.balance) + '</button>' : "") +
         '<button class="btn btn-sm" data-act="tadj-edit" data-id="' + t.id + '">Bonus / incentive</button>' +
         '<button class="btn btn-sm" data-act="tstatement" data-id="' + t.id + '">Statement</button>'),
-      sorts: [{ key: "name", label: "Name", val: t => t.name },
+      sorts: [{ key: "name", label: "Name A–Z", val: t => t.name },
+              { key: "id", label: "Staff ID", val: t => t.id },
+              { key: "joinNew", label: "Joined — newest first", val: t => t.joiningDate || "", desc: true },
               { key: "role", label: "Role", val: t => t.role || "" },
               { key: "pay", label: "Highest payable first", val: t => t.pv.payable, desc: true }],
       emptyTitle: "No other staff yet", emptyText: "Add admin, counsellors, editors, digital marketers and others on a monthly salary.",
