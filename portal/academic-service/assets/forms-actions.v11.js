@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v10.js. v10: void a fee payment or teacher payment entered by mistake. */
+/* Academic Service — forms-actions.v11.js. v11: Sheet is send-only; full restore, sheet import, bulk Supabase buttons and demo reset removed. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -515,7 +515,7 @@ const Actions = {
             ["Batch sheet holds", "classes · sub-classes · enrolment · attendance"],
             ["Books sheet holds", "plans · class log · fees · payments · income · expenses · salary · accounts"]]) +
         '<div class="btn-row" style="margin-top:12px">' +
-          '<button type="button" class="btn btn-primary" data-act="sync-now">Sync now</button>' +
+          '<button type="button" class="btn btn-primary" data-act="sync-now">Send to the Sheet now</button>' +
           '<button type="button" class="btn" data-act="sync-test">Test the connection</button>' +
           '<button type="button" class="btn" data-act="sync-full">Push everything</button>' +
           '<button type="button" class="btn" data-act="goto" data-page="settings">Settings</button>' +
@@ -585,32 +585,9 @@ const Actions = {
     const list = (Settings().academyHolds || []).filter(h => h.id !== id);
     DataService.saveSettings({ academyHolds: list }); toast("Removed", "ok"); render();
   },
-  "imp-open": () => sheetLock("Import from Google Sheet", () => Importer.open()),
-  "imp-min": (id, el, ev) => { if (ev) ev.stopPropagation(); Importer.minimise(); },
-  "imp-restore": (id, el, ev) => {
-    const sc = document.getElementById("impScrim");
-    if (sc && sc.classList.contains("min")) Importer.restore();
-  },
-  "supa-push": async () => {
-    if (!Supa.on()) { toast("Enter the Supabase URL and key, tick 'Make Supabase the live source of truth', and Save first", "bad", 6000); return; }
-    const n = DataService.getStudents().length, t = DataService.getTeachers().length;
-    if (!confirm("Upload this device's current data to Supabase?\n\nThis sends " + n + " students, " + t + " teachers and all fees, payments and records up to Supabase. Existing rows with the same id are updated. Nothing is deleted.")) return;
-    toast("Uploading to Supabase…", "ok");
-    Supa.init();
-    const r = await Supa.pushAll();
-    if (r.ok) { toast("✅ Uploaded " + r.count + " records to Supabase", "ok", 5000); }
-    else { toast("Upload problem: " + (r.error || "unknown"), "bad", 7000); }
-  },
-  "supa-pull": async () => {
-    if (!Supa.on()) { toast("Turn on Supabase and Save first", "warn"); return; }
-    if (!confirm("Load everything from Supabase into this device? This replaces what is shown here with the live database.")) return;
-    const r = await Supa.pullAll();
-    toast(r.ok ? "Loaded from Supabase \u2713" : ("Could not load: " + (r.error || "")), r.ok ? "ok" : "bad"); render();
-  },
   "sync-now": async () => {
     if (!Sync.on()) { toast("Turn sync on in Settings first", "warn"); return; }
     await Sync.pushNow(false);
-    sheetLock("Also pull changes from the sheet?", () => Sync.pullNow(false));
   },
   "sync-test": async () => {
     if (!Settings().apiUrl) { toast("Add the web app URL first", "bad"); return; }
@@ -1662,41 +1639,6 @@ Object.assign(Actions, {
       toast("Backup downloaded", "ok");
     } catch (e) { toast("Could not create the file here", "bad"); }
   },
-  "restore": () => {
-    const inp = document.createElement("input");
-    inp.type = "file"; inp.accept = "application/json";
-    inp.onchange = function(){
-      const f = inp.files[0]; if (!f) return;
-      const r = new FileReader();
-      r.onload = function(){
-        try {
-          const obj = JSON.parse(r.result);
-          if (!obj.students || !obj.fees) throw new Error("bad file");
-          confirmAction({ title: "Restore backup", danger: true,
-            note: "Everything in this browser is replaced by the file.",
-            message: "Restore " + obj.students.length + " students and " + (obj.payments || []).length + " payments?",
-            submitText: "Restore",
-            onConfirm: function(){
-              DataService.importAll(Object.assign(emptyDB(), obj));
-              DB.settings = Object.assign(defaultSettings(), obj.settings || {});
-              $("#globalMonth").innerHTML = monthOpts(State.month, "");
-              toast("Backup restored", "ok"); render();
-            } });
-        } catch (e) { toast("That file could not be read as a backup", "bad"); }
-      };
-      r.readAsText(f);
-    };
-    inp.click();
-  },
-  "reset-demo": () => confirmAction({ title: "Reset to sample data", danger: true,
-    note: "Everything in this browser is replaced by the demo academy. Export a backup first if you need it.",
-    message: "Delete all records and load the sample data again?", submitText: "Reset everything",
-    onConfirm: function(){
-      seedDatabase(); State.month = currentMonth();
-      $("#globalMonth").innerHTML = monthOpts(State.month, "");
-      UI.open = {}; UI.limit = {};
-      toast("Sample data reloaded", "ok"); switchWS("batch");
-    } })
 });
 
 
