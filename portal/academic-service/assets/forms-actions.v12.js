@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v11.js. v11: Sheet is send-only; full restore, sheet import, bulk Supabase buttons and demo reset removed. */
+/* Academic Service — forms-actions.v12.js. v12: Record payment explains what to do when a student has no fee yet. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -1286,6 +1286,8 @@ Object.assign(Actions, {
       }
     });
   },
+  "pay-to-plan": (sid) => { closeModal(); setTimeout(() => Actions["plan-new"](sid), 60); },
+  "pay-to-batch": (sid) => { closeModal(); setTimeout(() => Actions["student-assign"](sid), 60); },
   "pay-student": (id, el) => {
     const form = $("#mForm");
     form.elements.feeId.innerHTML = el.value ? feeOptionsFor(el.value, "") : '<option value="">Choose a student first</option>';
@@ -1300,6 +1302,16 @@ Object.assign(Actions, {
     const views = Logic.feeViews({ studentId: sid }).map(withBasis);
     const bal = views.reduce((s, v) => s + (v.balance > 0 ? v.balance : 0), 0);
     const st = DataService.getStudent(sid);
+    /* a new student has no fee to pay against until a class plan or batch enrolment raises one */
+    if (st && !views.length) {
+      hint.innerHTML = '<div class="note" style="margin-top:6px"><b>' + esc(st.name) + ' has no fee yet.</b> ' +
+        'A fee is created when the student gets a class: a <b>class plan</b> (one-to-one) or a <b>batch enrolment</b>. ' +
+        'Leave "Raise this month\'s fee now" ticked there, then come back here.</div>' +
+        '<div class="btn-row" style="margin-top:8px">' +
+        '<button type="button" class="btn btn-sm btn-primary" data-act="pay-to-plan" data-id="' + esc(sid) + '">+ New class plan</button>' +
+        '<button type="button" class="btn btn-sm" data-act="pay-to-batch" data-id="' + esc(sid) + '">Enrol in a batch</button></div>';
+      return;
+    }
     hint.innerHTML = '<div class="minirow" style="margin-top:6px"><span>' + esc(st ? st.name : sid) +
       '</span><b class="' + (bal > 0 ? "out" : "in") + '">' + (bal > 0 ? "Pending " + money(bal) : "No pending balance") + '</b></div>';
   },
