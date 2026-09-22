@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-books.v6.js. v6: Void buttons on payments and teacher payments, and a voided list on each page. */
+/* Academic Service — ws-books.v7.js. v7: Settings tidied — Sheet is send-only, risky imports and bulk Supabase buttons removed. */
 /* one line per individual student on a teacher's month — rule, amount and an Override button */
 function payLinesHtml(pv){
   const L = (pv && pv.indLines) || [];
@@ -1184,15 +1184,13 @@ Pages.settings = function(){
     '<div class="card-bd" style="text-align:center; padding:26px 22px">' +
       '<div style="font-size:34px; line-height:1">📊</div>' +
       '<h3 style="font-family:var(--f-d,serif); font-size:22px; margin:8px 0 4px; color:#eafff2">Data Sync &amp; Backup</h3>' +
-      '<div style="margin:0 auto 18px; max-width:540px; color:#eafff2; font-size:14px; line-height:1.5; background:rgba(0,0,0,.18); padding:12px 16px; border-radius:12px">Supabase is the live database. Your Google Sheet is a full backup — you can pull everything back from it any time (for example if Supabase ever has a problem).</div>' +
+      '<div style="margin:0 auto 18px; max-width:540px; color:#eafff2; font-size:14px; line-height:1.5; background:rgba(0,0,0,.18); padding:12px 16px; border-radius:12px">Supabase is the live database — every change is saved there within a second. The Google Sheet is a one-way backup copy: the app sends to it but never reads from it.</div>' +
       '<div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:center">' +
-        '<button data-act="imp-open" style="cursor:pointer; border:none; border-radius:14px; padding:15px 30px; font-size:17px; font-weight:700; color:#06140e; background:linear-gradient(90deg,#8fe0b6,#5fbf88); box-shadow:0 8px 22px rgba(95,191,136,.4)">🔄 Import from Sheet</button>' +
-        '<button class="btn" data-act="sync-full" style="padding:15px 24px; font-size:15px">⬆️ Export to Sheet</button>' +
+        '<button class="btn" data-act="sync-full" style="padding:15px 24px; font-size:15px">⬆️ Send everything to the Sheet</button>' +
       '</div>' +
-      '<div style="margin:14px auto 4px; max-width:520px; font-size:13px; color:#cfeeda; line-height:1.5">Import pulls the latest data from the Google Sheet into the app, overwriting the local copy on this device.</div>' +
       '<div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:14px; padding-top:14px; border-top:1px solid rgba(143,211,174,.2)">' +
         '<button class="btn" data-act="backup" style="font-size:13.5px">⬇️ Export backup (JSON file)</button>' +
-        '<button class="btn" data-act="restore" style="font-size:13.5px">⬆️ Import backup (JSON file)</button>' +
+
       '</div>' +
       '<div style="margin:10px auto 0; max-width:520px; font-size:12px; color:#9fd8b6">A JSON file is a full offline copy of everything — handy to keep on your computer.</div>' +
       '<div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:14px; padding-top:14px; border-top:1px solid rgba(143,211,174,.2)">' +
@@ -1235,32 +1233,30 @@ Pages.settings = function(){
     '<div class="btn-row" style="margin-top:12px">' +
       '<button class="btn btn-primary" data-act="settings-save">Save settings</button>' +
       '<button class="btn" data-act="supa-test">Test Supabase</button>' +
-      '<button class="btn" data-act="supa-push">⬆️ Upload everything to Supabase</button>' +
-      '<button class="btn" data-act="supa-pull">⬇️ Load everything from Supabase</button>' +
     '</div>' +
-    '<div class="note" style="margin-top:10px; font-size:12.5px">First time moving to Supabase? Connect above, then click <b>Upload everything to Supabase</b> to send this device\'s current data up. After that every device shares it live.</div>' +
+    '<div class="note" style="margin-top:10px; font-size:12.5px">Every change is saved to Supabase automatically, and each device loads from it when the page opens. Tap the chip at the top to see the last save and any problem.</div>' +
     '</div></div>' +
   '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Google Sheets backup</h3>' +
     '<span class="spacer"></span><button class="btn btn-sm" data-act="sync-panel">Open backup panel</button></div>' +
     '<div class="card-bd">' +
     '<div class="note">Two spreadsheets sit behind this app: <b>MQ Batch</b> (classes, sub-classes, enrolment, attendance) ' +
     'and <b>MQ Individual + Books</b> (class plans, class log, fees and all the money). One Apps Script web app writes to both. ' +
-    'The app never waits for the sheets — everything saves here first and goes up a few seconds later.</div>' +
+    'It is a one-way backup: changes are sent a few seconds after you make them, and nothing is ever read back from the sheets.</div>' +
     '<div class="form-grid">' +
       '<div class="field span2"><label>Web app URL</label>' +
         '<input class="input" id="set_apiUrl" value="' + esc(s.apiUrl || "") + '" placeholder="https://script.google.com/macros/s/…/exec"></div>' +
       field("Shared key", '<input class="input mono" id="set_syncKey" value="' + esc(s.syncKey || "") + '" placeholder="the API_KEY from Code.gs">') +
-      field("Check the sheets every", '<input class="input" type="number" min="1" max="60" id="set_syncEvery" value="' + esc(s.syncEvery || 3) + '"> ') +
+      field("Send to the sheets every (minutes)", '<input class="input" type="number" min="1" max="60" id="set_syncEvery" value="' + esc(s.syncEvery || 3) + '"> ') +
       '<div class="field"><label>Sync</label><label style="display:flex;gap:8px;align-items:center;padding-top:9px;font-size:13.5px">' +
-        '<input type="checkbox" id="set_syncOn"' + (s.syncOn ? " checked" : "") + '> Keep this browser and the sheets in step</label></div>' +
+        '<input type="checkbox" id="set_syncOn"' + (s.syncOn ? " checked" : "") + '> Send a backup copy to the sheets</label></div>' +
       '<div class="field"><label>Teacher page address</label>' +
         '<input class="input" id="set_teacherLinkBase" value="' + esc(s.teacherLinkBase || "") + '"></div>' +
     '</div>' +
     '<div class="btn-row" style="margin-top:13px">' +
       '<button class="btn btn-primary" data-act="settings-save">Save settings</button>' +
       '<button class="btn" data-act="sync-test">Test the connection</button>' +
-      '<button class="btn" data-act="sync-now">Sync now</button>' +
-      '<button class="btn" data-act="sync-full">Push everything</button>' +
+      '<button class="btn" data-act="sync-now">Send changes now</button>' +
+      '<button class="btn" data-act="sync-full">Send everything</button>' +
     '</div>' +
   '</div></div>' +
   '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Billing</h3></div><div class="card-bd">' +
