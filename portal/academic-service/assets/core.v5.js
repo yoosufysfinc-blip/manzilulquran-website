@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — core.v4.js. v4: payments and teacher payments can be voided (kept, but out of every total). */
+/* Academic Service — core.v5.js. v5: the Google Sheet is send-only; the sheet importer and pull code are gone. */
 /* ==========================================================================
    ManzilulQuran — Academy Manager (single file)
 
@@ -82,83 +82,6 @@ function persist(){
   Storage.save(DB);
 }
 function Settings(){ return DB.settings || {}; }
-
-/* ==========================================================================
-   Import from Google Sheet — staged pull with a friendly progress overlay.
-   Uses the existing Apps Script "pull" action (with the "only" filter) so it
-   needs NO Code.gs change. Handy as a restore-from-backup if Supabase is down.
-   ========================================================================== */
-const Importer = {
-  steps: [
-    { key: "teachers", em: "👨‍🏫", label: "Teachers", colls: ["teachers", "holidays"] },
-    { key: "students", em: "👨‍🎓", label: "Students", colls: ["students", "batches", "subclasses", "enrollments", "plans", "attendance", "classes"] },
-    { key: "money",    em: "💰", label: "Payments & Ledger", colls: ["fees", "payments", "refunds", "income", "expenses", "teacherPayments", "teacherAdjust", "adjustments", "transfers", "accounts"] }
-  ],
-  open(){
-    if (!Sync.on()) { toast("Add the Google Sheet URL in Settings first", "bad"); return; }
-    const wrap = document.createElement("div");
-    wrap.className = "imp-scrim"; wrap.id = "impScrim";
-    wrap.innerHTML =
-      '<div class="imp-card" data-act="imp-restore">' +
-        '<button class="imp-min" data-act="imp-min" title="Minimise">–</button>' +
-        '<div class="imp-mintag">Syncing…<small id="impMinPct">0%</small></div>' +
-        '<div class="imp-body">' +
-          '<div class="imp-head"><span class="imp-book">📖</span>' +
-            '<div><div class="imp-title">Importing from Google Sheet</div>' +
-            '<div class="imp-sub">Syncing data… please wait<span class="imp-dots"><i></i><i></i><i></i></span></div></div></div>' +
-            this.steps.map((st, i) => '<div class="imp-step" id="impStep' + i + '"><div class="lbl"><span><span class="em">' + st.em + '</span> ' + st.label + ' syncing</span><span class="pc">0%</span></div><div class="bar"><div class="fill"></div></div></div>').join("") +
-          '<div class="imp-err" id="impErr"></div>' +
-        '</div>' +
-      '</div>';
-    document.body.appendChild(wrap);
-    this.run();
-  },
-  setStep(i, pct, state){
-    const el = document.getElementById("impStep" + i); if (!el) return;
-    el.querySelector(".fill").style.width = pct + "%";
-    el.querySelector(".pc").textContent = Math.round(pct) + "%";
-    el.classList.toggle("active", state === "active");
-    el.classList.toggle("done", state === "done");
-    /* overall % for the minimised tag */
-    const overall = Math.round((i * 100 + pct) / this.steps.length);
-    const mp = document.getElementById("impMinPct"); if (mp) mp.textContent = overall + "%";
-  },
-  async run(){
-    const counts = { teachers: 0, students: 0 };
-    try {
-      for (let i = 0; i < this.steps.length; i++) {
-        const st = this.steps[i];
-        this.setStep(i, 8, "active");
-        /* small animated ramp so the bar feels alive while the request is in flight */
-        let p = 8; const ramp = setInterval(() => { p = Math.min(p + 6, 82); this.setStep(i, p, "active"); }, 160);
-        const r = await Sync.jsonp({ action: "pull", key: Settings().syncKey, since: 0, only: st.colls });
-        clearInterval(ramp);
-        if (!r || !r.ok) throw new Error((r && r.error) || "the sheet refused the request");
-        const changes = r.changes || {};
-        /* apply just these collections */
-        Object.keys(changes).forEach(c => {
-          if (c === "settings") return;
-          DB[c] = (changes[c] || []).filter(x => x && x.id && !x._d);
-        });
-        if (changes.teachers) counts.teachers = (changes.teachers.filter(x => !x._d) || []).length;
-        if (changes.students) counts.students = (changes.students.filter(x => !x._d) || []).length;
-        this.setStep(i, 100, "done");
-        await new Promise(res => setTimeout(res, 260));
-      }
-      Cache.clear(); Storage.save(DB); if (typeof Sync !== "undefined") Sync.snapshot();
-      /* also push the freshly-imported data up to Supabase if it's the primary */
-      setTimeout(() => this.close(), 500);
-      setTimeout(() => { render(); toast("✅ Sync complete! " + counts.teachers + " teachers, " + counts.students + " students updated", "ok", 5000); }, 560);
-    } catch (e) {
-      const box = document.getElementById("impErr");
-      if (box) { box.textContent = "⚠️ " + (e.message || e) + " — tap the – to close and try again."; box.classList.add("show"); }
-    }
-  },
-  close(){ const el = document.getElementById("impScrim"); if (el) el.remove(); },
-  minimise(){ const el = document.getElementById("impScrim"); if (el) el.classList.add("min"); },
-  restore(){ const el = document.getElementById("impScrim"); if (el) el.classList.remove("min"); }
-};
-
 
 /* ==========================================================================
    Supabase — the primary live database (the "bank").
@@ -509,67 +432,11 @@ const Sync = {
     } finally { Sync.st.busy = false; Sync.paint(); }
   },
 
-  async pullNow(silent){
-    if (!Sync.on() || Sync.st.busy) return;
-    Sync.st.busy = true; Sync.mark("busy", "checking the sheets…");
-    try {
-      const r = await Sync.jsonp({ action: "pull", key: Settings().syncKey, since: Sync.st.lastPull || 0 });
-      if (!r || !r.ok) throw new Error((r && r.error) || "the sheet refused the request");
-      const n = Sync.apply(r.changes || {});
-      Sync.st.lastPull = r.now || Date.now();
-      Sync.st.at = Date.now();
-      Sync.save();
-      Sync.mark("ok", n ? n + " change(s) came in" : "already up to date");
-      if (n) { Cache.clear(); Storage.save(DB); Sync.snapshot(); render(); }
-      if (!silent) toast(n ? n + " change(s) pulled in" : "Already up to date", "ok");
-    } catch (e) {
-      Sync.mark("err", String(e.message || e));
-      if (!silent) toast("Could not reach the sheets: " + (e.message || e), "bad", 5000);
-    } finally { Sync.st.busy = false; Sync.paint(); }
-  },
-
-  /* newest change wins; a row deleted in the sheet is removed here too */
-  apply(changes){
-    let n = 0;
-    Object.keys(changes).forEach(function(c){
-      if (c === "settings") {
-        const patch = {};
-        changes[c].forEach(function(r){
-          let v = r.value;
-          if (typeof v === "string" && (v.charAt(0) === "[" || v.charAt(0) === "{")) { try { v = JSON.parse(v); } catch (e) {} }
-          patch[r.id] = v;
-        });
-        DB.settings = Object.assign({}, DB.settings, patch); n += changes[c].length;
-        return;
-      }
-      if (SYNC_COLLS.indexOf(c) < 0) return;
-      DB[c] = DB[c] || [];
-      changes[c].forEach(function(r){
-        const i = DB[c].findIndex(x => x.id === r.id);
-        const dead = r._d === true || r._d === "TRUE";
-        if (dead) { if (i >= 0) { DB[c].splice(i, 1); n++; } return; }
-        if (i < 0) { DB[c].push(Sync.clean(c, r)); n++; return; }
-        if ((+r._u || 0) >= (+DB[c][i]._u || 0)) { DB[c][i] = Sync.clean(c, r); n++; }
-      });
-    });
-    return n;
-  },
-  /* the sheet stores lists as text and booleans as words — put them back */
-  clean(c, r){
-    const o = Object.assign({}, r);
-    ["days", "classDays"].forEach(function(k){
-      if (typeof o[k] === "string") o[k] = o[k] ? o[k].split(",").map(x => x.trim()).filter(Boolean) : [];
-    });
-    ["waived","locked","reconciled"].forEach(function(k){
-      if (o[k] === "TRUE" || o[k] === "FALSE") o[k] = (o[k] === "TRUE");
-    });
-    delete o.extra;
-    return o;
-  },
-
   mark(status, msg){ Sync.st.status = status; Sync.st.msg = msg || ""; Sync.paint(); },
+  /* The chip belongs to Supabase (where the records live). The Sheet backup reports only in the panel,
+     so a slow or failing backup can no longer make the chip say "Sync problem". */
   paint(){
-    const el = $("#syncChip");
+    const el = null;
     if (!el) return;
     if (!Sync.on()) { el.className = "syncchip off"; el.innerHTML = '<i></i>Sync off'; return; }
     const ago = Sync.st.at ? Math.round((Date.now() - Sync.st.at) / 60000) : null;
@@ -590,8 +457,7 @@ const Sync = {
   start(){
     Sync.load(); Sync.snapshot(); Sync.paint();
     if (!Sync.on()) return;
-    /* Sheets is a backup mirror: changes are pushed automatically, but nothing is
-       ever pulled back automatically — pulling is manual and password-locked (sheetLock) */
+    /* Sheets is a one-way backup: changes are sent automatically, nothing is ever read back */
     clearInterval(Sync._tick);
     Sync._tick = setInterval(function(){
       Sync.pushNow(true);
@@ -820,12 +686,3 @@ const DataService = {
 
 /* ---- Sheet lock: anything that reads FROM Google Sheets asks for the password first ---- */
 const SHEET_LOCK_PW = "manzil786";
-function sheetLock(title, fn){
-  openModal({ title: title, submitText: "Unlock", body:
-    '<div class="note">Pulling from Google Sheets can overwrite what is here. Enter the Academic Service password to continue.</div>' +
-    '<div class="field"><label>Password</label><input class="input" type="password" name="pw" autocomplete="off"></div>',
-    onSubmit: function(d){
-      if (d.pw !== SHEET_LOCK_PW) { toast("Wrong password", "bad"); return false; }
-      setTimeout(fn, 0);
-    } });
-}
