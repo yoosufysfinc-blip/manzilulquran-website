@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v13.js. v13: type-to-find boxes for student and teacher instead of long dropdowns. */
+/* Academic Service — forms-actions.v14.js. v14: the type-to-find box lists matching people as you type, with one tap to pick. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -123,15 +123,43 @@ const RULE_NUM = ["feeBase", "feeIncluded", "feeMin", "feeMax", "payRate", "payB
    A dropdown with 105 students is hopeless on a phone. This is a text box with the full
    list behind it: type a few letters of the name or the ID and pick from the suggestions. */
 function pickBox(label, name, value, rows, placeholder){
-  const listId = "pick_" + name;
   const cur = rows.find(r => r.id === value);
-  return '<div class="field"><label>' + esc(label) + '</label>' +
-    '<input class="input" name="' + name + '" list="' + listId + '" value="' + esc(value || "") + '" ' +
-      'placeholder="' + esc(placeholder || "Type a name or ID") + '" autocomplete="off" data-act="pick-name" data-id="' + name + '">' +
-    '<datalist id="' + listId + '">' +
-      rows.map(r => '<option value="' + esc(r.id) + '">' + esc(r.name) + " · " + esc(r.id) + '</option>').join("") +
-    '</datalist>' +
-    '<span class="hint" data-pick="' + name + '">' + (cur ? esc(cur.name) : "Start typing, then pick from the list") + '</span></div>';
+  return '<div class="field pickwrap" data-pick-for="' + name + '">' +
+    '<label>' + esc(label) + '</label>' +
+    '<input type="hidden" name="' + name + '" value="' + esc(value || "") + '">' +
+    '<input class="input" name="' + name + '_q" value="' + (cur ? esc(cur.name) : esc(value || "")) + '" ' +
+      'placeholder="' + esc(placeholder || "Type a few letters") + '" autocomplete="off" autocorrect="off" spellcheck="false" ' +
+      'data-act="pick-type" data-id="' + name + '">' +
+    '<div class="pickmenu" data-pick-menu="' + name + '" hidden></div>' +
+    '<span class="hint" data-pick="' + name + '">' + (cur ? esc(cur.name) + " · " + esc(cur.id) : "Type a few letters of the name or the ID") + '</span></div>';
+}
+/* the list under the box: whatever matches what has been typed so far */
+function pickRows(name){
+  return name === "teacherId" ? pickTeachers() : pickStudents();
+}
+function pickExtra(name, r){
+  if (name === "teacherId") return Logic.indRateLabel(r.indRateType || "") || "";
+  const pl = DataService.getPlans({ studentId: r.id }).filter(p => p.status === "Active")[0];
+  return pl ? (pl.course || "") : (r.status === "Active" ? "no class plan" : "inactive");
+}
+function pickRender(name, q){
+  const menu = document.querySelector('[data-pick-menu="' + name + '"]');
+  if (!menu) return;
+  const s = String(q || "").trim().toLowerCase();
+  let rows = pickRows(name);
+  if (s) {
+    const starts = rows.filter(r => String(r.name).toLowerCase().indexOf(s) === 0 || String(r.id).toLowerCase().indexOf(s) === 0);
+    const has = rows.filter(r => starts.indexOf(r) < 0 &&
+      (String(r.name).toLowerCase().indexOf(s) >= 0 || String(r.id).toLowerCase().indexOf(s) >= 0));
+    rows = starts.concat(has);
+  }
+  const shown = rows.slice(0, 12);
+  menu.innerHTML = shown.length
+    ? shown.map(r => '<button type="button" class="pickitem" data-act="pick-choose" data-id="' + esc(r.id) + '" data-for="' + name + '">' +
+        '<b>' + esc(r.name) + '</b><span>' + esc(r.id) + (pickExtra(name, r) ? " · " + esc(pickExtra(name, r)) : "") + '</span></button>').join("") +
+      (rows.length > shown.length ? '<div class="pickmore">' + (rows.length - shown.length) + ' more — keep typing</div>' : "")
+    : '<div class="pickmore">Nobody matches “' + esc(q) + '”</div>';
+  menu.hidden = false;
 }
 function pickStudents(){ return DataService.getStudents().slice().sort((a, b) => String(a.name).localeCompare(String(b.name))); }
 function pickTeachers(){ return DataService.getTeachers().filter(t => t.kind !== "staff").slice().sort((a, b) => String(a.name).localeCompare(String(b.name))); }
@@ -282,6 +310,8 @@ function restoreFocus(){
   State._focus = null;
 }
 document.addEventListener("input", function(e){
+  const p = e.target.closest('[data-act="pick-type"]');
+  if (p) { Actions["pick-type"](p.dataset.id, p); return; }
   const f = e.target.closest("[data-fset]");
   if (f && f.tagName === "INPUT") { applyFset(f); return; }
   const g = e.target.closest('[data-act="gsearch"]');
@@ -298,7 +328,15 @@ document.addEventListener("change", function(e){
   const a = e.target.closest("[data-act]");
   if (a && (a.tagName === "SELECT" || a.tagName === "INPUT")) { const A = Actions[a.dataset.act]; if (A) A(a.dataset.id, a); }
 });
+/* opening the box shows the list straight away; tapping elsewhere closes it */
+document.addEventListener("focusin", function(e){
+  const p = e.target.closest('[data-act="pick-type"]');
+  if (p) Actions["pick-type"](p.dataset.id, p);
+});
 document.addEventListener("click", function(e){
+  if (!e.target.closest(".pickwrap")) {
+    document.querySelectorAll("[data-pick-menu]").forEach(m => { m.hidden = true; });
+  }
   const w = e.target.closest("[data-ws-go]");
   if (w) { switchWS(w.dataset.wsGo); return; }
   const nav = e.target.closest("#navList button");
@@ -1305,17 +1343,32 @@ Object.assign(Actions, {
     });
   },
   /* show the name under the box as it is typed, so a wrong ID is obvious before saving */
-  "pick-name": (name, el) => {
+  /* every letter narrows the list under the box */
+  "pick-type": (name, el) => {
     const form = el.closest("form"); if (!form) return;
-    const hint = form.querySelector('[data-pick="' + name + '"]'); if (!hint) return;
+    pickRender(name, el.value);
+    const hid = form.elements[name], hint = form.querySelector('[data-pick="' + name + '"]');
     const v = String(el.value || "").trim();
-    const rows = name === "teacherId" ? DataService.getTeachers() : DataService.getStudents();
-    const hit = rows.find(r => r.id === v) ||
-      (v.length > 1 ? rows.filter(r => String(r.name).toLowerCase().indexOf(v.toLowerCase()) === 0) : []).slice(0, 1)[0];
-    if (!v) { hint.textContent = "Start typing, then pick from the list"; hint.style.color = ""; return; }
-    if (hit && hit.id !== v) { el.value = hit.id; }       /* typed the name: keep the ID */
-    hint.textContent = hit ? hit.name + " · " + hit.id : "No match — pick one from the list";
-    hint.style.color = hit ? "" : "var(--bad)";
+    const rows = pickRows(name);
+    const exact = rows.find(r => r.id.toLowerCase() === v.toLowerCase() ||
+      String(r.name).toLowerCase() === v.toLowerCase());
+    if (hid) hid.value = exact ? exact.id : "";
+    if (hint) {
+      hint.textContent = exact ? exact.name + " · " + exact.id
+        : v ? "Pick one from the list below" : "Type a few letters of the name or the ID";
+      hint.style.color = "";
+    }
+  },
+  /* tapping a name in the list fills it in */
+  "pick-choose": (id, el) => {
+    const name = el.dataset.for, form = el.closest("form"); if (!form) return;
+    const rows = pickRows(name), r = rows.find(x => x.id === id); if (!r) return;
+    form.elements[name].value = r.id;
+    form.elements[name + "_q"].value = r.name;
+    const menu = form.querySelector('[data-pick-menu="' + name + '"]');
+    if (menu) { menu.hidden = true; menu.innerHTML = ""; }
+    const hint = form.querySelector('[data-pick="' + name + '"]');
+    if (hint) { hint.textContent = r.name + " · " + r.id; hint.style.color = ""; }
   },
   "pay-to-plan": (sid) => { closeModal(); setTimeout(() => Actions["plan-new"](sid), 60); },
   "pay-to-batch": (sid) => { closeModal(); setTimeout(() => Actions["student-assign"](sid), 60); },
