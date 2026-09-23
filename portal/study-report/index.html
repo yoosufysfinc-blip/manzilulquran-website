@@ -650,7 +650,7 @@ footer b{color:var(--gold)}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="/portal/study-report/insights.css?v=20260923d">
+<link rel="stylesheet" href="/portal/study-report/insights.css?v=20260923e">
 </head>
 <body>
 <div class="app">
@@ -2267,7 +2267,7 @@ let LINK=null; // {sid,tok} when opened through a shared teacher link
 let sb=null, roster=[], currentId=null, pushTimer=null, pushErrShown=false, editStudentId=null;
 
 function showOnly(id){
-  if(LINK&&id==="v-settings")id="v-dash";   // settings is admin-only
+  if(LINK&&(id==="v-settings"||id==="v-progress"))id="v-dash";   // settings + progress reports are admin-only
   $$(".view").forEach(v=>v.classList.remove("on"));
   $("#"+id).classList.add("on");
   const inSystem=["v-dash","v-daily","v-tasks","v-exams","v-settings","v-reports","v-memorised","v-progress"].includes(id);
@@ -2314,6 +2314,9 @@ async function linkBoot(sid,tok){
   showOnly("v-roster");$("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">Opening student system…</div>';
   $("#logoutBtn").style.display="none";$("#rosterRefresh").style.display="none";$("#insightsBtn").style.display="none";
   $("#addStudentFab").style.display="none";$(".rtools").style.display="none";
+  // report generation is admin-only: remove the Progress Report tab from nav, dots and swipe order
+  {const pi=TAB_ORDER.indexOf("progress");if(pi>=0)TAB_ORDER.splice(pi,1);}
+  $$('#nav [data-v="progress"],.tdot[data-v="progress"]').forEach(el=>el.remove());
   const{data,error}=await sb.rpc("get_student_by_token",{sid,tok});
   if(error||!data||!data.length){
     $("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">This link is invalid or has been revoked.<br>Ask the academy admin for a fresh link.</div>';
@@ -2583,6 +2586,6 @@ window.addEventListener("beforeunload",()=>{if(pushTimer){/* last resort: cache 
 
 bootBackend();
 </script>
-<script src="/portal/study-report/insights.js?v=20260923d"></script>
+<script src="/portal/study-report/insights.js?v=20260923e"></script>
 </body>
 </html>
