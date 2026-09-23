@@ -512,6 +512,63 @@ footer b{color:var(--gold)}
 .dot.err{background:var(--bad)!important; box-shadow:0 0 10px var(--bad)!important}
 .roster-head{display:flex; align-items:center; gap:12px; margin-bottom:18px; flex-wrap:wrap}
 .roster-head h2{font-family:var(--disp); font-weight:400; font-size:22px; color:var(--gold2); letter-spacing:.04em}
+/* roster toolbar: search · sort · grid/list */
+.rtools{display:flex;gap:8px;align-items:center;margin:-6px 0 14px;flex-wrap:wrap}
+.rsearch{flex:1 1 200px;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border-radius:12px;
+  background:var(--panel);border:1px solid var(--line2)}
+.rsearch svg{width:17px;height:17px;flex:0 0 auto;fill:none;stroke:var(--gold2);stroke-width:2;stroke-linecap:round}
+.rsearch input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--ink);font:500 14px var(--ui)}
+.rsearch:focus-within{border-color:var(--gold)}
+.rsort{min-height:44px;border-radius:12px;background:var(--panel);border:1px solid var(--line2);color:var(--ink);font:500 13.5px var(--ui);padding:0 10px}
+.rview{display:inline-flex;border:1px solid var(--line2);border-radius:12px;overflow:hidden;background:var(--panel)}
+.rview button{width:44px;height:44px;display:grid;place-items:center;background:transparent;border:0;color:var(--mut);cursor:pointer}
+.rview button+button{border-left:1px solid var(--line)}
+.rview button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.rview button.on{background:rgba(201,169,110,.18);color:var(--gold2)}
+.rsearch:focus-visible,.rsort:focus-visible,.rview button:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+/* compact list view */
+.roster.roster-list{display:flex;flex-direction:column;gap:6px}
+.lrow{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:12px;
+  background:var(--panel);border:1px solid var(--line);cursor:pointer;min-height:56px;transition:border-color .2s,background .2s}
+.lrow:hover{border-color:var(--line2);background:rgba(201,169,110,.05)}
+.lrow .lmain{min-width:0}
+.lrow .lmain b{display:block;font-family:var(--disp);font-weight:400;font-size:15.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow .lmain span{font-size:11.5px;color:var(--mut)}
+.lrow .lmain span i{font-style:normal;color:var(--gold2);font-weight:600}
+.lrow .lprog,.lrow .lst{display:none}
+.lrow .lact{display:flex;gap:2px}
+.lrow .lact button{width:44px;height:44px;border-radius:10px;border:0;background:transparent;color:var(--mut);font-size:15px;cursor:pointer;display:grid;place-items:center}
+.lrow .lact button:hover{background:rgba(201,169,110,.12);color:var(--gold2)}
+.lrow .lact .sdel:hover{background:rgba(224,122,106,.14);color:#e07a6a}
+.lrow .lact .sshare{color:var(--gold2)}
+.lrow .lact .smore{display:none}
+@media(max-width:480px){
+  .lrow{padding-left:12px}
+  .lrow .lact .smore{display:grid}
+  .lrow:not(.open) .lact .srename,.lrow:not(.open) .lact .sdel{display:none}
+  .lrow.open .lact .sshare,.lrow.open .lact .ssettings{display:none}
+}
+@media(min-width:760px){.lrow .lmain span i br{display:none}}
+@media(min-width:760px){
+  .lrow{grid-template-columns:minmax(160px,1.3fr) minmax(120px,1fr) 90px 80px auto;gap:14px}
+  .lrow .lmain span i{display:none}
+  .lrow .lprog{display:flex;align-items:center;gap:8px}
+  .lrow .lprog .bar{flex:1;height:7px;border-radius:9px;background:rgba(255,255,255,.06);overflow:hidden}
+  .lrow .lprog .bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#2fae7f,#C9A96E)}
+  .lrow .lprog span,.lrow .lst{font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
+  .lrow .lst{display:block}
+  .lrow .lst b{color:var(--gold2);font-weight:600}
+}
+/* add-student: fixed floating button, always reachable */
+.rfab{display:none;position:fixed;right:max(16px,env(safe-area-inset-right,0px) + 12px);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:55;
+  display:flex;align-items:center;gap:8px;min-height:52px;padding:0 20px 0 16px;border-radius:99px;border:0;cursor:pointer;
+  background:linear-gradient(135deg,#e8cf9a,#C9A96E 55%,#a8843f);color:#06150f;font:700 14px var(--ui);
+  box-shadow:0 10px 28px rgba(0,0,0,.45),0 0 0 3px rgba(201,169,110,.25)}
+.rfab .pl{font-size:22px;line-height:1}
+.rfab:hover{transform:translateY(-2px)}
+.rfab:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
+@media(max-width:480px){.rfab{width:56px;height:56px;padding:0;justify-content:center}.rfab .tx{display:none}}
+#v-roster{padding-bottom:84px}
 
 
 /* ---------- view / edit mode ---------- */
@@ -593,7 +650,7 @@ footer b{color:var(--gold)}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="/portal/study-report/insights.css?v=20260923c">
+<link rel="stylesheet" href="/portal/study-report/insights.css?v=20260923d">
 </head>
 <body>
 <div class="app">
@@ -675,6 +732,17 @@ footer b{color:var(--gold)}
       <button class="btn gold sm" id="insightsBtn">🏆 Insights</button>
       <button class="btn ghost sm" id="rosterRefresh">↻ Refresh</button>
       <button class="btn ghost sm" id="logoutBtn">🔒 Lock</button>
+    </div>
+    <div class="rtools">
+      <label class="rsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="rosterSearch" type="search" placeholder="Search students" autocomplete="off" aria-label="Search students"></label>
+      <select id="rosterSort" class="rsort" aria-label="Sort students">
+        <option value="name">Name A–Z</option><option value="updated">Recently updated</option>
+        <option value="lines">Most memorised</option><option value="att">Best attendance</option></select>
+      <div class="rview" role="group" aria-label="Layout">
+        <button type="button" data-rv="grid" aria-label="Grid view" title="Grid"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></button>
+        <button type="button" data-rv="list" aria-label="List view" title="List"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1.2"/><circle cx="4" cy="12" r="1.2"/><circle cx="4" cy="18" r="1.2"/></svg></button>
+      </div>
     </div>
     <div class="grid roster" id="rosterGrid"></div>
   </section>
@@ -870,6 +938,8 @@ footer b{color:var(--gold)}
   </section>
 
   <footer>Manzilul<b>Quran</b> E-learning Academy · manzilulquran.in</footer>
+<!-- outside .view: views animate with transform, which would trap position:fixed -->
+<button type="button" class="rfab" id="addStudentFab" aria-label="Add student"><span class="pl">＋</span><span class="tx">Add student</span></button>
 </div>
 
 
@@ -2205,6 +2275,7 @@ function showOnly(id){
   const mf=$("#menuFab"); if(mf)mf.style.display=inSystem?"grid":"none";
   $("#backRoster").style.display=inSystem?"inline-flex":"none";
   $("#chipBox").style.display=inSystem?"flex":"none";
+  const fab=$("#addStudentFab");if(fab)fab.style.display=(id==="v-roster"&&!LINK)?"flex":"none";
   const td=$("#tabDots"); if(td){ if(inSystem){ try{updateDots(id.replace("v-",""));}catch(e){} } else td.style.display="none"; }
 }
 function setSync(state){ // "ok" | "sync" | "err"
@@ -2242,6 +2313,7 @@ async function linkBoot(sid,tok){
   sb=window.supabase.createClient(CONN.url,CONN.key);
   showOnly("v-roster");$("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">Opening student system…</div>';
   $("#logoutBtn").style.display="none";$("#rosterRefresh").style.display="none";$("#insightsBtn").style.display="none";
+  $("#addStudentFab").style.display="none";$(".rtools").style.display="none";
   const{data,error}=await sb.rpc("get_student_by_token",{sid,tok});
   if(error||!data||!data.length){
     $("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">This link is invalid or has been revoked.<br>Ask the academy admin for a fresh link.</div>';
@@ -2361,14 +2433,36 @@ function miniRing(pct){
     <defs><linearGradient id="gGoldR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2fae7f"/><stop offset="1" stop-color="#C9A96E"/></linearGradient></defs>
     <text x="29" y="33" text-anchor="middle" font-size="11" fill="#e8cf9a">${pct.toFixed(0)}%</text></svg>`;
 }
+const RUI={q:"",sort:"name",view:"grid"};
+try{RUI.sort=localStorage.getItem("mq_sr_sort")||"name";RUI.view=localStorage.getItem("mq_sr_view")||"grid";}catch(e){}
+let rosterSum=[];
 function renderRoster(){
   $("#rosterCount").textContent=roster.length+" student"+(roster.length===1?"":"s");
-  const cards=roster.map((r,i)=>{
-    const sm=summarize(r.state);
-    const upd=r.updated_at?new Date(r.updated_at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}):"—";
-    return `<div class="card scard" data-id="${r.id}" style="animation:rise .4s ${i*0.05}s ease both">
+  rosterSum=roster.map(r=>({r,sm:summarize(r.state)}));
+  drawRoster();
+}
+function drawRoster(){
+  const q=RUI.q.trim().toLowerCase();
+  let rows=rosterSum.filter(x=>!q||(x.r.name||"").toLowerCase().includes(q));
+  const by={name:(a,b)=>(a.r.name||"").localeCompare(b.r.name||""),
+    updated:(a,b)=>(b.r.updated_at||"").localeCompare(a.r.updated_at||""),
+    lines:(a,b)=>b.sm.lines-a.sm.lines,att:(a,b)=>b.sm.att-a.sm.att}[RUI.sort]||((a,b)=>0);
+  rows=rows.slice().sort(by);
+  const grid=$("#rosterGrid"),list=RUI.view==="list";
+  grid.classList.toggle("roster-list",list);
+  $("#rosterSort").value=RUI.sort;
+  $$(".rview button").forEach(b=>b.classList.toggle("on",b.dataset.rv===RUI.view));
+  const upd=r=>r.updated_at?new Date(r.updated_at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}):"—";
+  const cards=rows.map(({r,sm},i)=>list
+    ?`<div class="lrow" data-id="${r.id}" role="button" tabindex="0">
+      <div class="lmain"><b>${esc(r.name)}</b><span>Updated ${upd(r)} · ${sm.months} mo<i><br>${sm.pct.toFixed(0)}% · ${fmt(sm.lines)} lines · ${sm.att.toFixed(0)}% att.</i></span></div>
+      <div class="lprog"><div class="bar"><i style="width:${Math.min(100,Math.max(sm.pct,1)).toFixed(1)}%"></i></div><span>${sm.pct.toFixed(1)}%</span></div>
+      <div class="lst"><b>${fmt(sm.lines)}</b> lines</div><div class="lst"><b>${sm.att.toFixed(0)}%</b> att.</div>
+      <div class="lact"><button class="sshare" title="Copy teacher link" aria-label="Copy teacher link">🔗</button><button class="ssettings" title="Settings" aria-label="Settings">⚙</button><button class="srename" title="Rename" aria-label="Rename">✎</button><button class="sdel" title="Delete" aria-label="Delete">✕</button><button class="smore" title="More" aria-label="More actions" aria-expanded="false">⋯</button></div>
+    </div>`
+    :`<div class="card scard" data-id="${r.id}" style="animation:rise .4s ${Math.min(i,12)*0.04}s ease both">
       <div class="sname">${esc(r.name)}</div>
-      <div class="smeta">Updated ${upd} · ${sm.months} month${sm.months===1?"":"s"} tracked</div>
+      <div class="smeta">Updated ${upd(r)} · ${sm.months} month${sm.months===1?"":"s"} tracked</div>
       <div class="srow">${miniRing(sm.pct)}
         <div class="sstats"><b>${fmt(sm.lines)}</b> lines memorised<br><b>${sm.att.toFixed(0)}%</b> attendance</div></div>
       <div class="sactions">
@@ -2378,12 +2472,13 @@ function renderRoster(){
         <button class="btn ghost sm srename" title="Rename">✎</button>
         <button class="btn danger sm sdel" title="Delete">✕</button>
       </div>
-    </div>`;
-  }).join("");
-  $("#rosterGrid").innerHTML=cards+`<div class="card scard addcard" id="addStudentCard"><div><div class="plus">＋</div>Add student<br><span style="font-size:12px;color:var(--dim)">create a new Hifz system</span></div></div>`;
-  $$("#rosterGrid .scard[data-id]").forEach(c=>{
+    </div>`).join("");
+  grid.innerHTML=cards||`<div class="empty-note" style="grid-column:1/-1">${q?"No student matches “"+esc(RUI.q)+"”.":"No students yet — tap ＋ Add student."}</div>`;
+  $$("#rosterGrid [data-id]").forEach(c=>{
     const id=c.dataset.id;
-    c.addEventListener("click",e=>{if(e.target.closest(".srename,.sdel,.sshare,.ssettings"))return;openStudent(id);});
+    c.addEventListener("click",e=>{if(e.target.closest(".srename,.sdel,.sshare,.ssettings,.smore"))return;openStudent(id);});
+    const more=c.querySelector(".smore");if(more)more.onclick=()=>{const o=c.classList.toggle("open");more.setAttribute("aria-expanded",o);more.textContent=o?"‹":"⋯";};
+    c.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target===c){e.preventDefault();openStudent(id);}});
     c.querySelector(".srename").onclick=()=>openStudentModal(id);
     c.querySelector(".ssettings").onclick=()=>openStudent(id,{settings:true});
     c.querySelector(".sshare").onclick=async()=>{
@@ -2402,8 +2497,11 @@ function renderRoster(){
       toast(r.name+" removed");fetchRoster();
     };
   });
-  $("#addStudentCard").onclick=()=>openStudentModal(null);
 }
+$("#rosterSearch").addEventListener("input",e=>{RUI.q=e.target.value;drawRoster();});
+$("#rosterSort").onchange=e=>{RUI.sort=e.target.value;try{localStorage.setItem("mq_sr_sort",RUI.sort);}catch(_){}drawRoster();};
+$$(".rview button").forEach(b=>b.onclick=()=>{RUI.view=b.dataset.rv;try{localStorage.setItem("mq_sr_view",RUI.view);}catch(_){}drawRoster();});
+$("#addStudentFab").onclick=()=>openStudentModal(null);
 $("#rosterRefresh").onclick=fetchRoster;
 $("#insightsBtn").onclick=()=>{if(window.openInsights)openInsights();else toast("Insights module didn't load — hard-refresh the page");};
 
@@ -2485,6 +2583,6 @@ window.addEventListener("beforeunload",()=>{if(pushTimer){/* last resort: cache 
 
 bootBackend();
 </script>
-<script src="/portal/study-report/insights.js?v=20260923c"></script>
+<script src="/portal/study-report/insights.js?v=20260923d"></script>
 </body>
 </html>
