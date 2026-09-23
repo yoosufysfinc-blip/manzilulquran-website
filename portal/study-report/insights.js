@@ -1,866 +1,2588 @@
-/* =====================================================================
-   Study Report · Academy Insights + Individual Progress Report
-   Depends on globals from index.html (classic scripts share scope):
-     S, activeMonth, defaultState, monthKeys, monthStats, isClassDay,
-     daysInMonth, normPortions, portionText, currentStreak, gradeOf,
-     SURAHS, DOWS, MONTH_NAMES, pad, esc, fmt, monthLabel, monthShort,
-     todayStr, toast, $, $$, roster, currentId, LINK, openStudent,
-     gotoView, showOnly, enterRoster
-   Nothing here writes to Supabase — it only reads `state` blobs.
-   ===================================================================== */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Study Report · ManzilulQuran Academy</title>
+<link rel="icon" href="/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050f0c; --bg2:#08170f; --panel:rgba(14,38,29,.66); --panel2:rgba(20,52,40,.5);
+  --line:rgba(201,169,110,.16); --line2:rgba(201,169,110,.32);
+  --em:#1B7A5A; --em2:#2fae7f; --emGlow:rgba(47,174,127,.35);
+  --gold:#C9A96E; --gold2:#e8cf9a; --goldGlow:rgba(201,169,110,.28);
+  --ink:#eef7f0; --mut:#8fb3a2; --dim:#5d7d6e;
+  --bad:#e07a6a; --warn:#e0b76a; --ok:#57c98f;
+  --r:18px; --r2:12px;
+  --disp:'Marcellus',serif; --ui:'Outfit',system-ui,sans-serif; --ar:'Amiri',serif;
+}
+/* ---- Light-green theme (moon toggle). Dark is default; this only lightens. ---- */
+body.lighttheme{
+  /* Warm parchment / sand — like an old manuscript. Deep green ink, gold accents. */
+  --bg:#efe6d0; --bg2:#e7dcc0; --panel:#f6efdd; --panel2:#f1e8d1;
+  --line:rgba(74,58,30,.18); --line2:rgba(74,58,30,.32);
+  --em:#0f5a41; --em2:#12704f; --emGlow:rgba(18,112,79,.16);
+  --gold:#9a7526; --gold2:#6f5214; --goldGlow:rgba(154,117,38,.20);
+  --ink:#241d10; --mut:#5b4d33; --dim:#75664a;
+  --bad:#b4552f; --warn:#a9781f; --ok:#2f7d55;
+}
+body.lighttheme{
+  background:
+    radial-gradient(1200px 600px at 100% -10%,rgba(154,117,38,.10),transparent 60%),
+    radial-gradient(900px 500px at -10% 110%,rgba(18,112,79,.08),transparent 55%),
+    linear-gradient(165deg,#f0e7d2 0%,#e6dabc 100%);
+}
+/* faint paper grain so it reads as parchment, not flat colour */
+body.lighttheme::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E")}
+body.lighttheme .card,body.lighttheme .kpi,body.lighttheme table{backdrop-filter:none}
+body.lighttheme .card{box-shadow:0 2px 10px rgba(74,58,30,.08),0 1px 0 rgba(255,255,255,.5) inset}
+body.lighttheme .panel,body.lighttheme .kpi{box-shadow:0 1px 6px rgba(74,58,30,.06)}
+body.lighttheme .motiv{
+  background:linear-gradient(135deg,rgba(255,251,240,.85),rgba(246,239,221,.6));
+  border-color:rgba(154,117,38,.35);
+  box-shadow:0 6px 22px rgba(74,58,30,.12),inset 0 1px 0 rgba(255,255,255,.7)}
+body.lighttheme .motiv-text{color:#6f5214}
+body.lighttheme .motiv-text b{color:#0f5a41}
+/* header + chip warmth */
+body.lighttheme header{border-bottom-color:rgba(74,58,30,.14)}
+body.lighttheme .modebadge.view{background:rgba(154,117,38,.16);color:#6f5214}
+/* inputs on parchment */
+body.lighttheme input,body.lighttheme select,body.lighttheme textarea{
+  background:#fbf6e9;border-color:rgba(74,58,30,.28);color:#241d10}
+body.lighttheme .pcell{background:rgba(18,112,79,.10);border-color:rgba(74,58,30,.18);color:#241d10}
+body.lighttheme .pcell:hover{background:rgba(18,112,79,.18);border-color:var(--em2)}
+body.lighttheme table th{background:#e7dcc0;color:#5b4d33}
+body.lighttheme .menu-fab,body.lighttheme .moonbtn{background:#f6efdd;color:#6f5214;border-color:rgba(74,58,30,.28)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--ui); background:var(--bg); color:var(--ink); min-height:100vh;
+  background-image:
+    radial-gradient(1100px 600px at 85% -10%, rgba(27,122,90,.22), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(201,169,110,.10), transparent 55%),
+    radial-gradient(700px 700px at 50% 45%, rgba(11,77,59,.16), transparent 70%);
+  background-attachment:fixed;
+}
+/* subtle geometric star field */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; opacity:.05; z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23C9A96E' stroke-width='1'%3E%3Cpath d='M60 12 L74 46 L108 60 L74 74 L60 108 L46 74 L12 60 L46 46 Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size:120px 120px;
+}
+.app{position:relative; z-index:1; max-width:1280px; margin:0 auto; padding:22px 22px 90px}
+/* ---------- header ---------- */
+header{display:flex; align-items:center; gap:11px; flex-wrap:nowrap; padding:12px 6px 16px 52px; position:relative}
+  .hspacer{flex:1}
+  .hstudent{display:flex;align-items:center;gap:7px;min-width:0}
+  .hstudent .hs-name{font-weight:600;font-size:15px;color:var(--gold2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:44vw}
+  .hstudent .hs-date{font-size:11px;color:var(--mut);white-space:nowrap}
+  .hstudent .dot{width:8px;height:8px;border-radius:50%;background:var(--em2);flex:0 0 auto}
+  .hstudent .dot.sync{background:var(--warn)} .hstudent .dot.err{background:var(--bad)}
+.crest{
+  width:50px;height:50px;border-radius:50%; display:grid;place-items:center; flex:0 0 auto; margin-left:2px;
+  background:linear-gradient(140deg,#0B4D3B,#1B7A5A); border:2px solid var(--gold);
+  box-shadow:0 0 24px var(--emGlow), inset 0 0 18px rgba(0,0,0,.35);
+  font-size:24px; color:var(--gold2); position:relative; overflow:hidden;
+}
+.crest img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:50%; pointer-events:none}
+.htitle h1{font-family:var(--disp); font-weight:400; font-size:clamp(20px,3vw,28px); letter-spacing:.04em}
+.htitle h1 em{font-style:normal; color:var(--gold2)}
+.htitle p{color:var(--mut); font-size:13px; letter-spacing:.14em; text-transform:uppercase; margin-top:2px}
+.hspacer{flex:1}
+  .vobanner{max-width:720px;margin:0 auto 14px;text-align:center;font-family:var(--ui);font-size:13px;font-weight:600;
+  color:var(--warn);background:rgba(224,183,106,.12);border:1px solid rgba(224,183,106,.35);
+  border-radius:12px;padding:10px 18px;letter-spacing:.01em}
+  .vobanner[hidden]{display:none}
+  .menu-fab{position:fixed;top:14px;left:12px;z-index:60;width:38px;height:40px;border-radius:0;
+    background:transparent;border:0;color:var(--gold2);font-size:24px;line-height:1;cursor:pointer;display:grid;
+    place-items:center;transition:transform .18s,color .18s;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  .menu-fab:hover{color:var(--gold);transform:scale(1.08)}
+  .menu-fab:active{transform:scale(.94)}
+  .menu-fab:hover{border-color:var(--gold);transform:scale(1.05)}
+  .side-scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:70;opacity:0;pointer-events:none;transition:.25s}
+  .side-scrim.open{opacity:1;pointer-events:auto}
+  nav.sidebar{position:fixed;top:0;left:0;bottom:0;width:250px;z-index:80;flex-direction:column;gap:6px;
+    background:linear-gradient(180deg,var(--bg2),var(--bg));border-right:1px solid var(--line2);
+    padding:20px 14px;transform:translateX(-105%);transition:transform .28s cubic-bezier(.3,.8,.3,1);box-shadow:8px 0 40px rgba(0,0,0,.4)}
+  nav.sidebar.open{transform:none}
+  nav.sidebar .side-head{font-family:var(--disp,'Marcellus'),serif;font-size:18px;color:var(--gold2);
+    padding:6px 12px 14px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  nav.sidebar button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;
+    border:1px solid transparent;color:var(--ink);font-family:var(--ui);font-size:14.5px;font-weight:500;
+    padding:12px 14px;border-radius:11px;cursor:pointer;transition:.16s}
+  nav.sidebar button:hover{background:rgba(201,169,110,.1)}
+  nav.sidebar button.active{background:linear-gradient(135deg,rgba(201,169,110,.22),rgba(201,169,110,.08));
+    border-color:var(--line2);color:var(--gold2);font-weight:600}
+  body.lighttheme nav.sidebar{background:linear-gradient(180deg,#dfeee6,#cfe6d8)}
+  .moonbtn{background:transparent;border:0;width:44px;height:44px;padding:0;cursor:pointer;flex:0 0 auto;
+    -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+    display:grid;place-items:center;position:relative}
+  /* Clear Islamic crescent moon — hold to unlock exam & task editing */
+  .moonsvg{width:26px;height:26px;overflow:visible;fill:var(--gold2);stroke:none;transition:transform .3s ease}
+  .crescent{fill:var(--gold2)}
+  .cre-stars circle{fill:var(--gold);opacity:.9}
+  .moonbtn:hover .moonsvg{transform:scale(1.1)}
+  .moonbtn:active .moonsvg{transform:scale(.92)}
+  body.tasks-unlocked .moonsvg{fill:var(--em2);filter:drop-shadow(0 0 6px var(--emGlow))}
+  body.tasks-unlocked .cre-stars circle{fill:var(--em2)}
+  /* hold-to-charge ring */
+  .hold-ring{position:absolute;inset:-3px;border-radius:50%;pointer-events:none;
+    border:2px solid transparent;opacity:0}
+  .moonbtn.charging .hold-ring{opacity:1;border-color:var(--gold);
+    animation:holdSpin 2.3s linear forwards, holdGlow 2.3s ease-in forwards}
+  .moonbtn.charging .moonsvg{animation:holdPulse 2.3s ease-in forwards}
+  @keyframes holdSpin{to{transform:rotate(360deg)}}
+  @keyframes holdGlow{0%{box-shadow:0 0 0 0 var(--goldGlow)}100%{box-shadow:0 0 20px 4px var(--goldGlow)}}
+  @keyframes holdPulse{0%{transform:scale(1)}100%{transform:scale(1.18)}}
+  .moonbtn.pop .moonsvg{animation:moonPop .4s ease-out}
+  @keyframes moonPop{0%{transform:scale(1)}45%{transform:scale(1.35)}100%{transform:scale(1)}}
+  .motiv{position:relative;max-width:720px;margin:0 auto 20px;text-align:center;overflow:hidden;
+    border-radius:18px;padding:16px 30px;
+    background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.03));
+    backdrop-filter:blur(14px) saturate(1.1);-webkit-backdrop-filter:blur(14px) saturate(1.1);
+    border:1px solid rgba(255,255,255,.18);
+    box-shadow:0 8px 32px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.22)}
+  .motiv::before{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;
+    background:linear-gradient(120deg,rgba(255,255,255,.14),transparent 40%)}
+  body.lighttheme .motiv{background:linear-gradient(135deg,rgba(255,255,255,.65),rgba(255,255,255,.35));
+    border-color:rgba(255,255,255,.6);box-shadow:0 8px 28px rgba(27,122,90,.14),inset 0 1px 0 rgba(255,255,255,.7)}
+  .motiv-text{display:inline-block;position:relative;font-family:'Amiri',serif;
+    font-size:18px;line-height:1.5;letter-spacing:.01em;color:var(--gold2);
+    opacity:0;transform:translateY(7px);transition:opacity .9s ease,transform .9s ease}
+  body.lighttheme .motiv-text{color:#6b5214}
+  .motiv-text.in{opacity:1;transform:none}
+  .motiv-text b{color:var(--em2);font-style:normal;font-weight:700}
+  body.lighttheme .motiv-text b{color:#12795a}
+  .motiv-text::after{content:"";position:absolute;top:0;left:-150%;width:55%;height:100%;
+    background:linear-gradient(105deg,transparent,rgba(255,255,255,0) 30%,rgba(255,255,255,.7) 50%,rgba(255,255,255,0) 70%,transparent);
+    transform:skewX(-16deg);pointer-events:none}
+  .motiv-text.sweep::after{animation:motivSweep 2.6s ease-in-out}
+  @keyframes motivSweep{from{left:-150%}to{left:170%}}
+  @media(max-width:640px){.motiv{margin:0 12px 14px;padding:10px 16px}.motiv-text{font-size:13.5px}}
+  .student-chip{
+  display:flex;align-items:center;gap:10px; padding:9px 16px; border-radius:999px;
+  background:var(--panel); border:1px solid var(--line);
+}
+.student-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--ok); box-shadow:0 0 10px var(--ok); animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.student-chip b{font-weight:600}
+.student-chip span{color:var(--mut);font-size:12px}
+/* ---------- nav ---------- */
+nav{
+  display:flex; gap:6px; padding:6px; border-radius:16px; margin-bottom:26px; flex-wrap:wrap;
+  background:var(--panel); border:1px solid var(--line); backdrop-filter:blur(10px);
+  position:sticky; top:10px; z-index:50;
+}
+nav button{
+  font-family:var(--ui); font-size:14px; font-weight:500; letter-spacing:.02em;
+  color:var(--mut); background:transparent; border:0; padding:10px 18px; border-radius:11px;
+  cursor:pointer; transition:.25s; display:flex; align-items:center; gap:8px;
+}
+nav button:hover{color:var(--ink)}
+nav button.active{
+  color:#06150f; background:linear-gradient(135deg,var(--gold2),var(--gold));
+  box-shadow:0 4px 18px var(--goldGlow); font-weight:600;
+}
+/* ---------- generic panels ---------- */
+.view{display:none; animation:rise .45s ease both}
+.view.on{display:block}
+@keyframes rise{from{opacity:0; transform:translateY(14px)}to{opacity:1; transform:none}}
+.grid{display:grid; gap:16px}
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+  padding:20px; backdrop-filter:blur(12px); position:relative; overflow:hidden;
+  transition:border-color .3s, transform .3s, box-shadow .3s;
+}
+.card:hover{border-color:var(--line2)}
+.card h3{font-family:var(--disp); font-weight:400; font-size:17px; letter-spacing:.05em; color:var(--gold2); margin-bottom:14px; display:flex; align-items:center; gap:9px}
+.card h3 .sub{font-family:var(--ui); font-size:11px; color:var(--dim); letter-spacing:.12em; text-transform:uppercase; margin-left:auto}
+/* KPI cards */
+.kpis{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.kpi{padding:18px 18px 16px; cursor:default}
+.kpi:hover{transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.kpi .lab{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--mut)}
+.kpi .val{font-family:var(--disp); font-size:clamp(26px,3vw,34px); margin-top:6px; color:var(--ink)}
+.kpi .val small{font-size:15px; color:var(--dim)}
+.kpi .sub{font-size:12px; color:var(--dim); margin-top:4px}
+.kpi::after{content:""; position:absolute; inset:auto 0 0 0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); opacity:0; transition:.3s}
+.kpi:hover::after{opacity:.8}
+.kpi.gold .val{color:var(--gold2)}
+.kpi.green .val{color:var(--em2)}
+/* dashboard layout */
+.dash-top{grid-template-columns:340px 1fr}
+@media(max-width:900px){.dash-top{grid-template-columns:1fr}}
+.ringwrap{display:flex; flex-direction:column; align-items:center; gap:8px}
+.ringlabel{text-align:center}
+.ringlabel .big{font-family:var(--disp); font-size:40px; color:var(--gold2)}
+.ringlabel .cap{font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--mut)}
+svg text{font-family:var(--ui)}
+.legend{display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--mut); margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+/* heatmap */
+.heat{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
+.heat .dow{font-size:10px; letter-spacing:.1em; color:var(--dim); text-align:center; text-transform:uppercase}
+.heat .cell{
+  aspect-ratio:1; border-radius:8px; background:rgba(255,255,255,.04); border:1px solid transparent;
+  display:grid; place-items:center; font-size:11px; color:var(--dim); position:relative; transition:.2s;
+}
+.heat .cell:hover{transform:scale(1.12); z-index:2}
+.heat .cell.h0{background:rgba(255,255,255,.04)}
+.heat .cell.hol{background:rgba(224,122,106,.10); color:#8a5f58}
+.heat .cell.p{color:#dff5e8}
+.heat .cell.h1{background:rgba(27,122,90,.35)}
+.heat .cell.h2{background:rgba(27,122,90,.6)}
+.heat .cell.h3{background:rgba(47,174,127,.75); box-shadow:0 0 10px rgba(47,174,127,.4)}
+.heat .cell.h4{background:linear-gradient(135deg,#2fae7f,#C9A96E); color:#06150f; font-weight:600; box-shadow:0 0 14px rgba(201,169,110,.45)}
+.heat .cell.abs{background:rgba(224,122,106,.22)}
+      /* reports + memorised */
+  .rep-head{margin-bottom:14px}
+  .rep-h2{font-family:var(--disp,'Marcellus'),serif;font-size:22px;color:var(--gold2);font-weight:400;letter-spacing:.02em}
+  .rep-sub{color:var(--mut);font-size:13px;margin-top:4px;max-width:70ch}
+  .rep-tabbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .rep-tab{background:var(--panel);border:1px solid var(--line2);color:var(--dim);font-family:var(--ui);
+    font-weight:600;font-size:13px;padding:9px 16px;border-radius:10px;cursor:pointer;transition:.18s}
+  .rep-tab:hover{border-color:var(--gold);color:var(--gold2)}
+  .rep-tab.active{background:linear-gradient(135deg,var(--gold),#b4934e);color:#241a08;border-color:var(--gold)}
+  .rep-table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .rep-table th{text-align:left;padding:12px 16px;font-family:var(--ui);font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--mut);border-bottom:1px solid var(--line2);position:sticky;top:0;background:var(--bg2)}
+  .rep-table td{padding:11px 16px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:middle}
+  .rep-table tr:hover td{background:rgba(201,169,110,.04)}
+  .rep-sur{font-weight:600;color:var(--gold2)}
+  .rep-ar{font-family:'Amiri',serif;font-size:17px;color:var(--em2);margin-left:6px}
+  .rep-rounds{display:inline-flex;align-items:center;gap:2px}
+  .rep-dot{width:7px;height:7px;border-radius:50%;background:var(--em2);opacity:.85}
+  .rep-num{display:inline-block;min-width:30px;text-align:center;font-variant-numeric:tabular-nums;font-weight:700;
+    color:#dff5e8;background:rgba(27,122,90,.4);border-radius:20px;padding:3px 10px;font-size:13px}
+  .rep-bar{height:8px;border-radius:5px;background:linear-gradient(90deg,var(--em),var(--em2));min-width:8px}
+  .rep-barwrap{background:rgba(255,255,255,.05);border-radius:5px;overflow:hidden;width:120px}
+  .rep-juzrow td{background:rgba(201,169,110,.06)}
+  .rep-juzbadge{display:inline-block;background:var(--gold);color:#241a08;font-weight:700;font-size:12px;
+    border-radius:7px;padding:3px 10px;font-family:var(--ui)}
+  .rep-empty{padding:40px 20px;text-align:center;color:var(--mut);font-size:14px}
+  .memsum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+  .memsum .mcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .memsum .mval{font-family:var(--disp,'Marcellus'),serif;font-size:30px;color:var(--gold2)}
+  .memsum .mlab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-top:3px}
+  .juzchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+  .juzchip{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:12px;font-weight:700;
+    font-family:var(--ui);background:rgba(255,255,255,.05);color:var(--dim);border:1px solid var(--line)}
+  .juzchip.done{background:rgba(47,174,127,.3);color:#dff5e8;border-color:var(--em2)}
+  .juzchip.part{background:rgba(201,169,110,.2);color:var(--gold2);border-color:var(--gold)}
+  .ayahnum{width:58px;}
+  .ayahnum.wide{width:76px;background:var(--bg2);border:1px solid var(--line2);color:var(--ink);border-radius:8px;
+    padding:7px 8px;font-family:var(--ui);font-size:13px;text-align:center;margin-left:6px}
+  .ayahnum::-webkit-outer-spin-button,.ayahnum::-webkit-inner-spin-button{opacity:.4}
+  .pm-range{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line2)}
+  .pm-range-h{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+  .pm-range-note{font-size:11.5px;color:var(--dim);font-style:italic}
+  .zoombar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .zoombar .zlabel{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-right:2px}
+  .zbtn{background:var(--panel);border:1px solid var(--line2);color:var(--gold2);font-family:var(--ui);font-weight:600;
+    font-size:13px;padding:6px 12px;border-radius:9px;cursor:pointer;transition:.18s;line-height:1}
+  .zbtn:hover{border-color:var(--gold);background:var(--panel2)}
+  .zbtn.zreset{font-size:11px;color:var(--mut)}
+  .zval{font-size:12px;color:var(--dim);min-width:44px;text-align:center;font-variant-numeric:tabular-nums}
+  /* daily-log page zoom (scales the whole section like browser zoom) */
+  #dailyZoom{transform:scale(var(--dz,1));transform-origin:top left;transition:transform .15s ease}
+  /* contained portion cells — never stretch the column */
+  #dailyTable td:nth-child(3),#dailyTable td:nth-child(4),#dailyTable td:nth-child(5){max-width:190px}
+    /* merged event cell (exam / juz submission) */
+  .pcol-merged{text-align:center}
+  .evcell{display:flex;align-items:center;justify-content:center;gap:10px;border-radius:11px;padding:11px 14px;
+    font-family:var(--ui);font-weight:700;font-size:14px;letter-spacing:.02em}
+  .evcell .evi{font-size:18px}
+  .evcell.exam{background:linear-gradient(135deg,rgba(201,169,110,.30),rgba(201,169,110,.14));color:var(--gold2);
+    border:1px solid var(--gold)}
+  .evcell.juz.pass{background:linear-gradient(135deg,rgba(47,174,127,.34),rgba(47,174,127,.16));color:#dff5e8;
+    border:1px solid var(--em2)}
+  .evcell.juz.retry{background:linear-gradient(135deg,rgba(224,122,106,.30),rgba(224,122,106,.14));color:#ffd9d2;
+    border:1px solid var(--bad)}
+  tr.ev-glow td{position:relative}
+  tr.ev-glow .evcell.pass{animation:evGlow 2.4s ease-in-out infinite}
+  @keyframes evGlow{0%,100%{box-shadow:0 0 0 rgba(47,174,127,0)}50%{box-shadow:0 0 22px rgba(47,174,127,.6)}}
+  /* small day markers (checkmarks) — visible in view mode too */
+  .dmarks{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+  .dmark{font-size:10px;font-weight:700;font-family:var(--ui);border-radius:6px;padding:2px 6px;letter-spacing:.02em}
+  .dmark.ok{background:rgba(47,174,127,.28);color:#dff5e8}
+  .dmark.retry{background:rgba(224,122,106,.26);color:#ffd9d2}
+  .dmark.exam{background:rgba(201,169,110,.24);color:var(--gold2)}
+  /* day-row long-press menu */
+  .rowmenu{position:fixed;z-index:200;background:var(--bg2);border:1px solid var(--line2);border-radius:14px;
+    padding:8px;min-width:200px;box-shadow:0 16px 44px rgba(0,0,0,.5);display:none}
+  .rowmenu.on{display:block;animation:rmIn .16s ease-out}
+  @keyframes rmIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+  .rowmenu-h{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);padding:6px 10px 8px}
+  .rowmenu button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:transparent;border:0;
+    color:var(--ink);font-family:var(--ui);font-size:14px;font-weight:600;padding:12px;border-radius:10px;cursor:pointer;transition:.15s}
+  .rowmenu button:hover{background:rgba(201,169,110,.12)}
+  .rowmenu button .rmi{font-size:18px}
+  tr.row-pressing td{background:rgba(201,169,110,.10)!important;transition:background .2s}
+  /* exam long-press: the 3 portion cells collapse into one merged bar */
+  tr.exam-merging td.pcol{background:linear-gradient(135deg,rgba(201,169,110,.28),rgba(201,169,110,.16));
+    transition:background .2s}
+  tr.exam-merging td.pcol .portion{visibility:hidden}
+  tr.exam-merging td.pcol.pcol-mid::after{content:"◷ Arranging exam…";position:absolute;left:0;right:0;text-align:center;
+    font-family:var(--ui);font-weight:700;font-size:12.5px;color:var(--gold2);letter-spacing:.04em}
+  #dailyTable td.pcol{position:relative}
+  .pcell{display:flex;align-items:center;gap:7px;width:100%;text-align:left;background:rgba(27,122,90,.14);
+    border:1px solid var(--line);border-radius:9px;padding:6px 9px;cursor:pointer;color:var(--ink);
+    font-family:var(--ui);font-size:12.5px;transition:.16s;overflow:hidden}
+  .pcell:hover{border-color:var(--em2);background:rgba(27,122,90,.24)}
+  .pcell .arname{font-family:'Amiri',serif;font-size:15px;color:var(--em2);flex:0 0 auto}
+    .pcell-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pcell-badge{display:inline-block;background:var(--em2);color:#fff;font-size:10px;font-weight:700;
+    border-radius:20px;padding:1px 7px;margin-left:2px}
+  .pcell.multi{border-style:solid}
+  /* surah popup board */
+  .surahpop{position:fixed;z-index:210;min-width:250px;max-width:320px;background:var(--bg2);
+    border:1px solid var(--line2);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.5);
+    padding:14px;display:none}
+  body.lighttheme .surahpop{box-shadow:0 20px 50px rgba(74,58,30,.28)}
+  .surahpop.on{display:block;animation:rmIn .16s ease-out}
+  .surahpop-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;
+    font-family:var(--disp,'Marcellus'),serif;font-size:16px;color:var(--gold2)}
+  .surahpop-head button{background:transparent;border:0;color:var(--mut);font-size:16px;cursor:pointer;padding:2px 6px;border-radius:6px}
+  .surahpop-head button:hover{background:rgba(201,169,110,.14);color:var(--ink)}
+  .surahpop-list{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow:auto}
+  .surahpop-item{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:11px;
+    background:rgba(27,122,90,.10);border:1px solid var(--line)}
+  .surahpop-num{width:26px;height:26px;flex:0 0 auto;border-radius:8px;background:rgba(47,174,127,.24);
+    color:var(--em2);display:grid;place-items:center;font-size:12px;font-weight:700;font-family:var(--ui)}
+  .surahpop-ar{font-family:'Amiri',serif;font-size:19px;color:var(--em2);flex:0 0 auto}
+  .surahpop-meta{display:flex;flex-direction:column;min-width:0}
+  .surahpop-name{font-family:var(--ui);font-weight:600;font-size:13.5px;color:var(--ink)}
+  .surahpop-ayah{font-size:11.5px;color:var(--mut)}
+  .surahpop-edit{width:100%;margin-top:12px;background:linear-gradient(135deg,var(--gold),#b4934e);color:#241a08;
+    border:0;font-family:var(--ui);font-weight:700;font-size:13px;padding:11px;border-radius:11px;cursor:pointer}
+  .surahpop-scrim{position:fixed;inset:0;z-index:205;display:none}
+  .surahpop-scrim.on{display:block}
+  .jt-result{display:flex;gap:10px;flex:1}
+  .jt-opt{flex:1;padding:13px;border-radius:11px;font-family:var(--ui);font-weight:700;font-size:13.5px;cursor:pointer;
+    border:1.5px solid var(--line2);background:var(--bg2);color:var(--dim);transition:.18s}
+  .jt-opt.pass:hover,.jt-opt.pass.sel{background:rgba(47,174,127,.25);border-color:var(--em2);color:#dff5e8}
+  .jt-opt.retry:hover,.jt-opt.retry.sel{background:rgba(224,122,106,.22);border-color:#e07a6a;color:#ffd9d2}
+  .jtchip{display:block;margin-top:5px;font-family:var(--ui);font-size:10.5px;font-weight:700;letter-spacing:.02em;
+    border-radius:7px;padding:3px 8px;cursor:pointer;border:1px solid transparent;transition:.18s;white-space:nowrap}
+  .jtchip.add{background:transparent;border-color:var(--line2);color:var(--mut);opacity:.6}
+  .jtchip.add:hover{opacity:1;border-color:var(--gold);color:var(--gold2)}
+  .jtchip.pass{background:rgba(47,174,127,.28);border-color:var(--em2);color:#dff5e8}
+  .jtchip.retry{background:rgba(224,122,106,.24);border-color:#e07a6a;color:#ffd9d2}
+  .jtchip:hover{filter:brightness(1.12)}
+  .offtag{display:inline-block;margin-left:6px;font-size:9px;font-weight:700;letter-spacing:.08em;color:#c98;
+    background:rgba(224,122,106,.14);border:1px solid rgba(224,122,106,.3);border-radius:5px;padding:1px 5px;vertical-align:middle}
+  tr.holiday{background:rgba(224,183,106,.10)}
+  tr.holiday.has-data{background:transparent}                 /* edited holiday returns to normal theme */
+  tr.holiday.has-data .datecell b{color:var(--ink)}
+  tr.holiday.has-data td:first-child{color:inherit}
+  tr.holiday .datecell b{color:var(--warn)}
+/* tables */
+.tblwrap{overflow-x:auto; border-radius:var(--r2); border:1px solid var(--line)}
+table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:760px}
+thead th{
+  text-align:left; font-weight:600; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--gold); padding:12px 12px; background:rgba(11,77,59,.35); border-bottom:1px solid var(--line);
+  position:sticky; top:0;
+}
+tbody td{padding:9px 12px; border-bottom:1px solid rgba(255,255,255,.05); vertical-align:middle}
+tbody tr{transition:background .2s}
+tbody tr:hover{background:rgba(201,169,110,.05)}
+tbody 
+tbody tr.holiday td:first-child{color:var(--warn)}
+tbody tr.today-row{background:rgba(201,169,110,.09); box-shadow:inset 3px 0 0 var(--gold)}
+.datecell b{font-weight:600}
+.datecell span{color:var(--dim); font-size:11px; margin-left:6px}
+/* controls */
+input,select,textarea{
+  font-family:var(--ui); font-size:13.5px; color:var(--ink);
+  background:rgba(5,20,14,.7); border:1px solid var(--line); border-radius:9px; padding:8px 10px;
+  transition:border-color .2s, box-shadow .2s; outline:none; max-width:100%;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,169,110,.14)}
+input[type=number]{width:74px; text-align:center}
+input::placeholder{color:var(--dim)}
+select{cursor:pointer}
+option{background:#0a1f16; color:var(--ink)}
+.btn{
+  font-family:var(--ui); font-weight:600; font-size:13.5px; cursor:pointer; border:0; border-radius:11px;
+  padding:10px 18px; display:inline-flex; align-items:center; gap:8px; transition:.25s; letter-spacing:.02em;
+}
+.btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold)); color:#06150f; box-shadow:0 4px 16px var(--goldGlow)}
+.btn.gold:hover{transform:translateY(-2px); box-shadow:0 8px 24px var(--goldGlow)}
+.btn.ghost{background:transparent; border:1px solid var(--line2); color:var(--gold2)}
+.btn.ghost:hover{background:rgba(201,169,110,.08)}
+.btn.danger{background:transparent; border:1px solid rgba(224,122,106,.4); color:var(--bad)}
+.btn.danger:hover{background:rgba(224,122,106,.1)}
+.btn.sm{padding:6px 12px; font-size:12px; border-radius:8px}
+/* toggle check (present) */
+.pv{width:30px;height:30px;border-radius:9px;border:1px solid var(--line2);background:transparent;cursor:pointer;
+  display:grid;place-items:center;color:transparent;font-size:15px;transition:.2s}
+.pv.on{background:linear-gradient(135deg,#2fae7f,#1B7A5A); color:#06150f; border-color:transparent; box-shadow:0 0 12px var(--emGlow)}
+.pv.abs{background:rgba(224,122,106,.18); color:var(--bad); border-color:rgba(224,122,106,.35)}
+/* portion picker chips */
+.portion{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.portion select.surah{min-width:150px; max-width:170px}
+.portion select.ayah{width:74px}
+.portion .dash{color:var(--dim)}
+.pchip{
+  display:inline-flex; align-items:center; gap:7px; padding:5px 10px; border-radius:8px; font-size:12.5px;
+  background:rgba(27,122,90,.18); border:1px solid rgba(47,174,127,.25); color:#c9ecd9; cursor:pointer; transition:.2s;
+}
+.pchip:hover{border-color:var(--gold)}
+.pchip .arname{font-family:var(--ar); font-size:15px; color:var(--gold2)}
+.pchip.empty{background:transparent; border-style:dashed; color:var(--dim)}
+/* month tabs */
+.mtabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px}
+.mtab{
+  padding:8px 15px; border-radius:11px; font-size:13px; font-weight:500; cursor:pointer;
+  background:var(--panel2); border:1px solid var(--line); color:var(--mut); transition:.2s;
+}
+.mtab:hover{color:var(--ink)}
+.mtab.on{background:linear-gradient(135deg,#0B4D3B,#1B7A5A); color:#eafff4; border-color:transparent; box-shadow:0 4px 14px var(--emGlow)}
+.mtab.add{border-style:dashed; color:var(--gold2)}
+/* daily layout */
+.daily-grid{grid-template-columns:1fr 300px}
+@media(max-width:1000px){.daily-grid{grid-template-columns:1fr}}
+.mstat{display:flex; justify-content:space-between; padding:8px 2px; border-bottom:1px dashed rgba(255,255,255,.06); font-size:13.5px}
+.mstat span{color:var(--mut)}
+.mstat b{font-weight:600}
+.delta.up{color:var(--ok)} .delta.down{color:var(--bad)} .delta.flat{color:var(--dim)}
+/* progress bars */
+.pbar{height:8px; border-radius:99px; background:rgba(255,255,255,.07); overflow:hidden; min-width:90px}
+.pbar i{display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,var(--em2),var(--gold)); width:0; transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.status{font-size:11px; font-weight:600; letter-spacing:.06em; padding:4px 10px; border-radius:99px; text-transform:uppercase}
+.status.done{background:rgba(87,201,143,.15); color:var(--ok)}
+.status.prog{background:rgba(224,183,106,.15); color:var(--warn)}
+.status.not{background:rgba(255,255,255,.07); color:var(--dim)}
+.grade{font-family:var(--disp); font-size:17px}
+.grade.gA{color:var(--ok)} .grade.gB{color:var(--gold2)} .grade.gC{color:var(--warn)} .grade.gF{color:var(--bad)}
+/* settings */
+.set-grid{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.frow{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px dashed rgba(255,255,255,.06)}
+.frow label{color:var(--mut); font-size:13.5px}
+.chk{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--mut); cursor:pointer}
+.chk input{width:16px;height:16px;accent-color:var(--gold)}
+.taglist{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+.tag{display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:99px; background:rgba(27,122,90,.18); border:1px solid rgba(47,174,127,.25); font-size:13px}
+.tag button{background:none;border:0;color:var(--bad);cursor:pointer;font-size:14px;line-height:1}
+/* toast + modal */
+#toast{
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(80px); opacity:0;
+  background:linear-gradient(135deg,#0B4D3B,#155f47); border:1px solid var(--line2); color:#eafff4;
+  padding:12px 22px; border-radius:13px; font-size:14px; z-index:200; transition:.35s; box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+#toast.show{transform:translateX(-50%) translateY(0); opacity:1}
+.modal-bg{position:fixed; inset:0; background:rgba(2,10,7,.75); backdrop-filter:blur(6px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.modal-bg.on{display:flex; animation:rise .3s ease}
+.modal{background:#0a2018; border:1px solid var(--line2); border-radius:20px; padding:26px; width:min(440px,100%); box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal h3{font-family:var(--disp); color:var(--gold2); font-weight:400; margin-bottom:18px; font-size:19px}
+.modal .row{display:flex; gap:10px; margin-bottom:14px; align-items:center}
+.modal .row label{width:110px; color:var(--mut); font-size:13px; flex:0 0 auto}
+.modal .row select,.modal .row input{flex:1}
+.modal .actions{display:flex; justify-content:flex-end; gap:10px; margin-top:20px}
+/* chart tooltip */
+.tip{position:fixed; pointer-events:none; background:#0a2018; border:1px solid var(--line2); border-radius:10px; padding:8px 12px; font-size:12.5px; z-index:150; opacity:0; transition:opacity .15s; box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.tip b{color:var(--gold2)}
+.empty-note{color:var(--dim); font-size:13.5px; text-align:center; padding:26px 10px}
+footer{margin-top:44px; text-align:center; color:var(--dim); font-size:12px; letter-spacing:.08em}
+footer b{color:var(--gold)}
+
+/* ---------- roster / auth ---------- */
+.roster{grid-template-columns:repeat(auto-fill,minmax(235px,1fr))}
+.scard{cursor:pointer; padding:18px}
+.scard:hover{transform:translateY(-4px); box-shadow:0 14px 34px rgba(0,0,0,.4); border-color:var(--line2)}
+.scard .sname{font-family:var(--disp); font-size:18px; letter-spacing:.03em; margin-bottom:2px}
+.scard .smeta{font-size:12px; color:var(--mut)}
+.scard .srow{display:flex; align-items:center; gap:14px; margin-top:12px}
+.scard .sstats{font-size:12.5px; color:var(--mut); line-height:1.7}
+.scard .sstats b{color:var(--gold2); font-weight:600}
+.scard .sactions{display:flex; gap:6px; margin-top:14px; opacity:0; transition:.25s}
+.scard:hover .sactions{opacity:1}
+.scard.addcard{border-style:dashed; display:grid; place-items:center; min-height:170px; color:var(--gold2); font-size:15px; text-align:center}
+.scard.addcard .plus{font-size:34px; font-family:var(--disp)}
+.auth-card{max-width:430px; margin:7vh auto 0}
+.auth-card .frow{border-bottom:0; flex-direction:column; align-items:stretch; gap:6px}
+.auth-card input{width:100%}
+.auth-card .hint{font-size:12.5px; color:var(--dim); line-height:1.6; margin-top:10px}
+.auth-card .hint code{color:var(--gold2); background:rgba(201,169,110,.1); padding:1px 6px; border-radius:5px}
+.dot.sync{background:var(--warn)!important; box-shadow:0 0 10px var(--warn)!important}
+.dot.err{background:var(--bad)!important; box-shadow:0 0 10px var(--bad)!important}
+.roster-head{display:flex; align-items:center; gap:12px; margin-bottom:18px; flex-wrap:wrap}
+.roster-head h2{font-family:var(--disp); font-weight:400; font-size:22px; color:var(--gold2); letter-spacing:.04em}
+/* roster toolbar: search · sort · grid/list */
+.rtools{display:flex;gap:8px;align-items:center;margin:-6px 0 14px;flex-wrap:wrap}
+.rsearch{flex:1 1 200px;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border-radius:12px;
+  background:var(--panel);border:1px solid var(--line2)}
+.rsearch svg{width:17px;height:17px;flex:0 0 auto;fill:none;stroke:var(--gold2);stroke-width:2;stroke-linecap:round}
+.rsearch input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--ink);font:500 14px var(--ui)}
+.rsearch:focus-within{border-color:var(--gold)}
+.rsort{min-height:44px;border-radius:12px;background:var(--panel);border:1px solid var(--line2);color:var(--ink);font:500 13.5px var(--ui);padding:0 10px}
+.rview{display:inline-flex;border:1px solid var(--line2);border-radius:12px;overflow:hidden;background:var(--panel)}
+.rview button{width:44px;height:44px;display:grid;place-items:center;background:transparent;border:0;color:var(--mut);cursor:pointer}
+.rview button+button{border-left:1px solid var(--line)}
+.rview button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.rview button.on{background:rgba(201,169,110,.18);color:var(--gold2)}
+.rsearch:focus-visible,.rsort:focus-visible,.rview button:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+/* compact list view */
+.roster.roster-list{display:flex;flex-direction:column;gap:6px}
+.lrow{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:12px;
+  background:var(--panel);border:1px solid var(--line);cursor:pointer;min-height:56px;transition:border-color .2s,background .2s}
+.lrow:hover{border-color:var(--line2);background:rgba(201,169,110,.05)}
+.lrow .lmain{min-width:0}
+.lrow .lmain b{display:block;font-family:var(--disp);font-weight:400;font-size:15.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow .lmain span{font-size:11.5px;color:var(--mut)}
+.lrow .lmain span i{font-style:normal;color:var(--gold2);font-weight:600}
+.lrow .lprog,.lrow .lst{display:none}
+.lrow .lact{display:flex;gap:2px}
+.lrow .lact button{width:44px;height:44px;border-radius:10px;border:0;background:transparent;color:var(--mut);font-size:15px;cursor:pointer;display:grid;place-items:center}
+.lrow .lact button:hover{background:rgba(201,169,110,.12);color:var(--gold2)}
+.lrow .lact .sdel:hover{background:rgba(224,122,106,.14);color:#e07a6a}
+.lrow .lact .sshare{color:var(--gold2)}
+.lrow .lact .smore{display:none}
+@media(max-width:480px){
+  .lrow{padding-left:12px}
+  .lrow .lact .smore{display:grid}
+  .lrow:not(.open) .lact .srename,.lrow:not(.open) .lact .sdel{display:none}
+  .lrow.open .lact .sshare,.lrow.open .lact .ssettings{display:none}
+}
+@media(min-width:760px){.lrow .lmain span i br{display:none}}
+@media(min-width:760px){
+  .lrow{grid-template-columns:minmax(160px,1.3fr) minmax(120px,1fr) 90px 80px auto;gap:14px}
+  .lrow .lmain span i{display:none}
+  .lrow .lprog{display:flex;align-items:center;gap:8px}
+  .lrow .lprog .bar{flex:1;height:7px;border-radius:9px;background:rgba(255,255,255,.06);overflow:hidden}
+  .lrow .lprog .bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#2fae7f,#C9A96E)}
+  .lrow .lprog span,.lrow .lst{font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
+  .lrow .lst{display:block}
+  .lrow .lst b{color:var(--gold2);font-weight:600}
+}
+/* add-student: fixed floating button, always reachable */
+.rfab{display:none;position:fixed;right:max(16px,env(safe-area-inset-right,0px) + 12px);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:55;
+  display:flex;align-items:center;gap:8px;min-height:52px;padding:0 20px 0 16px;border-radius:99px;border:0;cursor:pointer;
+  background:linear-gradient(135deg,#e8cf9a,#C9A96E 55%,#a8843f);color:#06150f;font:700 14px var(--ui);
+  box-shadow:0 10px 28px rgba(0,0,0,.45),0 0 0 3px rgba(201,169,110,.25)}
+.rfab .pl{font-size:22px;line-height:1}
+.rfab:hover{transform:translateY(-2px)}
+.rfab:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
+@media(max-width:480px){.rfab{width:56px;height:56px;padding:0;justify-content:center}.rfab .tx{display:none}}
+#v-roster{padding-bottom:84px}
+
+
+/* ---------- view / edit mode ---------- */
+/* view-only: block edits but keep full clarity (no fade) */
+  body.viewonly .pv,body.viewonly .lnin,body.viewonly .pchip.empty,body.viewonly .tdone,
+  body.viewonly #addTaskBtn,body.viewonly #addExamBtn,body.viewonly .mtab.add,
+  body.viewonly .tedit,body.viewonly .tdel,body.viewonly .eedit,body.viewonly .edel{pointer-events:none}
+  /* .pcell stays tappable in view-only so the surah popup can open */
+  body.viewonly .pcell{pointer-events:auto;cursor:pointer}
+  /* task/exam MANAGEMENT gated behind the moon long-press (admin arrangement) */
+  #addTaskBtn,#addExamBtn,.tedit,.tdel,.eedit,.edel{display:none}
+  body.tasks-unlocked #addTaskBtn,body.tasks-unlocked #addExamBtn,
+  body.tasks-unlocked .tedit,body.tasks-unlocked .tdel,
+  body.tasks-unlocked .eedit,body.tasks-unlocked .edel{display:inline-flex}
+.crest{cursor:pointer; user-select:none; transition:.25s}
+.crest.editing{border-color:var(--gold); box-shadow:0 0 26px var(--goldGlow),0 0 50px var(--emGlow); animation:crestPulse 1.8s infinite}
+@keyframes crestPulse{0%,100%{box-shadow:0 0 22px var(--goldGlow),0 0 44px var(--emGlow)}50%{box-shadow:0 0 40px var(--goldGlow),0 0 80px var(--emGlow)}}
+.crest.burst{animation:burstPop .55s cubic-bezier(.2,1.6,.4,1)}
+@keyframes burstPop{0%{transform:scale(1)}35%{transform:scale(1.35) rotate(-8deg)}100%{transform:scale(1)}}
+.burst-ring{position:fixed; border-radius:50%; border:2px solid var(--gold2); pointer-events:none; z-index:300; animation:ringOut .6s ease-out forwards}
+@keyframes ringOut{from{opacity:.95; transform:scale(.2)}to{opacity:0; transform:scale(1)}}
+#flash{position:fixed; inset:0; pointer-events:none; z-index:299; opacity:0;
+  background:radial-gradient(circle at 12% 8%, rgba(201,169,110,.4), transparent 55%); transition:opacity .5s}
+#flash.on{opacity:1; transition:opacity .08s}
+.modebadge{font-size:10px; letter-spacing:.14em; text-transform:uppercase; padding:3px 9px; border-radius:99px; margin-left:8px}
+.modebadge.view{background:rgba(255,255,255,.08); color:var(--mut)}
+.modebadge.edit{background:linear-gradient(135deg,var(--gold2),var(--gold)); color:#06150f; font-weight:700}
+.pm-list{display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 14px}
+.pm-list .pchip button{background:none;border:0;color:var(--bad);cursor:pointer;font-size:13px}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important; transition:none!important}
+}
+@media(max-width:640px){
+  .app{padding:14px 12px 70px}
+  nav{position:static}
+  nav button{padding:9px 12px; font-size:13px}
+}
+
+  /* ===== Mobile redesign: fit, white borders, visible graphics, swipe dots ===== */
+  .tabdots{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:center;gap:10px;
+    padding:11px 10px 12px;margin:0 auto 6px;background:linear-gradient(180deg,var(--bg),transparent);
+    touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
+  .tabdots:active{cursor:grabbing}
+  .tdots-inner{display:flex;align-items:center;gap:8px}
+  .tabdots .tdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.28);cursor:pointer;
+    transition:.2s;border:1px solid rgba(255,255,255,.35)}
+  .tabdots .tdot.on{background:var(--gold2);border-color:var(--gold);width:22px;border-radius:5px;box-shadow:0 0 8px var(--goldGlow)}
+  .tdarrow{background:transparent;border:0;color:var(--gold2);font-size:22px;line-height:1;cursor:pointer;
+    padding:2px 6px;opacity:.75;transition:.18s;-webkit-tap-highlight-color:transparent}
+  .tdarrow:hover{opacity:1;transform:scale(1.15)}
+  .tabdots-lbl{position:absolute;right:14px;font-size:11px;color:var(--mut);letter-spacing:.04em}
+
+  /* white borders + more visible graphics */
+  .card{border-color:rgba(255,255,255,.14)}
+  .kpi{border-color:rgba(255,255,255,.16)}
+  table{border-color:rgba(255,255,255,.14)}
+  table th{border-bottom:1px solid rgba(255,255,255,.22)}
+  table td,table th{border-right:1px solid rgba(255,255,255,.06)}
+  table td:last-child,table th:last-child{border-right:0}
+  .pcell{border-color:rgba(255,255,255,.22)}
+  .pcell:hover{border-color:var(--gold2)}
+  .crest{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,255,255,.10),0 4px 14px rgba(0,0,0,.3)}
+
+  /* whole-page mobile fit — stop the zoomed-in feel, keep the daily table itself intact */
+  @media (max-width:600px){
+    :root{ font-size:15px; }
+    .wrap,main{max-width:100%;padding-left:10px;padding-right:10px}
+    header{padding:10px 4px 12px 44px;gap:8px}
+    .crest{width:42px;height:42px}
+    .hstudent .hs-name{font-size:14px;max-width:40vw}
+    h1{font-size:18px}
+    .card{padding:14px;border-radius:14px}
+    .kpi .v{font-size:20px}
+    .menu-fab{top:12px;left:10px;font-size:22px}
+    /* keep daily table readable & scrollable, do not shrink its cells */
+    .tbl-scroll,.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  }
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="/portal/study-report/insights.css?v=20260923d">
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="crest" id="crest" title="ManzilulQuran">☪<img src="/og-image.jpg" alt="" onerror="this.remove()"></div>
+    <div class="hstudent" id="chipBox" style="display:none">
+      <span class="dot" id="syncDot" title="sync status"></span>
+      <span class="hs-name" id="chipStudent">Student</span>
+      <span class="hs-date" id="chipDate"></span>
+    </div>
+    <div class="hspacer"></div>
+    <button class="btn ghost sm" id="backRoster" style="display:none">← All</button>
+    <button class="moonbtn" id="moonBtn" title="Hold to unlock exam &amp; task editing" aria-label="Admin unlock">
+      <svg viewBox="0 0 24 24" class="moonsvg" aria-hidden="true">
+        <path class="crescent" d="M20.5 15.2A8 8 0 1 1 11.8 3.5a0.1 0.1 0 0 1 .08 .16A6.6 6.6 0 0 0 20.3 15a0.1 0.1 0 0 1 .2 .2Z"></path>
+        <g class="cre-stars"><circle cx="6.5" cy="6" r="0.9"></circle><circle cx="9.5" cy="3.6" r="0.6"></circle></g>
+      </svg>
+      <span class="hold-ring"></span>
+    </button>
+  </header>
+
+  <div class="vobanner" id="voBanner" hidden>🔒 View-only</div>
+  <div class="motiv" id="motiv" aria-live="polite"><span class="motiv-text" id="motivText"></span></div>
+
+  <button class="menu-fab" id="menuFab" style="display:none" aria-label="Menu">☰</button>
+  <div class="side-scrim" id="sideScrim"></div>
+  <nav id="nav" class="sidebar" style="display:none">
+    <div class="side-head">Menu</div>
+    <button data-v="daily" class="active">☑ Daily Log</button>
+    <button data-v="dash">◈ Dashboard</button>
+    <button data-v="tasks">✎ Tasks</button>
+    <button data-v="exams">🎓 Exams</button>
+    <button data-v="reports">📊 Reports</button>
+    <button data-v="memorised">🌙 Memorised</button>
+    <button data-v="progress">📜 Progress Report</button>
+  </nav>
+
+  <div class="tabdots" id="tabDots" style="display:none">
+    <button class="tdarrow" id="dotPrev" aria-label="Previous tab">‹</button>
+    <div class="tdots-inner">
+      <span class="tdot" data-v="daily"></span><span class="tdot" data-v="dash"></span>
+      <span class="tdot" data-v="tasks"></span><span class="tdot" data-v="exams"></span>
+      <span class="tdot" data-v="reports"></span><span class="tdot" data-v="memorised"></span>
+      <span class="tdot" data-v="progress"></span>
+    </div>
+    <button class="tdarrow" id="dotNext" aria-label="Next tab">›</button>
+    <span class="tabdots-lbl" id="tabDotsLbl"></span>
+  </div>
+
+
+  <!-- ================= CONNECT (first-run setup) ================= -->
+  <section class="view" id="v-connect">
+    <div class="card auth-card">
+      <h3>Connect to Supabase</h3>
+      <div class="frow"><label>Project URL</label><input id="cnUrl" placeholder="https://xxxx.supabase.co"></div>
+      <div class="frow"><label>Anon public key</label><input id="cnKey" placeholder="eyJhbGciOi..."></div>
+      <div style="margin-top:16px"><button class="btn gold" id="cnSave" style="width:100%;justify-content:center">Connect</button></div>
+      <div class="hint">Find both in your Supabase dashboard → <code>Project Settings → API</code>. This is saved only in this browser. Run the setup SQL once (provided with this file) before connecting. No login accounts are needed.</div>
+    </div>
+  </section>
+
+  <!-- ================= ADMIN PIN ================= -->
+  <section class="view" id="v-login">
+    <div class="card auth-card">
+      <h3>Admin access</h3>
+      <div class="frow"><label>Admin PIN</label><input id="pinInput" type="password" placeholder="••••" autocomplete="off"></div>
+      <div style="margin-top:16px"><button class="btn gold" id="pinBtn" style="width:100%;justify-content:center">Open student list</button></div>
+      <div class="hint">The PIN is the <code>ADMIN_PIN</code> value set inside this file. It's asked once per device. Teachers opening a shared student link never see this screen.</div>
+      <div style="margin-top:14px;text-align:center"><button class="btn ghost sm" id="lgReconfig">Change Supabase project</button></div>
+    </div>
+  </section>
+
+  <!-- ================= ROSTER ================= -->
+  <section class="view" id="v-roster">
+    <div class="roster-head">
+      <h2>Students · Hifz Systems</h2>
+      <span style="color:var(--dim);font-size:13px" id="rosterCount"></span>
+      <span style="flex:1"></span>
+      <button class="btn gold sm" id="insightsBtn">🏆 Insights</button>
+      <button class="btn ghost sm" id="rosterRefresh">↻ Refresh</button>
+      <button class="btn ghost sm" id="logoutBtn">🔒 Lock</button>
+    </div>
+    <div class="rtools">
+      <label class="rsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="rosterSearch" type="search" placeholder="Search students" autocomplete="off" aria-label="Search students"></label>
+      <select id="rosterSort" class="rsort" aria-label="Sort students">
+        <option value="name">Name A–Z</option><option value="updated">Recently updated</option>
+        <option value="lines">Most memorised</option><option value="att">Best attendance</option></select>
+      <div class="rview" role="group" aria-label="Layout">
+        <button type="button" data-rv="grid" aria-label="Grid view" title="Grid"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></button>
+        <button type="button" data-rv="list" aria-label="List view" title="List"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1.2"/><circle cx="4" cy="12" r="1.2"/><circle cx="4" cy="18" r="1.2"/></svg></button>
+      </div>
+    </div>
+    <div class="grid roster" id="rosterGrid"></div>
+  </section>
+
+  <!-- ================= DASHBOARD ================= -->
+  <section class="view on" id="v-dash">
+    <div class="grid kpis" id="kpiRow"></div>
+
+    <div class="grid dash-top" style="margin-top:16px">
+      <div class="card ringwrap">
+        <h3>Qur'an Completion <span class="sub">30 Juz Ring</span></h3>
+        <div id="juzRing"></div>
+        <div class="ringlabel">
+          <div class="big" id="ringPct">0%</div>
+          <div class="cap" id="ringSub">of 9,060 lines</div>
+        </div>
+        <div class="legend">
+          <span><i style="background:linear-gradient(135deg,#2fae7f,#C9A96E)"></i>Memorised</span>
+          <span><i style="background:rgba(255,255,255,.12)"></i>Remaining</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Lines Memorised per Month <span class="sub">with cumulative curve</span></h3>
+        <div id="monthChart"></div>
+      </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:1fr 1fr; margin-top:16px" id="dashRow2">
+      <div class="card">
+        <h3>Attendance Trend <span class="sub">% per month</span></h3>
+        <div id="attChart"></div>
+      </div>
+      <div class="card">
+        <h3><span id="heatTitle">This Month</span> <span class="sub">activity heatmap</span></h3>
+        <div class="heat" id="heatmap"></div>
+        <div class="legend" style="margin-top:12px">
+          <span><i style="background:rgba(27,122,90,.35)"></i>Light</span>
+          <span><i style="background:rgba(47,174,127,.75)"></i>Strong</span>
+          <span><i style="background:linear-gradient(135deg,#2fae7f,#C9A96E)"></i>Best</span>
+          <span><i style="background:rgba(224,122,106,.22)"></i>Absent</span>
+          <span><i style="background:rgba(224,122,106,.10)"></i>Holiday</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>Monthly Portion Summary <span class="sub">cumulative record</span></h3>
+      <div class="tblwrap"><table id="portionTable">
+        <thead><tr><th>Month</th><th>Present</th><th>Class Days</th><th>Attend %</th><th>Lines</th><th>Pages</th><th>Cum. Lines</th><th>Cum. Pages</th><th>% of Qur'an</th><th>Juz ≈</th><th>Lines Δ</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ================= DAILY LOG ================= -->
+  <section class="view" id="v-daily">
+    <div class="mtabs" id="mtabs"></div>
+    <div class="zoombar" id="zoombar">
+      <span class="zlabel">Zoom</span>
+      <button class="zbtn" id="zoomOut" title="Zoom out">−</button>
+      <span class="zval" id="zoomVal">100%</span>
+      <button class="zbtn" id="zoomIn" title="Zoom in">＋</button>
+      <button class="zbtn zreset" id="zoomReset" title="Reset">Reset</button>
+    </div>
+    <div class="grid daily-grid" id="dailyZoom">
+      <div class="card" style="padding:0">
+        <div class="tblwrap" style="border:0; max-height:640px; overflow:auto">
+          <table id="dailyTable">
+            <thead><tr><th style="width:110px">Date</th><th style="width:46px">✓</th><th>New Lesson</th><th style="width:84px">Lines</th><th>Sabq (Revision)</th><th>Old Lesson</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h3 id="mdashTitle">Month Dashboard</h3>
+          <div id="mdash"></div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>▲ vs Previous Month</h3>
+          <div id="mdelta"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TASKS ================= -->
+  <section class="view" id="v-tasks">
+    <div class="grid kpis" id="taskSummary"></div>
+    <div class="card" style="margin-top:16px">
+      <h3>Memorisation Tasks <span class="sub"><button class="btn gold sm" id="addTaskBtn">＋ New Task</button></span></h3>
+      <div class="tblwrap"><table id="taskTable">
+        <thead><tr><th>#</th><th>Task</th><th>Portion</th><th>Target</th><th>Done</th><th>Remaining</th><th style="min-width:140px">Progress</th><th>Status</th><th>Due</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <div class="empty-note" id="taskEmpty" style="display:none">No tasks yet — press ＋ New Task to assign the first memorisation goal.</div>
+    </div>
+  </section>
+
+  <!-- ================= EXAMS ================= -->
+  <section class="view" id="v-exams">
+    <div class="grid kpis" id="examSummary"></div>
+    <div class="card" style="margin-top:16px">
+      <h3>Exam Results <span class="sub"><button class="btn gold sm" id="addExamBtn">＋ New Exam</button></span></h3>
+      <div class="tblwrap"><table id="examTable">
+        <thead><tr><th>#</th><th>Date</th><th>Portion Tested</th><th>Lines</th><th>Examiner</th><th>Marks</th><th>%</th><th>Grade</th><th>Mistakes</th><th>Remarks</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <div class="empty-note" id="examEmpty" style="display:none">No exams recorded yet — press ＋ New Exam after the first assessment.</div>
+    </div>
+  </section>
+
+  <!-- ================= REPORTS ================= -->
+  <section class="view" id="v-reports">
+    <div class="rep-head">
+      <h2 class="rep-h2">📊 Repetition Reports</h2>
+      <p class="rep-sub">How many class-days each surah has been repeated. Counted automatically from your daily log — one appearance in a column = one round.</p>
+    </div>
+    <div class="rep-tabbar">
+      <button class="rep-tab active" data-rep="page">Page-wise · Old Lessons</button>
+      <button class="rep-tab" data-rep="juz">Juz-wise · Old + New</button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div id="repArea"></div>
+    </div>
+  </section>
+
+  <!-- ================= MEMORISED ================= -->
+  <section class="view" id="v-memorised">
+    <div class="rep-head">
+      <h2 class="rep-h2">🌙 Memorised Portion</h2>
+      <p class="rep-sub">Everything that has appeared as a New Lesson — the portion committed to memory, in shā’ Allāh.</p>
+    </div>
+    <div class="rep-tabbar">
+      <button class="rep-tab active" data-mem="surah">Surah-wise</button>
+      <button class="rep-tab" data-mem="juz">Juz-wise</button>
+    </div>
+    <div class="memsum" id="memSummary"></div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div id="memArea"></div>
+    </div>
+  </section>
+
+  <!-- ================= PROGRESS REPORT (insights.js) ================= -->
+  <section class="view" id="v-progress">
+    <div class="rep-head no-print">
+      <h2 class="rep-h2">📜 Progress Report</h2>
+      <p class="rep-sub">Monthly, yearly or all-time report for this student — minimal for a quick parent update, complete for the full record. Print or save as PDF.</p>
+    </div>
+    <div id="progressArea"></div>
+  </section>
+
+  <!-- ================= ACADEMY INSIGHTS (insights.js, admin only) ================= -->
+  <section class="view" id="v-insights">
+    <div id="insightsArea"></div>
+  </section>
+
+  <!-- ================= SETTINGS ================= -->
+  <section class="view" id="v-settings">
+    <div class="grid set-grid">
+      <div class="card">
+        <h3>Academy &amp; Student</h3>
+        <div class="frow"><label>Academy</label><input id="cfgAcademy" style="width:220px"></div>
+        <div class="frow"><label>Student name</label><input id="cfgStudent" style="width:220px"></div>
+        <div class="frow"><label>Lines per page</label><input id="cfgLpp" type="number" min="1"></div>
+        <div class="frow"><label>Full Qur'an (lines)</label><input id="cfgTotal" type="number" min="1" style="width:100px"></div>
+      </div>
+      <div class="card">
+        <h3>Weekly Holidays <span class="sub">greyed out in every month</span></h3>
+        <div id="cfgWeekly" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px"></div>
+      </div>
+      <div class="card">
+        <h3>Specific Holiday Dates <span class="sub">Eid, breaks…</span></h3>
+        <div style="display:flex; gap:10px"><input type="date" id="cfgHolDate"><button class="btn ghost sm" id="cfgHolAdd">Add date</button></div>
+        <div class="taglist" id="cfgHolList"></div>
+      </div>
+      <div class="card">
+        <h3>Examiners <span class="sub">exam dropdown</span></h3>
+        <div style="display:flex; gap:10px"><input id="cfgExName" placeholder="Examiner name" style="flex:1"><button class="btn ghost sm" id="cfgExAdd">Add</button></div>
+        <div class="taglist" id="cfgExList"></div>
+      </div>
+      <div class="card">
+        <h3>Data</h3>
+        <p style="color:var(--mut); font-size:13px; margin-bottom:14px">Everything is saved automatically in this browser. Export a backup file regularly, and import it to restore or move to another device.</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button class="btn gold" id="exportBtn">⬇ Export backup (JSON)</button>
+          <button class="btn ghost" id="importBtn">⬆ Import backup</button>
+          <input type="file" id="importFile" accept=".json" style="display:none">
+          <button class="btn danger" id="resetBtn">Reset all data</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Manzilul<b>Quran</b> E-learning Academy · manzilulquran.in</footer>
+<!-- outside .view: views animate with transform, which would trap position:fixed -->
+<button type="button" class="rfab" id="addStudentFab" aria-label="Add student"><span class="pl">＋</span><span class="tx">Add student</span></button>
+</div>
+
+
+<!-- student modal -->
+<div class="modal-bg" id="studentModal">
+  <div class="modal">
+    <h3 id="smTitle">Add a student</h3>
+    <div class="row"><label>Student name</label><input id="smName" placeholder="e.g. Atiyya Ahasn"></div>
+    <div class="actions"><button class="btn ghost" data-close>Cancel</button><button class="btn gold" id="smSave">Create system</button></div>
+  </div>
+</div>
+
+<!-- add month modal -->
+<div class="modal-bg" id="monthModal">
+  <div class="modal">
+    <h3>Add a new month</h3>
+    <div class="row"><label>Month</label><select id="nmMonth"></select></div>
+    <div class="row"><label>Year</label><select id="nmYear"></select></div>
+    <div class="actions"><button class="btn ghost" data-close>Cancel</button><button class="btn gold" id="nmCreate">Create month</button></div>
+  </div>
+</div>
+
+<!-- task modal -->
+<div class="modal-bg" id="taskModal">
+  <div class="modal">
+    <h3 id="taskModalTitle">New memorisation task</h3>
+    <div class="row"><label>Task name</label><input id="tmName" placeholder="e.g. Memorise Surah Al-Mulk"></div>
+    <div class="row"><label>Surah</label><select id="tmSurah"></select></div>
+    <div class="row"><label>Ayah range</label><select id="tmA1" class="ayah"></select><span class="dash">→</span><select id="tmA2" class="ayah"></select></div>
+    <div class="row"><label>Target lines</label><input id="tmTarget" type="number" min="1" value="15"></div>
+    <div class="row"><label>Lines done</label><input id="tmDone" type="number" min="0" value="0"></div>
+    <div class="row"><label>Due date</label><input id="tmDue" type="date"></div>
+    <div class="actions"><button class="btn ghost" data-close>Cancel</button><button class="btn gold" id="tmSave">Save task</button></div>
+  </div>
+</div>
+
+<!-- exam modal -->
+<div class="modal-bg" id="examModal">
+  <div class="modal">
+    <h3 id="examModalTitle">New exam result</h3>
+    <div class="row"><label>Date</label><input id="emDate" type="date"></div>
+    <div class="row"><label>Surah — from</label><select id="emSurahFrom"></select></div>
+    <div class="row"><label>Surah — to</label><select id="emSurahTo"></select></div>
+    <div class="row"><label>Lines</label><input id="emLines" type="number" min="0"></div>
+    <div class="row"><label>Examiner</label><select id="emExaminer"></select></div>
+    <div class="row"><label>Max marks</label><input id="emMax" type="number" min="1" value="100"></div>
+    <div class="row"><label>Obtained</label><input id="emObt" type="number" min="0"></div>
+    <div class="row"><label>Mistakes</label><input id="emMist" type="number" min="0" value="0"></div>
+    <div class="row"><label>Remarks</label><input id="emRem" placeholder="Optional notes"></div>
+    <div class="actions"><button class="btn ghost" data-close>Cancel</button><button class="btn gold" id="emSave">Save exam</button></div>
+  </div>
+</div>
+
+<!-- portion picker modal (multi-surah) -->
+<div class="surahpop-scrim" id="surahPopScrim"></div>
+<div class="surahpop" id="surahPop">
+  <div class="surahpop-head"><span id="surahPopTitle">Portions</span><button id="surahPopClose" aria-label="Close">✕</button></div>
+  <div class="surahpop-list" id="surahPopList"></div>
+  <button class="surahpop-edit" id="surahPopEdit" style="display:none">✎ Edit these portions</button>
+</div>
+
+<div class="rowmenu" id="rowMenu">
+  <div class="rowmenu-h" id="rowMenuTitle">Day</div>
+  <button id="rmExam"><span class="rmi">🎓</span> Arrange an exam</button>
+  <button id="rmJuz"><span class="rmi">📖</span> Juz submission</button>
+  <button id="rmClear" style="display:none"><span class="rmi">✕</span> Clear this day's event</button>
+</div>
+
+<div class="modal-bg" id="juzTestModal">
+  <div class="modal">
+    <h3 id="jtTitle">Juz examiner test</h3>
+    <p style="color:var(--mut);font-size:13px;margin:-4px 0 14px">Record the result of a full-juz recitation from memory in front of an examiner.</p>
+    <div class="row"><label>Juz completed</label>
+      <select id="jtJuz"></select></div>
+    <div class="row"><label>Examiner</label>
+      <select id="jtExaminer"></select></div>
+    <div class="row"><label>Result</label>
+      <div class="jt-result">
+        <button type="button" class="jt-opt pass" id="jtPass">✓ Completed successfully</button>
+        <button type="button" class="jt-opt retry" id="jtRetry">↻ Try again</button>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn danger sm" id="jtRemove" style="display:none">Remove</button>
+      <span style="flex:1"></span>
+      <button class="btn ghost" data-close>Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="portionModal">
+  <div class="modal">
+    <h3 id="pmTitle">Select portions</h3>
+    <div class="pm-list" id="pmList"></div>
+    <div class="row"><label>Surah</label><select id="pmSurah"></select></div>
+    <div class="row"><label>From ayah</label>
+      <select id="pmA1" class="ayah" hidden></select>
+      <input id="pmA1n" class="ayahnum wide" type="number" min="1" title="From ayah" placeholder="from">
+      <span class="dash">→</span><label style="width:auto">to</label>
+      <select id="pmA2" class="ayah" hidden></select>
+      <input id="pmA2n" class="ayahnum wide" type="number" min="1" title="To ayah" placeholder="to">
+    </div>
+    <div class="row"><span></span><button class="btn ghost sm" id="pmAdd" style="margin-left:auto">＋ Add this portion</button></div>
+
+    <div class="pm-range">
+      <div class="pm-range-h">Or add a whole run of surahs</div>
+      <div class="row"><label>From surah</label><select id="pmRangeFrom"></select></div>
+      <div class="row"><label>To surah</label><select id="pmRangeTo"></select></div>
+      <div class="row"><span class="pm-range-note" id="pmRangeNote">e.g. An-Naba' → An-Nas adds every surah between, in full.</span>
+        <button class="btn ghost sm" id="pmRangeAdd" style="margin-left:auto">＋ Add all in range</button></div>
+    </div>
+    <div class="actions">
+      <button class="btn danger sm" id="pmClear">Clear all</button>
+      <span style="flex:1"></span>
+      <button class="btn ghost" data-close>Cancel</button>
+      <button class="btn gold" id="pmSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="flash"></div>
+<div class="tip" id="tip"></div>
+<script>
 "use strict";
+/* ================= QURAN DATA ================= */
+const SURAHS=[["Al-Fatihah","الفاتحة",7],["Al-Baqarah","البقرة",286],["Aal Imran","آل عمران",200],["An-Nisa","النساء",176],["Al-Ma'idah","المائدة",120],["Al-An'am","الأنعام",165],["Al-A'raf","الأعراف",206],["Al-Anfal","الأنفال",75],["At-Tawbah","التوبة",129],["Yunus","يونس",109],["Hud","هود",123],["Yusuf","يوسف",111],["Ar-Ra'd","الرعد",43],["Ibrahim","إبراهيم",52],["Al-Hijr","الحجر",99],["An-Nahl","النحل",128],["Al-Isra","الإسراء",111],["Al-Kahf","الكهف",110],["Maryam","مريم",98],["Ta-Ha","طه",135],["Al-Anbiya","الأنبياء",112],["Al-Hajj","الحج",78],["Al-Mu'minun","المؤمنون",118],["An-Nur","النور",64],["Al-Furqan","الفرقان",77],["Ash-Shu'ara","الشعراء",227],["An-Naml","النمل",93],["Al-Qasas","القصص",88],["Al-Ankabut","العنكبوت",69],["Ar-Rum","الروم",60],["Luqman","لقمان",34],["As-Sajdah","السجدة",30],["Al-Ahzab","الأحزاب",73],["Saba","سبأ",54],["Fatir","فاطر",45],["Ya-Sin","يس",83],["As-Saffat","الصافات",182],["Sad","ص",88],["Az-Zumar","الزمر",75],["Ghafir","غافر",85],["Fussilat","فصلت",54],["Ash-Shura","الشورى",53],["Az-Zukhruf","الزخرف",89],["Ad-Dukhan","الدخان",59],["Al-Jathiyah","الجاثية",37],["Al-Ahqaf","الأحقاف",35],["Muhammad","محمد",38],["Al-Fath","الفتح",29],["Al-Hujurat","الحجرات",18],["Qaf","ق",45],["Adh-Dhariyat","الذاريات",60],["At-Tur","الطور",49],["An-Najm","النجم",62],["Al-Qamar","القمر",55],["Ar-Rahman","الرحمن",78],["Al-Waqi'ah","الواقعة",96],["Al-Hadid","الحديد",29],["Al-Mujadila","المجادلة",22],["Al-Hashr","الحشر",24],["Al-Mumtahanah","الممتحنة",13],["As-Saff","الصف",14],["Al-Jumu'ah","الجمعة",11],["Al-Munafiqun","المنافقون",11],["At-Taghabun","التغابن",18],["At-Talaq","الطلاق",12],["At-Tahrim","التحريم",12],["Al-Mulk","الملك",30],["Al-Qalam","القلم",52],["Al-Haqqah","الحاقة",52],["Al-Ma'arij","المعارج",44],["Nuh","نوح",28],["Al-Jinn","الجن",28],["Al-Muzzammil","المزمل",20],["Al-Muddaththir","المدثر",56],["Al-Qiyamah","القيامة",40],["Al-Insan","الإنسان",31],["Al-Mursalat","المرسلات",50],["An-Naba","النبأ",40],["An-Nazi'at","النازعات",46],["Abasa","عبس",42],["At-Takwir","التكوير",29],["Al-Infitar","الانفطار",19],["Al-Mutaffifin","المطففين",36],["Al-Inshiqaq","الانشقاق",25],["Al-Buruj","البروج",22],["At-Tariq","الطارق",17],["Al-A'la","الأعلى",19],["Al-Ghashiyah","الغاشية",26],["Al-Fajr","الفجر",30],["Al-Balad","البلد",20],["Ash-Shams","الشمس",15],["Al-Layl","الليل",21],["Ad-Duha","الضحى",11],["Ash-Sharh","الشرح",8],["At-Tin","التين",8],["Al-Alaq","العلق",19],["Al-Qadr","القدر",5],["Al-Bayyinah","البينة",8],["Az-Zalzalah","الزلزلة",8],["Al-Adiyat","العاديات",11],["Al-Qari'ah","القارعة",11],["At-Takathur","التكاثر",8],["Al-Asr","العصر",3],["Al-Humazah","الهمزة",9],["Al-Fil","الفيل",5],["Quraysh","قريش",4],["Al-Ma'un","الماعون",7],["Al-Kawthar","الكوثر",3],["Al-Kafirun","الكافرون",6],["An-Nasr","النصر",3],["Al-Masad","المسد",5],["Al-Ikhlas","الإخلاص",4],["Al-Falaq","الفلق",5],["An-Nas","الناس",6]];
+const DOWS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const MONTH_NAMES=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+/* ================= STATE ================= */
+
+const defaultState=()=>({
+  config:{academy:"ManzilulQuran E-learning Academy",student:"Student Name",lpp:15,total:9060,weekly:[false,false,false,false,false,false,false],holDates:[],examiners:["Ustadh"]},
+  months:{},tasks:[],exams:[]
+});
+let S=defaultState();
+let CAN_EDIT=true;
+const canEdit=()=>CAN_EDIT;
+const normPortions=v=>Array.isArray(v)?v:(v&&v.s!=null?[v]:[]);
+function save(){if(window.persistState)persistState();}
+let activeMonth=null;           // "YYYY-MM"
+let portionCtx=null;            // {mKey,day,field} for portion modal
+let editTaskId=null, editExamId=null;
+
+/* ================= HELPERS ================= */
+const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+const todayStr=()=>{const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());};
+const fmt=n=>Number(n||0).toLocaleString("en-IN");
+const monthLabel=k=>{const[y,m]=k.split("-");return MONTH_NAMES[+m-1]+" "+y;};
+const monthShort=k=>{const[y,m]=k.split("-");return MONTH_NAMES[+m-1].slice(0,3)+" '"+y.slice(2);};
+const daysInMonth=k=>{const[y,m]=k.split("-").map(Number);return new Date(y,m,0).getDate();};
+function isClassDay(k,day){
+  const[y,m]=k.split("-").map(Number);
+  const dow=(new Date(y,m-1,day).getDay()+6)%7; // 0=Mon
+  if(S.config.weekly[dow])return false;
+  if(S.config.holDates.includes(k+"-"+pad(day)))return false;
+  return true;
+}
+function monthKeys(){return Object.keys(S.months).sort();}
+function dayRec(k,day){const m=S.months[k];return m&&m.days[pad(day)]||{};}
+function setDay(k,day,patch){const m=S.months[k];const d=pad(day);m.days[d]=Object.assign(m.days[d]||{},patch);save();}
+function portionText(p,withAr){
+  if(!p||p.s==null)return null;
+  const s=SURAHS[p.s];
+  let t=(p.s+1)+". "+s[0];
+  if(p.a1!=null){t+=" · "+p.a1+(p.a2&&p.a2!==p.a1?"–"+p.a2:"");}
+  return withAr?{t,ar:s[1]}:t;
+}
+function monthStats(k){
+  const dim=daysInMonth(k),m=S.months[k];
+  let classDays=0,present=0,absent=0,lines=0;
+  const hasData=r=>r&&(r.p!=null||Number(r.ln||0)>0||
+      normPortions(r.nl).length||normPortions(r.sq).length||normPortions(r.ol).length);
+  for(let d=1;d<=dim;d++){
+    const r=m?m.days[pad(d)]||{}:{};
+    const counted=isClassDay(k,d)||hasData(r);   // holidays with data now count too
+    if(!counted)continue;
+    if(isClassDay(k,d))classDays++;              // attendance % still measured against real class days
+    if(r.p===1)present++; else if(r.p===0)absent++;
+    lines+=Number(r.ln||0);                      // ALL entered lines count, holiday or not
+  }
+  const exams=S.exams.filter(e=>e.date&&e.date.startsWith(k)).length;
+  return{classDays,present,absent,lines,pages:lines/S.config.lpp,att:classDays?present/classDays*100:0,avg:present?lines/present:0,exams};
+}
+function allStats(){
+  const keys=monthKeys();let cum=0;const rows=keys.map(k=>{const st=monthStats(k);cum+=st.lines;return Object.assign({k,cum},st);});
+  const totPresent=rows.reduce((a,r)=>a+r.present,0),totClass=rows.reduce((a,r)=>a+r.classDays,0);
+  return{rows,cumLines:cum,att:totClass?totPresent/totClass*100:0,totPresent,totClass};
+}
+function currentStreak(){
+  // consecutive class days present, walking back from today (or last recorded day)
+  const keys=monthKeys();if(!keys.length)return 0;
+  let d=new Date();let streak=0;let first=true;
+  for(let guard=0;guard<800;guard++){
+    const k=d.getFullYear()+"-"+pad(d.getMonth()+1),day=d.getDate();
+    if(k<keys[0])break;                       // walked past all tracked months
+    if(S.months[k]&&isClassDay(k,day)){
+      const r=dayRec(k,day);
+      if(r.p===1){streak++;}
+      else if(first&&r.p==null){/* today not marked yet — skip it */}
+      else break;                             // absent or unmarked gap ends the streak
+      first=false;
+    }
+    d.setDate(d.getDate()-1);
+  }
+  return streak;
+}
+function projectedKhatm(){
+  const {rows,cumLines}=allStats();
+  const remaining=S.config.total-cumLines;
+  if(remaining<=0)return{txt:"Complete! ماشاء الله",sub:"Khatm achieved"};
+  const recent=rows.slice(-3).filter(r=>r.lines>0);
+  if(!recent.length)return{txt:"—",sub:"Needs pace data"};
+  const perMonth=recent.reduce((a,r)=>a+r.lines,0)/recent.length;
+  const monthsLeft=remaining/perMonth;
+  if(monthsLeft>600)return{txt:"—",sub:"Needs pace data"};
+  const d=new Date();d.setMonth(d.getMonth()+Math.ceil(monthsLeft));
+  return{txt:MONTH_NAMES[d.getMonth()].slice(0,3)+" "+d.getFullYear(),sub:"~"+Math.ceil(monthsLeft)+" months at current pace"};
+}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2400);}
+function countUp(el,val,dec=0,suffix=""){
+  const dur=(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)?0:900;const t0=performance.now();
+  function step(t){const p=dur?Math.min(1,(t-t0)/dur):1,e=1-Math.pow(1-p,3);
+    el.textContent=(val*e).toFixed(dec).replace(/\B(?=(\d{3})+(?!\d))/g,",")+suffix;
+    if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+
+/* ================= SURAH PICKER WIDGETS ================= */
+const SURAH_JUZ=[[1],[1,2,3],[3,4],[4,5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11],[11,12],[12,13],[13],[13],[14],[14],[15],[15,16],[16],[16],[17],[17],[18],[18],[18,19],[19],[19,20],[20],[20,21],[21],[21],[21],[21,22],[22],[22],[22,23],[23],[23],[23,24],[24],[24,25],[25],[25],[25],[25],[26],[26],[26],[26],[26],[26,27],[27],[27],[27],[27],[27],[27],[28],[28],[28],[28],[28],[28],[28],[28],[28],[29],[29],[29],[29],[29],[29],[29],[29],[29],[29],[29],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30],[30]];
+/* which juz(s) each surah touches — juz_of a surah = SURAH_JUZ[surahIndex] */
+function juzList(si){return SURAH_JUZ[si]||[];}
+function primaryJuz(si){const l=juzList(si);return l.length?l[0]:null;}
+
+function fillSurahSelect(sel,withNone){
+  sel.innerHTML=(withNone?'<option value="">— Surah —</option>':"")+SURAHS.map((s,i)=>`<option value="${i}">${i+1}. ${s[0]} · ${s[1]}</option>`).join("");
+}
+function fillAyahSelect(sel,count,val){
+  let h="";for(let i=1;i<=count;i++)h+=`<option value="${i}"${i===val?" selected":""}>${i}</option>`;
+  sel.innerHTML=h;
+}
+function bindSurahAyah(surahSel,a1Sel,a2Sel,a1Num,a2Num){
+  const cap=()=>{const i=surahSel.value===""?null:+surahSel.value;return i==null?1:SURAHS[i][2];};
+  const sync=()=>{const c=cap();
+    fillAyahSelect(a1Sel,c,1);fillAyahSelect(a2Sel,c,c);
+    if(a1Num){a1Num.max=c;a1Num.value=a1Sel.value;}
+    if(a2Num){a2Num.max=c;a2Num.value=a2Sel.value;}};
+  surahSel.addEventListener("change",sync);
+  a1Sel.addEventListener("change",()=>{
+    if(+a2Sel.value<+a1Sel.value)a2Sel.value=a1Sel.value;
+    if(a1Num)a1Num.value=a1Sel.value; if(a2Num)a2Num.value=a2Sel.value;});
+  a2Sel.addEventListener("change",()=>{ if(a2Num)a2Num.value=a2Sel.value; });
+  // typing a number drives the dropdown (ayah search by number)
+  if(a1Num)a1Num.addEventListener("input",()=>{
+    let v=Math.max(1,Math.min(cap(),+a1Num.value||1)); a1Sel.value=v;
+    if(+a2Sel.value<v){a2Sel.value=v; if(a2Num)a2Num.value=v;} });
+  if(a2Num)a2Num.addEventListener("input",()=>{
+    let v=Math.max(1,Math.min(cap(),+a2Num.value||1)); a2Sel.value=v; });
+  sync();
+}
+</script>
+<script>
+"use strict";
+/* ================= THEME MOON + TASK UNLOCK ================= */
 (function(){
+  /* Dark theme only — light theme fully removed. Crescent moon: tap does nothing,
+     press-and-hold (2.3s) unlocks exam & task editing with a charge animation. */
+  try{ document.body.classList.remove("lighttheme"); }catch(e){}
+  function bind(){
+    const btn=document.getElementById("moonBtn"); if(!btn)return;
+    let held=false,timer=null;
+    const START=e=>{ held=false; btn.classList.add("charging"); timer=setTimeout(()=>{ held=true;
+        btn.classList.remove("charging");
+        btn.classList.remove("pop"); void btn.offsetWidth; btn.classList.add("pop");
+        document.body.classList.toggle("tasks-unlocked");
+        const on=document.body.classList.contains("tasks-unlocked");
+        if(navigator.vibrate)try{navigator.vibrate(30);}catch(_){}
+        if(window.toast)toast(on?"🔓 Exam & task editing unlocked":"🔒 Exam & task editing hidden");
+      },2300); };
+    const CANCEL=()=>{ clearTimeout(timer); btn.classList.remove("charging"); };
+    const END=()=>{ CANCEL(); /* short tap does nothing on purpose */ };
+    btn.addEventListener("contextmenu",e=>e.preventDefault());
+    btn.addEventListener("mousedown",START); btn.addEventListener("touchstart",START,{passive:true});
+    btn.addEventListener("mouseup",END); btn.addEventListener("mouseleave",CANCEL);
+    btn.addEventListener("touchend",END); btn.addEventListener("touchcancel",CANCEL);
+  }
+  document.addEventListener("DOMContentLoaded",bind);
+})();
 
-/* ---------- Juz boundaries (Madani/Tanzil), [surah 1-based, ayah] ---------- */
-const JUZ_START=[[1,1],[2,142],[2,253],[3,93],[4,24],[4,148],[5,82],[6,111],[7,88],[8,41],
-  [9,93],[11,6],[12,53],[15,1],[17,1],[18,75],[21,1],[23,1],[25,21],[27,56],
-  [29,46],[33,31],[36,28],[39,32],[41,47],[46,1],[51,31],[58,1],[67,1],[78,1]];
-const PREFIX=[];{let c=0;SURAHS.forEach((s,i)=>{PREFIX[i]=c;c+=s[2];});PREFIX.push(c);}
-const gIdx=(si,a)=>PREFIX[si]+a;                         // global ayah index (1-based ayah)
-const JUZ_IDX=JUZ_START.map(([s,a])=>gIdx(s-1,a));
-const TOTAL_AYAH=PREFIX[SURAHS.length];
-const JUZ_AYAHS=JUZ_IDX.map((st,i)=>(i<29?JUZ_IDX[i+1]:TOTAL_AYAH+1)-st);
-function juzOfAyah(si,a){const g=gIdx(si,a);let j=1;for(let i=0;i<30;i++){if(JUZ_IDX[i]<=g)j=i+1;else break;}return j;}
-
-/* ---------- score model (shared by leaderboard + report) ---------- */
-const WEIGHTS={pace:30,attendance:25,revision:20,consistency:15,accuracy:10};
-const DIM_LABEL={pace:"Memorisation pace",attendance:"Attendance",revision:"Revision",consistency:"Consistency",accuracy:"Accuracy"};
-function overall(dims){
-  let w=0,s=0;
-  Object.keys(WEIGHTS).forEach(k=>{if(dims[k]!=null){w+=WEIGHTS[k];s+=WEIGHTS[k]*dims[k];}});
-  return w?s/w:0;
+/* ================= JUZ CONGRATS (2-day occasional note) ================= */
+const CONGRATS_KEY="mq_hifz_congrats";
+function markCongrats(juz){
+  try{
+    localStorage.setItem(CONGRATS_KEY, JSON.stringify({juz, until: Date.now()+2*24*3600*1000}));
+  }catch(e){}
 }
-function verdict(score){
-  if(score>=85)return{t:"Excellent",ar:"ممتاز",c:"var(--p-ok)"};
-  if(score>=70)return{t:"Very good",ar:"جيد جدًا",c:"var(--p-em2)"};
-  if(score>=55)return{t:"Good",ar:"جيد",c:"var(--p-gold)"};
-  if(score>=40)return{t:"Needs more effort",ar:"مقبول",c:"var(--p-warn)"};
-  return{t:"Needs attention",ar:"يحتاج متابعة",c:"var(--p-bad)"};
-}
-
-/* ---------- period helpers ---------- */
-// P = {type:"month"|"year"|"all", key}
-const prevMonthKey=k=>{let[y,m]=k.split("-").map(Number);m--;if(!m){m=12;y--;}return y+"-"+pad(m);};
-function keysFor(P){
-  const ks=monthKeys();
-  if(P.type==="month")return ks.filter(k=>k===P.key);
-  if(P.type==="year")return ks.filter(k=>k.startsWith(P.key+"-"));
-  return ks;
-}
-function endKeyFor(P){return P.type==="month"?P.key:P.type==="year"?P.key+"-12":null;}
-function inPeriod(ds,P){if(!ds)return false;if(P.type==="month")return ds.startsWith(P.key);if(P.type==="year")return ds.startsWith(P.key+"-");return true;}
-function prevPeriod(P){
-  if(P.type==="month")return{type:"month",key:prevMonthKey(P.key)};
-  if(P.type==="year")return{type:"year",key:String(+P.key-1)};
+function activeCongrats(){
+  try{
+    const c=JSON.parse(localStorage.getItem(CONGRATS_KEY)||"null");
+    if(c && c.until>Date.now())return c;
+  }catch(e){}
   return null;
 }
-function periodLabel(P){
-  if(P.type==="month")return monthLabel(P.key);
-  if(P.type==="year")return "Year "+P.key;
-  const ks=monthKeys();return ks.length?"All time · "+monthShort(ks[0])+" – "+monthShort(ks[ks.length-1]):"All time";
-}
-const dLabel=ds=>{const[y,m,d]=ds.split("-").map(Number);const dt=new Date(y,m-1,d);return DOWS[(dt.getDay()+6)%7].slice(0,3)+" "+d+" "+MONTH_NAMES[m-1].slice(0,3);};
-const pctTxt=v=>v==null?"—":Math.round(v)+"%";
 
-/* ---------- run fn against another student's state (same swap pattern as summarize()) ---------- */
-function withState(state,fn){
-  const keep=S,keepAM=activeMonth;
-  S=Object.assign(defaultState(),state||{});
-  S.config=Object.assign(defaultState().config,(state||{}).config||{});
-  S.months=S.months||{};S.tasks=S.tasks||[];S.exams=S.exams||[];
-  try{return fn();}finally{S=keep;activeMonth=keepAM;}
-}
-
-/* ---------- period statistics for the student currently in S ---------- */
-function periodStats(P){
-  const keys=keysFor(P),lpp=S.config.lpp||15;
-  let classDays=0,present=0,absent=0,lines=0,revDays=0,nlDays=0,sqDays=0,olDays=0,maxDay=0;
-  const juzRev=new Map(),log=[],juzTests=[],daily=[];
-  keys.forEach(k=>{
-    const st=monthStats(k);present+=st.present;absent+=st.absent;lines+=st.lines;
-    const days=(S.months[k]&&S.months[k].days)||{},dim=daysInMonth(k),today=todayStr();
-    // class days so far: future days of the running month are not counted as missed
-    for(let d=1;d<=dim;d++){if(isClassDay(k,d)&&k+"-"+pad(d)<=today)classDays++;}
-    for(let d=1;d<=dim;d++){
-      const r=days[pad(d)];const ds=k+"-"+pad(d);
-      const ln=Number((r&&r.ln)||0);
-      daily.push({ds,d,k,p:r?r.p:null,ln,cls:isClassDay(k,d)});
-      if(!r)continue;
-      const nl=normPortions(r.nl),sq=normPortions(r.sq),ol=normPortions(r.ol),ev=r.ev||null;
-      if(r.p===1){if(sq.length||ol.length)revDays++;if(ln>0)nlDays++;if(ln>maxDay)maxDay=ln;}
-      if(sq.length)sqDays++;if(ol.length)olDays++;
-      const seen=new Set();
-      sq.concat(ol).forEach(p=>{if(p&&p.s!=null)seen.add(juzOfAyah(p.s,p.a1||1));});
-      seen.forEach(j=>juzRev.set(j,(juzRev.get(j)||0)+1));
-      if(ev&&ev.type==="juz")juzTests.push({ds,juz:ev.juz,result:ev.result,examiner:ev.examiner||""});
-      if(r.p!=null||ln>0||nl.length||sq.length||ol.length||ev)
-        log.push({ds,p:r.p,nl,ln,sq,ol,ev,off:!isClassDay(k,d)});
+/* ================= MOTIVATION TICKER ================= */
+(function(){
+  const NOTES=[
+    "Every ayah you memorise is light upon light for you, {name}.",
+    "The Prophet ﷺ said the best of you are those who learn the Qur'an and teach it.",
+    "Steady drops fill the ocean — one line a day, {name}, and the Qur'an becomes yours.",
+    "{name}, the one who recites the Qur'an will be told: read and rise.",
+    "Your tongue grows heavy with reward each time you revise, {name}.",
+    "The huffaz will wear a crown of light for their parents on the Day of Judgement.",
+    "Whoever is preoccupied with the Qur'an, Allah gives them more than those who ask.",
+    "Small and constant beats large and rare — keep going, {name}.",
+    "Angels surround the gatherings where the Qur'an is recited.",
+    "{name}, every letter is ten rewards — and you are counting thousands.",
+    "Revision is the true memorisation. Guard what you hold, {name}.",
+    "The Qur'an will be a companion and an intercessor for you, {name}.",
+    "A hafidh carries a garden of Paradise within the chest.",
+    "Difficulty today is mastery tomorrow. Push one more line, {name}.",
+    "The one who struggles and stumbles in reciting has two rewards.",
+    "{name}, you are joining the caravan of the people of the Qur'an — the people of Allah.",
+    "Sabr with your sabaq, {name} — the sweetness comes after the patience.",
+    "Let the Qur'an speak on your behalf tomorrow. Memorise for that day, {name}."
+  ];
+  const el=()=>document.getElementById("motivText");
+  const box=()=>document.getElementById("motiv");
+  let order=[], ptr=0, timer=null;
+  function studentName(){
+    try{ if(typeof S!=="undefined" && S.config && S.config.student && S.config.student!=="Student Name" && S.config.student!=="Student")
+      return S.config.student.split(" ")[0]; }catch(e){}
+    return "dear student";
+  }
+  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function nextNote(){
+    // occasionally surface a juz-completion congrats for 2 days after a pass
+    const c=(typeof activeCongrats==="function")?activeCongrats():null;
+    if(c && Math.random()<0.35){
+      return "🎉 Mabrook, {name}! You completed Juz "+c.juz+" — may Allah bless your hifz.";
     }
-  });
-  const exams=S.exams.filter(e=>inPeriod(e.date,P)).sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-  const examAvg=exams.length?exams.reduce((a,e)=>a+(e.max?e.obt/e.max*100:0),0)/exams.length:null;
-  const mist=exams.reduce((a,e)=>a+(+e.mist||0),0);
-  const jtPass=juzTests.filter(t=>t.result==="pass").length,jtRetry=juzTests.length-jtPass;
-  const att=classDays?present/classDays*100:0,avg=present?lines/present:0;
-  const accuracy=examAvg!=null?examAvg:(juzTests.length?jtPass/juzTests.length*100:null);
-  const dims={
-    pace:Math.min(100,avg/lpp*100),
-    attendance:att,
-    revision:present?revDays/present*100:0,
-    consistency:present?nlDays/present*100:0,
-    accuracy
-  };
-  const eligible=present>0||lines>0;
-  return{P,keys,classDays,present,absent,lines,pages:lines/lpp,att,avg,revDays,nlDays,sqDays,olDays,maxDay,
-    juzRev,log,juzTests,jtPass,jtRetry,exams,examAvg,mist,daily,dims,score:eligible?overall(dims):0,eligible};
-}
-function cumulativeTo(endKey){return monthKeys().filter(k=>!endKey||k<=endKey).reduce((a,k)=>a+monthStats(k).lines,0);}
+    if(!order.length||ptr>=order.length){order=shuffle([...Array(NOTES.length).keys()]);ptr=0;}
+    return NOTES[order[ptr++]];
+  }
+  function show(){
+    const t=el(); if(!t)return;
+    const raw=nextNote().replace(/\{name\}/g,"<b>"+studentName()+"</b>");
+    t.classList.remove("in","sweep");
+    // fade out old, swap, fade in + sweep
+    setTimeout(()=>{
+      t.innerHTML=raw;
+      void t.offsetWidth;                 // reflow so animation restarts
+      t.classList.add("in");
+      setTimeout(()=>t.classList.add("sweep"),480);
+    },160);
+  }
+  function start(){
+    if(timer)return;
+    const b=box(); if(!b)return;
+    show();
+    timer=setInterval(show,18000);        // 18s => ~3.3 notes per minute (>3/min)
+  }
+  document.addEventListener("DOMContentLoaded",start);
+  window.__motivStart=start;
+})();
 
-/* ---------- memorised portion as ayah units split by juz ---------- */
-function memorised(endKey){
-  const bySurah=new Map(),first=new Map();
-  monthKeys().filter(k=>!endKey||k<=endKey).forEach(k=>{
-    const days=(S.months[k]&&S.months[k].days)||{};
-    Object.keys(days).sort().forEach(dd=>{
-      normPortions((days[dd]||{}).nl).forEach(p=>{
-        if(!p||p.s==null)return;
-        const a1=p.a1||1,a2=p.a2||p.a1||SURAHS[p.s][2];
-        if(!bySurah.has(p.s))bySurah.set(p.s,[]);
-        bySurah.get(p.s).push({a1:Math.min(a1,a2),a2:Math.max(a1,a2)});
-        if(!first.has(p.s))first.set(p.s,k+"-"+dd);
+/* ================= PORTION ZOOM ================= */
+(function(){
+  const KEY="mq_hifz_dz";
+  let dz=1; try{dz=parseFloat(localStorage.getItem(KEY))||1;}catch(e){}
+  dz=Math.min(1.6,Math.max(0.6,dz));
+  function apply(){
+    const box=document.getElementById("dailyZoom");
+    if(box){ box.style.setProperty("--dz",dz.toFixed(2));
+      // counter the width so the scaled section still fits its container
+      box.style.width=(100/dz).toFixed(2)+"%"; }
+    const v=document.getElementById("zoomVal");
+    if(v)v.textContent=Math.round(dz*100)+"%";
+    try{localStorage.setItem(KEY,dz.toFixed(2));}catch(e){}
+  }
+  function bind(){
+    const oi=document.getElementById("zoomIn"),oo=document.getElementById("zoomOut"),
+          or=document.getElementById("zoomReset");
+    if(!oi)return;
+    oi.onclick=()=>{dz=Math.min(1.6,dz+0.1);apply();};
+    oo.onclick=()=>{dz=Math.max(0.6,dz-0.1);apply();};
+    or.onclick=()=>{dz=1;apply();};
+    apply();
+  }
+  document.addEventListener("DOMContentLoaded",bind);
+  window.__applyPZ=apply;
+})();
+
+/* ================= NAV ================= */
+function openSide(v){$("#nav").classList.toggle("open",v);$("#sideScrim").classList.toggle("open",v);}
+$("#menuFab").addEventListener("click",()=>openSide(!$("#nav").classList.contains("open")));
+$("#sideScrim").addEventListener("click",()=>openSide(false));
+const TAB_ORDER=["daily","dash","tasks","exams","reports","memorised","progress"];
+function gotoView(v){
+  if(!TAB_ORDER.includes(v))return;
+  $$("#nav button").forEach(x=>x.classList.toggle("active",x.dataset.v===v));
+  $$(".view").forEach(sec=>sec.classList.remove("on"));
+  const el=$("#v-"+v); if(el)el.classList.add("on");
+  updateDots(v);
+  renderAll();
+}
+$("#nav").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  gotoView(b.dataset.v); openSide(false);
+});
+/* ---- swipe on the DOTS BAR only to change tab ---- */
+(function(){
+  let x0=null,y0=null,t0=0;
+  function curTab(){const on=$(".view.on");if(!on)return "daily";return (on.id||"").replace("v-","");}
+  function activeTab(){ return TAB_ORDER.includes(curTab()); }
+  const bar=$("#tabDots"); if(!bar)return;
+  bar.addEventListener("touchstart",e=>{
+    if(e.touches.length!==1)return; x0=e.touches[0].clientX; y0=e.touches[0].clientY; t0=Date.now();
+  },{passive:true});
+  bar.addEventListener("touchend",e=>{
+    if(x0==null)return;
+    const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0, dt=Date.now()-t0;
+    x0=null;
+    if(!activeTab())return;
+    if(Math.abs(dx)<40||Math.abs(dx)<Math.abs(dy)*1.4||dt>600)return; // clear horizontal swipe on the bar
+    const i=TAB_ORDER.indexOf(curTab()); if(i<0)return;
+    const ni = dx<0 ? Math.min(TAB_ORDER.length-1,i+1) : Math.max(0,i-1);
+    if(ni!==i)gotoView(TAB_ORDER[ni]);
+  },{passive:true});
+})();
+function updateDots(v){
+  const wrap=$("#tabDots"); if(!wrap)return;
+  const i=TAB_ORDER.indexOf(v);
+  wrap.style.display = i<0 ? "none" : "flex";
+  $$("#tabDots .tdot").forEach((d,di)=>d.classList.toggle("on",di===i));
+  const lbl={daily:"Daily Log",dash:"Dashboard",tasks:"Tasks",exams:"Exams",reports:"Reports",memorised:"Memorised",progress:"Progress Report"}[v]||"";
+  const L=$("#tabDotsLbl"); if(L)L.textContent=lbl;
+}
+(function(){
+  function cur(){return ($(".view.on")?.id||"").replace("v-","");}
+  const step=d=>{const i=TAB_ORDER.indexOf(cur());if(i<0)return;const ni=Math.max(0,Math.min(TAB_ORDER.length-1,i+d));if(ni!==i)gotoView(TAB_ORDER[ni]);};
+  $("#dotPrev")&&$("#dotPrev").addEventListener("click",()=>step(-1));
+  $("#dotNext")&&$("#dotNext").addEventListener("click",()=>step(1));
+  $$("#tabDots .tdot").forEach(d=>d.addEventListener("click",()=>gotoView(d.dataset.v)));
+})();
+$$(".modal-bg").forEach(m=>{
+  m.addEventListener("click",e=>{if(e.target===m||e.target.hasAttribute("data-close"))m.classList.remove("on");});
+});
+
+/* ================= DASHBOARD ================= */
+function renderKPIs(){
+  const A=allStats(),cfg=S.config;
+  const pages=A.cumLines/cfg.lpp, pct=A.cumLines/cfg.total*100;
+  const streak=currentStreak(), kh=projectedKhatm();
+  const avg=A.totPresent?A.cumLines/A.totPresent:0;
+  const kpis=[
+    {lab:"Lines Memorised",val:A.cumLines,dec:0,cls:"gold",sub:"of "+fmt(cfg.total)+" lines"},
+    {lab:"Pages Memorised",val:pages,dec:1,cls:"",sub:"of "+Math.round(cfg.total/cfg.lpp)+" pages"},
+    {lab:"% of Qur'an",val:pct,dec:1,suf:"%",cls:"green",sub:"Juz ≈ "+(pct*0.3).toFixed(1)+" / 30"},
+    {lab:"Overall Attendance",val:A.att,dec:1,suf:"%",cls:"",sub:A.totPresent+" of "+A.totClass+" class days"},
+    {lab:"Current Streak",val:streak,dec:0,cls:"gold",sub:streak?"class days present in a row":"mark today to start"},
+    {lab:"Avg Lines / Day",val:avg,dec:1,cls:"",sub:"per present day"},
+    {lab:"Projected Khatm",txt:kh.txt,cls:"green",sub:kh.sub},
+  ];
+  $("#kpiRow").innerHTML=kpis.map((k,i)=>`<div class="card kpi ${k.cls}" style="animation:rise .4s ${i*0.06}s ease both">
+    <div class="lab">${k.lab}</div><div class="val" data-i="${i}">${k.txt?esc(k.txt):"0"}</div><div class="sub">${esc(k.sub)}</div></div>`).join("");
+  kpis.forEach((k,i)=>{if(k.txt==null)countUp($(`#kpiRow .val[data-i="${i}"]`),k.val,k.dec,k.suf||"");});
+}
+function renderJuzRing(){
+  const A=allStats(),cfg=S.config;
+  const pct=Math.min(1,A.cumLines/cfg.total);
+  const R=108,CX=140,CY=140,SW=17,C=2*Math.PI*R;
+  const gap=0.028;                                    // radians gap between juz segments
+  let segs="";
+  for(let j=0;j<30;j++){
+    const a0=-Math.PI/2+j*(2*Math.PI/30)+gap/2, a1=-Math.PI/2+(j+1)*(2*Math.PI/30)-gap/2;
+    const segStart=j/30, segEnd=(j+1)/30;
+    let fillFrac=0;
+    if(pct>=segEnd)fillFrac=1; else if(pct>segStart)fillFrac=(pct-segStart)/(segEnd-segStart);
+    const arc=(aa,bb,col,op,w)=>{const x0=CX+R*Math.cos(aa),y0=CY+R*Math.sin(aa),x1=CX+R*Math.cos(bb),y1=CY+R*Math.sin(bb);
+      const large=(bb-aa)>Math.PI?1:0;
+      return `<path d="M${x0.toFixed(2)} ${y0.toFixed(2)} A${R} ${R} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}" stroke="${col}" stroke-width="${w}" fill="none" stroke-linecap="round" opacity="${op}"/>`;};
+    segs+=arc(a0,a1,"rgba(255,255,255,.09)",1,SW);
+    if(fillFrac>0){const am=a0+(a1-a0)*fillFrac;
+      segs+=arc(a0,Math.max(am,a0+0.001),`url(#gGold)`,1,SW);
+    }
+  }
+  const juzDone=Math.floor(pct*30);
+  $("#juzRing").innerHTML=`<svg width="280" height="280" viewBox="0 0 280 280">
+    <defs><linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2fae7f"/><stop offset="1" stop-color="#C9A96E"/></linearGradient></defs>
+    <circle cx="${CX}" cy="${CY}" r="${R-SW-6}" fill="rgba(11,77,59,.18)" stroke="rgba(201,169,110,.12)"/>
+    <g class="ringsegs" style="opacity:0;transition:opacity 1s">${segs}</g>
+    <text x="${CX}" y="${CY-12}" text-anchor="middle" font-size="40" font-family="Marcellus,serif" fill="#e8cf9a" id="ringNum">0</text>
+    <text x="${CX}" y="${CY+14}" text-anchor="middle" font-size="10" letter-spacing="2" fill="#8fb3a2">JUZ COMPLETE</text>
+    <text x="${CX}" y="${CY+34}" text-anchor="middle" font-size="11" fill="#5d7d6e">${fmt(A.cumLines)} / ${fmt(cfg.total)} lines</text>
+  </svg>`;
+  requestAnimationFrame(()=>{$(".ringsegs").style.opacity=1;});
+  countUp($("#ringNum"),juzDone,0);
+  $("#ringPct").textContent=(pct*100).toFixed(1)+"%";
+  $("#ringSub").textContent="of the Holy Qur'an memorised";
+}
+function svgLineBar(rows,valKey,cumKey,w,h){
+  if(!rows.length)return '<div class="empty-note">Add a month and log daily lines to light up this chart.</div>';
+  const P={l:40,r:cumKey?46:16,t:14,b:30};
+  const iw=w-P.l-P.r, ih=h-P.t-P.b;
+  const maxV=Math.max(1,...rows.map(r=>r[valKey]));
+  const maxC=cumKey?Math.max(1,...rows.map(r=>r[cumKey])):0;
+  const bw=Math.min(38,iw/rows.length*0.55), step=iw/rows.length;
+  let bars="",labels="",pts=[];
+  rows.forEach((r,i)=>{
+    const x=P.l+step*i+step/2, bh=r[valKey]/maxV*ih;
+    bars+=`<rect x="${(x-bw/2).toFixed(1)}" y="${(P.t+ih-bh).toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="6" fill="url(#gBar)" class="bar" data-tip="<b>${monthLabel(r.k)}</b><br>${fmt(r[valKey])} lines · ${r.pages.toFixed(1)} pages${cumKey?"<br>Cumulative: "+fmt(r[cumKey]):""}" style="transform-origin:${x}px ${P.t+ih}px"/>`;
+    labels+=`<text x="${x}" y="${h-10}" text-anchor="middle" font-size="10" fill="#5d7d6e">${monthShort(r.k)}</text>`;
+    if(cumKey)pts.push([x,P.t+ih-r[cumKey]/maxC*ih]);
+  });
+  let curve="";
+  if(cumKey&&pts.length){
+    const d=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+    curve=`<path d="${d}" fill="none" stroke="#e8cf9a" stroke-width="2.5" stroke-linecap="round" class="curve"/>`+
+      pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#e8cf9a"/>`).join("");
+  }
+  const gridY=[0,.25,.5,.75,1].map(f=>`<line x1="${P.l}" x2="${w-P.r}" y1="${(P.t+ih*(1-f)).toFixed(1)}" y2="${(P.t+ih*(1-f)).toFixed(1)}" stroke="rgba(255,255,255,.05)"/>
+    <text x="${P.l-8}" y="${(P.t+ih*(1-f)+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#5d7d6e">${Math.round(maxV*f)}</text>`).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto">
+    <defs><linearGradient id="gBar" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#0B4D3B"/><stop offset="1" stop-color="#2fae7f"/></linearGradient></defs>
+    ${gridY}${bars}${curve}${labels}</svg>`;
+}
+function svgAttLine(rows,w,h){
+  if(!rows.length)return '<div class="empty-note">Attendance appears here once class days are marked.</div>';
+  const P={l:40,r:16,t:14,b:30}, iw=w-P.l-P.r, ih=h-P.t-P.b, step=iw/Math.max(1,rows.length-1||1);
+  const pts=rows.map((r,i)=>[P.l+(rows.length>1?step*i:iw/2), P.t+ih-(r.att/100)*ih]);
+  const d=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area=d+` L${pts[pts.length-1][0].toFixed(1)} ${P.t+ih} L${pts[0][0].toFixed(1)} ${P.t+ih} Z`;
+  const grid=[0,25,50,75,100].map(v=>`<line x1="${P.l}" x2="${w-P.r}" y1="${(P.t+ih*(1-v/100)).toFixed(1)}" y2="${(P.t+ih*(1-v/100)).toFixed(1)}" stroke="rgba(255,255,255,.05)"/>
+    <text x="${P.l-8}" y="${(P.t+ih*(1-v/100)+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#5d7d6e">${v}%</text>`).join("");
+  const labels=rows.map((r,i)=>`<text x="${pts[i][0]}" y="${h-10}" text-anchor="middle" font-size="10" fill="#5d7d6e">${monthShort(r.k)}</text>`).join("");
+  const dots=rows.map((r,i)=>`<circle cx="${pts[i][0]}" cy="${pts[i][1]}" r="4.5" fill="#2fae7f" stroke="#050f0c" stroke-width="2" class="bar" data-tip="<b>${monthLabel(r.k)}</b><br>Attendance ${r.att.toFixed(1)}%<br>${r.present}/${r.classDays} class days"/>`).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto">
+    <defs><linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(47,174,127,.35)"/><stop offset="1" stop-color="rgba(47,174,127,0)"/></linearGradient></defs>
+    ${grid}<path d="${area}" fill="url(#gArea)"/><path d="${d}" fill="none" stroke="#2fae7f" stroke-width="2.5" stroke-linecap="round" class="curve"/>${dots}${labels}</svg>`;
+}
+function renderHeat(){
+  const keys=monthKeys();
+  const nowK=new Date().getFullYear()+"-"+pad(new Date().getMonth()+1);
+  const k=S.months[nowK]?nowK:(keys[keys.length-1]||null);
+  const box=$("#heatmap");
+  if(!k){box.innerHTML="";$("#heatTitle").textContent="This Month";box.insertAdjacentHTML("beforeend",'<div class="empty-note" style="grid-column:1/-1">No months yet.</div>');return;}
+  $("#heatTitle").textContent=monthLabel(k);
+  const dim=daysInMonth(k);
+  const[y,m]=k.split("-").map(Number);
+  const firstDow=(new Date(y,m-1,1).getDay()+6)%7;
+  const maxL=Math.max(1,...Array.from({length:dim},(_,i)=>Number(dayRec(k,i+1).ln||0)));
+  let h=["Mo","Tu","We","Th","Fr","Sa","Su"].map(d=>`<div class="dow">${d}</div>`).join("");
+  for(let i=0;i<firstDow;i++)h+="<div></div>";
+  for(let d=1;d<=dim;d++){
+    const r=dayRec(k,d), cls=isClassDay(k,d)?"":"hol";
+    let lvl="h0", tip=`<b>${monthLabel(k).split(" ")[0]} ${d}</b><br>`;
+    if(cls==="hol"){tip+="Holiday";}
+    else{
+      const ln=Number(r.ln||0);
+      if(r.p===0){lvl="abs";tip+="Absent";}
+      else if(ln>0){const f=ln/maxL; lvl=f>0.99?"h4":f>0.66?"h3":f>0.33?"h2":"h1"; tip+=ln+" lines memorised";}
+      else if(r.p===1){lvl="h1";tip+="Present · no lines logged";}
+      else tip+="Not marked";
+    }
+    h+=`<div class="cell ${cls} ${lvl} ${lvl!=='h0'?'p':''} bar" data-tip="${tip}">${d}</div>`;
+  }
+  box.innerHTML=h;
+}
+function renderPortionTable(){
+  const A=allStats();const tb=$("#portionTable tbody");const cfg=S.config;
+  let prev=null;
+  tb.innerHTML=A.rows.map(r=>{
+    const delta=prev==null?"—":r.lines-prev;
+    const dcls=prev==null?"flat":delta>0?"up":delta<0?"down":"flat";
+    const dtxt=prev==null?"—":(delta>0?"▲ +":delta<0?"▼ ":"＝ ")+fmt(Math.abs(delta));
+    prev=r.lines;
+    return `<tr><td><b>${monthLabel(r.k)}</b></td><td>${r.present}</td><td>${r.classDays}</td><td>${r.att.toFixed(1)}%</td>
+      <td>${fmt(r.lines)}</td><td>${r.pages.toFixed(1)}</td><td style="color:var(--gold2)">${fmt(r.cum)}</td>
+      <td>${(r.cum/cfg.lpp).toFixed(1)}</td><td>${(r.cum/cfg.total*100).toFixed(2)}%</td><td>${(r.cum/cfg.total*30).toFixed(1)}</td>
+      <td class="delta ${dcls}">${dtxt}</td></tr>`;
+  }).join("")||'<tr><td colspan="11"><div class="empty-note">No months yet — open Daily Log and add your first month.</div></td></tr>';
+}
+function renderDash(){renderKPIs();renderJuzRing();
+  const A=allStats();
+  $("#monthChart").innerHTML=svgLineBar(A.rows,"lines","cum",560,260);
+  $("#attChart").innerHTML=svgAttLine(A.rows,520,240);
+  renderHeat();renderPortionTable();bindTips();
+}
+/* tooltips */
+function bindTips(){
+  const tip=$("#tip");
+  $$(".bar").forEach(el=>{
+    el.onmousemove=e=>{tip.innerHTML=el.dataset.tip;tip.style.opacity=1;
+      tip.style.left=Math.min(innerWidth-170,e.clientX+14)+"px";tip.style.top=(e.clientY+14)+"px";};
+    el.onmouseleave=()=>tip.style.opacity=0;
+  });
+}
+</script>
+<script>
+"use strict";
+/* ================= DAILY LOG ================= */
+function ensureFirstMonth(){
+  if(monthKeys().length)return;
+  const d=new Date();addMonth(d.getFullYear(),d.getMonth()+1,false);
+}
+function addMonth(y,m,announce=true){
+  const k=y+"-"+pad(m);
+  if(S.months[k]){activeMonth=k;toast(monthLabel(k)+" already exists");renderDaily();return;}
+  S.months[k]={days:{}};save();activeMonth=k;
+  if(announce)toast(monthLabel(k)+" added ✓");
+  renderDaily();
+}
+function renderMTabs(){
+  const keys=monthKeys();
+  if(!activeMonth||!S.months[activeMonth])activeMonth=keys[keys.length-1]||null;
+  $("#mtabs").innerHTML=keys.map(k=>`<div class="mtab ${k===activeMonth?"on":""}" data-k="${k}">${monthLabel(k)}</div>`).join("")
+    +`<div class="mtab add" id="addMonthTab">＋ Add month</div>`;
+  $$("#mtabs .mtab[data-k]").forEach(t=>t.onclick=()=>{activeMonth=t.dataset.k;renderDaily();});
+  $("#addMonthTab").onclick=openMonthModal;
+}
+function openMonthModal(){
+  if(!canEdit())return;
+  const keys=monthKeys();
+  let sy,sm;
+  if(keys.length){const[y,m]=keys[keys.length-1].split("-").map(Number);sm=m===12?1:m+1;sy=m===12?y+1:y;}
+  else{const d=new Date();sy=d.getFullYear();sm=d.getMonth()+1;}
+  $("#nmMonth").innerHTML=MONTH_NAMES.map((n,i)=>`<option value="${i+1}"${i+1===sm?" selected":""}>${n}</option>`).join("");
+  const yNow=new Date().getFullYear();
+  let yh="";for(let y=yNow-2;y<=yNow+6;y++)yh+=`<option value="${y}"${y===sy?" selected":""}>${y}</option>`;
+  $("#nmYear").innerHTML=yh;
+  $("#monthModal").classList.add("on");
+}
+$("#nmCreate").onclick=()=>{addMonth(+$("#nmYear").value,+$("#nmMonth").value);$("#monthModal").classList.remove("on");};
+
+function portionCell(k,day,field){
+  const list=normPortions(dayRec(k,day)[field]);
+  if(!list.length){
+    return `<span class="portion"><span class="pchip empty" data-d="${day}" data-f="${field}" title="Add portion">＋</span></span>`;
+  }
+  const first=list[0], multi=list.length>1;
+  const label = !multi ? esc(portionText(first))
+                       : `${esc(SURAHS[first.s][0])} <span class="pcell-badge">+${list.length-1}</span>`;
+  // multi-surah cells open a read-only popup board on click (works in view mode);
+  // single cells open the editor when editing, or the popup when view-only.
+  return `<span class="portion"><button class="pcell${multi?' multi':''}" data-d="${day}" data-f="${field}" data-multi="${multi?1:0}"
+      title="${esc(list.map(p=>portionText(p)).join(" · "))}">
+      <span class="arname">${SURAHS[first.s][1]}</span><span class="pcell-t">${label}</span>
+    </button></span>`;
+}
+function dayMarker(r,d){
+  // small status marks visible even in view-only mode (checkmarks etc.)
+  let m="";
+  if(r.ev&&r.ev.type==="juz")m+=r.ev.result==="pass"?'<span class="dmark ok" title="Juz '+r.ev.juz+' — passed">✓ J'+r.ev.juz+'</span>':'<span class="dmark retry" title="Juz '+r.ev.juz+' — try again">↻ J'+r.ev.juz+'</span>';
+  if(r.ev&&r.ev.type==="exam")m+='<span class="dmark exam" title="Exam day">🎓</span>';
+  return m?('<div class="dmarks">'+m+'</div>'):"";
+}
+function eventCellHTML(ev){
+  if(ev.type==="exam"){
+    return '<div class="evcell exam"><span class="evi">🎓</span><span class="evt">Exam'+(ev.juz?' · Juz '+ev.juz:'')+'</span></div>';
+  }
+  const ok=ev.result==="pass";
+  return '<div class="evcell juz '+(ok?"pass":"retry")+'"><span class="evi">'+(ok?"✓":"↻")+'</span><span class="evt">Juz '+ev.juz+' — '+(ok?"Completed":"Try again")+'</span></div>';
+}
+function juzTestChip(r,d){
+  const jt=r.jt;  // {juz, examiner, result:"pass"|"retry", date}
+  if(jt && jt.result){
+    const ok=jt.result==="pass";
+    return `<button class="jtchip ${ok?'pass':'retry'}" data-jt="${d}" title="Juz ${jt.juz} test — ${ok?'Completed successfully':'Try again'}${jt.examiner?' · '+esc(jt.examiner):''}">
+      ${ok?'✓':'↻'} Juz ${jt.juz}</button>`;
+  }
+  return `<button class="jtchip add" data-jt="${d}" title="Record a juz examiner test on this day">+ juz test</button>`;
+}
+function renderDaily(){
+  renderMTabs();
+  const tb=$("#dailyTable tbody");
+  if(!activeMonth){tb.innerHTML='<tr><td colspan="6"><div class="empty-note">Add your first month to begin daily tracking.</div></td></tr>';$("#mdash").innerHTML="";$("#mdelta").innerHTML="";return;}
+  const k=activeMonth,dim=daysInMonth(k),today=todayStr();
+  const[y,m]=k.split("-").map(Number);
+  let holidayWarned=false;
+  const warnHoliday=(d)=>{ if(isClassDay(k,d))return; if(holidayWarned)return; holidayWarned=true;
+    toast("⚠️ This is a holiday / off day — you're adding data on a non-class day."); };
+  let h="";
+  for(let d=1;d<=dim;d++){
+    const dt=k+"-"+pad(d), r=dayRec(k,d), cls=isClassDay(k,d);
+    const dow=DOWS[(new Date(y,m-1,d).getDay()+6)%7].slice(0,3);
+    const pState=r.p===1?"on":r.p===0?"abs":"";
+    const pMark=r.p===1?"✓":r.p===0?"✗":"·";
+    const ev=r.ev;                                 // {type:"exam"|"juz", juz, result, ...}
+    const hasData = (r.p!=null)||Number(r.ln||0)>0||normPortions(r.nl).length||normPortions(r.sq).length||normPortions(r.ol).length||ev;
+    const rowCls=[cls?"":"holiday", (!cls&&hasData)?"has-data":"", dt===today?"today-row":"", ev?("ev-"+ev.type):"", (ev&&ev.type==="juz"&&ev.result==="pass")?"ev-glow":""].filter(Boolean).join(" ");
+    let portionArea;
+    if(ev){
+      // the three portion columns become ONE merged cell describing the event
+      portionArea=`<td class="pcol pcol-merged" data-day="${d}" colspan="3">${eventCellHTML(ev)}</td>`;
+    } else {
+portionArea=`<td class="pcol" data-day="${d}">${portionCell(k,d,"nl")}</td>
+      <td>${`<input type="number" min="0" value="${r.ln??""}" placeholder="0" data-d="${d}" class="lnin" style="width:64px">`}</td>
+      <td class="pcol" data-day="${d}">${portionCell(k,d,"sq")}</td>
+      <td class="pcol" data-day="${d}">${portionCell(k,d,"ol")}</td>`;
+    }
+    h+=`<tr class="${rowCls}" data-day="${d}">
+      <td class="datecell"><b>${d}</b><span>${dow}</span>${dayMarker(r,d)}</td>
+      <td>${`<button class="pv ${pState}" data-d="${d}" title="present / absent / clear">${pMark}</button>`}${cls?"":'<span class="offtag" title="Holiday / off day">OFF</span>'}</td>
+      ${portionArea}
+      ${ev?`<td><input type="number" min="0" value="${r.ln??""}" placeholder="0" data-d="${d}" class="lnin" style="width:64px"></td>`:""}
+    </tr>`;
+  }
+  tb.innerHTML=h;
+  tb.querySelectorAll(".pv").forEach(b=>b.onclick=()=>{
+    if(!canEdit())return;
+    const d=+b.dataset.d, r=dayRec(k,d);
+    warnHoliday(d);
+    const next=r.p===1?0:r.p===0?null:1;
+    setDay(k,d,{p:next});renderDaily();
+  });
+  tb.querySelectorAll(".lnin").forEach(inp=>inp.onchange=()=>{
+    if(!canEdit()){renderDaily();return;}
+    warnHoliday(+inp.dataset.d);
+    const v=inp.value===""?null:Math.max(0,+inp.value);
+    setDay(k,+inp.dataset.d,{ln:v});renderMonthDash();
+  });
+  tb.querySelectorAll(".pcell,.pchip.empty").forEach(c=>c.onclick=(ev)=>{
+    const day=+c.dataset.d, field=c.dataset.f, multi=c.dataset.multi==="1";
+    // multi-surah cell => always open the popup board (works in view-only too)
+    if(multi){ openSurahPop(k,day,field, ev.clientX, ev.clientY); return; }
+    // single: edit mode opens editor; view-only opens the popup board
+    if(canEdit()){ warnHoliday(day); openPortionModal(k,day,field); }
+    else if(c.classList.contains("pcell")){ openSurahPop(k,day,field, ev.clientX, ev.clientY); }
+  });
+  // long-press (0.6s) a day row => menu: Exam / Juz submission (edit mode only)
+  tb.querySelectorAll("tr[data-day]").forEach(row=>{
+    let timer=null, fired=false;
+    const start=(e)=>{
+      if(!adminUnlocked()&&!LINK){}          // allow in edit mode
+      if(!canEdit())return;
+      fired=false; row.classList.add("row-pressing");
+      const pt=(e.touches&&e.touches[0])||e;
+      timer=setTimeout(()=>{ fired=true; row.classList.remove("row-pressing");
+        openRowMenu(k,+row.dataset.day, pt.clientX, pt.clientY);
+      },600);
+    };
+    const cancel=()=>{ clearTimeout(timer); row.classList.remove("row-pressing"); };
+    row.addEventListener("mousedown",start); row.addEventListener("touchstart",start,{passive:true});
+    row.addEventListener("mouseup",cancel); row.addEventListener("mouseleave",cancel);
+    row.addEventListener("touchend",cancel); row.addEventListener("touchmove",cancel,{passive:true});
+    row.addEventListener("click",e=>{ if(fired){e.stopPropagation();e.preventDefault();fired=false;} },true);
+    row.addEventListener("contextmenu",e=>{ if(canEdit())e.preventDefault(); });
+  });
+  tb.querySelectorAll(".jtchip").forEach(c=>c.onclick=()=>{if(!canEdit())return;openJuzTest(k,+c.dataset.jt);});
+  renderMonthDash();
+  if(window.__applyPZ)window.__applyPZ();
+  // (auto-scroll to today removed by request — the log opens at the top of the month)
+}
+function renderMonthDash(){
+  const k=activeMonth;if(!k)return;
+  const st=monthStats(k);
+  $("#mdashTitle").textContent="📊 "+monthLabel(k);
+  const rows=[["Days Present",st.present],["Class Days",st.classDays],["Days Absent",st.absent],
+    ["Attendance %",st.att.toFixed(1)+"%"],["Total Lines",fmt(st.lines)],["Pages",st.pages.toFixed(1)],
+    ["Avg Lines/Day",st.avg.toFixed(1)],["Exams",st.exams]];
+  $("#mdash").innerHTML=rows.map(r=>`<div class="mstat"><span>${r[0]}</span><b>${r[1]}</b></div>`).join("");
+  // deltas vs previous existing month
+  const keys=monthKeys(), idx=keys.indexOf(k);
+  if(idx<=0){$("#mdelta").innerHTML='<div class="empty-note" style="padding:12px">First tracked month</div>';return;}
+  const pv=monthStats(keys[idx-1]);
+  const mk=(label,d,suf)=>{const cls=d>0?"up":d<0?"down":"flat", sym=d>0?"▲ +":d<0?"▼ ":"＝ ";
+    return `<div class="mstat"><span>${label}</span><b class="delta ${cls}">${sym}${Math.abs(d).toFixed(1)}${suf}</b></div>`;};
+  $("#mdelta").innerHTML=mk("Attendance Δ",st.att-pv.att,"%")+mk("Lines Δ",st.lines-pv.lines,"");
+}
+/* portion modal (multi-surah) */
+let pmDraft=[];
+function renderPmList(){
+  $("#pmList").innerHTML=pmDraft.length?pmDraft.map((p,i)=>
+    `<span class="pchip"><span class="arname">${SURAHS[p.s][1]}</span>${esc(portionText(p))}<button data-i="${i}" title="Remove">✕</button></span>`).join("")
+    :'<span style="color:var(--dim);font-size:12.5px">No portions yet — pick a surah below and press ＋ Add.</span>';
+  $("#pmList").querySelectorAll("button").forEach(b=>b.onclick=()=>{pmDraft.splice(+b.dataset.i,1);renderPmList();});
+}
+function openPortionModal(k,day,field){
+  portionCtx={k,day,field};
+  const names={nl:"New lesson",sq:"Sabq (revision)",ol:"Old lesson"};
+  $("#pmTitle").textContent=names[field]+" · "+monthLabel(k).split(" ")[0]+" "+day;
+  const sSel=$("#pmSurah"),a1=$("#pmA1"),a2=$("#pmA2"),a1n=$("#pmA1n"),a2n=$("#pmA2n");
+  fillSurahSelect(sSel,true);
+  if(!sSel._bound){bindSurahAyah(sSel,a1,a2,a1n,a2n);sSel._bound=true;}
+  sSel.value="";sSel.dispatchEvent(new Event("change"));
+  // range dropdowns (full-surah runs)
+  const rF=$("#pmRangeFrom"),rT=$("#pmRangeTo");
+  if(!rF._bound){fillSurahSelect(rF,false);fillSurahSelect(rT,false);rF._bound=true;}
+  pmDraft=normPortions(dayRec(k,day)[field]).map(p=>({...p}));
+  renderPmList();
+  $("#portionModal").classList.add("on");
+}
+$("#pmAdd").onclick=()=>{
+  const sv=$("#pmSurah").value;
+  if(sv===""){toast("Choose a surah first");return;}
+  pmDraft.push({s:+sv,a1:+$("#pmA1").value,a2:+$("#pmA2").value});
+  renderPmList();
+  $("#pmSurah").value="";$("#pmSurah").dispatchEvent(new Event("change"));
+};
+$("#pmRangeAdd").onclick=()=>{
+  let a=+$("#pmRangeFrom").value, b=+$("#pmRangeTo").value;
+  if(a>b){const t=a;a=b;b=t;}                       // allow picking either order
+  let added=0;
+  for(let i=a;i<=b;i++){
+    if(pmDraft.some(p=>p.s===i && p.a1===1 && p.a2===SURAHS[i][2]))continue; // skip dup full-surah
+    pmDraft.push({s:i,a1:1,a2:SURAHS[i][2]}); added++;
+  }
+  renderPmList();
+  toast(added? ("Added "+added+" surah"+(added>1?"s":"")+" in full") : "Those surahs are already added");
+};
+$("#pmSave").onclick=()=>{
+  const{k,day,field}=portionCtx;
+  // if a surah is picked but not yet added, include it
+  const sv=$("#pmSurah").value;
+  if(sv!=="")pmDraft.push({s:+sv,a1:+$("#pmA1").value,a2:+$("#pmA2").value});
+  setDay(k,day,{[field]:pmDraft.length?pmDraft:null});
+  $("#portionModal").classList.remove("on");renderDaily();toast(pmDraft.length+" portion"+(pmDraft.length===1?"":"s")+" saved ✓");
+};
+$("#pmClear").onclick=()=>{
+  const{k,day,field}=portionCtx;
+  setDay(k,day,{[field]:null});
+  $("#portionModal").classList.remove("on");renderDaily();
+};
+
+/* ================= TASKS ================= */
+function taskStatus(t){const p=t.target?t.done/t.target:0;return p>=1?["done","Completed"]:t.done>0?["prog","In progress"]:["not","Not started"];}
+function renderTasks(){
+  const tb=$("#taskTable tbody");
+  const list=S.tasks;
+  $("#taskEmpty").style.display=list.length?"none":"block";
+  tb.innerHTML=list.map((t,i)=>{
+    const pct=t.target?Math.min(100,t.done/t.target*100):0;
+    const[scls,slab]=taskStatus(t);
+    const p=t.portion?portionText(t.portion):null;
+    const overdue=t.due&&t.due<todayStr()&&pct<100;
+    return `<tr>
+      <td style="color:var(--dim)">${i+1}</td>
+      <td><b>${esc(t.name)}</b></td>
+      <td>${p?`<span class="pchip"><span class="arname">${SURAHS[t.portion.s][1]}</span>${esc(p)}</span>`:'<span style="color:var(--dim)">—</span>'}</td>
+      <td>${t.target}</td>
+      <td><input type="number" min="0" max="${t.target}" value="${t.done}" data-id="${t.id}" class="tdone"></td>
+      <td>${Math.max(0,t.target-t.done)}</td>
+      <td><div style="display:flex;align-items:center;gap:10px"><div class="pbar"><i data-w="${pct}"></i></div><span style="font-size:12px;color:var(--mut)">${pct.toFixed(0)}%</span></div></td>
+      <td><span class="status ${scls}">${slab}</span></td>
+      <td style="font-size:12px;color:${overdue?"var(--bad)":"var(--mut)"}">${t.due||"—"}${overdue?" ⚠":""}</td>
+      <td style="white-space:nowrap"><button class="btn ghost sm tedit" data-id="${t.id}">✎</button> <button class="btn danger sm tdel" data-id="${t.id}">✕</button></td>
+    </tr>`;
+  }).join("");
+  requestAnimationFrame(()=>tb.querySelectorAll(".pbar i").forEach(b=>b.style.width=b.dataset.w+"%"));
+  tb.querySelectorAll(".tdone").forEach(inp=>inp.onchange=()=>{
+    if(!canEdit()){renderTasks();return;}
+    const t=S.tasks.find(x=>x.id===inp.dataset.id);t.done=Math.max(0,Math.min(t.target,+inp.value||0));save();renderTasks();
+  });
+  tb.querySelectorAll(".tdel").forEach(b=>b.onclick=()=>{if(!canEdit())return;if(confirm("Delete this task?")){S.tasks=S.tasks.filter(x=>x.id!==b.dataset.id);save();renderTasks();}});
+  tb.querySelectorAll(".tedit").forEach(b=>b.onclick=()=>openTaskModal(b.dataset.id));
+  // summary
+  const done=list.filter(t=>taskStatus(t)[0]==="done").length;
+  const prog=list.filter(t=>taskStatus(t)[0]==="prog").length;
+  const avg=list.length?list.reduce((a,t)=>a+(t.target?Math.min(1,t.done/t.target):0),0)/list.length*100:0;
+  const cards=[["Total Tasks",list.length,""],["Completed",done,"green"],["In Progress",prog,"gold"],["Not Started",list.length-done-prog,""],["Avg Completion",avg.toFixed(0)+"%","gold"]];
+  $("#taskSummary").innerHTML=cards.map(c=>`<div class="card kpi ${c[2]}"><div class="lab">${c[0]}</div><div class="val">${c[1]}</div></div>`).join("");
+}
+function openTaskModal(id){
+  if(!canEdit())return;
+  editTaskId=id||null;
+  $("#taskModalTitle").textContent=id?"Edit task":"New memorisation task";
+  const sSel=$("#tmSurah"),a1=$("#tmA1"),a2=$("#tmA2");
+  fillSurahSelect(sSel,true);
+  if(!sSel._bound){bindSurahAyah(sSel,a1,a2);sSel._bound=true;}
+  if(id){const t=S.tasks.find(x=>x.id===id);
+    $("#tmName").value=t.name;$("#tmTarget").value=t.target;$("#tmDone").value=t.done;$("#tmDue").value=t.due||"";
+    if(t.portion){sSel.value=t.portion.s;sSel.dispatchEvent(new Event("change"));a1.value=t.portion.a1;a2.value=t.portion.a2;}
+    else{sSel.value="";sSel.dispatchEvent(new Event("change"));}
+  }else{
+    $("#tmName").value="";$("#tmTarget").value=15;$("#tmDone").value=0;$("#tmDue").value="";
+    sSel.value="";sSel.dispatchEvent(new Event("change"));
+  }
+  $("#taskModal").classList.add("on");
+}
+$("#addTaskBtn").onclick=()=>openTaskModal(null);
+$("#tmSave").onclick=()=>{
+  const name=$("#tmName").value.trim();if(!name){toast("Give the task a name");return;}
+  const sv=$("#tmSurah").value;
+  const portion=sv===""?null:{s:+sv,a1:+$("#tmA1").value,a2:+$("#tmA2").value};
+  const rec={name,portion,target:Math.max(1,+$("#tmTarget").value||1),done:Math.max(0,+$("#tmDone").value||0),due:$("#tmDue").value||null};
+  if(editTaskId){Object.assign(S.tasks.find(x=>x.id===editTaskId),rec);}
+  else{rec.id="t"+Date.now();S.tasks.push(rec);}
+  save();$("#taskModal").classList.remove("on");renderTasks();toast("Task saved ✓");
+};
+</script>
+<script>
+"use strict";
+/* ================= EXAMS ================= */
+function gradeOf(pct){ // pct 0..1
+  if(pct>=0.9)return["A+","gA"];if(pct>=0.8)return["A","gA"];if(pct>=0.7)return["B+","gB"];
+  if(pct>=0.6)return["B","gB"];if(pct>=0.5)return["C","gC"];if(pct>=0.4)return["D","gC"];return["F","gF"];
+}
+function renderExams(){
+  const tb=$("#examTable tbody");
+  const list=[...S.exams].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  $("#examEmpty").style.display=list.length?"none":"block";
+  tb.innerHTML=list.map((e,i)=>{
+    const pct=e.max?e.obt/e.max:0, [g,gc]=gradeOf(pct);
+    let portionCellHTML='—';
+    if(e.range){
+      const a=SURAHS[e.range.from], b=SURAHS[e.range.to];
+      portionCellHTML = e.range.from===e.range.to
+        ? `<span class="pchip"><span class="arname">${a[1]}</span>${e.range.from+1}. ${esc(a[0])}</span>`
+        : `<span class="pchip"><span class="arname">${a[1]}</span>${e.range.from+1}. ${esc(a[0])} → ${e.range.to+1}. ${esc(b[0])}</span>`;
+    } else if(e.portion){
+      portionCellHTML = `<span class="pchip"><span class="arname">${SURAHS[e.portion.s][1]}</span>${esc(portionText(e.portion))}</span>`;
+    }
+    return `<tr>
+      <td style="color:var(--dim)">${i+1}</td>
+      <td>${e.date||"—"}</td>
+      <td>${portionCellHTML}</td>
+      <td>${e.lines||"—"}</td>
+      <td>${esc(e.examiner||"—")}</td>
+      <td>${e.obt} / ${e.max}</td>
+      <td><b>${(pct*100).toFixed(1)}%</b></td>
+      <td><span class="grade ${gc}">${g}</span></td>
+      <td>${e.mist??0}</td>
+      <td style="font-size:12px;color:var(--mut);max-width:180px">${esc(e.rem||"")}</td>
+      <td style="white-space:nowrap"><button class="btn ghost sm eedit" data-id="${e.id}">✎</button> <button class="btn danger sm edel" data-id="${e.id}">✕</button></td>
+    </tr>`;
+  }).join("");
+  tb.querySelectorAll(".edel").forEach(b=>b.onclick=()=>{if(!canEdit())return;if(confirm("Delete this exam?")){S.exams=S.exams.filter(x=>x.id!==b.dataset.id);save();renderExams();}});
+  tb.querySelectorAll(".eedit").forEach(b=>b.onclick=()=>openExamModal(b.dataset.id));
+  const avg=list.length?list.reduce((a,e)=>a+(e.max?e.obt/e.max:0),0)/list.length*100:0;
+  const best=list.length?Math.max(...list.map(e=>e.max?e.obt/e.max*100:0)):0;
+  const totalMist=list.reduce((a,e)=>a+(+e.mist||0),0);
+  const cards=[["Exams Taken",list.length,""],["Average Score",avg.toFixed(1)+"%","gold"],["Best Score",best.toFixed(1)+"%","green"],["Total Mistakes",totalMist,""]];
+  $("#examSummary").innerHTML=cards.map(c=>`<div class="card kpi ${c[2]}"><div class="lab">${c[0]}</div><div class="val">${c[1]}</div></div>`).join("");
+}
+function openExamForDay(k,day){
+  const dateStr=k+"-"+pad(day);
+  // stamp a lightweight exam event on the day so the 3 cells merge & recolour
+  setDay(k,day,{ev:{type:"exam", date:dateStr}});
+  renderDaily();
+  openExamModal(null);
+  const el=document.getElementById("emDate"); if(el)el.value=dateStr;
+  if(window.toast)toast("Exam set for "+dateStr+" — fill the marks below");
+}
+function openExamModal(id){
+  if(!canEdit())return;
+  editExamId=id||null;
+  $("#examModalTitle").textContent=id?"Edit exam result":"New exam result";
+  const sFrom=$("#emSurahFrom"),sTo=$("#emSurahTo");
+  fillSurahSelect(sFrom,true);fillSurahSelect(sTo,true);
+  $("#emExaminer").innerHTML='<option value="">— Examiner —</option>'+S.config.examiners.map(x=>`<option>${esc(x)}</option>`).join("");
+  if(id){const e=S.exams.find(x=>x.id===id);
+    $("#emDate").value=e.date||"";$("#emLines").value=e.lines||"";$("#emMax").value=e.max;$("#emObt").value=e.obt;
+    $("#emMist").value=e.mist||0;$("#emRem").value=e.rem||"";$("#emExaminer").value=e.examiner||"";
+    // support both new range {sFrom,sTo} and old single portion {s}
+    const from=(e.range?e.range.from:(e.portion?e.portion.s:""));
+    const to=(e.range?e.range.to:(e.portion?e.portion.s:""));
+    sFrom.value=from===""||from==null?"":from; sTo.value=to===""||to==null?"":to;
+  }else{
+    $("#emDate").value=todayStr();$("#emLines").value="";$("#emMax").value=100;$("#emObt").value="";
+    $("#emMist").value=0;$("#emRem").value="";sFrom.value="";sTo.value="";
+  }
+  $("#examModal").classList.add("on");
+}
+$("#addExamBtn").onclick=()=>openExamModal(null);
+$("#emSave").onclick=()=>{
+  const max=Math.max(1,+$("#emMax").value||1), obt=Math.max(0,+$("#emObt").value||0);
+  if(obt>max){toast("Obtained marks can't exceed max");return;}
+  const fv=$("#emSurahFrom").value, tv=$("#emSurahTo").value;
+  let range=null;
+  if(fv!=="" && tv!==""){ let a=+fv,b=+tv; if(a>b){const t=a;a=b;b=t;} range={from:a,to:b}; }
+  else if(fv!==""){ range={from:+fv,to:+fv}; }
+  const rec={date:$("#emDate").value||todayStr(),range,portion:null,
+    lines:+$("#emLines").value||null,examiner:$("#emExaminer").value||"",max,obt,mist:+$("#emMist").value||0,rem:$("#emRem").value.trim()};
+  if(editExamId){Object.assign(S.exams.find(x=>x.id===editExamId),rec);}
+  else{rec.id="e"+Date.now();S.exams.push(rec);}
+  save();$("#examModal").classList.remove("on");renderExams();toast("Exam saved ✓");
+};
+
+/* ================= SETTINGS ================= */
+function renderSettings(){
+  const c=S.config;
+  $("#cfgAcademy").value=c.academy;$("#cfgStudent").value=c.student;
+  $("#cfgLpp").value=c.lpp;$("#cfgTotal").value=c.total;
+  $("#cfgWeekly").innerHTML=DOWS.map((d,i)=>`<label class="chk"><input type="checkbox" data-i="${i}" ${c.weekly[i]?"checked":""}> ${d}</label>`).join("");
+  $$("#cfgWeekly input").forEach(x=>x.onchange=()=>{c.weekly[+x.dataset.i]=x.checked;save();toast(DOWS[+x.dataset.i]+(x.checked?" marked OFF everywhere":" is a class day again"));});
+  $("#cfgHolList").innerHTML=c.holDates.sort().map(d=>`<span class="tag">${d}<button data-d="${d}">✕</button></span>`).join("")||'<span style="color:var(--dim);font-size:12px">No specific holidays yet.</span>';
+  $$("#cfgHolList button").forEach(b=>b.onclick=()=>{c.holDates=c.holDates.filter(x=>x!==b.dataset.d);save();renderSettings();});
+  $("#cfgExList").innerHTML=c.examiners.map(x=>`<span class="tag">${esc(x)}<button data-x="${esc(x)}">✕</button></span>`).join("")||'<span style="color:var(--dim);font-size:12px">Add examiners for the exam dropdown.</span>';
+  $$("#cfgExList button").forEach(b=>b.onclick=()=>{c.examiners=c.examiners.filter(x=>x!==b.dataset.x);save();renderSettings();});
+}
+["cfgAcademy","cfgStudent"].forEach(id=>$( "#"+id).addEventListener("change",e=>{
+  S.config[id==="cfgAcademy"?"academy":"student"]=e.target.value.trim()||S.config[id==="cfgAcademy"?"academy":"student"];
+  save();renderChip();toast("Saved ✓");
+}));
+$("#cfgLpp").addEventListener("change",e=>{S.config.lpp=Math.max(1,+e.target.value||15);save();toast("Lines per page updated");});
+$("#cfgTotal").addEventListener("change",e=>{S.config.total=Math.max(1,+e.target.value||9060);save();toast("Total lines updated");});
+$("#cfgHolAdd").onclick=()=>{const v=$("#cfgHolDate").value;if(!v)return;
+  if(!S.config.holDates.includes(v))S.config.holDates.push(v);save();renderSettings();toast("Holiday added");};
+$("#cfgExAdd").onclick=()=>{const v=$("#cfgExName").value.trim();if(!v)return;
+  if(!S.config.examiners.includes(v))S.config.examiners.push(v);$("#cfgExName").value="";save();renderSettings();};
+
+/* export / import / reset */
+$("#exportBtn").onclick=()=>{
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="hifz-backup-"+(S.config.student||"student").replace(/\s+/g,"_")+"-"+todayStr()+".json";
+  a.click();URL.revokeObjectURL(a.href);toast("Backup exported ⬇");
+};
+$("#importBtn").onclick=()=>$("#importFile").click();
+$("#importFile").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{
+    const data=JSON.parse(rd.result);
+    if(!data.config||!data.months)throw 0;
+    S=Object.assign(defaultState(),data);save();activeMonth=null;renderAll();renderChip();toast("Backup imported ✓");
+  }catch(err){toast("That file isn't a valid backup");}};
+  rd.readAsText(f);e.target.value="";
+};
+$("#resetBtn").onclick=()=>{
+  if(confirm("Reset ALL data? This deletes every month, task and exam. Export a backup first."))
+  if(confirm("Are you absolutely sure?")){const nm=S.config.student;S=defaultState();S.config.student=nm;save();activeMonth=null;renderAll();renderChip();toast("All data reset");}
+};
+
+/* ================= BOOT ================= */
+function renderChip(){
+  $("#chipStudent").textContent=S.config.student;
+  $("#chipDate").textContent=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+}
+
+/* ================= SURAH POPUP BOARD ================= */
+let surahPopCtx=null;
+function openSurahPop(k,day,field,x,y){
+  const list=normPortions(dayRec(k,day)[field]);
+  if(!list.length)return;
+  surahPopCtx={k,day,field};
+  const names={nl:"New Lesson",sq:"Sabq (Revision)",ol:"Old Lesson"};
+  $("#surahPopTitle").textContent=(names[field]||"Portions")+" · "+list.length+" surah"+(list.length>1?"s":"");
+  $("#surahPopList").innerHTML=list.map(p=>{
+    const su=SURAHS[p.s];
+    const ay=p.a1!=null?("Ayah "+p.a1+(p.a2&&p.a2!==p.a1?"–"+p.a2:"")):"Full surah";
+    return `<div class="surahpop-item">
+      <span class="surahpop-num">${p.s+1}</span>
+      <span class="surahpop-ar">${su[1]}</span>
+      <span class="surahpop-meta"><span class="surahpop-name">${esc(su[0])}</span><span class="surahpop-ayah">${ay}</span></span>
+    </div>`;
+  }).join("");
+  const editBtn=$("#surahPopEdit");
+  editBtn.style.display=canEdit()?"block":"none";
+  const pop=$("#surahPop"), sc=$("#surahPopScrim");
+  pop.classList.add("on"); if(sc)sc.classList.add("on");
+  const pw=300,ph=Math.min(360,120+list.length*46), vw=innerWidth,vh=innerHeight;
+  // touch taps can report x/y as 0 — fall back to centering the board
+  const cx=(x&&x>0)?x:(vw/2-pw/2), cy=(y&&y>0)?y:(vh/2-ph/2);
+  pop.style.left=Math.max(12,Math.min(cx,vw-pw-12))+"px";
+  pop.style.top=Math.max(12,Math.min(cy,vh-ph-12))+"px";
+}
+function closeSurahPop(){$("#surahPop").classList.remove("on");const sc=$("#surahPopScrim");if(sc)sc.classList.remove("on");}
+$("#surahPopClose").onclick=closeSurahPop;
+$("#surahPopEdit").onclick=()=>{ if(!surahPopCtx)return; const{k,day,field}=surahPopCtx; closeSurahPop();
+  if(canEdit())openPortionModal(k,day,field); };
+document.addEventListener("click",e=>{ if($("#surahPop").classList.contains("on") &&
+  !e.target.closest("#surahPop") && !e.target.closest(".pcell")) closeSurahPop(); });
+
+/* ================= DAY ROW MENU (exam / juz submission) ================= */
+let rowMenuCtx=null;
+function openRowMenu(k,day,x,y){
+  rowMenuCtx={k,day};
+  const r=dayRec(k,day);
+  $("#rowMenuTitle").textContent=monthLabel(k).split(" ")[0]+" "+day;
+  $("#rmClear").style.display=r.ev?"flex":"none";
+  const menu=$("#rowMenu");
+  menu.classList.add("on");
+  // position within viewport
+  const mw=210,mh=160, vw=innerWidth,vh=innerHeight;
+  menu.style.left=Math.min(x,vw-mw-12)+"px";
+  menu.style.top=Math.min(y,vh-mh-12)+"px";
+}
+function closeRowMenu(){$("#rowMenu").classList.remove("on");}
+document.addEventListener("click",e=>{ if(!e.target.closest("#rowMenu")&&!e.target.closest("tr[data-day]"))closeRowMenu(); });
+$("#rmExam").onclick=()=>{ if(!rowMenuCtx)return; const{k,day}=rowMenuCtx; closeRowMenu(); openExamForDay(k,day); };
+$("#rmJuz").onclick=()=>{ if(!rowMenuCtx)return; const{k,day}=rowMenuCtx; closeRowMenu(); openJuzTest(k,day); };
+$("#rmClear").onclick=()=>{ if(!rowMenuCtx)return; const{k,day}=rowMenuCtx; const m=S.months[k];
+  if(m&&m.days[pad(day)]){delete m.days[pad(day)].ev; save();} closeRowMenu(); renderDaily(); toast("Day event cleared"); };
+
+/* ================= JUZ EXAMINER TEST ================= */
+let jtCtx=null;  // {k, day}
+function openJuzTest(k,day){
+  jtCtx={k,day};
+  const r=dayRec(k,day), jt=(r.ev&&r.ev.type==="juz")?r.ev:null;
+  $("#jtTitle").textContent="Juz submission · "+monthLabel(k).split(" ")[0]+" "+day;
+  // fill juz 1..30
+  $("#jtJuz").innerHTML=Array.from({length:30},(_,i)=>`<option value="${i+1}"${jt&&jt.juz===i+1?" selected":""}>Juz ${i+1}</option>`).join("");
+  // examiners from settings
+  const exs=S.config.examiners&&S.config.examiners.length?S.config.examiners:["Ustadh"];
+  $("#jtExaminer").innerHTML=exs.map(x=>`<option${jt&&jt.examiner===x?" selected":""}>${esc(x)}</option>`).join("");
+  $("#jtRemove").style.display=jt?"inline-flex":"none";
+  $("#juzTestModal").classList.add("on");
+}
+function saveJuzTest(result){
+  if(!jtCtx)return;
+  const {k,day}=jtCtx;
+  const juz=+$("#jtJuz").value;
+  setDay(k,day,{ev:{type:"juz", juz, examiner:$("#jtExaminer").value||"", result, date:todayStr()}});
+  if(result==="pass")markCongrats(juz);      // trigger occasional congrats for 2 days
+  $("#juzTestModal").classList.remove("on");
+  renderDaily();
+  toast(result==="pass"?"✓ Juz test recorded — Completed successfully":"↻ Juz test recorded — Try again");
+}
+$("#jtPass").onclick=()=>saveJuzTest("pass");
+$("#jtRetry").onclick=()=>saveJuzTest("retry");
+$("#jtRemove").onclick=()=>{
+  if(!jtCtx)return;
+  const {k,day}=jtCtx, m=S.months[k]; if(m&&m.days[pad(day)]){delete m.days[pad(day)].ev;save();}
+  $("#juzTestModal").classList.remove("on");renderDaily();toast("Juz submission removed");
+};
+
+/* ================= REPORTS + MEMORISED ENGINE ================= */
+let repMode="page", memMode="surah";
+
+/* Walk every class-day and collect portion appearances per field.
+   Returns { ol:Map(surahIdx->count), nl:Map, sq:Map } where count = number of
+   class-days that surah appears in that column (= repetition rounds). */
+function collectRounds(){
+  const ol=new Map(), nl=new Map(), sq=new Map();
+  const bump=(map,si)=>map.set(si,(map.get(si)||0)+1);
+  Object.keys(S.months).forEach(k=>{
+    const days=S.months[k].days||{};
+    Object.keys(days).forEach(dd=>{
+      const rec=days[dd]||{};
+      ["ol","nl","sq"].forEach(field=>{
+        const seen=new Set();                       // one round per surah per day, even if multiple portions
+        normPortions(rec[field]).forEach(p=>{ if(p&&p.s!=null)seen.add(p.s); });
+        seen.forEach(si=>bump(field==="ol"?ol:field==="nl"?nl:sq, si));
       });
     });
   });
-  const ppj=(S.config.total||9060)/(S.config.lpp||15)/30;
-  const units=[],frac=new Array(31).fill(0),juzFirst=new Array(31).fill(null);
-  bySurah.forEach((ranges,si)=>{
-    ranges.sort((a,b)=>a.a1-b.a1);const merged=[];
-    ranges.forEach(r=>{const l=merged[merged.length-1];if(l&&r.a1<=l.a2+1)l.a2=Math.max(l.a2,r.a2);else merged.push({...r});});
-    merged.forEach(r=>{
-      let a=r.a1;
-      while(a<=r.a2){
-        const j=juzOfAyah(si,a);
-        let end=r.a2;
-        if(j<30){const ns=JUZ_START[j];if(ns[0]-1===si&&ns[1]-1<end)end=ns[1]-1;}
-        const n=end-a+1;
-        units.push({si,a1:a,a2:end,j,pages:n/JUZ_AYAHS[j-1]*ppj,first:first.get(si)});
-        frac[j]+=n/JUZ_AYAHS[j-1];
-        const f=first.get(si);if(!juzFirst[j]||f<juzFirst[j])juzFirst[j]=f;
-        a=end+1;
-      }
+  return {ol,nl,sq};
+}
+
+function renderReports(){
+  $$("#v-reports .rep-tab").forEach(b=>b.classList.toggle("active",b.dataset.rep===repMode));
+  const R=collectRounds();
+  const area=$("#repArea");
+
+  if(repMode==="page"){
+    // Old-lesson rounds, surah by surah, most-repeated first
+    const rows=[...R.ol.entries()].sort((a,b)=>b[1]-a[1]);
+    if(!rows.length){area.innerHTML='<div class="rep-empty">No old-lesson data yet. Add some Old Lesson portions in the daily log and they’ll appear here.</div>';return;}
+    const max=rows[0][1]||1;
+    area.innerHTML=`<table class="rep-table">
+      <thead><tr><th>Surah</th><th>Rounds (days revised)</th><th>Repetition</th></tr></thead>
+      <tbody>${rows.map(([si,c])=>`
+        <tr><td><span class="rep-sur">${si+1}. ${esc(SURAHS[si][0])}</span><span class="rep-ar">${SURAHS[si][1]}</span></td>
+        <td><span class="rep-num">${c}×</span></td>
+        <td><div class="rep-barwrap"><div class="rep-bar" style="width:${Math.round(c/max*100)}%"></div></div></td></tr>`).join("")}</tbody></table>`;
+  } else {
+    // Juz-wise, combining old + new lesson rounds, grouped by juz
+    const combined=new Map();
+    [R.ol,R.nl].forEach(m=>m.forEach((c,si)=>combined.set(si,(combined.get(si)||0)+c)));
+    // bucket surahs into juz (a surah spanning juz counts in each juz it touches)
+    const byJuz=new Map();  // juz -> [{si,c}]
+    combined.forEach((c,si)=>{
+      juzList(si).forEach(j=>{
+        if(!byJuz.has(j))byJuz.set(j,[]);
+        byJuz.get(j).push({si,c});
+      });
+    });
+    const juzKeys=[...byJuz.keys()].sort((a,b)=>a-b);
+    if(!juzKeys.length){area.innerHTML='<div class="rep-empty">No lesson data yet.</div>';return;}
+    let html=`<table class="rep-table"><thead><tr><th>Surah</th><th>Rounds (old + new)</th><th>Repetition</th></tr></thead><tbody>`;
+    const gmax=Math.max(...[...combined.values()],1);
+    juzKeys.forEach(j=>{
+      const list=byJuz.get(j).sort((a,b)=>b.c-a.c);
+      const juzTotal=list.reduce((s,x)=>s+x.c,0);
+      html+=`<tr class="rep-juzrow"><td><span class="rep-juzbadge">Juz ${j}</span></td>
+        <td colspan="2" style="color:var(--mut)">${list.length} surah${list.length>1?"s":""} · ${juzTotal} total rounds</td></tr>`;
+      list.forEach(({si,c})=>{
+        html+=`<tr><td style="padding-left:32px"><span class="rep-sur">${si+1}. ${esc(SURAHS[si][0])}</span><span class="rep-ar">${SURAHS[si][1]}</span></td>
+          <td><span class="rep-num">${c}×</span></td>
+          <td><div class="rep-barwrap"><div class="rep-bar" style="width:${Math.round(c/gmax*100)}%"></div></div></td></tr>`;
+      });
+    });
+    area.innerHTML=html+"</tbody></table>";
+  }
+}
+
+/* MEMORISED = anything that ever appeared as a New Lesson.
+   Merge overlapping ayah ranges per surah so we show clean spans. */
+function collectMemorised(){
+  const bySurah=new Map();  // si -> [{a1,a2}]
+  Object.keys(S.months).forEach(k=>{
+    const days=S.months[k].days||{};
+    Object.keys(days).forEach(dd=>{
+      normPortions((days[dd]||{}).nl).forEach(p=>{
+        if(p&&p.s!=null){
+          if(!bySurah.has(p.s))bySurah.set(p.s,[]);
+          bySurah.get(p.s).push({a1:p.a1||1,a2:p.a2||p.a1||SURAHS[p.s][2]});
+        }
+      });
     });
   });
-  for(let j=1;j<=30;j++)frac[j]=Math.min(1,frac[j]);
-  const juzOrder=[];for(let j=1;j<=30;j++)if(frac[j]>0)juzOrder.push(j);
-  juzOrder.sort((a,b)=>(juzFirst[a]||"").localeCompare(juzFirst[b]||"")||a-b);
-  const pos=new Map(juzOrder.map((j,i)=>[j,i]));
-  units.sort((u,v)=>pos.get(u.j)-pos.get(v.j)||u.si-v.si||u.a1-v.a1);
-  const M=frac.reduce((a,b)=>a+b,0);
-  return{units,frac,juzOrder,M,ppj,full:frac.filter((f,j)=>j&&f>=0.995).length};
+  // merge ranges
+  const merged=new Map();
+  bySurah.forEach((ranges,si)=>{
+    ranges.sort((a,b)=>a.a1-b.a1);
+    const out=[];
+    ranges.forEach(r=>{
+      const last=out[out.length-1];
+      if(last && r.a1<=last.a2+1){last.a2=Math.max(last.a2,r.a2);}
+      else out.push({...r});
+    });
+    merged.set(si,out);
+  });
+  return merged;
 }
 
-/* ---------- revision (manzil) cycle ---------- */
-function dailyTargetPages(M,ppj){
-  if(M<=0)return 0;
-  if(M<=1)return M*ppj;                       // small hifz: revise all of it daily
-  if(M<=5)return Math.max(ppj*0.25,M*ppj/7);  // whole portion every 7 days
-  if(M<=15)return ppj;                        // 1 juz a day
-  if(M<=20)return ppj*1.5;
-  return ppj*2;                               // 2 juz a day for large hifz
-}
-function manzilCycle(mem){
-  const D=dailyTargetPages(mem.M,mem.ppj);if(!D)return{D:0,days:[]};
-  if(mem.M<=1)return{D,days:[mem.units.map(u=>({...u}))]};
-  const q=mem.units.map(u=>({...u}));const days=[];let cur=[],curP=0,guard=0;
-  while(q.length&&guard++<6000){
-    const u=q.shift(),room=D-curP,n=u.a2-u.a1+1;
-    if(u.pages<=room+D*0.15||n===1){cur.push(u);curP+=u.pages;}
-    else if(room<D*0.2&&cur.length){days.push(cur);cur=[];curP=0;q.unshift(u);continue;}
-    else{
-      const take=Math.max(1,Math.floor(n*room/u.pages));
-      if(take>=n){cur.push(u);curP+=u.pages;}
-      else{cur.push({...u,a2:u.a1+take-1,pages:u.pages*take/n});curP+=u.pages*take/n;
-           q.unshift({...u,a1:u.a1+take,pages:u.pages*(n-take)/n});}
+function ayahsCovered(ranges){return ranges.reduce((s,r)=>s+(r.a2-r.a1+1),0);}
+
+function renderMemorised(){
+  $$("#v-memorised .rep-tab").forEach(b=>b.classList.toggle("active",b.dataset.mem===memMode));
+  const mem=collectMemorised();
+  const area=$("#memArea"), sum=$("#memSummary");
+
+  // summary cards
+  let totalAyahs=0, surahsTouched=mem.size, surahsComplete=0;
+  mem.forEach((ranges,si)=>{
+    const cov=ayahsCovered(ranges); totalAyahs+=cov;
+    if(cov>=SURAHS[si][2])surahsComplete++;
+  });
+  // juz coverage: a juz is "done" if all its surahs are fully memorised, "part" if some
+  const juzState=new Map();
+  for(let j=1;j<=30;j++)juzState.set(j,{have:0,full:0,total:0});
+  SURAHS.forEach((_,si)=>juzList(si).forEach(j=>{juzState.get(j).total++;}));
+  mem.forEach((ranges,si)=>{
+    const full=ayahsCovered(ranges)>=SURAHS[si][2];
+    juzList(si).forEach(j=>{const st=juzState.get(j);st.have++;if(full)st.full++;});
+  });
+  let juzDone=0; juzState.forEach(st=>{if(st.total&&st.full>=st.total)juzDone++;});
+
+  sum.innerHTML=`
+    <div class="mcard"><div class="mval">${surahsTouched}</div><div class="mlab">Surahs started</div></div>
+    <div class="mcard"><div class="mval">${surahsComplete}</div><div class="mlab">Surahs complete</div></div>
+    <div class="mcard"><div class="mval">${totalAyahs}</div><div class="mlab">Ayahs memorised</div></div>
+    <div class="mcard"><div class="mval">${juzDone}<span style="font-size:16px;color:var(--mut)">/30</span></div><div class="mlab">Juz complete</div></div>`;
+
+  if(!mem.size){area.innerHTML='<div class="rep-empty">No New Lesson portions yet. As you log new memorisation, it appears here.</div>';return;}
+
+  if(memMode==="surah"){
+    const rows=[...mem.entries()].sort((a,b)=>a[0]-b[0]);
+    area.innerHTML=`<table class="rep-table"><thead><tr><th>Surah</th><th>Ayahs memorised</th><th>Coverage</th></tr></thead>
+      <tbody>${rows.map(([si,ranges])=>{
+        const cov=ayahsCovered(ranges), tot=SURAHS[si][2], pct=Math.round(cov/tot*100);
+        const spans=ranges.map(r=>r.a1===r.a2?`${r.a1}`:`${r.a1}–${r.a2}`).join(", ");
+        const full=cov>=tot;
+        return `<tr><td><span class="rep-sur">${si+1}. ${esc(SURAHS[si][0])}</span><span class="rep-ar">${SURAHS[si][1]}</span></td>
+          <td style="font-variant-numeric:tabular-nums">${spans} <span style="color:var(--mut)">(${cov}/${tot})</span></td>
+          <td><div style="display:flex;align-items:center;gap:8px"><div class="rep-barwrap" style="width:90px"><div class="rep-bar" style="width:${pct}%;${full?'background:linear-gradient(90deg,var(--gold),var(--em2))':''}"></div></div><span style="color:${full?'var(--em2)':'var(--mut)'};font-size:12px;font-weight:600">${full?'✓ Complete':pct+'%'}</span></div></td></tr>`;
+      }).join("")}</tbody></table>`;
+  } else {
+    // juz-wise grid
+    let chips="";
+    for(let j=1;j<=30;j++){
+      const st=juzState.get(j);
+      const cls=st.total&&st.full>=st.total?"done":st.have>0?"part":"";
+      chips+=`<div class="juzchip ${cls}" title="Juz ${j}: ${st.full}/${st.total} surahs complete">${j}</div>`;
     }
-    if(curP>=D*0.95){days.push(cur);cur=[];curP=0;}
+    let rows="";
+    for(let j=1;j<=30;j++){
+      const st=juzState.get(j);
+      if(st.have===0)continue;
+      const cls=st.full>=st.total?"done":"part";
+      rows+=`<tr><td><span class="rep-juzbadge">Juz ${j}</span></td>
+        <td>${st.full} of ${st.total} surahs complete${st.have>st.full?` · ${st.have-st.full} in progress`:""}</td>
+        <td><span style="color:${cls==='done'?'var(--em2)':'var(--gold2)'};font-weight:600">${cls==='done'?'✓ Complete':'In progress'}</span></td></tr>`;
+    }
+    area.innerHTML=`<div style="padding:18px"><div class="juzchips">${chips}</div></div>
+      <table class="rep-table"><thead><tr><th>Juz</th><th>Progress</th><th>Status</th></tr></thead><tbody>${rows||'<tr><td colspan="3" class="rep-empty">No juz started yet.</td></tr>'}</tbody></table>`;
   }
-  if(cur.length)days.push(cur);
-  return{D,days};
-}
-function segText(list){ // merge contiguous pieces of the same surah
-  const out=[];
-  list.forEach(u=>{const l=out[out.length-1];if(l&&l.si===u.si&&u.a1<=l.a2+1)l.a2=Math.max(l.a2,u.a2);else out.push({si:u.si,a1:u.a1,a2:u.a2});});
-  return out.map(u=>{const s=SURAHS[u.si];const whole=u.a1===1&&u.a2>=s[2];
-    return esc(s[0])+(whole?"":" "+u.a1+"–"+u.a2);}).join(" · ");
-}
-function compactSeg(list,byJuz){
-  const groups=[];
-  list.forEach(u=>{const k=byJuz?u.j:0;let g=groups.find(x=>x.k===k);if(!g){g={k,items:[]};groups.push(g);}g.items.push(u);});
-  return groups.map(g=>{
-    const m=[];g.items.slice().sort((a,b)=>a.si-b.si||a.a1-b.a1).forEach(u=>{const l=m[m.length-1];
-      if(l&&l.si===u.si&&u.a1<=l.a2+1)l.a2=Math.max(l.a2,u.a2);else m.push({si:u.si,a1:u.a1,a2:u.a2});});
-    if(byJuz&&g.k){const ay=m.reduce((a,u)=>a+u.a2-u.a1+1,0);if(ay>=JUZ_AYAHS[g.k-1])return "Whole Juz "+g.k;}
-    const nm=(u,end)=>{const s=SURAHS[u.si];const whole=u.a1===1&&u.a2>=s[2];
-      return esc(s[0])+(whole?"":end?" "+u.a2:" "+u.a1+(u.a2!==u.a1?"–"+u.a2:""));};
-    if(m.length<=3)return m.map(u=>nm(u)).join(" · ");
-    const f=m[0],l=m[m.length-1],fs=SURAHS[f.si],ls=SURAHS[l.si];
-    return esc(fs[0])+(f.a1>1?" "+f.a1:"")+" → "+esc(ls[0])+(l.a2<ls[2]?" "+l.a2:"")+` <span class="rp-small">(${m.length} surahs)</span>`;
-  }).join(" · ");
-}
-const juzBadges=list=>[...new Set(list.map(u=>u.j))].map(j=>`<span class="rp-jb">J${j}</span>`).join("");
-const pagesOf=list=>list.reduce((a,u)=>a+u.pages,0);
-
-/* ---------- next 7 days plan ---------- */
-function weekPlan(mem,cyc,P){
-  const lpp=S.config.lpp||15;
-  // recent new lessons (last 7 recorded new-lesson days) → Sabqi
-  const nlDays=[];
-  monthKeys().forEach(k=>{const days=(S.months[k]&&S.months[k].days)||{};
-    Object.keys(days).sort().forEach(dd=>{const nl=normPortions((days[dd]||{}).nl).filter(p=>p&&p.s!=null);if(nl.length)nlDays.push({ds:k+"-"+dd,nl});});});
-  const recent=nlDays.slice(-7);
-  const sabqi=[];recent.forEach(x=>x.nl.forEach(p=>sabqi.push({si:p.s,a1:p.a1||1,a2:p.a2||p.a1||SURAHS[p.s][2],j:0,pages:0})));
-  sabqi.sort((a,b)=>a.si-b.si||a.a1-b.a1);
-  const sabqiTxt=sabqi.length?compactSeg(sabqi,false):"—";
-  const last=nlDays.length?nlDays[nlDays.length-1].nl.slice(-1)[0]:null;
-  let cont="Next portion set by the teacher";
-  if(last){const s=SURAHS[last.s],a2=last.a2||last.a1||s[2];
-    cont=a2>=s[2]?esc(s[0])+" completed — begin the next assigned surah":"Continue "+esc(s[0])+" from ayah "+(a2+1);}
-  // pace = average lines per present day across all records
-  const st=periodStats({type:"all"});
-  const target=Math.round(Math.max(3,Math.min(lpp*2,st.avg||lpp/2)));
-  const rows=[];const d=new Date();let ci=0;
-  for(let i=0;i<7;i++){
-    const dow=(d.getDay()+6)%7,ds=d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
-    const off=S.config.weekly[dow]||S.config.holDates.includes(ds);
-    if(off)rows.push({ds,off:true});
-    else{const day=cyc.days.length?cyc.days[ci%cyc.days.length]:null;ci++;rows.push({ds,off:false,day,cycleNo:day?((ci-1)%cyc.days.length)+1:0});}
-    d.setDate(d.getDate()+1);
-  }
-  return{rows,target,cont,sabqiTxt};
 }
 
-/* ---------- strengths / areas / tips ---------- */
-function analyse(st,prev,mem){
-  const good=[],imp=[],needs=new Set(),lpp=S.config.lpp||15;
-  const D=st.dims;
-  if(!st.eligible)return{good,imp,needs};
-  if(D.attendance>=85)good.push(["Excellent regularity",`Present ${st.present} of ${st.classDays} class days (${pctTxt(D.attendance)}).`]);
-  else if(D.attendance<75){imp.push(["Attendance",`Present ${st.present} of ${st.classDays} class days (${pctTxt(D.attendance)}). Missed days break the revision chain.`]);needs.add("attendance");}
-  if(D.pace>=80)good.push(["Strong memorisation pace",`${st.avg.toFixed(1)} lines per present day — close to a page a day.`]);
-  else if(D.pace<45){imp.push(["Memorisation pace",`${st.avg.toFixed(1)} lines per present day (goal: ${lpp} lines ≈ 1 page).`]);needs.add("pace");}
-  if(st.present>=3){
-    if(D.revision>=80)good.push(["Revision kept daily",`Sabq / old lesson recorded on ${st.revDays} of ${st.present} present days.`]);
-    else if(D.revision<60){imp.push(["Daily revision",`Revision recorded on only ${st.revDays} of ${st.present} present days.`]);needs.add("revision");}
-    if(D.consistency>=80)good.push(["Steady new lessons",`New lesson given on ${st.nlDays} of ${st.present} present days.`]);
-    else if(D.consistency<55){imp.push(["Consistency",`New lesson on ${st.nlDays} of ${st.present} present days — aim for a small portion every class.`]);needs.add("consistency");}
-  }
-  if(st.examAvg!=null){
-    if(st.examAvg>=85)good.push(["Accurate recitation",`Exam average ${st.examAvg.toFixed(0)}% with ${st.mist} mistake${st.mist===1?"":"s"}.`]);
-    else if(st.examAvg<70){imp.push(["Accuracy in exams",`Exam average ${st.examAvg.toFixed(0)}% (${st.mist} mistakes noted).`]);needs.add("accuracy");}
-  }
-  if(st.jtPass)good.push(["Juz milestones",`Passed ${st.jtPass} juz submission${st.jtPass>1?"s":""} this period, mā shā’ Allāh.`]);
-  if(st.jtRetry){imp.push(["Juz submissions to retry",`${st.jtRetry} juz test${st.jtRetry>1?"s":""} marked “try again”.`]);needs.add("accuracy");}
-  if(prev&&prev.eligible&&prev.lines>0){
-    const ch=(st.lines-prev.lines)/prev.lines*100;
-    if(ch>=15)good.push(["Improving trend",`${Math.round(ch)}% more lines than the previous period.`]);
-    else if(ch<=-25){imp.push(["Slowing down",`${Math.abs(Math.round(ch))}% fewer lines than the previous period.`]);needs.add("pace");}
-  }
-  // memorised juz that were not revised at all in this period
-  if(st.present>=5){
-    const neg=mem.juzOrder.filter(j=>mem.frac[j]>=0.2&&!st.juzRev.get(j));
-    if(neg.length){imp.push(["Juz not revised this period",`Juz ${neg.join(", ")} did not appear in sabq or old-lesson revision.`]);needs.add("neglect");mem.neglected=neg;}
-  }
-  return{good,imp,needs};
-}
-const TIPS={
-  attendance:[["Fix one daily slot","Same time and place every day — after Fajr or Maghrib works best for most children."],
-    ["Never a zero day","On a busy day do 10 minutes of revision instead of skipping completely."]],
-  pace:[["Listen before memorising","Listen to the new lesson 5–10 times from a teacher-style reciter (e.g. Al-Husary muallim) before starting."],
-    ["Small pieces, many repetitions","Split the lesson into 2–3 line pieces; repeat each 10–20 times, then join them and recite together."],
-    ["Fresh mind for new lessons","Take the new lesson when the mind is fresh; keep phones and noise away."]],
-  revision:[["Sabqi every day","Recite the last 7 days’ lessons daily before taking a new lesson — it seals them."],
-    ["Recite in salah","Use memorised surahs in sunnah and nafl prayers; it is revision that never feels like homework."]],
-  consistency:[["Small but steady","Two lines every day beats ten lines once a week — consistency builds long-term memory."],
-    ["Track it visibly","Tick the daily plan table on the fridge or study wall; children love completing the row."]],
-  accuracy:[["Mark your weak spots","Lightly mark in pencil where mistakes happen in your own mushaf and revise those first."],
-    ["Record and compare","Record yourself reciting and follow along in the mushaf to catch slips."],
-    ["One mushaf only","Always use the same printed mushaf — the page picture becomes part of the memory."]],
-  neglect:[["Bring the juz back","Add the unrevised juz into this week’s manzil cycle before new lessons grow further."]],
-  general:[["Understand what you recite","Know the short meaning of each surah — understanding makes recall easier."],
-    ["Revise before sleep","A short recitation before sleeping helps memory settle overnight."],
-    ["Recite to someone","Recite the day’s portion to a parent or sibling — it adds gentle accountability."],
-    ["Make duʿā’","Ask Allah for ease and barakah in memorisation; keep intention sincere."]]
-};
+/* tab clicks */
+document.addEventListener("click",e=>{
+  const rt=e.target.closest("#v-reports .rep-tab");
+  if(rt){repMode=rt.dataset.rep;renderReports();return;}
+  const mt=e.target.closest("#v-memorised .rep-tab");
+  if(mt){memMode=mt.dataset.mem;renderMemorised();return;}
+});
 
-/* ---------- infographic builders (green / white palette) ---------- */
-const C={g9:"#064e3b",g8:"#065f46",g7:"#047857",g6:"#059669",g5:"#10b981",g3:"#6ee7b7",g1:"#d1fae5",g0:"#ecfdf5",
-  au7:"#a8740f",au5:"#e0a526",au4:"#f2c84b",au3:"#f7dc84",ink:"#0f2a1f",mut:"#5b6f66",dim:"#94a39b",line:"#e2efe7",red:"#e05a47",amber:"#d98a1c",gold:"#c9961a"};
-const FF="Plus Jakarta Sans,Outfit,sans-serif";
-let _gid=0;const gid=()=>"rg"+(++_gid);
-const ICON={
-  book:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5V4.5"/>',
-  cal:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="m9 15 2 2 4-4"/>',
-  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
-  globe:'<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/>',
-  layers:'<path d="m12 2 10 5-10 5L2 7z"/><path d="m2 12 10 5 10-5M2 17l10 5 10-5"/>',
-  loop:'<path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/>',
-  award:'<circle cx="12" cy="8" r="6"/><path d="M8.2 13.2 7 22l5-3 5 3-1.2-8.8"/>',
-  flame:'<path d="M12 22c4 0 7-3 7-7 0-5-5-8-6-13-2 3-3 5-3 7-1-1-2-2-2-4-2 3-3 6-3 10 0 4 3 7 7 7z"/>'
-};
-const ico=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</svg>`;
+function renderAll(){
+  const on=$(".view.on").id;
+  if(on==="v-dash")renderDash();
+  if(on==="v-daily")renderDaily();
+  if(on==="v-tasks")renderTasks();
+  if(on==="v-exams")renderExams();
+  if(on==="v-reports")renderReports();
+  if(on==="v-memorised")renderMemorised();
+  if(on==="v-settings")renderSettings();
+  if(on==="v-progress"&&window.renderProgress)renderProgress();
+}
+renderChip();
+</script>
+<script>
+"use strict";
+/* ================= SUPABASE BACKEND & ROSTER ================= */
+/* ============================================================
+   FILL THIS ONCE before uploading to your website (GitHub):
+   Supabase Dashboard → Project Settings → API
+   ============================================================ */
+const SUPA_URL="https://ymdkormhtsrndbjhydzt.supabase.co";
+const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltZGtvcm1odHNybmRiamh5ZHp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ0Nzg2MTksImV4cCI6MjEwMDA1NDYxOX0.iuP0-Kum5P66JvmeqNWPNtfI3K-kL5d7_ib_Pn6Q81U";
+const ADMIN_PIN="";  // your private PIN for the student list & settings.
+                     // Leave "" to open the list with no PIN at all.
 
-function ringSVG(score){
-  const r=52,c=2*Math.PI*r,v=Math.max(0,Math.min(100,score)),id=gid();
-  return `<svg viewBox="0 0 130 130" width="130" role="img" aria-label="Overall score ${Math.round(v)} of 100">
-  <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${C.g7}"/><stop offset=".6" stop-color="${C.g5}"/><stop offset="1" stop-color="#f2c94c"/></linearGradient></defs>
-  <circle cx="65" cy="65" r="${r}" fill="none" stroke="#fbf1d6" stroke-width="12"/>
-  <circle cx="65" cy="65" r="${r}" fill="none" stroke="url(#${id})" stroke-width="12" stroke-linecap="round"
-    stroke-dasharray="${(c*v/100).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 65 65)"/>
-  <text x="65" y="68" text-anchor="middle" font-family="${FF}" font-size="32" font-weight="800" fill="${C.au7}">${Math.round(v)}</text>
-  <text x="65" y="86" text-anchor="middle" font-family="${FF}" font-size="10" fill="${C.mut}">score / 100</text></svg>`;
+const CONN_KEY="mq_conn_v1";
+let CONN=null;try{CONN=JSON.parse(localStorage.getItem(CONN_KEY)||"null");}catch(e){}
+if(SUPA_URL&&SUPA_KEY)CONN={url:SUPA_URL,key:SUPA_KEY};
+let LINK=null; // {sid,tok} when opened through a shared teacher link
+let sb=null, roster=[], currentId=null, pushTimer=null, pushErrShown=false, editStudentId=null;
+
+function showOnly(id){
+  if(LINK&&id==="v-settings")id="v-dash";   // settings is admin-only
+  $$(".view").forEach(v=>v.classList.remove("on"));
+  $("#"+id).classList.add("on");
+  const inSystem=["v-dash","v-daily","v-tasks","v-exams","v-settings","v-reports","v-memorised","v-progress"].includes(id);
+  $("#nav").style.display=inSystem?"flex":"none";
+  const mf=$("#menuFab"); if(mf)mf.style.display=inSystem?"grid":"none";
+  $("#backRoster").style.display=inSystem?"inline-flex":"none";
+  $("#chipBox").style.display=inSystem?"flex":"none";
+  const fab=$("#addStudentFab");if(fab)fab.style.display=(id==="v-roster"&&!LINK)?"flex":"none";
+  const td=$("#tabDots"); if(td){ if(inSystem){ try{updateDots(id.replace("v-",""));}catch(e){} } else td.style.display="none"; }
 }
-function donutSVG(parts,center,sub){
-  const tot=parts.reduce((a,p)=>a+p.v,0)||1,r=40,c=2*Math.PI*r;let off=0;
-  const segs=parts.filter(p=>p.v>0).map(p=>{const len=c*p.v/tot;
-    const s=`<circle cx="55" cy="55" r="${r}" fill="none" stroke="${p.c}" stroke-width="16" stroke-dasharray="${len.toFixed(2)} ${(c-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 55 55)"/>`;
-    off+=len;return s;}).join("");
-  return `<svg viewBox="0 0 110 110"><circle cx="55" cy="55" r="${r}" fill="none" stroke="${C.g0}" stroke-width="16"/>${segs}
-    <text x="55" y="57" text-anchor="middle" font-family="${FF}" font-size="18" font-weight="800" fill="${C.g9}">${center}</text>
-    <text x="55" y="71" text-anchor="middle" font-family="${FF}" font-size="8.5" fill="${C.mut}">${sub}</text></svg>`;
+function setSync(state){ // "ok" | "sync" | "err"
+  const d=$("#syncDot");d.classList.remove("sync","err");
+  if(state==="sync")d.classList.add("sync");
+  if(state==="err")d.classList.add("err");
+  d.title=state==="ok"?"Saved to cloud":state==="sync"?"Saving…":"Cloud save failed — data kept locally";
 }
-const donutKey=parts=>`<div class="rp-key">${parts.map(p=>`<div><i style="background:${p.c}"></i>${p.l}<b>${p.v}</b></div>`).join("")}</div>`;
-function radarSVG(dims){
-  const keys=Object.keys(WEIGHTS),cx=120,cy=100,R=66,n=keys.length;
-  const pt=(i,v)=>{const a=-Math.PI/2+i*2*Math.PI/n;return[cx+R*v*Math.cos(a),cy+R*v*Math.sin(a)];};
-  let grid="";[.25,.5,.75,1].forEach(f=>{grid+=`<polygon points="${keys.map((_,i)=>pt(i,f).join(",")).join(" ")}" fill="${f===1?C.g0:"none"}" stroke="${C.g1}"/>`;});
-  const axes=keys.map((_,i)=>{const[x,y]=pt(i,1);return`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${C.g1}"/>`;}).join("");
-  const poly=keys.map((k,i)=>pt(i,Math.max(.03,(dims[k]??0)/100)).map(v=>v.toFixed(1)).join(",")).join(" ");
-  const short={pace:"Pace",attendance:"Attendance",revision:"Revision",consistency:"Consistency",accuracy:"Accuracy"};
-  const labels=keys.map((k,i)=>{const[x,y]=pt(i,1.28);const v=dims[k];
-    return`<text x="${x.toFixed(1)}" y="${(y-2).toFixed(1)}" text-anchor="middle" font-family="${FF}" font-size="9.5" fill="${C.mut}">${short[k]}<tspan x="${x.toFixed(1)}" dy="11" fill="${C.g8}" font-weight="800">${v==null?"—":Math.round(v)}</tspan></text>`;}).join("");
-  return `<svg viewBox="0 0 240 205" role="img" aria-label="Skill balance">${grid}${axes}
-    <polygon points="${poly}" fill="rgba(16,185,129,.28)" stroke="${C.g6}" stroke-width="2"/>
-    ${keys.map((k,i)=>{const[x,y]=pt(i,Math.max(.03,(dims[k]??0)/100));return`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="${C.g7}"/>`;}).join("")}${labels}</svg>`;
+
+/* ---- boot ---- */
+function bootBackend(){
+  if(!window.supabase){
+    showOnly("v-connect");
+    toast("Couldn't load the Supabase library — check your internet connection");
+    return;
+  }
+  const q=new URLSearchParams(location.search);
+  if(q.get("s")&&q.get("t")){
+    if(!CONN||!CONN.url||!CONN.key){showOnly("v-connect");toast("This link needs SUPA_URL/SUPA_KEY set inside the file");return;}
+    linkBoot(q.get("s"),q.get("t"));
+    return;
+  }
+  // Admin path: reuse the portal's 24h unlock session.
+  // Teacher share links (?s=&t=) never reach this check.
+  try{
+    const at=parseInt(sessionStorage.getItem("mq_portal_unlocked_at")||"0",10);
+    if(!(at&&Date.now()-at<24*60*60*1000)){$$(".view").forEach(v=>v.classList.remove("on"));location.replace("/portal/");return;}
+  }catch(e){}
+  if(!CONN||!CONN.url||!CONN.key){showOnly("v-connect");return;}
+  initClient();
 }
-function barsSVG(items,opts){ // items [{lab,v,off,absent,hi}] ; opts {cum,h,w}
-  const W=opts.w||560,H=opts.h||150,pl=26,pr=opts.cum?34:6,pt=8,pb=20,n=items.length||1,id=gid();
-  const max=Math.max(1,...items.map(i=>i.v)),bw=(W-pl-pr)/n;
-  let g="";[0,.5,1].forEach(f=>{const y=pt+(H-pt-pb)*(1-f);g+=`<line x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}" stroke="${C.line}"/><text x="${pl-4}" y="${y+3}" text-anchor="end" font-family="${FF}" font-size="9" fill="${C.dim}">${Math.round(max*f)}</text>`;});
-  const every=Math.ceil(n/14);
-  const bars=items.map((it,i)=>{const h=(H-pt-pb)*it.v/max,x=pl+i*bw+bw*.14,w=bw*.72;
-    const col=it.off?C.g1:it.hi?`url(#${id}g)`:`url(#${id})`;
-    const bar=it.v>0?`<rect x="${x.toFixed(1)}" y="${(H-pb-h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="${Math.min(4,w/3).toFixed(1)}" fill="${col}"/>`
-      :it.absent?`<circle cx="${(x+w/2).toFixed(1)}" cy="${H-pb-4}" r="2.6" fill="${C.red}"/>`:"";
-    const lab=i%every===0?`<text x="${(x+w/2).toFixed(1)}" y="${H-6}" text-anchor="middle" font-family="${FF}" font-size="9" fill="${C.dim}">${esc(it.lab)}</text>`:"";
-    return bar+lab;}).join("");
-  let line="";
-  if(opts.cum){const cm=Math.max(1,...opts.cum);
-    const pts=opts.cum.map((c,i)=>[(pl+i*bw+bw/2).toFixed(1),(pt+(H-pt-pb)*(1-c/cm)).toFixed(1)]);
-    line=`<polyline points="${pts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${C.gold}" stroke-width="2.2" stroke-linejoin="round"/>`+
-      pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.8" fill="#fff" stroke="${C.gold}" stroke-width="1.8"/>`).join("")+
-      `<text x="${W-pr+4}" y="${pt+8}" font-family="${FF}" font-size="9" font-weight="700" fill="${C.gold}">${fmt(cm)}</text>`;}
-  return `<svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.g5}"/><stop offset="1" stop-color="${C.g7}"/></linearGradient><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.au4}"/><stop offset="1" stop-color="${C.au7}"/></linearGradient></defs>${g}${bars}${line}</svg>`;
+
+/* ---- teacher link mode (no password) ---- */
+async function linkBoot(sid,tok){
+  sb=window.supabase.createClient(CONN.url,CONN.key);
+  showOnly("v-roster");$("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">Opening student system…</div>';
+  $("#logoutBtn").style.display="none";$("#rosterRefresh").style.display="none";$("#insightsBtn").style.display="none";
+  $("#addStudentFab").style.display="none";$(".rtools").style.display="none";
+  const{data,error}=await sb.rpc("get_student_by_token",{sid,tok});
+  if(error||!data||!data.length){
+    $("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">This link is invalid or has been revoked.<br>Ask the academy admin for a fresh link.</div>';
+    return;
+  }
+  const row=data[0];
+  LINK={sid,tok};
+  currentId=row.id;
+  loadStateFrom(row);
+  CAN_EDIT=false;document.body.classList.add("viewonly");
+  renderModeBadge();
+  renderChip();setSync("ok");
+  showOnly("v-daily");
+  $("#backRoster").style.display="none";
+  $$("#nav button").forEach(x=>x.classList.toggle("active",x.dataset.v==="daily"));
+  renderAll();
+  toast("Viewing "+row.name+" — double-tap the ☪ logo to edit");
 }
-function attLineSVG(rows){
-  const W=560,H=140,pl=26,pr=8,pt=10,pb=20,n=rows.length;if(n<2)return"";
-  const x=i=>pl+(W-pl-pr)*i/(n-1),y=v=>pt+(H-pt-pb)*(1-v/100),id=gid();
-  let g="";[0,50,75,100].forEach(v=>{g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="${v===75?C.g3:C.line}" ${v===75?'stroke-dasharray="4 4"':""}/><text x="${pl-4}" y="${y(v)+3}" text-anchor="end" font-family="${FF}" font-size="9" fill="${C.dim}">${v}</text>`;});
-  const pts=rows.map((r,i)=>[x(i).toFixed(1),y(r.att).toFixed(1)]),every=Math.ceil(n/12);
-  return `<svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.g5}" stop-opacity=".35"/><stop offset="1" stop-color="${C.g5}" stop-opacity="0"/></linearGradient></defs>${g}
-    <polygon points="${pl},${H-pb} ${pts.map(p=>p.join(",")).join(" ")} ${W-pr},${H-pb}" fill="url(#${id})"/>
-    <polyline points="${pts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${C.g6}" stroke-width="2.4" stroke-linejoin="round"/>
-    ${pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#fff" stroke="${C.g7}" stroke-width="2"/>`+(i%every===0?`<text x="${p[0]}" y="${H-5}" text-anchor="middle" font-family="${FF}" font-size="9" fill="${C.dim}">${esc(rows[i].lab)}</text>`:"")).join("")}</svg>`;
+function loadStateFrom(row){
+  S=Object.assign(defaultState(),row.state||{});
+  S.config=Object.assign(defaultState().config,(row.state||{}).config||{});
+  if(!S.config.student||S.config.student==="Student Name")S.config.student=row.name;
+  S.months=S.months||{};S.tasks=S.tasks||[];S.exams=S.exams||[];
+  activeMonth=null;ensureFirstMonth();
 }
-function calendarHTML(st){
-  const k=st.keys[0];if(!k)return"";
-  const[y,m]=k.split("-").map(Number),first=(new Date(y,m-1,1).getDay()+6)%7,max=Math.max(1,...st.daily.map(d=>d.ln)),today=todayStr();
-  let cells=["M","T","W","T","F","S","S"].map(x=>`<span class="h">${x}</span>`).join("");
-  for(let i=0;i<first;i++)cells+=`<i></i>`;
-  st.daily.forEach(d=>{
-    let bg="#f4f7f5",cls="";
-    if(d.ds>today&&d.p==null)bg="#fafcfb";
-    else if(!d.cls&&d.p==null&&!d.ln)bg=`repeating-linear-gradient(45deg,${C.g0} 0 3px,#fff 3px 6px)`;
-    else if(d.p===0){bg="#fde3df";}
-    else if(d.p===1||d.ln>0){const f=d.ln/max;bg=f>.66?C.g6:f>.33?C.g5:C.g3;cls=f>.33?"w":"";}
-    cells+=`<i class="${cls}" style="background:${bg}">${d.d}</i>`;
+function renderModeBadge(){
+  let b=$("#modeBadge");
+  if(!b){b=document.createElement("span");b.id="modeBadge";$("#chipStudent").after(b);}
+  if(!LINK){b.remove();return;}
+  b.className="modebadge "+(CAN_EDIT?"edit":"view");
+  b.textContent=CAN_EDIT?"Editing":"View only";
+}
+/* logo double-tap → unlock/lock editing (teacher links only) */
+function unlockBurst(){
+  const c=$("#crest"),r=c.getBoundingClientRect();
+  c.classList.remove("burst");void c.offsetWidth;c.classList.add("burst");
+  const ring=document.createElement("div");ring.className="burst-ring";
+  const size=Math.max(innerWidth,innerHeight)*1.4;
+  ring.style.cssText+=`width:${size}px;height:${size}px;left:${r.left+r.width/2-size/2}px;top:${r.top+r.height/2-size/2}px;`;
+  document.body.appendChild(ring);setTimeout(()=>ring.remove(),650);
+  const f=$("#flash");f.classList.add("on");setTimeout(()=>f.classList.remove("on"),120);
+}
+function toggleEditMode(){
+  if(!LINK)return;                       // admin is always editable
+  CAN_EDIT=!CAN_EDIT;
+  document.body.classList.toggle("viewonly",!CAN_EDIT);
+  {const vb=document.getElementById("voBanner");if(vb)vb.hidden=CAN_EDIT;}
+  $("#crest").classList.toggle("editing",CAN_EDIT);
+  unlockBurst();renderModeBadge();renderAll();
+  toast(CAN_EDIT?"✎ Edit mode unlocked":"🔒 View mode");
+}
+(function(){
+  const c=document.getElementById("crest");
+  c.addEventListener("dblclick",toggleEditMode);
+  let lastTap=0;
+  c.addEventListener("touchend",e=>{
+    const now=Date.now();
+    if(now-lastTap<350){e.preventDefault();toggleEditMode();}
+    lastTap=now;
   });
-  return `<div class="rp-cal">${cells}</div><div class="rp-legend" style="margin-top:6px"><span><i style="background:${C.g3}"></i>light</span><span><i style="background:${C.g6}"></i>strong day</span><span><i style="background:#fde3df"></i>absent</span><span><i style="background:repeating-linear-gradient(45deg,${C.g0} 0 3px,#fff 3px 6px);border:1px solid ${C.g1}"></i>holiday</span></div>`;
-}
-function shelfHTML(mem,st,passed){
-  let h="";
-  for(let j=1;j<=30;j++){
-    const f=mem.frac[j],full=f>=.995,has=f>.12,rev=st&&st.juzRev.get(j),neg=mem.neglected&&mem.neglected.includes(j);
-    h+=`<div class="rp-juz${full?" full":""}${has?" has":""}${rev?" rev":""}${neg?" neg":""}">${passed.has(j)?'<span class="st">★</span>':""}<i style="height:${(f*100).toFixed(0)}%"></i><b>${j}</b></div>`;
-  }
-  return `<div class="rp-shelf">${h}</div>
-  <div class="rp-legend"><span><i style="background:linear-gradient(180deg,#ffe08a,#b8860b)"></i>Complete</span>
-   <span><i style="background:linear-gradient(180deg,${C.g5},${C.g7})"></i>Partly (fill = share)</span>
-   <span><i style="background:#fff;border:1.5px solid ${C.g6};border-radius:50%"></i>Revised in period</span>
-   <span>★ Juz test passed</span><span><i style="border:1.5px dashed ${C.red}"></i>Not revised</span></div>`;
-}
-function journeyHTML(cum,total){
-  const pct=Math.min(100,cum/total*100),juz=cum/total*30;
-  const ticks=[0,5,10,15,20,25,30].map(j=>`<span class="tick" style="left:${(j/30*100).toFixed(2)}%">${j===30?"Ḥāfiẓ":"J"+j}</span>`).join("");
-  return `<div class="rp-journey"><div class="ct" style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:${C.g8}"><span>Journey to complete Ḥifẓ</span><span>${pct.toFixed(1)}% · ≈${juz.toFixed(1)} juz</span></div>
-   <div class="rp-track"><i style="width:${Math.max(1.5,pct).toFixed(2)}%"></i><span class="flag" style="left:${Math.min(96,Math.max(4,pct)).toFixed(2)}%">▼ ${pct.toFixed(1)}%</span>${ticks}</div></div>`;
-}
-
-/* ---------- capacity, milestones, celebration, duas ---------- */
-function capacityInfo(st){
-  const cfg=S.config,lpp=cfg.lpp||15,all=periodStats({type:"all"});
-  const days=st.daily.filter(d=>d.p===1&&d.ln>0).map(d=>d.ln).sort((a,b)=>a-b);
-  const median=days.length?days[Math.floor(days.length/2)]:0;
-  const base=all.avg||st.avg||0;
-  const target=Math.round(Math.max(3,Math.min(lpp*2,Math.max(base,median)*1.1||lpp/2)));
-  const lvl=base>=lpp?["A","High capacity","Comfortably memorises a page or more per class."]
-    :base>=lpp*.6?["B","Good capacity","Memorises more than half a page per class."]
-    :base>=lpp*.3?["C","Developing","Steady pace — ready to grow with regular revision."]
-    :["D","Building foundation","Short portions now; capacity grows with daily practice."];
-  const classPerWeek=Math.max(1,7-(cfg.weekly||[]).filter(Boolean).length);
-  const attRate=all.classDays?Math.max(.3,all.present/all.classDays):.8;
-  const lpw=base*classPerWeek*attRate,remaining=Math.max(0,(cfg.total||9060)-cumulativeTo(null));
-  let finish=null;
-  if(lpw>0&&remaining>0){const d=new Date();d.setDate(d.getDate()+Math.round(remaining/lpw*7));finish=d;}
-  // weekday pattern (period)
-  const wd=[0,0,0,0,0,0,0],wc=[0,0,0,0,0,0,0];
-  st.daily.forEach(d=>{if(d.p===1){const[y,m,dd]=d.ds.split("-").map(Number);const w=(new Date(y,m-1,dd).getDay()+6)%7;wd[w]+=d.ln;wc[w]++;}});
-  const wavg=wd.map((v,i)=>wc[i]?v/wc[i]:0);
-  let bestW=-1;wavg.forEach((v,i)=>{if(v>0&&(bestW<0||v>wavg[bestW]))bestW=i;});
-  return{avg:st.avg,avgAll:base,best:st.maxDay,bestAll:all.maxDay,median,target,lvl,lpp,finish,remaining,lpw,wavg,bestW};
-}
-function capacityHTML(cap){
-  const max=Math.max(cap.lpp*2,cap.bestAll||0,cap.target)*1.05,pos=v=>(Math.min(v,max)/max*100).toFixed(1);
-  const mk=(v,c,l,up)=>`<span class="mk" style="left:${pos(v)}%;background:${c}"></span><span class="lb ${up?"up":"dn"}" style="left:${pos(v)}%;color:${c}">${l}</span>`;
-  const years=cap.lpw>0?cap.remaining/cap.lpw/52:null;
-  return `<div class="rp-cap"><div>
-    <div class="lvl"><div class="badge">${cap.lvl[0]}</div><div><b>${cap.lvl[1]}</b><span class="rp-small">${cap.lvl[2]}</span></div></div>
-    <div class="rp-meter">${(()=>{ // greedy label slots: up, down, up-2, down-2 — first slot whose last label is ≥17% away
-      const m=[[cap.avg,C.g7,"avg "+cap.avg.toFixed(1)],[cap.lpp,C.dim,"1 page"],[cap.best,C.gold,"best "+cap.best]];
-      if(cap.target!==Math.round(cap.avg))m.push([cap.target,C.g5,"target "+cap.target]);
-      const last={u0:-99,d0:-99,u1:-99,d1:-99};
-      return m.sort((x,y)=>x[0]-y[0]).map(x=>{const p=+pos(x[0]);
-        const slot=["u0","d0","u1","d1"].find(k=>p-last[k]>=17)||"d1";last[slot]=p;
-        return`<span class="mk" style="left:${p}%;background:${x[1]}"></span><span class="lb ${slot}" style="left:${p}%;color:${x[1]}">${x[2]}</span>`;}).join("");})()}</div>
-    <div class="rp-small">Lines per class day · this period</div></div>
-    <div class="rp-facts">
-      <div class="rp-fact"><div class="v">${cap.target} lines</div><div class="l">Recommended daily new lesson</div></div>
-      <div class="rp-fact"><div class="v">${cap.median||"—"}</div><div class="l">Typical (median) day</div></div>
-      <div class="rp-fact"><div class="v">${cap.bestW>=0?DOWS[cap.bestW].slice(0,3):"—"}</div><div class="l">Strongest weekday</div></div>
-      <div class="rp-fact"><div class="v">${cap.finish?cap.finish.toLocaleDateString("en-GB",{month:"short",year:"numeric"}):"—"}</div><div class="l">${years!=null?`Ḥifẓ completion at this pace (≈${years<1?Math.max(1,Math.round(years*12))+" months":years.toFixed(1)+" years"})`:"Completion estimate"}</div></div>
-    </div></div>`;
-}
-function nextMilestone(mem,lpp){
-  const part=mem.juzOrder.filter(j=>mem.frac[j]<.995).sort((a,b)=>mem.frac[b]-mem.frac[a])[0];
-  if(part){const left=Math.max(1,Math.round((1-mem.frac[part])*mem.ppj*lpp));return`Next milestone: complete <b>Juz ${part}</b> — about ${fmt(left)} lines to go.`;}
-  return mem.juzOrder.length?"Next milestone: begin the next juz with a strong start.":"Next milestone: complete the first surah of the plan.";
-}
-function completedJuz(P,st){
-  const set=new Set(st.juzTests.filter(t=>t.result==="pass").map(t=>+t.juz));
-  const end=endKeyFor(P),pv=prevPeriod(P);
-  if(P.type!=="all"){
-    const now=memorised(end),before=memorised(pv?endKeyFor(pv):"0000-00");
-    for(let j=1;j<=30;j++)if(now.frac[j]>=.995&&before.frac[j]<.995)set.add(j);
-  }else{const now=memorised(null);for(let j=1;j<=30;j++)if(now.frac[j]>=.995)set.add(j);}
-  return[...set].filter(Boolean).sort((a,b)=>a-b);
-}
-const DUA={
-  zidni:{ar:"رَّبِّ زِدْنِي عِلْمًا",tr:"Rabbi zidnī ʿilmā",mn:"“My Lord, increase me in knowledge.”",src:"Sūrah Ṭā-Hā 20:114"},
-  sharh:{ar:"رَبِّ اشْرَحْ لِي صَدْرِي ۝ وَيَسِّرْ لِي أَمْرِي ۝ وَاحْلُلْ عُقْدَةً مِّن لِّسَانِي ۝ يَفْقَهُوا قَوْلِي",tr:"Rabbish-raḥ lī ṣadrī, wa yassir lī amrī, waḥlul ʿuqdatam-min lisānī, yafqahū qawlī",mn:"“My Lord, expand my chest, ease my task for me, and untie the knot from my tongue, so they may understand my speech.”",src:"Sūrah Ṭā-Hā 20:25–28"},
-  tatim:{ar:"الْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ",mn:"“All praise is for Allah, by whose favour good deeds are completed.”",src:"Ibn Mājah"},
-  rabi:{ar:"اللَّهُمَّ اجْعَلِ الْقُرْآنَ رَبِيعَ قَلْبِي، وَنُورَ صَدْرِي",mn:"“O Allah, make the Qur’an the spring of my heart and the light of my chest.”",src:"Musnad Aḥmad"}
-};
-const duaCard=(d,label)=>`<div class="rp-dua"><div class="lb">${label}</div><span class="rp-ar">${d.ar}</span>${d.tr?`<div class="tr">${d.tr}</div>`:""}<div class="mn">${d.mn}</div><div class="src">${d.src}</div></div>`;
-function motivationText(name,V,st,A,cap){
-  const weak=A.imp[0]?A.imp[0][0].toLowerCase():"daily revision";
-  if(!st.eligible)return`${name}, every ḥāfiẓ began with a single line. Let’s start again with ${cap.target} lines a day — you can do it, in shā’ Allāh!`;
-  if(st.score>=85)return`Mā shā’ Allāh, ${name}! You are among the shining students of this period. Keep the same routine — consistency is your superpower.`;
-  if(st.score>=70)return`Great effort, ${name}! A little more focus on ${weak} will take you to excellent, in shā’ Allāh.`;
-  if(st.score>=55)return`Good progress, ${name}. Small steps every day with steady revision will lift you quickly — keep going!`;
-  return`${name}, the Qur’an rewards the one who keeps trying. Let’s build back with a small target of ${cap.target} lines a day and daily revision — you can do this!`;
-}
-function celebrateHTML(name,juzList,full,msg){
-  if(!juzList.length)return"";
-  const medals=juzList.slice(0,4).map(j=>`<div class="rp-medal">Juz<br>${j}</div>`).join("");
-  return `<div class="rp-celebrate"><div class="top">${medals}<div><h5>Mabrūk! ${juzList.length>1?juzList.length+" juz completed":"Juz "+juzList[0]+" completed"} 🎉</h5>
-    <p>${msg||`${name} has completed ${juzList.length>1?"Juz "+juzList.join(", "):"Juz "+juzList[0]} — a milestone for the family and the academy.`} Bārak Allāhu fīk!</p></div></div>
-    <span class="rp-ar">${DUA.tatim.ar}</span><div class="mn">${DUA.tatim.mn} · ${DUA.tatim.src}</div>
-    ${full?`<span class="rp-ar" style="font-size:17px;margin-top:6px">${DUA.rabi.ar}</span><div class="mn">${DUA.rabi.mn} · ${DUA.rabi.src}</div>`:""}</div>`;
-}
-
-/* =====================================================================
-   INDIVIDUAL PROGRESS REPORT (view v-progress)
-   ===================================================================== */
-const RP={type:"month",key:null,fmt:"minimal"};
-window.setReportPeriod=function(P){RP.type=P.type;RP.key=P.key||null;};
-
-function rankFor(P){
-  if(LINK||!Array.isArray(roster)||roster.length<2)return null;
-  const list=roster.map(r=>{const state=r.id===currentId?S:r.state;
-    const st=r.id===currentId?periodStats(P):withState(state,()=>periodStats(P));
-    return{id:r.id,score:st.score,eligible:st.eligible};}).filter(x=>x.eligible).sort((a,b)=>b.score-a.score);
-  const i=list.findIndex(x=>x.id===currentId);
-  return i<0?null:{rank:i+1,of:list.length};
-}
-
-function renderControls(){
-  const ks=monthKeys(),years=[...new Set(ks.map(k=>k.slice(0,4)))].sort().reverse();
-  if(RP.type==="month"&&!ks.includes(RP.key))RP.key=(activeMonth&&ks.includes(activeMonth))?activeMonth:ks[ks.length-1]||null;
-  if(RP.type==="year"&&!years.includes(RP.key))RP.key=years[0]||null;
-  const opts=RP.type==="month"?ks.slice().reverse().map(k=>`<option value="${k}"${k===RP.key?" selected":""}>${monthLabel(k)}</option>`).join("")
-    :RP.type==="year"?years.map(y=>`<option value="${y}"${y===RP.key?" selected":""}>${y}</option>`).join(""):"";
-  return `<div class="rp-controls no-print">
-    <div class="rp-seg" role="group" aria-label="Report period">
-      ${[["month","Monthly"],["year","Yearly"],["all","All time"]].map(([v,l])=>`<button data-rpt="${v}" class="${RP.type===v?"on":""}">${l}</button>`).join("")}
-    </div>
-    ${RP.type!=="all"?`<select class="ix-select" id="rpKey" aria-label="Choose period">${opts}</select>`:""}
-    <div class="rp-seg" role="group" aria-label="Report format">
-      <button data-rpf="minimal" class="${RP.fmt==="minimal"?"on":""}">Minimal</button>
-      <button data-rpf="detailed" class="${RP.fmt==="detailed"?"on":""}">Complete</button>
-    </div>
-    <span class="grow"></span>
-    <div class="rp-actions">
-      <button class="btn gold ix-btn" id="rpPrint">⎙ Print / Save PDF</button>
-      <button class="btn ghost ix-btn" id="rpCopy">Copy WhatsApp summary</button>
-    </div></div>`;
-}
-
-function buildReport(){
-  const P={type:RP.type,key:RP.key},detailed=RP.fmt==="detailed",cfg=S.config,lpp=cfg.lpp||15;
-  const name=esc(cfg.student||"Student"),first=esc(String(cfg.student||"Student").split(" ")[0]);
-  const st=periodStats(P),pv=prevPeriod(P),prev=pv?periodStats(pv):null;
-  const endKey=endKeyFor(P),cum=cumulativeTo(endKey),mem=memorised(endKey);
-  const A=analyse(st,prev,mem),rank=rankFor(P),V=verdict(st.score);
-  const passedAll=new Set();monthKeys().filter(k=>!endKey||k<=endKey).forEach(k=>{const days=(S.months[k]&&S.months[k].days)||{};
-    Object.values(days).forEach(r=>{if(r&&r.ev&&r.ev.type==="juz"&&r.ev.result==="pass")passedAll.add(+r.ev.juz);});});
-  const cyc=manzilCycle(mem),plan=weekPlan(mem,cyc,P),cap=capacityInfo(st),done=completedJuz(P,st);
-  const gen=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
-  const plabel=esc(periodLabel(P));
-  const foot=`<div class="rp-foot"><span>ManzilulQuran E-learning Academy · manzilulquran.in</span><span>info@manzilulquran.in</span></div>`;
-  const band=`<div class="rp-band"><div class="crest"><img src="/og-image.jpg" alt=""></div>
-    <div style="position:relative;z-index:1"><div class="t1">${esc(cfg.academy||"ManzilulQuran E-learning Academy")}</div>
-      <div class="t2">Ḥifẓ Progress Report<span class="rp-ar">تقرير الحفظ</span></div></div>
-    <div class="who"><div class="nm rp-gold-lt">${name}</div>
-      <span class="rp-chip">${plabel}</span>${rank&&rank.rank<=Math.max(3,Math.ceil(rank.of/2))?`<span class="rp-chip gold">★ Rank ${rank.rank} of ${rank.of}</span>`:""}
-      <span class="gen">Generated ${gen} · ${detailed?"Complete":"Minimal"} report</span></div></div>`;
-  const slim=(t,n)=>`<div class="rp-band slim"><div style="position:relative;z-index:1"><div class="t2"><span class="rp-gold-lt">${name}</span> · ${t}</div></div><div class="pg">${plabel} · Page ${n} of 3</div></div>`;
-  const sheet=(inner)=>`<article class="rp-doc">${inner}</article>`;
-
-  if(!st.keys.length||(!st.eligible&&!st.log.length)){
-    return sheet(band+`<div class="rp-body"><div class="rp-empty">No daily records for ${plabel} yet.<br>Choose another period or add entries in the Daily Log.</div></div>`+foot);
-  }
-
-  /* ---- shared blocks ---- */
-  const hasPrev=prev&&prev.eligible;
-  const delta=(a,b,unit)=>{if(b==null)return"";const d=a-b;if(Math.abs(d)<0.5)return`<div class="d rp-muted">= previous</div>`;
-    return`<div class="d ${d>0?"rp-up":"rp-down"}">${d>0?"▲":"▼"} ${fmt(Math.abs(Math.round(d)))}${unit}</div>`;};
-  const summary=`${name} memorised <b>${fmt(st.lines)} lines</b> (${st.pages.toFixed(1)} pages) and attended <b>${st.present} of ${st.classDays}</b> class days.
-    Total memorised: <b>${(cum/lpp).toFixed(1)} pages ≈ ${(cum/cfg.total*30).toFixed(1)} juz</b>.`;
-  const hero=`<div class="rp-hero"><div class="ring">${ringSVG(st.score)}</div><div>
-    <span class="rp-grade">${V.t}<span class="rp-ar">${V.ar}</span></span>
-    ${done.length?`<span class="rp-grade" style="background:linear-gradient(90deg,#c9961a,#f5c542);color:#3d2a00;margin-left:6px">🎉 Juz ${done.join(", ")} completed</span>`:""}
-    <div class="rp-sum">${summary}</div></div></div>`;
-  const kp=[
-    ["book",fmt(st.lines),"New lines",delta(st.lines,hasPrev?prev.lines:null,"")],
-    ["cal",pctTxt(st.att),"Attendance",delta(st.att,hasPrev?prev.att:null," pts")],
-    ["bolt",st.avg.toFixed(1)+"<small> /day</small>","Lines per class day",""],
-    ["globe",(cum/cfg.total*100).toFixed(1)+"<small>%</small>","Of the Qur’an memorised",""]];
-  if(detailed)kp.push(
-    ["layers",(cum/lpp).toFixed(1),"Pages memorised in total",""],
-    ["loop",pctTxt(st.dims.revision),"Class days with revision",""],
-    ["award",st.examAvg!=null?Math.round(st.examAvg)+"%":"—","Exam average",""],
-    ["flame",String(currentStreak()),"Current streak (days)",""]);
-  const kpis=`<div class="rp-kpis">${kp.map(k=>`<div class="rp-kpi"><div class="ic">${ico(k[0])}</div><div><div class="v">${k[1]}</div><div class="l">${k[2]}</div>${k[3]}</div></div>`).join("")}</div>`;
-  const shelf=`<div class="rp-h">30 Juz map <span class="rp-ar">خريطة الأجزاء</span><small>fill ≈ share memorised</small></div>${shelfHTML(mem,st,passedAll)}`;
-
-  let linesChart,attChart,monthRows=null;
-  if(P.type==="month"){
-    const bestD=Math.max(...st.daily.map(d=>d.ln));
-    linesChart=barsSVG(st.daily.map(d=>({lab:String(d.d),v:d.ln,off:!d.cls,absent:d.p===0,hi:d.ln>0&&d.ln===bestD})),detailed?{h:210,w:360}:{h:130});
-    attChart=calendarHTML(st);
-  }else{
-    let c=cumulativeTo(prevMonthKey(st.keys[0]));
-    monthRows=st.keys.map(k=>{const m=periodStats({type:"month",key:k});c+=m.lines;return{k,lab:monthShort(k),v:m.lines,cum:c,att:m.att,present:m.present,classDays:m.classDays};});
-    linesChart=barsSVG(monthRows.map(r=>({lab:r.lab,v:r.v})),{cum:monthRows.map(r=>r.cum),h:detailed?190:130,w:detailed?360:560});
-    attChart=monthRows.length>1?attLineSVG(monthRows):`<div class="rp-small">Attendance ${pctTxt(monthRows[0]?monthRows[0].att:0)}</div>`;
-  }
-  const linesCard=`<div class="rp-card"><div class="ct">${P.type==="month"?"Lines memorised each day":"Lines per month"}<span>${P.type==="month"?"gold = best day · red dot = absent":"gold line = total memorised"}</span></div>${linesChart}</div>`;
-
-  const nGood=2,nImp=detailed?3:2;
-  const li=l=>l.map(x=>`<li><div><b>${esc(x[0])}</b><span>${esc(x[1])}</span></div></li>`).join("");
-  const strengths=`<div class="rp-grid g2"><div><div class="rp-sub">Strengths</div><ul class="rp-list">${A.good.length?li(A.good.slice(0,nGood)):`<li><div><b>Keep building</b><span>Strengths will show as more days are recorded.</span></div></li>`}</ul></div>
-    <div><div class="rp-sub imp">Areas to improve</div><ul class="rp-list imp">${A.imp.length?li(A.imp.slice(0,nImp)):`<li><div><b>No weak area found</b><span>Maintain the same routine, in shā’ Allāh.</span></div></li>`}</ul></div></div>`;
-
-  // 7-day checklist plan
-  const cycTxt=!cyc.days.length?"Revision cycle appears once new lessons are recorded."
-    :mem.M<=1?"Memorised portion is small — revise all of it every class day."
-    :`Revise ≈${cyc.D.toFixed(0)} pages a day · full cycle every ${cyc.days.length} class days.`;
-  const planRows=plan.rows.map(r=>r.off
-    ?`<tr class="off"><td class="rp-first nw" data-l="Day">${dLabel(r.ds)}</td><td data-l="Juz reading" colspan="4">Holiday — listen to this week’s lessons, light recitation</td></tr>`
-    :`<tr><td class="rp-first nw" data-l="Day">${dLabel(r.ds)}</td>
-      <td data-l="Juz reading">${r.day?`${juzBadges(r.day)}${compactSeg(r.day,true)} <span class="rp-small">≈${pagesOf(r.day).toFixed(1)}p</span>`:"—"}</td>
-      <td data-l="Sabaq" style="text-align:center"><span class="tick"></span></td><td data-l="Sabqi" style="text-align:center"><span class="tick"></span></td><td data-l="Manzil" style="text-align:center"><span class="tick"></span></td></tr>`).join("");
-  const planSec=`<div class="rp-h">Daily juz reading plan <span class="rp-ar">الورد اليومي</span><small>next 7 days</small></div>
-    <div class="rp-grid g2" style="margin-bottom:8px">
-      <div class="rp-fact"><div class="v" style="font-size:12.5px">New lesson (Sabaq): ≈ ${plan.target} lines</div><div class="l">${plan.cont}</div></div>
-      <div class="rp-fact"><div class="v" style="font-size:12.5px">Sabqi — every day</div><div class="l">${plan.sabqiTxt}</div></div></div>
-    <table class="rp-tbl rp-stack"><thead><tr><th>Day</th><th>Juz reading (Manzil)</th><th style="text-align:center">Sabaq</th><th style="text-align:center">Sabqi</th><th style="text-align:center">Manzil</th></tr></thead><tbody>${planRows}</tbody></table>
-    <div class="rp-small" style="margin-top:4px">${cycTxt} Tick each box when done.</div>`;
-
-  const motiv=`<div class="rp-motiv"><div class="msg">${motivationText(first,V,st,A,cap)}</div><div class="next">${nextMilestone(mem,lpp)}</div>
-    ${detailed?`<div class="hd"><span class="rp-ar">اقْرَأْ وَارْتَقِ وَرَتِّلْ كَمَا كُنْتَ تُرَتِّلُ فِي الدُّنْيَا</span>
-      <span>“It will be said to the companion of the Qur’an: recite and rise, and recite as you used to recite in the world — your rank is at the last verse you recite.” — Abū Dāwūd, at-Tirmidhī</span></div>`
-      :`<div class="hd"><span>“The best of you are those who learn the Qur’an and teach it.” — al-Bukhārī</span></div>`}</div>`;
-  const remarks=`<div class="rp-h">Teacher’s remarks</div><div class="rp-rem"><div class="rp-remarks">&nbsp;</div><div class="rp-sign"><div>Teacher</div><div>Parent</div><div>Date</div></div></div>`;
-
-  /* ---------------- MINIMAL: one sheet ---------------- */
-  if(!detailed){
-    const pt=l=>l.length?l.map(p=>esc(portionText(p))).join(", "):"—";
-    const recent=st.log.slice(-5);
-    const recentSec=`<div class="rp-h">Recent sessions <small>last ${recent.length}</small></div>
-      <table class="rp-tbl rp-stack"><thead><tr><th>Date</th><th>✓</th><th>New lesson</th><th>Lines</th><th>Revision</th></tr></thead><tbody>
-      ${recent.map(r=>`<tr><td class="rp-first nw" data-l="Date">${dLabel(r.ds)}</td><td data-l="Present">${r.p===1?'<span class="rp-ok">✓</span>':r.p===0?'<span class="rp-no">✗</span>':"·"}</td>
-        ${r.ev?`<td data-l="Event" colspan="3" class="rp-ev">${r.ev.type==="juz"?`Juz ${r.ev.juz} submission — ${r.ev.result==="pass"?"completed ★":"try again"}`:"Exam day"}</td>`
-        :`<td data-l="New lesson">${pt(r.nl)}</td><td data-l="Lines">${r.ln||"—"}</td><td data-l="Revision">${pt(r.sq.concat(r.ol))}</td>`}</tr>`).join("")}</tbody></table>`;
-    const sec=h=>`<section class="rp-sec">${h}</section>`;
-    return sheet(band+`<div class="rp-body">
-      ${hero}
-      ${done.length?`<div style="margin-top:10px">${celebrateHTML(first,done,false)}</div>`:""}
-      ${sec(`<div class="rp-h">At a glance</div>${kpis}<div style="margin-top:10px">${journeyHTML(cum,cfg.total)}</div>`)}
-      ${sec(shelf)}
-      ${sec(`<div class="rp-h">Progress</div>${linesCard}`)}
-      ${sec(`<div class="rp-h">Strengths &amp; areas to improve</div>${strengths}`)}
-      ${sec(planSec)}
-      ${sec(recentSec)}
-      ${sec(`<div class="rp-h">Motivation &amp; duʿā’</div><div class="rp-grid g2">${motiv}${duaCard(DUA.zidni,"Duʿā’ before lessons")}</div>`)}
-      ${sec(remarks)}</div>`+foot);
-  }
-
-  /* ---------------- COMPLETE: three designed A4 pages ---------------- */
-  // page 1 — overview
-  const p1=sheet(band+`<div class="rp-body">
-    ${hero}
-    <div class="rp-h">At a glance <small>${hasPrev?"▲▼ vs previous period":""}</small></div>${kpis}
-    <div style="margin-top:10px">${journeyHTML(cum,cfg.total)}</div>
-    ${shelf}
-    <div class="rp-h">Student capacity <small>how much ${first} can memorise</small></div>${capacityHTML(cap)}
-  </div>`+foot);
-
-  // page 2 — infographics
-  const unmarked=Math.max(0,st.classDays-st.present-st.absent);
-  const attParts=[{v:st.present,c:C.g6,l:"Present"},{v:st.absent,c:C.red,l:"Absent"},{v:unmarked,c:C.g1,l:"Not marked"}];
-  const mixParts=[{v:st.nlDays,c:C.g7,l:"New lesson"},{v:st.sqDays,c:C.g5,l:"Sabq"},{v:st.olDays,c:C.au5,l:"Old lesson"}];
-  let summaryBlock;
-  if(P.type==="month"){
-    const today=todayStr(),wk=[];
-    for(let w=0;w*7<st.daily.length;w++){
-      const ds=st.daily.slice(w*7,w*7+7);
-      const cls=ds.filter(d=>d.cls&&d.ds<=today).length,pr=ds.filter(d=>d.p===1).length,ln=ds.reduce((a,d)=>a+d.ln,0);
-      wk.push({lab:`Week ${w+1}`,sub:`${ds[0].d}–${ds[ds.length-1].d}`,ln,pr,cls});}
-    const mx=Math.max(1,...wk.map(w=>w.ln));
-    summaryBlock=`<div class="rp-weeks">${wk.map(w=>`<div class="rp-wk"><div class="a">${w.lab} <span style="font-weight:400">· ${w.sub}</span></div><div class="b">${fmt(w.ln)}</div><div class="c">lines · ${w.pr}/${w.cls} days</div><div class="bar"><i style="width:${(w.ln/mx*100).toFixed(0)}%"></i></div></div>`).join("")}</div>`;
-  }else{
-    const rows=monthRows.slice(-12),mx=Math.max(1,...rows.map(r=>r.v));
-    summaryBlock=`<div class="rp-weeks">${rows.map(r=>`<div class="rp-wk"><div class="a">${esc(r.lab)}</div><div class="b">${fmt(r.v)}</div><div class="c">lines · ${pctTxt(r.att)} att.</div><div class="bar"><i style="width:${(r.v/mx*100).toFixed(0)}%"></i></div></div>`).join("")}</div>`;
-  }
-  const wdBars=barsSVG(cap.wavg.map((v,i)=>({lab:DOWS[i].slice(0,3),v:Math.round(v*10)/10,off:!!(cfg.weekly||[])[i],hi:i===cap.bestW})),{h:150,w:360});
-  const p2=sheet(slim("Progress infographics",2)+`<div class="rp-body">
-    <div class="rp-h">Memorisation &amp; attendance</div>
-    <div class="rp-grid g2">${linesCard}<div class="rp-card"><div class="ct">${P.type==="month"?"Attendance calendar":"Attendance % per month"}<span>${P.type==="month"?"":"dashed = 75% goal"}</span></div>${attChart}</div></div>
-    <div class="rp-h">Balance of learning</div>
-    <div class="rp-grid g3">
-      <div class="rp-card"><div class="ct">Attendance</div><div class="rp-donut">${donutSVG(attParts,pctTxt(st.att),"attendance")}${donutKey(attParts)}</div></div>
-      <div class="rp-card"><div class="ct">Lesson mix</div><div class="rp-donut">${donutSVG(mixParts,pctTxt(st.dims.revision),"revised")}${donutKey(mixParts)}</div></div>
-      <div class="rp-card"><div class="ct">Skill balance<span>0–100</span></div>${radarSVG(st.dims)}</div></div>
-    <div class="rp-h">${P.type==="month"?"Week by week":"Month by month"} <small>log summary</small></div>
-    <div class="rp-grid g2"><div>${summaryBlock}</div><div class="rp-card"><div class="ct">Average lines by weekday<span>gold = strongest</span></div>${wdBars}</div></div>
-    <div class="rp-h">Strengths &amp; areas to improve</div>${strengths}
-  </div>`+foot);
-
-  // page 3 — plan, assessments, guidance, duas
-  const cycSec=cyc.days.length>1?`<div class="rp-h">Revision cycle <small>${cyc.days.length} days · in memorisation order</small></div>
-    <div class="rp-cycle">${cyc.days.slice(0,12).map((d,i)=>`<div><b>Day ${i+1}</b> ${[...new Set(d.map(u=>"J"+u.j))].join(" ")} · ≈${pagesOf(d).toFixed(0)}p</div>`).join("")}${cyc.days.length>12?`<div>+${cyc.days.length-12} more days</div>`:""}</div>`:"";
-  const exRows=st.exams.slice(-3).map(e=>{const pct=e.max?e.obt/e.max:0,[g]=gradeOf(pct);
-      const por=e.range?(e.range.from===e.range.to?esc(SURAHS[e.range.from][0]):esc(SURAHS[e.range.from][0])+" → "+esc(SURAHS[e.range.to][0])):e.portion?esc(portionText(e.portion)):"—";
-      return`<tr><td class="rp-first nw" data-l="Date">${e.date?dLabel(e.date):"—"}</td><td data-l="Portion">${por}</td><td data-l="Result"><b>${Math.round(pct*100)}%</b> ${esc(g)}</td></tr>`;})
-    .concat(st.juzTests.slice(-2).map(t=>`<tr><td class="rp-first nw" data-l="Date">${dLabel(t.ds)}</td><td data-l="Portion">Juz ${t.juz} submission</td><td data-l="Result">${t.result==="pass"?'<span class="rp-ok">★ Passed</span>':'<span class="rp-no">Retry</span>'}</td></tr>`)).join("");
-  const tasks=S.tasks.slice(0,4);
-  const assess=(exRows||tasks.length)?`<div class="rp-h">Assessments &amp; tasks</div><div class="rp-grid g2">
-    <div>${exRows?`<table class="rp-tbl rp-stack"><thead><tr><th>Date</th><th>Exam / juz test</th><th>Result</th></tr></thead><tbody>${exRows}</tbody></table>`:'<div class="rp-small">No exams in this period.</div>'}</div>
-    <div class="rp-card"><div class="ct">Memorisation tasks</div>${tasks.length?`<div class="rp-prog">${tasks.map(t=>{const pc=t.target?Math.min(100,t.done/t.target*100):0;
-      return`<div class="r"><div class="top"><span>${esc(t.name)}</span><b>${t.done}/${t.target}</b></div><div class="bar"><i style="width:${pc.toFixed(0)}%"></i></div></div>`;}).join("")}</div>`:'<div class="rp-small">No tasks set.</div>'}</div></div>`:"";
-  const order=["neglect","attendance","revision","pace","accuracy","consistency"].filter(k=>A.needs.has(k));
-  const pick=[];order.forEach(k=>TIPS[k].forEach(t=>pick.push(t)));TIPS.general.forEach(t=>pick.push(t));
-  const tips=`<div class="rp-h">How to improve memory <small>chosen for ${first}</small></div><ol class="rp-tips">${pick.slice(0,4).map(x=>`<li><b>${esc(x[0])}</b><span>${esc(x[1])}</span></li>`).join("")}</ol>`;
-  const p3=sheet(slim("Plan, guidance & duʿā’",3)+`<div class="rp-body">
-    ${planSec}${cycSec}${assess}${tips}
-    ${done.length
-      ?`<div class="rp-h">Celebration, motivation &amp; duʿā’ <span class="rp-ar">مبروك</span></div><div class="rp-grid g2">${celebrateHTML(first,done,false,motivationText(first,V,st,A,cap))}${duaCard(DUA.zidni,"Duʿā’ for more knowledge")}</div>`
-      :`<div class="rp-h">Motivation &amp; duʿā’</div><div class="rp-grid g2">${motiv}${duaCard(DUA.sharh,"Duʿā’ for ease in learning")}</div>`}
-    ${remarks}</div>`+foot);
-  return p1+p2+p3;
-}
-
-function whatsappText(){
-  const P={type:RP.type,key:RP.key},st=periodStats(P),cfg=S.config,lpp=cfg.lpp||15;
-  const cum=cumulativeTo(endKeyFor(P)),mem=memorised(endKeyFor(P)),V=verdict(st.score);
-  const pv=prevPeriod(P),prev=pv?periodStats(pv):null,A=analyse(st,prev,mem);
-  const L=[`*${cfg.student} — Hifz Report*`,`_${periodLabel(P)}_`,"",
-    `⭐ Overall: ${Math.round(st.score)}/100 (${V.t})`,
-    `📖 New: ${fmt(st.lines)} lines (${st.pages.toFixed(1)} pages)`,
-    `🕌 Attendance: ${st.present}/${st.classDays} days (${pctTxt(st.att)})`,
-    `🌙 Total memorised: ${(cum/lpp).toFixed(1)} pages ≈ ${(cum/cfg.total*30).toFixed(1)} juz`];
-  if(A.good.length)L.push("",`✅ ${A.good[0][0]}`);
-  if(A.imp.length)L.push(`🎯 Improve: ${A.imp.slice(0,2).map(x=>x[0]).join(", ")}`);
-  L.push("","— ManzilulQuran E-learning Academy");
-  return L.join("\n");
-}
-
-/* fit each sheet to A4 before printing (Complete: 1 page per sheet, Minimal: 2 pages) */
-function fitSheets(on){
-  const docs=$$("#rpDoc .rp-doc");
-  document.body.classList.toggle("rp-fit",!!on&&docs.length>0);
-  docs.forEach(d=>{d.style.zoom="";});
-  if(!on||!docs.length)return;
-  const PAGE=1040,lim=docs.length>1?PAGE:PAGE*2-120;          // px at 96dpi, A4 minus 8mm margins, small safety
-  docs.forEach(d=>{const h=d.offsetHeight;if(h>lim)d.style.zoom=(lim/h).toFixed(3);});
-}
-window.__rpFit=fitSheets;
-window.addEventListener("beforeprint",()=>{const v=$("#v-progress");if(v&&v.offsetParent!==null)fitSheets(true);});
-window.addEventListener("afterprint",()=>fitSheets(false));
-
-window.renderProgress=function(){
-  const root=$("#progressArea");if(!root)return;
-  if(!monthKeys().length){root.innerHTML=renderControls()+`<div class="rp-docs"><article class="rp-doc"><div class="rp-empty">Add a month in the Daily Log to generate a report.</div></article></div>`;bindControls();return;}
-  const ctl=renderControls();                    // normalises RP.key first
-  // one wrapper per labelled cell so stacked phone rows keep label | content on one line
-  const html=buildReport().replace(/(<td[^>]*data-l="[^"]*"[^>]*>)([\s\S]*?)(<\/td>)/g,(m,o,inner,c)=>o+"<div>"+inner+"</div>"+c);
-  root.innerHTML=ctl+`<div class="rp-docs" id="rpDoc">${html}</div>`;
-  bindControls();
-};
-function bindControls(){
-  $$("#progressArea [data-rpt]").forEach(b=>b.onclick=()=>{RP.type=b.dataset.rpt;RP.key=null;renderProgress();});
-  $$("#progressArea [data-rpf]").forEach(b=>b.onclick=()=>{RP.fmt=b.dataset.rpf;renderProgress();});
-  const k=$("#rpKey");if(k)k.onchange=()=>{RP.key=k.value;renderProgress();};
-  const pr=$("#rpPrint");if(pr)pr.onclick=()=>{
-    const t=document.title;document.title=`Hifz Report - ${S.config.student} - ${periodLabel({type:RP.type,key:RP.key})}`;
-    window.print();setTimeout(()=>{document.title=t;},800);};
-  const cp=$("#rpCopy");if(cp)cp.onclick=async()=>{const txt=whatsappText();
-    try{await navigator.clipboard.writeText(txt);toast("Summary copied — paste it in WhatsApp ✓");}catch(e){prompt("Copy this summary:",txt);}};
-}
-
-/* =====================================================================
-   ACADEMY INSIGHTS (view v-insights, admin roster only)
-   ===================================================================== */
-const IX={P:null,sort:"score"};
-function allMonthKeys(){const s=new Set();roster.forEach(r=>Object.keys((r.state&&r.state.months)||{}).forEach(k=>s.add(k)));return[...s].sort();}
-function computeAll(P){
-  return roster.map(r=>withState(r.state,()=>{
-    const st=periodStats(P),pv=prevPeriod(P),prev=pv?periodStats(pv):null;
-    const ks=monthKeys(),spark=ks.slice(-6).map(k=>monthStats(k).lines);
-    return{id:r.id,name:r.name||S.config.student,st,prev,cum:cumulativeTo(null),total:S.config.total||9060,
-      streak:currentStreak(),spark,updated:r.updated_at};
-  }));
-}
-function sparkSVG(v){if(v.length<2)return"";const m=Math.max(1,...v),W=80,H=22;
-  const pts=v.map((x,i)=>`${(i*W/(v.length-1)).toFixed(1)},${(H-2-(H-4)*x/m).toFixed(1)}`).join(" ");
-  return`<svg viewBox="0 0 ${W} ${H}" width="80" height="22" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#C9A96E" stroke-width="1.6"/></svg>`;}
-
-window.openInsights=function(){
-  showOnly("v-insights");
-  const ks=allMonthKeys(),now=todayStr().slice(0,7);
-  if(!IX.P)IX.P=ks.includes(now)?{type:"month",key:now}:ks.length?{type:"month",key:ks[ks.length-1]}:{type:"all"};
-  renderInsights();window.scrollTo({top:0});
-};
-function renderInsights(){
-  const root=$("#insightsArea");if(!root)return;
-  const ks=allMonthKeys(),years=[...new Set(ks.map(k=>k.slice(0,4)))].sort().reverse(),P=IX.P;
-  const sel=`<select class="ix-select" id="ixPeriod" aria-label="Period">
-    <optgroup label="Month">${ks.slice().reverse().map(k=>`<option value="month:${k}"${P.type==="month"&&P.key===k?" selected":""}>${monthLabel(k)}</option>`).join("")}</optgroup>
-    <optgroup label="Year">${years.map(y=>`<option value="year:${y}"${P.type==="year"&&P.key===y?" selected":""}>Year ${y}</option>`).join("")}</optgroup>
-    <option value="all:"${P.type==="all"?" selected":""}>All time</option></select>`;
-  const top=`<div class="ix-top"><button class="btn ghost ix-btn" id="ixBack">← Students</button><h2>Academy Insights</h2>${sel}
-    <div class="ix-sub">Who is leading, who attends most, and who needs help — calculated live from every student’s daily log.</div></div>`;
-  if(!roster.length){root.innerHTML=top+`<div class="empty-note">No students yet.</div>`;bindIx();return;}
-
-  const all=computeAll(P),act=all.filter(x=>x.st.eligible);
-  const plabel=P.type==="month"?monthLabel(P.key):P.type==="year"?"Year "+P.key:"All time";
-  const by=(f)=>act.slice().sort((a,b)=>f(b)-f(a));
-  const ranked=by(x=>x.st.score);
-  const totLines=act.reduce((a,x)=>a+x.st.lines,0);
-  const avgAtt=act.length?act.reduce((a,x)=>a+x.st.att,0)/act.length:0;
-  const passes=act.reduce((a,x)=>a+x.st.jtPass,0);
-  const kpis=`<div class="ix-kpis">
-    <div class="ix-kpi"><div class="v">${act.length}<span style="font-size:15px;color:var(--dim)"> / ${all.length}</span></div><div class="l">Active students</div></div>
-    <div class="ix-kpi"><div class="v">${fmt(totLines)}</div><div class="l">Lines memorised</div></div>
-    <div class="ix-kpi"><div class="v">${Math.round(avgAtt)}%</div><div class="l">Average attendance</div></div>
-    <div class="ix-kpi"><div class="v">${passes}</div><div class="l">Juz submissions passed</div></div></div>`;
-
-  const pod=[ranked[1],ranked[0],ranked[2]].map((x,i)=>{const pos=[2,1,3][i];
-    if(!x)return`<div class="ix-pod p${pos} empty"></div>`;
-    return`<div class="ix-pod p${pos}" data-open="${x.id}" role="button" tabindex="0"><div class="ix-medal">${pos}</div>
-      <div class="ix-pname">${esc(x.name)}</div><div class="ix-pscore">${Math.round(x.st.score)} pts · ${fmt(x.st.lines)} lines</div>
-      <div class="ix-plinth">${pos===1?"Best of the "+(P.type==="month"?"month":"period"):"#"+pos}</div></div>`;}).join("");
-  const hero=`<div class="ix-hero"><h3>${P.type==="month"?"Stars of the month":"Top students"}</h3><div class="ix-hsub">${esc(plabel)} · ranked by overall score</div>
-    <div class="ix-podium">${pod}</div></div>`;
-
-  const award=(ic,t,x,m)=>x?`<button class="ix-award" data-open="${x.id}"><span class="ic">${ic}</span><span><span class="t">${t}</span><div class="n">${esc(x.name)}</div><span class="m">${m}</span></span></button>`
-    :`<div class="ix-award none"><span class="ic">${ic}</span><span><span class="t">${t}</span><div class="n">—</div></span></div>`;
-  const topMem=by(x=>x.st.lines)[0];
-  const topAtt=act.filter(x=>x.st.classDays>=3).sort((a,b)=>b.st.att-a.st.att||b.st.present-a.st.present)[0];
-  const topRev=by(x=>x.st.revDays)[0];
-  const impr=act.filter(x=>x.prev&&x.prev.eligible).map(x=>({x,d:x.st.lines-x.prev.lines})).filter(o=>o.d>0).sort((a,b)=>b.d-a.d)[0];
-  const topEx=act.filter(x=>x.st.examAvg!=null).sort((a,b)=>b.st.examAvg-a.st.examAvg)[0];
-  const topStr=by(x=>x.streak)[0];
-  const awards=`<div class="ix-awards">
-    ${award("📖","Top memoriser",topMem&&topMem.st.lines>0?topMem:null,topMem?`${fmt(topMem.st.lines)} lines · ${topMem.st.pages.toFixed(1)} pages`:"")}
-    ${award("🕌","Attends the most",topAtt,topAtt?`${pctTxt(topAtt.st.att)} · ${topAtt.st.present}/${topAtt.st.classDays} days`:"")}
-    ${award("🔁","Best reviser",topRev&&topRev.st.revDays>0?topRev:null,topRev?`Revision on ${topRev.st.revDays} days`:"")}
-    ${award("📈","Most improved",impr?impr.x:null,impr?`+${fmt(impr.d)} lines vs previous`:"")}
-    ${award("🎓","Top exam score",topEx,topEx?`${topEx.st.examAvg.toFixed(0)}% average`:"")}
-    ${award("🔥","Longest current streak",topStr&&topStr.streak>0?topStr:null,topStr?`${topStr.streak} class days in a row`:"")}</div>`;
-
-  const maxL=Math.max(1,...act.map(x=>x.st.lines));
-  const bars=`<div class="ix-card"><h3>Lines memorised <small>${esc(plabel)}</small></h3><div class="ix-bars">
-    ${by(x=>x.st.lines).map(x=>`<div class="ix-bar"><span class="nm">${esc(x.name)}</span><span class="tr"><i data-w="${(x.st.lines/maxL*100).toFixed(1)}"></i></span><span class="vv">${fmt(x.st.lines)}</span></div>`).join("")||'<div class="ix-note">No lines recorded.</div>'}</div></div>`;
-
-  const sorts={score:["Score",x=>x.st.score],lines:["Lines",x=>x.st.lines],att:["Attendance",x=>x.st.att],rev:["Revision",x=>x.st.revDays],exam:["Exams",x=>x.st.examAvg??-1],total:["Total hifz",x=>x.cum]};
-  const list=act.slice().sort((a,b)=>sorts[IX.sort][1](b)-sorts[IX.sort][1](a));
-  const board=`<div class="ix-card"><h3>Leaderboard <small>tap a student for the full report</small></h3>
-    <div class="ix-sort">${Object.entries(sorts).map(([k,v])=>`<button data-sort="${k}" class="${IX.sort===k?"on":""}">${v[0]}</button>`).join("")}</div>
-    <div class="ix-head"><span>#</span><span>Student</span><span>Score</span><span>Lines</span><span>Attend.</span><span>Revision</span><span>Exams</span><span>Total</span><span>6 months</span></div>
-    <div class="ix-list">${list.map((x,i)=>`<div class="ix-row" data-open="${x.id}" role="button" tabindex="0">
-      <span class="ix-rank">${i+1}</span>
-      <span class="who"><b>${esc(x.name)}</b><span>${fmt(x.st.lines)} lines · ${pctTxt(x.st.att)} att. · ${(x.cum/x.total*100).toFixed(1)}% hifz</span></span>
-      <span class="sc">${Math.round(x.st.score)}<small>score</small></span>
-      <span class="cols"><span>${fmt(x.st.lines)}</span><span>${pctTxt(x.st.att)}</span><span>${x.st.revDays} d</span><span>${x.st.examAvg!=null?Math.round(x.st.examAvg)+"%":"—"}</span><span>${(x.cum/x.total*100).toFixed(1)}%</span></span>
-      <span class="spark">${sparkSVG(x.spark)}</span></div>`).join("")||'<div class="ix-note">No activity in this period.</div>'}</div></div>`;
-
-  // needs attention
-  const attn=[];
-  act.forEach(x=>{
-    if(x.st.classDays>=4&&x.st.att<60)attn.push([x,`attendance ${pctTxt(x.st.att)}`]);
-    else if(x.st.present>=3&&x.st.lines===0)attn.push([x,`present ${x.st.present} days but no new lines recorded`]);
-    else if(x.st.present>=3&&x.st.dims.revision<40)attn.push([x,`revision on only ${x.st.revDays} of ${x.st.present} present days`]);
-  });
-  if(P.type==="month"&&P.key===todayStr().slice(0,7))all.forEach(x=>{
-    if(x.updated&&(Date.now()-new Date(x.updated).getTime())>10*864e5)attn.push([x,`log not updated for ${Math.floor((Date.now()-new Date(x.updated).getTime())/864e5)} days`]);});
-  const idle=all.filter(x=>!x.st.eligible);
-  const attnCard=`<div class="ix-card"><h3>Needs attention</h3><div class="ix-attn">
-    ${attn.map(([x,why])=>`<div data-open="${x.id}" role="button" tabindex="0" style="cursor:pointer"><span>⚠</span><span><b>${esc(x.name)}</b> — <span>${esc(why)}</span></span></div>`).join("")||'<div style="background:rgba(47,174,127,.08);border-color:rgba(47,174,127,.25)"><span>✓</span><span>No concerns in this period, al-ḥamdu lillāh.</span></div>'}
-    ${idle.length?`<div style="background:rgba(255,255,255,.03);border-color:var(--line)"><span>○</span><span><b>No records:</b> <span>${idle.map(x=>esc(x.name)).join(", ")}</span></span></div>`:""}
-    </div><p class="ix-note" style="margin-top:12px">Score = pace ${WEIGHTS.pace}% (1 page per present day = full marks) · attendance ${WEIGHTS.attendance}% · revision ${WEIGHTS.revision}% · consistency ${WEIGHTS.consistency}% · exams ${WEIGHTS.accuracy}%. Students with no exams are scored on the other four.</p></div>`;
-
-  root.innerHTML=top+kpis+hero+awards+board+`<div class="ix-grid2">${bars}${attnCard}</div>`;
-  requestAnimationFrame(()=>$$("#insightsArea .ix-bar .tr i").forEach(b=>b.style.width=b.dataset.w+"%"));
-  bindIx();
-}
-function bindIx(){
-  const b=$("#ixBack");if(b)b.onclick=()=>enterRoster();
-  const s=$("#ixPeriod");if(s)s.onchange=()=>{const[t,k]=s.value.split(":");IX.P={type:t,key:k||null};renderInsights();};
-  $$("#insightsArea [data-sort]").forEach(x=>x.onclick=()=>{IX.sort=x.dataset.sort;renderInsights();});
-  $$("#insightsArea [data-open]").forEach(el=>{
-    const go=()=>{const id=el.dataset.open;openStudent(id);RP.type=IX.P.type;RP.key=IX.P.key;RP.fmt="minimal";gotoView("progress");window.scrollTo({top:0});};
-    el.onclick=go;el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};
-  });
-}
 })();
+const ADMIN_OK_KEY="mq_admin_ok_v1";
+function adminUnlocked(){return !ADMIN_PIN||localStorage.getItem(ADMIN_OK_KEY)===ADMIN_PIN;}
+async function initClient(){
+  try{
+    sb=window.supabase.createClient(CONN.url,CONN.key);
+    if(adminUnlocked())enterRoster();else showOnly("v-login");
+  }catch(e){showOnly("v-connect");toast("Couldn't connect — check URL and key");}
+}
+$("#cnSave").onclick=()=>{
+  const url=$("#cnUrl").value.trim().replace(/\/+$/,""), key=$("#cnKey").value.trim();
+  if(!/^https:\/\/.+supabase\.(co|in|com)/.test(url)||key.length<20){toast("That doesn't look like a valid URL + anon key");return;}
+  CONN={url,key};localStorage.setItem(CONN_KEY,JSON.stringify(CONN));initClient();
+};
+$("#pinBtn").onclick=()=>{
+  if($("#pinInput").value===ADMIN_PIN&&ADMIN_PIN){
+    localStorage.setItem(ADMIN_OK_KEY,ADMIN_PIN);$("#pinInput").value="";enterRoster();
+  }else toast("Wrong PIN");
+};
+$("#pinInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("#pinBtn").click();});
+$("#lgReconfig").onclick=()=>{localStorage.removeItem(CONN_KEY);CONN=(SUPA_URL&&SUPA_KEY)?{url:SUPA_URL,key:SUPA_KEY}:null;showOnly("v-connect");};
+$("#logoutBtn").onclick=()=>{
+  if(!ADMIN_PIN){toast("No PIN set inside the file — the list stays open");return;}
+  localStorage.removeItem(ADMIN_OK_KEY);showOnly("v-login");toast("Locked");
+};
+
+/* ---- roster ---- */
+async function enterRoster(){
+  currentId=null;showOnly("v-roster");
+  await fetchRoster();
+}
+async function fetchRoster(){
+  $("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">Loading students…</div>';
+  const{data,error}=await sb.from("students").select("id,name,state,updated_at,share_token").order("name");
+  if(error){
+    $("#rosterGrid").innerHTML=`<div class="empty-note" style="grid-column:1/-1">Couldn't load students: ${esc(error.message)}<br>Did you run the setup SQL in Supabase?</div>`;
+    return;
+  }
+  roster=data||[];renderRoster();
+}
+function summarize(state){
+  const keep=S, keepAM=activeMonth;
+  S=Object.assign(defaultState(),state||{});
+  S.config=Object.assign(defaultState().config,(state||{}).config||{});
+  let out;
+  try{const A=allStats();out={lines:A.cumLines,pct:A.cumLines/S.config.total*100,att:A.att,months:A.rows.length};}
+  catch(e){out={lines:0,pct:0,att:0,months:0};}
+  S=keep;activeMonth=keepAM;
+  return out;
+}
+function miniRing(pct){
+  const r=22,c=2*Math.PI*r,off=c*(1-Math.min(1,pct/100));
+  return `<svg width="58" height="58" viewBox="0 0 58 58">
+    <circle cx="29" cy="29" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
+    <circle cx="29" cy="29" r="${r}" fill="none" stroke="url(#gGoldR)" stroke-width="6" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 29 29)"/>
+    <defs><linearGradient id="gGoldR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2fae7f"/><stop offset="1" stop-color="#C9A96E"/></linearGradient></defs>
+    <text x="29" y="33" text-anchor="middle" font-size="11" fill="#e8cf9a">${pct.toFixed(0)}%</text></svg>`;
+}
+const RUI={q:"",sort:"name",view:"grid"};
+try{RUI.sort=localStorage.getItem("mq_sr_sort")||"name";RUI.view=localStorage.getItem("mq_sr_view")||"grid";}catch(e){}
+let rosterSum=[];
+function renderRoster(){
+  $("#rosterCount").textContent=roster.length+" student"+(roster.length===1?"":"s");
+  rosterSum=roster.map(r=>({r,sm:summarize(r.state)}));
+  drawRoster();
+}
+function drawRoster(){
+  const q=RUI.q.trim().toLowerCase();
+  let rows=rosterSum.filter(x=>!q||(x.r.name||"").toLowerCase().includes(q));
+  const by={name:(a,b)=>(a.r.name||"").localeCompare(b.r.name||""),
+    updated:(a,b)=>(b.r.updated_at||"").localeCompare(a.r.updated_at||""),
+    lines:(a,b)=>b.sm.lines-a.sm.lines,att:(a,b)=>b.sm.att-a.sm.att}[RUI.sort]||((a,b)=>0);
+  rows=rows.slice().sort(by);
+  const grid=$("#rosterGrid"),list=RUI.view==="list";
+  grid.classList.toggle("roster-list",list);
+  $("#rosterSort").value=RUI.sort;
+  $$(".rview button").forEach(b=>b.classList.toggle("on",b.dataset.rv===RUI.view));
+  const upd=r=>r.updated_at?new Date(r.updated_at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}):"—";
+  const cards=rows.map(({r,sm},i)=>list
+    ?`<div class="lrow" data-id="${r.id}" role="button" tabindex="0">
+      <div class="lmain"><b>${esc(r.name)}</b><span>Updated ${upd(r)} · ${sm.months} mo<i><br>${sm.pct.toFixed(0)}% · ${fmt(sm.lines)} lines · ${sm.att.toFixed(0)}% att.</i></span></div>
+      <div class="lprog"><div class="bar"><i style="width:${Math.min(100,Math.max(sm.pct,1)).toFixed(1)}%"></i></div><span>${sm.pct.toFixed(1)}%</span></div>
+      <div class="lst"><b>${fmt(sm.lines)}</b> lines</div><div class="lst"><b>${sm.att.toFixed(0)}%</b> att.</div>
+      <div class="lact"><button class="sshare" title="Copy teacher link" aria-label="Copy teacher link">🔗</button><button class="ssettings" title="Settings" aria-label="Settings">⚙</button><button class="srename" title="Rename" aria-label="Rename">✎</button><button class="sdel" title="Delete" aria-label="Delete">✕</button><button class="smore" title="More" aria-label="More actions" aria-expanded="false">⋯</button></div>
+    </div>`
+    :`<div class="card scard" data-id="${r.id}" style="animation:rise .4s ${Math.min(i,12)*0.04}s ease both">
+      <div class="sname">${esc(r.name)}</div>
+      <div class="smeta">Updated ${upd(r)} · ${sm.months} month${sm.months===1?"":"s"} tracked</div>
+      <div class="srow">${miniRing(sm.pct)}
+        <div class="sstats"><b>${fmt(sm.lines)}</b> lines memorised<br><b>${sm.att.toFixed(0)}%</b> attendance</div></div>
+      <div class="sactions">
+        <button class="btn ghost sm sopen">Open →</button>
+        <button class="btn gold sm sshare" title="Copy teacher link">🔗 Share</button>
+        <button class="btn ghost sm ssettings" title="Settings (admin)">⚙</button>
+        <button class="btn ghost sm srename" title="Rename">✎</button>
+        <button class="btn danger sm sdel" title="Delete">✕</button>
+      </div>
+    </div>`).join("");
+  grid.innerHTML=cards||`<div class="empty-note" style="grid-column:1/-1">${q?"No student matches “"+esc(RUI.q)+"”.":"No students yet — tap ＋ Add student."}</div>`;
+  $$("#rosterGrid [data-id]").forEach(c=>{
+    const id=c.dataset.id;
+    c.addEventListener("click",e=>{if(e.target.closest(".srename,.sdel,.sshare,.ssettings,.smore"))return;openStudent(id);});
+    const more=c.querySelector(".smore");if(more)more.onclick=()=>{const o=c.classList.toggle("open");more.setAttribute("aria-expanded",o);more.textContent=o?"‹":"⋯";};
+    c.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target===c){e.preventDefault();openStudent(id);}});
+    c.querySelector(".srename").onclick=()=>openStudentModal(id);
+    c.querySelector(".ssettings").onclick=()=>openStudent(id,{settings:true});
+    c.querySelector(".sshare").onclick=async()=>{
+      const r=roster.find(x=>x.id===id);
+      if(location.protocol==="file:"){toast("Share links work once the file is hosted on your website, not from file://");return;}
+      const url=location.origin+location.pathname+"?s="+id+"&t="+r.share_token;
+      try{await navigator.clipboard.writeText(url);toast("Teacher link copied — send it on WhatsApp ✓");}
+      catch(e){prompt("Copy this teacher link:",url);}
+    };
+    c.querySelector(".sdel").onclick=async()=>{
+      const r=roster.find(x=>x.id===id);
+      if(!confirm(`Delete ${r.name}'s entire system? This cannot be undone.`))return;
+      if(!confirm("Are you absolutely sure? Export a backup first if unsure."))return;
+      const{error}=await sb.from("students").delete().eq("id",id);
+      if(error){toast("Delete failed: "+error.message);return;}
+      toast(r.name+" removed");fetchRoster();
+    };
+  });
+}
+$("#rosterSearch").addEventListener("input",e=>{RUI.q=e.target.value;drawRoster();});
+$("#rosterSort").onchange=e=>{RUI.sort=e.target.value;try{localStorage.setItem("mq_sr_sort",RUI.sort);}catch(_){}drawRoster();};
+$$(".rview button").forEach(b=>b.onclick=()=>{RUI.view=b.dataset.rv;try{localStorage.setItem("mq_sr_view",RUI.view);}catch(_){}drawRoster();});
+$("#addStudentFab").onclick=()=>openStudentModal(null);
+$("#rosterRefresh").onclick=fetchRoster;
+$("#insightsBtn").onclick=()=>{if(window.openInsights)openInsights();else toast("Insights module didn't load — hard-refresh the page");};
+
+/* add / rename student */
+function openStudentModal(id){
+  editStudentId=id;
+  $("#smTitle").textContent=id?"Rename student":"Add a student";
+  $("#smSave").textContent=id?"Save name":"Create system";
+  $("#smName").value=id?(roster.find(x=>x.id===id)||{}).name||"":"";
+  $("#studentModal").classList.add("on");
+  setTimeout(()=>$("#smName").focus(),50);
+}
+$("#smSave").onclick=async()=>{
+  const name=$("#smName").value.trim();
+  if(!name){toast("Enter the student's name");return;}
+  if(editStudentId){
+    const r=roster.find(x=>x.id===editStudentId);
+    const st=Object.assign(defaultState(),r.state||{});
+    st.config=Object.assign(defaultState().config,(r.state||{}).config||{},{student:name});
+    const{error}=await sb.from("students").update({name,state:st,updated_at:new Date().toISOString()}).eq("id",editStudentId);
+    if(error){toast("Rename failed: "+error.message);return;}
+  }else{
+    const st=defaultState();st.config.student=name;
+    const{error}=await sb.from("students").insert({name,state:st});
+    if(error){toast("Couldn't create: "+error.message);return;}
+    toast(name+"'s system created ✓");
+  }
+  $("#studentModal").classList.remove("on");fetchRoster();
+};
+$("#smName").addEventListener("keydown",e=>{if(e.key==="Enter")$("#smSave").click();});
+
+/* ---- open a student's system ---- */
+function openStudent(id,opts){
+  const r=roster.find(x=>x.id===id);if(!r)return;
+  currentId=id;pushErrShown=false;
+  loadStateFrom(r);
+  renderChip();setSync("ok");
+  const startView=opts&&opts.settings?"v-settings":"v-dash";
+  showOnly(startView);
+  $$("#nav button").forEach(x=>x.classList.toggle("active",x.dataset.v==="dash"&&startView==="v-dash"));
+  renderAll();
+}
+$("#backRoster").onclick=async()=>{
+  if(pushTimer){clearTimeout(pushTimer);await pushNow();}
+  enterRoster();
+};
+
+/* ---- persistence: local cache + debounced cloud push ---- */
+function persistState(){
+  if(!currentId||!canEdit())return;
+  try{localStorage.setItem("mq_cache_"+currentId,JSON.stringify(S));}catch(e){}
+  setSync("sync");
+  clearTimeout(pushTimer);
+  pushTimer=setTimeout(pushNow,900);
+}
+async function pushNow(){
+  if(!currentId||!sb)return;
+  pushTimer=null;
+  let error;
+  if(LINK){
+    const res=await sb.rpc("update_student_by_token",{sid:LINK.sid,tok:LINK.tok,new_state:S,new_name:S.config.student});
+    error=res.error||(res.data===false?{message:"link no longer valid"}:null);
+  }else{
+    const res=await sb.from("students")
+      .update({state:S,name:S.config.student,updated_at:new Date().toISOString()})
+      .eq("id",currentId);
+    error=res.error;
+  }
+  if(error){
+    setSync("err");
+    if(!pushErrShown){toast("Cloud save failed — changes are kept in this browser");pushErrShown=true;}
+    return;
+  }
+  pushErrShown=false;setSync("ok");
+  const r=roster.find(x=>x.id===currentId);
+  if(r){r.state=JSON.parse(JSON.stringify(S));r.name=S.config.student;}
+}
+window.addEventListener("beforeunload",()=>{if(pushTimer){/* last resort: cache already saved */}});
+
+bootBackend();
+</script>
+<script src="/portal/study-report/insights.js?v=20260923d"></script>
+</body>
+</html>
