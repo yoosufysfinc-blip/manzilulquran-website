@@ -292,86 +292,199 @@ const TIPS={
     ["Make duʿā’","Ask Allah for ease and barakah in memorisation; keep intention sincere."]]
 };
 
-/* ---------- small SVG builders (parchment palette) ---------- */
-function gaugeSVG(score){
-  const r=70,cx=90,cy=86,a0=Math.PI,a=a0-Math.PI*Math.min(1,score/100);
-  const pt=ang=>[cx+r*Math.cos(ang),cy-r*Math.sin(ang)];
-  const [x0,y0]=pt(a0),[x1,y1]=pt(0),[xa,ya]=pt(a);
-  return `<svg viewBox="0 0 180 104" width="180" role="img" aria-label="Overall score ${Math.round(score)} of 100">
-    <defs><linearGradient id="rpG" x1="0" x2="1"><stop offset="0" stop-color="#1f8a62"/><stop offset="1" stop-color="#c79a43"/></linearGradient></defs>
-    <path d="M${x0} ${y0} A${r} ${r} 0 0 1 ${x1} ${y1}" fill="none" stroke="rgba(29,42,34,.1)" stroke-width="14" stroke-linecap="round"/>
-    ${score>0?`<path d="M${x0} ${y0} A${r} ${r} 0 0 1 ${xa.toFixed(1)} ${ya.toFixed(1)}" fill="none" stroke="url(#rpG)" stroke-width="14" stroke-linecap="round"/>`:""}
-    <text x="90" y="80" text-anchor="middle" font-family="Marcellus,serif" font-size="34" fill="#0f5a41">${Math.round(score)}</text>
-    <text x="90" y="98" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10.5" fill="#5c6b5f">overall score / 100</text></svg>`;
+/* ---------- infographic builders (green / white palette) ---------- */
+const C={g9:"#064e3b",g8:"#065f46",g7:"#047857",g6:"#059669",g5:"#10b981",g3:"#6ee7b7",g1:"#d1fae5",g0:"#ecfdf5",
+  au7:"#a8740f",au5:"#e0a526",au4:"#f2c84b",au3:"#f7dc84",ink:"#0f2a1f",mut:"#5b6f66",dim:"#94a39b",line:"#e2efe7",red:"#e05a47",amber:"#d98a1c",gold:"#c9961a"};
+const FF="Plus Jakarta Sans,Outfit,sans-serif";
+let _gid=0;const gid=()=>"rg"+(++_gid);
+const ICON={
+  book:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5V4.5"/>',
+  cal:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="m9 15 2 2 4-4"/>',
+  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/>',
+  layers:'<path d="m12 2 10 5-10 5L2 7z"/><path d="m2 12 10 5 10-5M2 17l10 5 10-5"/>',
+  loop:'<path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/>',
+  award:'<circle cx="12" cy="8" r="6"/><path d="M8.2 13.2 7 22l5-3 5 3-1.2-8.8"/>',
+  flame:'<path d="M12 22c4 0 7-3 7-7 0-5-5-8-6-13-2 3-3 5-3 7-1-1-2-2-2-4-2 3-3 6-3 10 0 4 3 7 7 7z"/>'
+};
+const ico=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</svg>`;
+
+function ringSVG(score){
+  const r=52,c=2*Math.PI*r,v=Math.max(0,Math.min(100,score)),id=gid();
+  return `<svg viewBox="0 0 130 130" width="130" role="img" aria-label="Overall score ${Math.round(v)} of 100">
+  <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${C.g7}"/><stop offset=".6" stop-color="${C.g5}"/><stop offset="1" stop-color="#f2c94c"/></linearGradient></defs>
+  <circle cx="65" cy="65" r="${r}" fill="none" stroke="#fbf1d6" stroke-width="12"/>
+  <circle cx="65" cy="65" r="${r}" fill="none" stroke="url(#${id})" stroke-width="12" stroke-linecap="round"
+    stroke-dasharray="${(c*v/100).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 65 65)"/>
+  <text x="65" y="68" text-anchor="middle" font-family="${FF}" font-size="32" font-weight="800" fill="${C.au7}">${Math.round(v)}</text>
+  <text x="65" y="86" text-anchor="middle" font-family="${FF}" font-size="10" fill="${C.mut}">score / 100</text></svg>`;
 }
+function donutSVG(parts,center,sub){
+  const tot=parts.reduce((a,p)=>a+p.v,0)||1,r=40,c=2*Math.PI*r;let off=0;
+  const segs=parts.filter(p=>p.v>0).map(p=>{const len=c*p.v/tot;
+    const s=`<circle cx="55" cy="55" r="${r}" fill="none" stroke="${p.c}" stroke-width="16" stroke-dasharray="${len.toFixed(2)} ${(c-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 55 55)"/>`;
+    off+=len;return s;}).join("");
+  return `<svg viewBox="0 0 110 110"><circle cx="55" cy="55" r="${r}" fill="none" stroke="${C.g0}" stroke-width="16"/>${segs}
+    <text x="55" y="57" text-anchor="middle" font-family="${FF}" font-size="18" font-weight="800" fill="${C.g9}">${center}</text>
+    <text x="55" y="71" text-anchor="middle" font-family="${FF}" font-size="8.5" fill="${C.mut}">${sub}</text></svg>`;
+}
+const donutKey=parts=>`<div class="rp-key">${parts.map(p=>`<div><i style="background:${p.c}"></i>${p.l}<b>${p.v}</b></div>`).join("")}</div>`;
 function radarSVG(dims){
-  const keys=Object.keys(WEIGHTS),cx=130,cy=112,R=78,n=keys.length;
-  const pt=(i,v)=>{const ang=-Math.PI/2+i*2*Math.PI/n;return[cx+R*v*Math.cos(ang),cy+R*v*Math.sin(ang)];};
-  let grid="";[.25,.5,.75,1].forEach(f=>{grid+=`<polygon points="${keys.map((_,i)=>pt(i,f).join(",")).join(" ")}" fill="none" stroke="rgba(29,42,34,.12)"/>`;});
-  const axes=keys.map((_,i)=>{const[x,y]=pt(i,1);return`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(29,42,34,.12)"/>`;}).join("");
-  const poly=keys.map((k,i)=>pt(i,Math.max(.02,(dims[k]??0)/100)).map(v=>v.toFixed(1)).join(",")).join(" ");
-  const labels=keys.map((k,i)=>{const[x,y]=pt(i,1.2);const v=dims[k];
-    return`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10.5" fill="#5c6b5f">${DIM_LABEL[k].split(" ")[0]}<tspan x="${x.toFixed(1)}" dy="12" fill="#0f5a41" font-weight="600">${v==null?"—":Math.round(v)}</tspan></text>`;}).join("");
-  return `<svg viewBox="0 0 260 236" role="img" aria-label="Skill balance">${grid}${axes}
-    <polygon points="${poly}" fill="rgba(31,138,98,.22)" stroke="#1f8a62" stroke-width="2"/>${labels}</svg>`;
+  const keys=Object.keys(WEIGHTS),cx=120,cy=100,R=66,n=keys.length;
+  const pt=(i,v)=>{const a=-Math.PI/2+i*2*Math.PI/n;return[cx+R*v*Math.cos(a),cy+R*v*Math.sin(a)];};
+  let grid="";[.25,.5,.75,1].forEach(f=>{grid+=`<polygon points="${keys.map((_,i)=>pt(i,f).join(",")).join(" ")}" fill="${f===1?C.g0:"none"}" stroke="${C.g1}"/>`;});
+  const axes=keys.map((_,i)=>{const[x,y]=pt(i,1);return`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${C.g1}"/>`;}).join("");
+  const poly=keys.map((k,i)=>pt(i,Math.max(.03,(dims[k]??0)/100)).map(v=>v.toFixed(1)).join(",")).join(" ");
+  const short={pace:"Pace",attendance:"Attendance",revision:"Revision",consistency:"Consistency",accuracy:"Accuracy"};
+  const labels=keys.map((k,i)=>{const[x,y]=pt(i,1.28);const v=dims[k];
+    return`<text x="${x.toFixed(1)}" y="${(y-2).toFixed(1)}" text-anchor="middle" font-family="${FF}" font-size="9.5" fill="${C.mut}">${short[k]}<tspan x="${x.toFixed(1)}" dy="11" fill="${C.g8}" font-weight="800">${v==null?"—":Math.round(v)}</tspan></text>`;}).join("");
+  return `<svg viewBox="0 0 240 205" role="img" aria-label="Skill balance">${grid}${axes}
+    <polygon points="${poly}" fill="rgba(16,185,129,.28)" stroke="${C.g6}" stroke-width="2"/>
+    ${keys.map((k,i)=>{const[x,y]=pt(i,Math.max(.03,(dims[k]??0)/100));return`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="${C.g7}"/>`;}).join("")}${labels}</svg>`;
 }
-function barsSVG(items,opts){ // items [{lab,v,off,absent}] ; opts {cum:[..]|null, h}
-  const W=560,H=opts.h||170,pl=30,pr=opts.cum?34:8,pt=10,pb=22,n=items.length||1;
+function barsSVG(items,opts){ // items [{lab,v,off,absent,hi}] ; opts {cum,h,w}
+  const W=opts.w||560,H=opts.h||150,pl=26,pr=opts.cum?34:6,pt=8,pb=20,n=items.length||1,id=gid();
   const max=Math.max(1,...items.map(i=>i.v)),bw=(W-pl-pr)/n;
-  let g="";[0,.5,1].forEach(f=>{const y=pt+(H-pt-pb)*(1-f);g+=`<line x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}" stroke="rgba(29,42,34,.08)"/><text x="${pl-4}" y="${y+3}" text-anchor="end" font-size="9" fill="#8a8f80">${Math.round(max*f)}</text>`;});
-  const every=Math.ceil(n/12);
-  const bars=items.map((it,i)=>{const h=(H-pt-pb)*it.v/max,x=pl+i*bw+bw*.15,w=bw*.7;
-    const col=it.absent?"rgba(180,85,47,.35)":it.off?"rgba(29,42,34,.12)":"url(#rpB)";
-    const bar=it.v>0?`<rect x="${x.toFixed(1)}" y="${(H-pb-h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${col}"><title>${esc(it.lab)}: ${it.v}</title></rect>`
-      :it.absent?`<rect x="${x.toFixed(1)}" y="${H-pb-3}" width="${w.toFixed(1)}" height="3" fill="rgba(180,85,47,.6)"><title>${esc(it.lab)}: absent</title></rect>`:"";
-    const lab=i%every===0?`<text x="${(x+w/2).toFixed(1)}" y="${H-7}" text-anchor="middle" font-size="9" fill="#8a8f80">${esc(it.lab)}</text>`:"";
+  let g="";[0,.5,1].forEach(f=>{const y=pt+(H-pt-pb)*(1-f);g+=`<line x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}" stroke="${C.line}"/><text x="${pl-4}" y="${y+3}" text-anchor="end" font-family="${FF}" font-size="9" fill="${C.dim}">${Math.round(max*f)}</text>`;});
+  const every=Math.ceil(n/14);
+  const bars=items.map((it,i)=>{const h=(H-pt-pb)*it.v/max,x=pl+i*bw+bw*.14,w=bw*.72;
+    const col=it.off?C.g1:it.hi?`url(#${id}g)`:`url(#${id})`;
+    const bar=it.v>0?`<rect x="${x.toFixed(1)}" y="${(H-pb-h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="${Math.min(4,w/3).toFixed(1)}" fill="${col}"/>`
+      :it.absent?`<circle cx="${(x+w/2).toFixed(1)}" cy="${H-pb-4}" r="2.6" fill="${C.red}"/>`:"";
+    const lab=i%every===0?`<text x="${(x+w/2).toFixed(1)}" y="${H-6}" text-anchor="middle" font-family="${FF}" font-size="9" fill="${C.dim}">${esc(it.lab)}</text>`:"";
     return bar+lab;}).join("");
   let line="";
   if(opts.cum){const cm=Math.max(1,...opts.cum);
     const pts=opts.cum.map((c,i)=>[(pl+i*bw+bw/2).toFixed(1),(pt+(H-pt-pb)*(1-c/cm)).toFixed(1)]);
-    line=`<polyline points="${pts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="#a8802f" stroke-width="2"/>`+
-      pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="#a8802f"/>`).join("")+
-      `<text x="${W-pr+4}" y="${pt+8}" font-size="9" fill="#a8802f">${fmt(cm)}</text>`;}
-  return `<svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="rpB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b9a70"/><stop offset="1" stop-color="#0f5a41"/></linearGradient></defs>${g}${bars}${line}</svg>`;
+    line=`<polyline points="${pts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${C.gold}" stroke-width="2.2" stroke-linejoin="round"/>`+
+      pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.8" fill="#fff" stroke="${C.gold}" stroke-width="1.8"/>`).join("")+
+      `<text x="${W-pr+4}" y="${pt+8}" font-family="${FF}" font-size="9" font-weight="700" fill="${C.gold}">${fmt(cm)}</text>`;}
+  return `<svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.g5}"/><stop offset="1" stop-color="${C.g7}"/></linearGradient><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.au4}"/><stop offset="1" stop-color="${C.au7}"/></linearGradient></defs>${g}${bars}${line}</svg>`;
 }
-function attLineSVG(rows){ // rows [{lab,att}]
-  const W=560,H=150,pl=30,pr=10,pt=12,pb=22,n=rows.length;
-  if(n<2)return "";
-  const x=i=>pl+(W-pl-pr)*i/(n-1),y=v=>pt+(H-pt-pb)*(1-v/100);
-  let g="";[0,50,75,100].forEach(v=>{g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(29,42,34,${v===75?.22:.08})" ${v===75?'stroke-dasharray="4 4"':""}/><text x="${pl-4}" y="${y(v)+3}" text-anchor="end" font-size="9" fill="#8a8f80">${v}</text>`;});
-  const pts=rows.map((r,i)=>[x(i).toFixed(1),y(r.att).toFixed(1)]);
-  const every=Math.ceil(n/12);
-  return `<svg viewBox="0 0 ${W} ${H}">${g}
-    <polygon points="${pl},${H-pb} ${pts.map(p=>p.join(",")).join(" ")} ${W-pr},${H-pb}" fill="rgba(31,138,98,.12)"/>
-    <polyline points="${pts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="#1f8a62" stroke-width="2.2"/>
-    ${pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#0f5a41"><title>${esc(rows[i].lab)}: ${Math.round(rows[i].att)}%</title></circle>`+(i%every===0?`<text x="${p[0]}" y="${H-7}" text-anchor="middle" font-size="9" fill="#8a8f80">${esc(rows[i].lab)}</text>`:"")).join("")}</svg>`;
+function attLineSVG(rows){
+  const W=560,H=140,pl=26,pr=8,pt=10,pb=20,n=rows.length;if(n<2)return"";
+  const x=i=>pl+(W-pl-pr)*i/(n-1),y=v=>pt+(H-pt-pb)*(1-v/100),id=gid();
+  let g="";[0,50,75,100].forEach(v=>{g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="${v===75?C.g3:C.line}" ${v===75?'stroke-dasharray="4 4"':""}/><text x="${pl-4}" y="${y(v)+3}" text-anchor="end" font-family="${FF}" font-size="9" fill="${C.dim}">${v}</text>`;});
+  const pts=rows.map((r,i)=>[x(i).toFixed(1),y(r.att).toFixed(1)]),every=Math.ceil(n/12);
+  return `<svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.g5}" stop-opacity=".35"/><stop offset="1" stop-color="${C.g5}" stop-opacity="0"/></linearGradient></defs>${g}
+    <polygon points="${pl},${H-pb} ${pts.map(p=>p.join(",")).join(" ")} ${W-pr},${H-pb}" fill="url(#${id})"/>
+    <polyline points="${pts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${C.g6}" stroke-width="2.4" stroke-linejoin="round"/>
+    ${pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#fff" stroke="${C.g7}" stroke-width="2"/>`+(i%every===0?`<text x="${p[0]}" y="${H-5}" text-anchor="middle" font-family="${FF}" font-size="9" fill="${C.dim}">${esc(rows[i].lab)}</text>`:"")).join("")}</svg>`;
 }
-function calendarHTML(st){ // month heat calendar
-  const k=st.keys[0];if(!k)return "";
-  const[y,m]=k.split("-").map(Number),first=(new Date(y,m-1,1).getDay()+6)%7,max=Math.max(1,...st.daily.map(d=>d.ln));
-  let cells="";for(let i=0;i<first;i++)cells+=`<i style="border:0;background:none"></i>`;
+function calendarHTML(st){
+  const k=st.keys[0];if(!k)return"";
+  const[y,m]=k.split("-").map(Number),first=(new Date(y,m-1,1).getDay()+6)%7,max=Math.max(1,...st.daily.map(d=>d.ln)),today=todayStr();
+  let cells=["M","T","W","T","F","S","S"].map(x=>`<span class="h">${x}</span>`).join("");
+  for(let i=0;i<first;i++)cells+=`<i></i>`;
   st.daily.forEach(d=>{
-    let bg="rgba(29,42,34,.05)",bd="rgba(29,42,34,.1)";
-    if(!d.cls&&d.p==null&&!d.ln){bg="repeating-linear-gradient(45deg,rgba(29,42,34,.05) 0 3px,transparent 3px 6px)";}
-    else if(d.p===0){bg="rgba(180,85,47,.22)";bd="rgba(180,85,47,.4)";}
-    else if(d.p===1||d.ln>0){const f=d.ln/max;bg=f>.85?"linear-gradient(135deg,#2b9a70,#c79a43)":`rgba(31,138,98,${(.18+f*.6).toFixed(2)})`;}
-    cells+=`<i style="background:${bg};border-color:${bd}" title="${d.d}: ${d.p===0?"absent":d.ln+" lines"}"><b>${d.d}</b></i>`;
+    let bg="#f4f7f5",cls="";
+    if(d.ds>today&&d.p==null)bg="#fafcfb";
+    else if(!d.cls&&d.p==null&&!d.ln)bg=`repeating-linear-gradient(45deg,${C.g0} 0 3px,#fff 3px 6px)`;
+    else if(d.p===0){bg="#fde3df";}
+    else if(d.p===1||d.ln>0){const f=d.ln/max;bg=f>.66?C.g6:f>.33?C.g5:C.g3;cls=f>.33?"w":"";}
+    cells+=`<i class="${cls}" style="background:${bg}">${d.d}</i>`;
   });
-  return `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:9px;color:#8a8f80;text-align:center;margin-bottom:4px">${["M","T","W","T","F","S","S"].map(x=>`<span>${x}</span>`).join("")}</div>
-  <div class="rp-cal" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${cells}</div>`;
+  return `<div class="rp-cal">${cells}</div><div class="rp-legend" style="margin-top:6px"><span><i style="background:${C.g3}"></i>light</span><span><i style="background:${C.g6}"></i>strong day</span><span><i style="background:#fde3df"></i>absent</span><span><i style="background:repeating-linear-gradient(45deg,${C.g0} 0 3px,#fff 3px 6px);border:1px solid ${C.g1}"></i>holiday</span></div>`;
 }
 function shelfHTML(mem,st,passed){
   let h="";
   for(let j=1;j<=30;j++){
-    const f=mem.frac[j],full=f>=.995,has=f>0,rev=st&&st.juzRev.get(j),neg=mem.neglected&&mem.neglected.includes(j);
-    h+=`<div class="rp-juz${full?" full":""}${has?" has":""}${rev?" rev":""}${neg?" neg":""}" title="Juz ${j}: ${Math.round(f*100)}% memorised${rev?` · revised ${rev} day${rev>1?"s":""}`:""}">
-      ${passed.has(j)?'<span class="st">★</span>':""}<i style="height:${(f*100).toFixed(0)}%"></i><b>${j}</b></div>`;
+    const f=mem.frac[j],full=f>=.995,has=f>.12,rev=st&&st.juzRev.get(j),neg=mem.neglected&&mem.neglected.includes(j);
+    h+=`<div class="rp-juz${full?" full":""}${has?" has":""}${rev?" rev":""}${neg?" neg":""}">${passed.has(j)?'<span class="st">★</span>':""}<i style="height:${(f*100).toFixed(0)}%"></i><b>${j}</b></div>`;
   }
   return `<div class="rp-shelf">${h}</div>
-  <div class="rp-legend"><span><i style="background:linear-gradient(180deg,#d8b76c,#0f5a41)"></i>Complete</span>
-   <span><i style="background:linear-gradient(180deg,#2b9a70,#0f5a41)"></i>Partly memorised (fill = share)</span>
-   <span><i style="background:#e9c979;border-radius:50%"></i>Revised in period</span>
-   <span>★ Juz submission passed</span><span><i style="border:1.5px dashed #b4552f;background:none"></i>Not revised</span></div>`;
+  <div class="rp-legend"><span><i style="background:linear-gradient(180deg,#ffe08a,#b8860b)"></i>Complete</span>
+   <span><i style="background:linear-gradient(180deg,${C.g5},${C.g7})"></i>Partly (fill = share)</span>
+   <span><i style="background:#fff;border:1.5px solid ${C.g6};border-radius:50%"></i>Revised in period</span>
+   <span>★ Juz test passed</span><span><i style="border:1.5px dashed ${C.red}"></i>Not revised</span></div>`;
+}
+function journeyHTML(cum,total){
+  const pct=Math.min(100,cum/total*100),juz=cum/total*30;
+  const ticks=[0,5,10,15,20,25,30].map(j=>`<span class="tick" style="left:${(j/30*100).toFixed(2)}%">${j===30?"Ḥāfiẓ":"J"+j}</span>`).join("");
+  return `<div class="rp-journey"><div class="ct" style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:${C.g8}"><span>Journey to complete Ḥifẓ</span><span>${pct.toFixed(1)}% · ≈${juz.toFixed(1)} juz</span></div>
+   <div class="rp-track"><i style="width:${Math.max(1.5,pct).toFixed(2)}%"></i><span class="flag" style="left:${Math.min(96,Math.max(4,pct)).toFixed(2)}%">▼ ${pct.toFixed(1)}%</span>${ticks}</div></div>`;
+}
+
+/* ---------- capacity, milestones, celebration, duas ---------- */
+function capacityInfo(st){
+  const cfg=S.config,lpp=cfg.lpp||15,all=periodStats({type:"all"});
+  const days=st.daily.filter(d=>d.p===1&&d.ln>0).map(d=>d.ln).sort((a,b)=>a-b);
+  const median=days.length?days[Math.floor(days.length/2)]:0;
+  const base=all.avg||st.avg||0;
+  const target=Math.round(Math.max(3,Math.min(lpp*2,Math.max(base,median)*1.1||lpp/2)));
+  const lvl=base>=lpp?["A","High capacity","Comfortably memorises a page or more per class."]
+    :base>=lpp*.6?["B","Good capacity","Memorises more than half a page per class."]
+    :base>=lpp*.3?["C","Developing","Steady pace — ready to grow with regular revision."]
+    :["D","Building foundation","Short portions now; capacity grows with daily practice."];
+  const classPerWeek=Math.max(1,7-(cfg.weekly||[]).filter(Boolean).length);
+  const attRate=all.classDays?Math.max(.3,all.present/all.classDays):.8;
+  const lpw=base*classPerWeek*attRate,remaining=Math.max(0,(cfg.total||9060)-cumulativeTo(null));
+  let finish=null;
+  if(lpw>0&&remaining>0){const d=new Date();d.setDate(d.getDate()+Math.round(remaining/lpw*7));finish=d;}
+  // weekday pattern (period)
+  const wd=[0,0,0,0,0,0,0],wc=[0,0,0,0,0,0,0];
+  st.daily.forEach(d=>{if(d.p===1){const[y,m,dd]=d.ds.split("-").map(Number);const w=(new Date(y,m-1,dd).getDay()+6)%7;wd[w]+=d.ln;wc[w]++;}});
+  const wavg=wd.map((v,i)=>wc[i]?v/wc[i]:0);
+  let bestW=-1;wavg.forEach((v,i)=>{if(v>0&&(bestW<0||v>wavg[bestW]))bestW=i;});
+  return{avg:st.avg,avgAll:base,best:st.maxDay,bestAll:all.maxDay,median,target,lvl,lpp,finish,remaining,lpw,wavg,bestW};
+}
+function capacityHTML(cap){
+  const max=Math.max(cap.lpp*2,cap.bestAll||0,cap.target)*1.05,pos=v=>(Math.min(v,max)/max*100).toFixed(1);
+  const mk=(v,c,l,up)=>`<span class="mk" style="left:${pos(v)}%;background:${c}"></span><span class="lb ${up?"up":"dn"}" style="left:${pos(v)}%;color:${c}">${l}</span>`;
+  const years=cap.lpw>0?cap.remaining/cap.lpw/52:null;
+  return `<div class="rp-cap"><div>
+    <div class="lvl"><div class="badge">${cap.lvl[0]}</div><div><b>${cap.lvl[1]}</b><span class="rp-small">${cap.lvl[2]}</span></div></div>
+    <div class="rp-meter">${(()=>{ // greedy label slots: up, down, up-2, down-2 — first slot whose last label is ≥17% away
+      const m=[[cap.avg,C.g7,"avg "+cap.avg.toFixed(1)],[cap.lpp,C.dim,"1 page"],[cap.best,C.gold,"best "+cap.best]];
+      if(cap.target!==Math.round(cap.avg))m.push([cap.target,C.g5,"target "+cap.target]);
+      const last={u0:-99,d0:-99,u1:-99,d1:-99};
+      return m.sort((x,y)=>x[0]-y[0]).map(x=>{const p=+pos(x[0]);
+        const slot=["u0","d0","u1","d1"].find(k=>p-last[k]>=17)||"d1";last[slot]=p;
+        return`<span class="mk" style="left:${p}%;background:${x[1]}"></span><span class="lb ${slot}" style="left:${p}%;color:${x[1]}">${x[2]}</span>`;}).join("");})()}</div>
+    <div class="rp-small">Lines per class day · this period</div></div>
+    <div class="rp-facts">
+      <div class="rp-fact"><div class="v">${cap.target} lines</div><div class="l">Recommended daily new lesson</div></div>
+      <div class="rp-fact"><div class="v">${cap.median||"—"}</div><div class="l">Typical (median) day</div></div>
+      <div class="rp-fact"><div class="v">${cap.bestW>=0?DOWS[cap.bestW].slice(0,3):"—"}</div><div class="l">Strongest weekday</div></div>
+      <div class="rp-fact"><div class="v">${cap.finish?cap.finish.toLocaleDateString("en-GB",{month:"short",year:"numeric"}):"—"}</div><div class="l">${years!=null?`Ḥifẓ completion at this pace (≈${years<1?Math.max(1,Math.round(years*12))+" months":years.toFixed(1)+" years"})`:"Completion estimate"}</div></div>
+    </div></div>`;
+}
+function nextMilestone(mem,lpp){
+  const part=mem.juzOrder.filter(j=>mem.frac[j]<.995).sort((a,b)=>mem.frac[b]-mem.frac[a])[0];
+  if(part){const left=Math.max(1,Math.round((1-mem.frac[part])*mem.ppj*lpp));return`Next milestone: complete <b>Juz ${part}</b> — about ${fmt(left)} lines to go.`;}
+  return mem.juzOrder.length?"Next milestone: begin the next juz with a strong start.":"Next milestone: complete the first surah of the plan.";
+}
+function completedJuz(P,st){
+  const set=new Set(st.juzTests.filter(t=>t.result==="pass").map(t=>+t.juz));
+  const end=endKeyFor(P),pv=prevPeriod(P);
+  if(P.type!=="all"){
+    const now=memorised(end),before=memorised(pv?endKeyFor(pv):"0000-00");
+    for(let j=1;j<=30;j++)if(now.frac[j]>=.995&&before.frac[j]<.995)set.add(j);
+  }else{const now=memorised(null);for(let j=1;j<=30;j++)if(now.frac[j]>=.995)set.add(j);}
+  return[...set].filter(Boolean).sort((a,b)=>a-b);
+}
+const DUA={
+  zidni:{ar:"رَّبِّ زِدْنِي عِلْمًا",tr:"Rabbi zidnī ʿilmā",mn:"“My Lord, increase me in knowledge.”",src:"Sūrah Ṭā-Hā 20:114"},
+  sharh:{ar:"رَبِّ اشْرَحْ لِي صَدْرِي ۝ وَيَسِّرْ لِي أَمْرِي ۝ وَاحْلُلْ عُقْدَةً مِّن لِّسَانِي ۝ يَفْقَهُوا قَوْلِي",tr:"Rabbish-raḥ lī ṣadrī, wa yassir lī amrī, waḥlul ʿuqdatam-min lisānī, yafqahū qawlī",mn:"“My Lord, expand my chest, ease my task for me, and untie the knot from my tongue, so they may understand my speech.”",src:"Sūrah Ṭā-Hā 20:25–28"},
+  tatim:{ar:"الْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ",mn:"“All praise is for Allah, by whose favour good deeds are completed.”",src:"Ibn Mājah"},
+  rabi:{ar:"اللَّهُمَّ اجْعَلِ الْقُرْآنَ رَبِيعَ قَلْبِي، وَنُورَ صَدْرِي",mn:"“O Allah, make the Qur’an the spring of my heart and the light of my chest.”",src:"Musnad Aḥmad"}
+};
+const duaCard=(d,label)=>`<div class="rp-dua"><div class="lb">${label}</div><span class="rp-ar">${d.ar}</span>${d.tr?`<div class="tr">${d.tr}</div>`:""}<div class="mn">${d.mn}</div><div class="src">${d.src}</div></div>`;
+function motivationText(name,V,st,A,cap){
+  const weak=A.imp[0]?A.imp[0][0].toLowerCase():"daily revision";
+  if(!st.eligible)return`${name}, every ḥāfiẓ began with a single line. Let’s start again with ${cap.target} lines a day — you can do it, in shā’ Allāh!`;
+  if(st.score>=85)return`Mā shā’ Allāh, ${name}! You are among the shining students of this period. Keep the same routine — consistency is your superpower.`;
+  if(st.score>=70)return`Great effort, ${name}! A little more focus on ${weak} will take you to excellent, in shā’ Allāh.`;
+  if(st.score>=55)return`Good progress, ${name}. Small steps every day with steady revision will lift you quickly — keep going!`;
+  return`${name}, the Qur’an rewards the one who keeps trying. Let’s build back with a small target of ${cap.target} lines a day and daily revision — you can do this!`;
+}
+function celebrateHTML(name,juzList,full,msg){
+  if(!juzList.length)return"";
+  const medals=juzList.slice(0,4).map(j=>`<div class="rp-medal">Juz<br>${j}</div>`).join("");
+  return `<div class="rp-celebrate"><div class="top">${medals}<div><h5>Mabrūk! ${juzList.length>1?juzList.length+" juz completed":"Juz "+juzList[0]+" completed"} 🎉</h5>
+    <p>${msg||`${name} has completed ${juzList.length>1?"Juz "+juzList.join(", "):"Juz "+juzList[0]} — a milestone for the family and the academy.`} Bārak Allāhu fīk!</p></div></div>
+    <span class="rp-ar">${DUA.tatim.ar}</span><div class="mn">${DUA.tatim.mn} · ${DUA.tatim.src}</div>
+    ${full?`<span class="rp-ar" style="font-size:17px;margin-top:6px">${DUA.rabi.ar}</span><div class="mn">${DUA.rabi.mn} · ${DUA.rabi.src}</div>`:""}</div>`;
 }
 
 /* =====================================================================
@@ -413,149 +526,178 @@ function renderControls(){
 
 function buildReport(){
   const P={type:RP.type,key:RP.key},detailed=RP.fmt==="detailed",cfg=S.config,lpp=cfg.lpp||15;
-  const name=esc(cfg.student||"Student");
+  const name=esc(cfg.student||"Student"),first=esc(String(cfg.student||"Student").split(" ")[0]);
   const st=periodStats(P),pv=prevPeriod(P),prev=pv?periodStats(pv):null;
   const endKey=endKeyFor(P),cum=cumulativeTo(endKey),mem=memorised(endKey);
   const A=analyse(st,prev,mem),rank=rankFor(P),V=verdict(st.score);
   const passedAll=new Set();monthKeys().filter(k=>!endKey||k<=endKey).forEach(k=>{const days=(S.months[k]&&S.months[k].days)||{};
-    Object.values(days).forEach(r=>{if(r&&r.ev&&r.ev.type==="juz"&&r.ev.result==="pass")passedAll.add(r.ev.juz);});});
-  const cyc=manzilCycle(mem),plan=weekPlan(mem,cyc,P);
-  const gen=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
-
-  const head=`<div class="rp-head">
-    <div class="rp-crest"><img src="/og-image.jpg" alt="ManzilulQuran"></div>
-    <div><div class="rp-acad">${esc(cfg.academy||"ManzilulQuran E-learning Academy")}</div>
-      <div class="rp-title">Hifz Progress Report<span class="ar">تقرير الحفظ</span></div></div>
-    <div class="rp-meta"><div class="rp-student">${name}</div>
-      <span class="rp-pill">${esc(periodLabel(P))}</span>
-      ${rank?`<span class="rp-pill gold">Rank ${rank.rank} of ${rank.of} in the academy</span>`:""}
-      <span class="rp-small">Generated ${gen} · ${detailed?"Complete":"Minimal"} report</span></div></div>`;
+    Object.values(days).forEach(r=>{if(r&&r.ev&&r.ev.type==="juz"&&r.ev.result==="pass")passedAll.add(+r.ev.juz);});});
+  const cyc=manzilCycle(mem),plan=weekPlan(mem,cyc,P),cap=capacityInfo(st),done=completedJuz(P,st);
+  const gen=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+  const plabel=esc(periodLabel(P));
+  const foot=`<div class="rp-foot"><span>ManzilulQuran E-learning Academy · manzilulquran.in</span><span>info@manzilulquran.in</span></div>`;
+  const band=`<div class="rp-band"><div class="crest"><img src="/og-image.jpg" alt=""></div>
+    <div style="position:relative;z-index:1"><div class="t1">${esc(cfg.academy||"ManzilulQuran E-learning Academy")}</div>
+      <div class="t2">Ḥifẓ Progress Report<span class="rp-ar">تقرير الحفظ</span></div></div>
+    <div class="who"><div class="nm rp-gold-lt">${name}</div>
+      <span class="rp-chip">${plabel}</span>${rank&&rank.rank<=Math.max(3,Math.ceil(rank.of/2))?`<span class="rp-chip gold">★ Rank ${rank.rank} of ${rank.of}</span>`:""}
+      <span class="gen">Generated ${gen} · ${detailed?"Complete":"Minimal"} report</span></div></div>`;
+  const slim=(t,n)=>`<div class="rp-band slim"><div style="position:relative;z-index:1"><div class="t2"><span class="rp-gold-lt">${name}</span> · ${t}</div></div><div class="pg">${plabel} · Page ${n} of 3</div></div>`;
+  const sheet=(inner)=>`<article class="rp-doc">${inner}</article>`;
 
   if(!st.keys.length||(!st.eligible&&!st.log.length)){
-    return head+`<div class="rp-empty">No daily records for ${esc(periodLabel(P))} yet.<br>Choose another period or add entries in the Daily Log.</div>`+foot();
+    return sheet(band+`<div class="rp-body"><div class="rp-empty">No daily records for ${plabel} yet.<br>Choose another period or add entries in the Daily Log.</div></div>`+foot);
   }
 
-  const delta=(a,b,unit)=>{if(b==null)return"";const d=a-b;if(Math.abs(d)<0.5)return`<div class="d rp-muted">same as before</div>`;
-    return`<div class="d ${d>0?"rp-up":"rp-down"}">${d>0?"▲":"▼"} ${fmt(Math.abs(Math.round(d)))}${unit} vs previous</div>`;};
+  /* ---- shared blocks ---- */
   const hasPrev=prev&&prev.eligible;
-  const summary=`${name} memorised <b>${fmt(st.lines)} lines</b> (${st.pages.toFixed(1)} pages) in ${esc(periodLabel(P).replace(/^All time · /,"all tracked months, "))}, attending <b>${st.present} of ${st.classDays}</b> class days.`
-    +` Total memorised so far: <b>${(cum/lpp).toFixed(1)} pages</b> ≈ <b>${(cum/cfg.total*30).toFixed(1)} juz</b>${mem.full?`, with ${mem.full} juz fully covered`:""}.`;
-
-  const verdictBand=`<div class="rp-verdict"><div class="rp-gauge">${gaugeSVG(st.score)}</div>
-    <div><div class="rp-grade" style="color:${V.c}">${V.t}<span class="ar">${V.ar}</span></div>
-      <div class="rp-summary">${summary}</div></div></div>`;
-
+  const delta=(a,b,unit)=>{if(b==null)return"";const d=a-b;if(Math.abs(d)<0.5)return`<div class="d rp-muted">= previous</div>`;
+    return`<div class="d ${d>0?"rp-up":"rp-down"}">${d>0?"▲":"▼"} ${fmt(Math.abs(Math.round(d)))}${unit}</div>`;};
+  const summary=`${name} memorised <b>${fmt(st.lines)} lines</b> (${st.pages.toFixed(1)} pages) and attended <b>${st.present} of ${st.classDays}</b> class days.
+    Total memorised: <b>${(cum/lpp).toFixed(1)} pages ≈ ${(cum/cfg.total*30).toFixed(1)} juz</b>.`;
+  const hero=`<div class="rp-hero"><div class="ring">${ringSVG(st.score)}</div><div>
+    <span class="rp-grade">${V.t}<span class="rp-ar">${V.ar}</span></span>
+    ${done.length?`<span class="rp-grade" style="background:linear-gradient(90deg,#c9961a,#f5c542);color:#3d2a00;margin-left:6px">🎉 Juz ${done.join(", ")} completed</span>`:""}
+    <div class="rp-sum">${summary}</div></div></div>`;
   const kp=[
-    [fmt(st.lines),"New lines this period",delta(st.lines,hasPrev?prev.lines:null,"")],
-    [pctTxt(st.att),"Attendance",delta(st.att,hasPrev?prev.att:null," pts")],
-    [st.avg.toFixed(1)+"<small> lines</small>","Per present day",""],
-    [(cum/cfg.total*100).toFixed(1)+"<small>%</small>","Of the whole Qur'an",""]
-  ];
+    ["book",fmt(st.lines),"New lines",delta(st.lines,hasPrev?prev.lines:null,"")],
+    ["cal",pctTxt(st.att),"Attendance",delta(st.att,hasPrev?prev.att:null," pts")],
+    ["bolt",st.avg.toFixed(1)+"<small> /day</small>","Lines per class day",""],
+    ["globe",(cum/cfg.total*100).toFixed(1)+"<small>%</small>","Of the Qur’an memorised",""]];
   if(detailed)kp.push(
-    [(cum/lpp).toFixed(1),"Pages memorised in total",""],
-    [pctTxt(st.dims.revision),"Days with revision",""],
-    [st.examAvg!=null?st.examAvg.toFixed(0)+"%":"—","Exam average",""],
-    [String(currentStreak()),"Current streak (days)",""]);
-  const kpis=`<div class="rp-sec"><h4>At a glance</h4><div class="rp-kpis">${kp.map(k=>`<div class="rp-kpi"><div class="v">${k[0]}</div><div class="l">${k[1]}</div>${k[2]}</div>`).join("")}</div></div>`;
+    ["layers",(cum/lpp).toFixed(1),"Pages memorised in total",""],
+    ["loop",pctTxt(st.dims.revision),"Class days with revision",""],
+    ["award",st.examAvg!=null?Math.round(st.examAvg)+"%":"—","Exam average",""],
+    ["flame",String(currentStreak()),"Current streak (days)",""]);
+  const kpis=`<div class="rp-kpis">${kp.map(k=>`<div class="rp-kpi"><div class="ic">${ico(k[0])}</div><div><div class="v">${k[1]}</div><div class="l">${k[2]}</div>${k[3]}</div></div>`).join("")}</div>`;
+  const shelf=`<div class="rp-h">30 Juz map <span class="rp-ar">خريطة الأجزاء</span><small>fill ≈ share memorised</small></div>${shelfHTML(mem,st,passedAll)}`;
 
-  // charts
-  let linesChart,attChart="";
+  let linesChart,attChart,monthRows=null;
   if(P.type==="month"){
-    linesChart=barsSVG(st.daily.map(d=>({lab:String(d.d),v:d.ln,off:!d.cls,absent:d.p===0})),{h:160});
+    const bestD=Math.max(...st.daily.map(d=>d.ln));
+    linesChart=barsSVG(st.daily.map(d=>({lab:String(d.d),v:d.ln,off:!d.cls,absent:d.p===0,hi:d.ln>0&&d.ln===bestD})),detailed?{h:210,w:360}:{h:130});
     attChart=calendarHTML(st);
   }else{
     let c=cumulativeTo(prevMonthKey(st.keys[0]));
-    const rows=st.keys.map(k=>{const m=periodStats({type:"month",key:k});c+=m.lines;return{lab:monthShort(k),v:m.lines,cum:c,att:m.att};});
-    linesChart=barsSVG(rows.map(r=>({lab:r.lab,v:r.v})),{cum:rows.map(r=>r.cum),h:170});
-    attChart=rows.length>1?attLineSVG(rows):`<div class="rp-small">Attendance: ${pctTxt(rows[0]?rows[0].att:0)}</div>`;
+    monthRows=st.keys.map(k=>{const m=periodStats({type:"month",key:k});c+=m.lines;return{k,lab:monthShort(k),v:m.lines,cum:c,att:m.att,present:m.present,classDays:m.classDays};});
+    linesChart=barsSVG(monthRows.map(r=>({lab:r.lab,v:r.v})),{cum:monthRows.map(r=>r.cum),h:detailed?190:130,w:detailed?360:560});
+    attChart=monthRows.length>1?attLineSVG(monthRows):`<div class="rp-small">Attendance ${pctTxt(monthRows[0]?monthRows[0].att:0)}</div>`;
   }
-  const charts=`<div class="rp-sec"><h4>Progress graphics</h4><div class="rp-charts${detailed?" two":""}">
-    <div class="rp-chart"><div class="ct">${P.type==="month"?"Lines memorised each day (red = absent, grey = holiday)":"Lines per month · gold line = total memorised"}</div>${linesChart}</div>
-    ${detailed?`<div class="rp-chart"><div class="ct">${P.type==="month"?"Attendance calendar (darker = more lines)":"Attendance % per month · dashed = 75% goal"}</div>${attChart}</div>`:""}
-    ${detailed?`<div class="rp-chart"><div class="ct">Skill balance (0–100)</div>${radarSVG(st.dims)}</div>
-      <div class="rp-chart"><div class="ct">How the score is made</div><table class="rp-tbl"><tbody>${Object.keys(WEIGHTS).map(k=>`<tr><td>${DIM_LABEL[k]}</td><td style="text-align:right">${st.dims[k]==null?"—":Math.round(st.dims[k])}</td><td class="rp-small" style="text-align:right">${WEIGHTS[k]}%</td></tr>`).join("")}</tbody></table>
-      <div class="rp-small" style="margin-top:6px">Pace: ${lpp} lines per present day = 100. Accuracy uses exam %, or juz-test pass rate if no exams.</div></div>`:""}
-  </div></div>`;
+  const linesCard=`<div class="rp-card"><div class="ct">${P.type==="month"?"Lines memorised each day":"Lines per month"}<span>${P.type==="month"?"gold = best day · red dot = absent":"gold line = total memorised"}</span></div>${linesChart}</div>`;
 
-  const shelf=`<div class="rp-sec"><h4>30 Juz map <span class="ar">خريطة الأجزاء</span></h4>${shelfHTML(mem,st,passedAll)}
-    ${detailed?`<div class="rp-small" style="margin-top:6px">Fill is estimated from memorised ayahs within each juz (≈). Memorised = every portion ever given as a New Lesson.</div>`:""}</div>`;
+  const nGood=2,nImp=detailed?3:2;
+  const li=l=>l.map(x=>`<li><div><b>${esc(x[0])}</b><span>${esc(x[1])}</span></div></li>`).join("");
+  const strengths=`<div class="rp-grid g2"><div><div class="rp-sub">Strengths</div><ul class="rp-list">${A.good.length?li(A.good.slice(0,nGood)):`<li><div><b>Keep building</b><span>Strengths will show as more days are recorded.</span></div></li>`}</ul></div>
+    <div><div class="rp-sub imp">Areas to improve</div><ul class="rp-list imp">${A.imp.length?li(A.imp.slice(0,nImp)):`<li><div><b>No weak area found</b><span>Maintain the same routine, in shā’ Allāh.</span></div></li>`}</ul></div></div>`;
 
-  const good=detailed?A.good:A.good.slice(0,2),imp=detailed?A.imp:A.imp.slice(0,2);
-  const li=l=>l.map(x=>`<li><b>${esc(x[0])}</b><span>${esc(x[1])}</span></li>`).join("");
-  const insights=`<div class="rp-sec"><h4>Strengths &amp; areas to improve</h4><div class="rp-two">
-    <div><div class="rp-tipgroup">Strengths</div><ul class="rp-list">${good.length?li(good):`<li><span>Keep building — strengths will show as more days are recorded.</span></li>`}</ul></div>
-    <div><div class="rp-tipgroup">Areas to improve</div><ul class="rp-list imp">${imp.length?li(imp):`<li><b>No weak area found</b><span>Maintain the same routine, in shā’ Allāh.</span></li>`}</ul></div></div></div>`;
+  // 7-day checklist plan
+  const cycTxt=!cyc.days.length?"Revision cycle appears once new lessons are recorded."
+    :mem.M<=1?"Memorised portion is small — revise all of it every class day."
+    :`Revise ≈${cyc.D.toFixed(0)} pages a day · full cycle every ${cyc.days.length} class days.`;
+  const planRows=plan.rows.map(r=>r.off
+    ?`<tr class="off"><td class="rp-first nw" data-l="Day">${dLabel(r.ds)}</td><td data-l="Juz reading" colspan="4">Holiday — listen to this week’s lessons, light recitation</td></tr>`
+    :`<tr><td class="rp-first nw" data-l="Day">${dLabel(r.ds)}</td>
+      <td data-l="Juz reading">${r.day?`${juzBadges(r.day)}${compactSeg(r.day,true)} <span class="rp-small">≈${pagesOf(r.day).toFixed(1)}p</span>`:"—"}</td>
+      <td data-l="Sabaq" style="text-align:center"><span class="tick"></span></td><td data-l="Sabqi" style="text-align:center"><span class="tick"></span></td><td data-l="Manzil" style="text-align:center"><span class="tick"></span></td></tr>`).join("");
+  const planSec=`<div class="rp-h">Daily juz reading plan <span class="rp-ar">الورد اليومي</span><small>next 7 days</small></div>
+    <div class="rp-grid g2" style="margin-bottom:8px">
+      <div class="rp-fact"><div class="v" style="font-size:12.5px">New lesson (Sabaq): ≈ ${plan.target} lines</div><div class="l">${plan.cont}</div></div>
+      <div class="rp-fact"><div class="v" style="font-size:12.5px">Sabqi — every day</div><div class="l">${plan.sabqiTxt}</div></div></div>
+    <table class="rp-tbl rp-stack"><thead><tr><th>Day</th><th>Juz reading (Manzil)</th><th style="text-align:center">Sabaq</th><th style="text-align:center">Sabqi</th><th style="text-align:center">Manzil</th></tr></thead><tbody>${planRows}</tbody></table>
+    <div class="rp-small" style="margin-top:4px">${cycTxt} Tick each box when done.</div>`;
 
-  // tips
-  const order=["neglect","attendance","revision","pace","accuracy","consistency"].filter(k=>A.needs.has(k));
-  let tipsHTML;
-  if(detailed){
-    const groups=order.map(k=>[k,TIPS[k]]).concat([["general",TIPS.general]]);
-    const gl={neglect:"Unrevised juz",attendance:"Regularity",revision:"Revision",pace:"Memorisation pace",accuracy:"Accuracy",consistency:"Consistency",general:"For every student"};
-    tipsHTML=groups.map(([k,t])=>`<div class="rp-tipgroup">${gl[k]}</div><ol class="rp-tips">${t.map(x=>`<li><b>${esc(x[0])}</b><span>${esc(x[1])}</span></li>`).join("")}</ol>`).join("");
+  const motiv=`<div class="rp-motiv"><div class="msg">${motivationText(first,V,st,A,cap)}</div><div class="next">${nextMilestone(mem,lpp)}</div>
+    ${detailed?`<div class="hd"><span class="rp-ar">اقْرَأْ وَارْتَقِ وَرَتِّلْ كَمَا كُنْتَ تُرَتِّلُ فِي الدُّنْيَا</span>
+      <span>“It will be said to the companion of the Qur’an: recite and rise, and recite as you used to recite in the world — your rank is at the last verse you recite.” — Abū Dāwūd, at-Tirmidhī</span></div>`
+      :`<div class="hd"><span>“The best of you are those who learn the Qur’an and teach it.” — al-Bukhārī</span></div>`}</div>`;
+  const remarks=`<div class="rp-h">Teacher’s remarks</div><div class="rp-rem"><div class="rp-remarks">&nbsp;</div><div class="rp-sign"><div>Teacher</div><div>Parent</div><div>Date</div></div></div>`;
+
+  /* ---------------- MINIMAL: one sheet ---------------- */
+  if(!detailed){
+    const pt=l=>l.length?l.map(p=>esc(portionText(p))).join(", "):"—";
+    const recent=st.log.slice(-5);
+    const recentSec=`<div class="rp-h">Recent sessions <small>last ${recent.length}</small></div>
+      <table class="rp-tbl rp-stack"><thead><tr><th>Date</th><th>✓</th><th>New lesson</th><th>Lines</th><th>Revision</th></tr></thead><tbody>
+      ${recent.map(r=>`<tr><td class="rp-first nw" data-l="Date">${dLabel(r.ds)}</td><td data-l="Present">${r.p===1?'<span class="rp-ok">✓</span>':r.p===0?'<span class="rp-no">✗</span>':"·"}</td>
+        ${r.ev?`<td data-l="Event" colspan="3" class="rp-ev">${r.ev.type==="juz"?`Juz ${r.ev.juz} submission — ${r.ev.result==="pass"?"completed ★":"try again"}`:"Exam day"}</td>`
+        :`<td data-l="New lesson">${pt(r.nl)}</td><td data-l="Lines">${r.ln||"—"}</td><td data-l="Revision">${pt(r.sq.concat(r.ol))}</td>`}</tr>`).join("")}</tbody></table>`;
+    const sec=h=>`<section class="rp-sec">${h}</section>`;
+    return sheet(band+`<div class="rp-body">
+      ${hero}
+      ${done.length?`<div style="margin-top:10px">${celebrateHTML(first,done,false)}</div>`:""}
+      ${sec(`<div class="rp-h">At a glance</div>${kpis}<div style="margin-top:10px">${journeyHTML(cum,cfg.total)}</div>`)}
+      ${sec(shelf)}
+      ${sec(`<div class="rp-h">Progress</div>${linesCard}`)}
+      ${sec(`<div class="rp-h">Strengths &amp; areas to improve</div>${strengths}`)}
+      ${sec(planSec)}
+      ${sec(recentSec)}
+      ${sec(`<div class="rp-h">Motivation &amp; duʿā’</div><div class="rp-grid g2">${motiv}${duaCard(DUA.zidni,"Duʿā’ before lessons")}</div>`)}
+      ${sec(remarks)}</div>`+foot);
+  }
+
+  /* ---------------- COMPLETE: three designed A4 pages ---------------- */
+  // page 1 — overview
+  const p1=sheet(band+`<div class="rp-body">
+    ${hero}
+    <div class="rp-h">At a glance <small>${hasPrev?"▲▼ vs previous period":""}</small></div>${kpis}
+    <div style="margin-top:10px">${journeyHTML(cum,cfg.total)}</div>
+    ${shelf}
+    <div class="rp-h">Student capacity <small>how much ${first} can memorise</small></div>${capacityHTML(cap)}
+  </div>`+foot);
+
+  // page 2 — infographics
+  const unmarked=Math.max(0,st.classDays-st.present-st.absent);
+  const attParts=[{v:st.present,c:C.g6,l:"Present"},{v:st.absent,c:C.red,l:"Absent"},{v:unmarked,c:C.g1,l:"Not marked"}];
+  const mixParts=[{v:st.nlDays,c:C.g7,l:"New lesson"},{v:st.sqDays,c:C.g5,l:"Sabq"},{v:st.olDays,c:C.au5,l:"Old lesson"}];
+  let summaryBlock;
+  if(P.type==="month"){
+    const today=todayStr(),wk=[];
+    for(let w=0;w*7<st.daily.length;w++){
+      const ds=st.daily.slice(w*7,w*7+7);
+      const cls=ds.filter(d=>d.cls&&d.ds<=today).length,pr=ds.filter(d=>d.p===1).length,ln=ds.reduce((a,d)=>a+d.ln,0);
+      wk.push({lab:`Week ${w+1}`,sub:`${ds[0].d}–${ds[ds.length-1].d}`,ln,pr,cls});}
+    const mx=Math.max(1,...wk.map(w=>w.ln));
+    summaryBlock=`<div class="rp-weeks">${wk.map(w=>`<div class="rp-wk"><div class="a">${w.lab} <span style="font-weight:400">· ${w.sub}</span></div><div class="b">${fmt(w.ln)}</div><div class="c">lines · ${w.pr}/${w.cls} days</div><div class="bar"><i style="width:${(w.ln/mx*100).toFixed(0)}%"></i></div></div>`).join("")}</div>`;
   }else{
-    const pick=[];order.forEach(k=>TIPS[k].forEach(t=>pick.push(t)));TIPS.general.forEach(t=>pick.push(t));
-    tipsHTML=`<ol class="rp-tips">${pick.slice(0,4).map(x=>`<li><b>${esc(x[0])}</b><span>${esc(x[1])}</span></li>`).join("")}</ol>`;
+    const rows=monthRows.slice(-12),mx=Math.max(1,...rows.map(r=>r.v));
+    summaryBlock=`<div class="rp-weeks">${rows.map(r=>`<div class="rp-wk"><div class="a">${esc(r.lab)}</div><div class="b">${fmt(r.v)}</div><div class="c">lines · ${pctTxt(r.att)} att.</div><div class="bar"><i style="width:${(r.v/mx*100).toFixed(0)}%"></i></div></div>`).join("")}</div>`;
   }
-  const tips=`<div class="rp-sec"><h4>How to improve memory</h4>${tipsHTML}</div>`;
+  const wdBars=barsSVG(cap.wavg.map((v,i)=>({lab:DOWS[i].slice(0,3),v:Math.round(v*10)/10,off:!!(cfg.weekly||[])[i],hi:i===cap.bestW})),{h:150,w:360});
+  const p2=sheet(slim("Progress infographics",2)+`<div class="rp-body">
+    <div class="rp-h">Memorisation &amp; attendance</div>
+    <div class="rp-grid g2">${linesCard}<div class="rp-card"><div class="ct">${P.type==="month"?"Attendance calendar":"Attendance % per month"}<span>${P.type==="month"?"":"dashed = 75% goal"}</span></div>${attChart}</div></div>
+    <div class="rp-h">Balance of learning</div>
+    <div class="rp-grid g3">
+      <div class="rp-card"><div class="ct">Attendance</div><div class="rp-donut">${donutSVG(attParts,pctTxt(st.att),"attendance")}${donutKey(attParts)}</div></div>
+      <div class="rp-card"><div class="ct">Lesson mix</div><div class="rp-donut">${donutSVG(mixParts,pctTxt(st.dims.revision),"revised")}${donutKey(mixParts)}</div></div>
+      <div class="rp-card"><div class="ct">Skill balance<span>0–100</span></div>${radarSVG(st.dims)}</div></div>
+    <div class="rp-h">${P.type==="month"?"Week by week":"Month by month"} <small>log summary</small></div>
+    <div class="rp-grid g2"><div>${summaryBlock}</div><div class="rp-card"><div class="ct">Average lines by weekday<span>gold = strongest</span></div>${wdBars}</div></div>
+    <div class="rp-h">Strengths &amp; areas to improve</div>${strengths}
+  </div>`+foot);
 
-  // revision method + week plan
-  const cycTxt=!cyc.days.length?"":mem.M<=1?"The memorised portion is small — revise all of it every class day."
-    :`Revise about <b>${(cyc.D).toFixed(0)} pages a day</b> (≈ ${(cyc.D/mem.ppj).toFixed(1)} juz), completing the whole memorised portion every <b>${cyc.days.length} class day${cyc.days.length>1?"s":""}</b>.`;
-  const planRows=plan.rows.map(r=>{
-    if(r.off)return`<tr class="off"><td class="rp-first" data-l="Day">${dLabel(r.ds)}</td><td data-l="New lesson" colspan="3">Holiday — listen to this week’s lessons; light recitation only</td><td data-l="Done"><span class="tick"></span></td></tr>`;
-    const man=r.day?`${juzBadges(r.day)}${compactSeg(r.day,true)} <span class="rp-small">(≈${pagesOf(r.day).toFixed(1)} p)</span>`:"—";
-    return`<tr><td class="rp-first nw" data-l="Day">${dLabel(r.ds)}${r.cycleNo&&cyc.days.length>1?`<div class="rp-small">Cycle day ${r.cycleNo}</div>`:""}</td>
-      <td data-l="New lesson">≈ ${plan.target} lines<div class="rp-small">${plan.cont}</div></td>
-      <td data-l="Sabqi">${plan.sabqiTxt}</td><td data-l="Juz reading">${man}</td><td data-l="Done"><span class="tick"></span></td></tr>`;}).join("");
-  const planSec=`<div class="rp-sec"><h4>Daily juz reading plan <span class="ar">الورد اليومي</span></h4>
-    <p class="rp-muted" style="margin:0 0 8px">${cycTxt||"Once new lessons are recorded, a revision cycle will appear here."} Sabqi = revise the last 7 lessons daily. Tick each row when done.</p>
-    <table class="rp-tbl rp-stack"><thead><tr><th>Day</th><th>New lesson (Sabaq)</th><th>Sabqi (recent)</th><th>Juz reading (Manzil)</th><th>Done</th></tr></thead><tbody>${planRows}</tbody></table></div>`;
-
-  const cycleSec=detailed&&cyc.days.length>1?`<div class="rp-sec"><h4>Full revision cycle</h4>
-    <p class="rp-muted" style="margin:0 0 8px">Revision order follows the order the juz were memorised. When the cycle ends, start again from day 1.</p>
-    <table class="rp-tbl rp-stack"><thead><tr><th>Cycle day</th><th>Juz</th><th>Portion to revise</th><th>≈ Pages</th></tr></thead><tbody>
-    ${cyc.days.slice(0,40).map((d,i)=>`<tr><td class="rp-first" data-l="Day">Day ${i+1}</td><td data-l="Juz">${juzBadges(d)}</td><td data-l="Portion">${compactSeg(d,true)}</td><td data-l="Pages">${pagesOf(d).toFixed(1)}</td></tr>`).join("")}
-    </tbody></table>${cyc.days.length>40?`<div class="rp-small">+${cyc.days.length-40} more days</div>`:""}</div>`:"";
-
-  // juz-wise revision table (detailed)
-  const juzTbl=detailed&&mem.juzOrder.length?`<div class="rp-sec"><h4>Juz-wise status</h4>
-    <table class="rp-tbl rp-stack"><thead><tr><th>Juz</th><th>Memorised</th><th>Revised days (period)</th><th>Juz test</th></tr></thead><tbody>
-    ${mem.juzOrder.map(j=>`<tr><td class="rp-first" data-l="Juz">Juz ${j}</td><td data-l="Memorised">${Math.round(mem.frac[j]*100)}%</td><td data-l="Revised">${st.juzRev.get(j)||`<span class="rp-no">0</span>`}</td><td data-l="Juz test">${passedAll.has(j)?`<span class="rp-ok">★ Passed</span>`:"—"}</td></tr>`).join("")}
-    </tbody></table></div>`:"";
-
-  // exams + juz tests + tasks (detailed)
-  let examSec="";
-  if(detailed&&(st.exams.length||st.juzTests.length)){
-    examSec=`<div class="rp-sec"><h4>Exams &amp; juz submissions</h4><table class="rp-tbl rp-stack"><thead><tr><th>Date</th><th>Type</th><th>Portion</th><th>Result</th><th>Mistakes</th><th>Examiner</th></tr></thead><tbody>
-    ${st.exams.map(e=>{const pct=e.max?e.obt/e.max:0,[g]=gradeOf(pct);
+  // page 3 — plan, assessments, guidance, duas
+  const cycSec=cyc.days.length>1?`<div class="rp-h">Revision cycle <small>${cyc.days.length} days · in memorisation order</small></div>
+    <div class="rp-cycle">${cyc.days.slice(0,12).map((d,i)=>`<div><b>Day ${i+1}</b> ${[...new Set(d.map(u=>"J"+u.j))].join(" ")} · ≈${pagesOf(d).toFixed(0)}p</div>`).join("")}${cyc.days.length>12?`<div>+${cyc.days.length-12} more days</div>`:""}</div>`:"";
+  const exRows=st.exams.slice(-3).map(e=>{const pct=e.max?e.obt/e.max:0,[g]=gradeOf(pct);
       const por=e.range?(e.range.from===e.range.to?esc(SURAHS[e.range.from][0]):esc(SURAHS[e.range.from][0])+" → "+esc(SURAHS[e.range.to][0])):e.portion?esc(portionText(e.portion)):"—";
-      return`<tr><td class="rp-first" data-l="Date">${e.date?dLabel(e.date):"—"}</td><td data-l="Type">Exam</td><td data-l="Portion">${por}</td><td data-l="Result"><b>${(pct*100).toFixed(0)}%</b> (${esc(g)}) · ${e.obt}/${e.max}</td><td data-l="Mistakes">${e.mist??0}</td><td data-l="Examiner">${esc(e.examiner||"—")}</td></tr>`;}).join("")}
-    ${st.juzTests.map(t=>`<tr><td class="rp-first" data-l="Date">${dLabel(t.ds)}</td><td data-l="Type">Juz submission</td><td data-l="Portion">Juz ${t.juz}</td><td data-l="Result">${t.result==="pass"?`<span class="rp-ok">✓ Completed</span>`:`<span class="rp-no">↻ Try again</span>`}</td><td data-l="Mistakes"></td><td data-l="Examiner">${esc(t.examiner||"—")}</td></tr>`).join("")}
-    </tbody></table></div>`;
-  }
-  const taskSec=detailed&&S.tasks.length?`<div class="rp-sec"><h4>Memorisation tasks</h4><table class="rp-tbl rp-stack"><thead><tr><th>Task</th><th>Portion</th><th>Progress</th><th>Due</th></tr></thead><tbody>
-    ${S.tasks.map(t=>{const pc=t.target?Math.min(100,t.done/t.target*100):0;return`<tr><td class="rp-first" data-l="Task">${esc(t.name)}</td><td data-l="Portion">${t.portion?esc(portionText(t.portion)):"—"}</td><td data-l="Progress">${t.done}/${t.target} (${pc.toFixed(0)}%)</td><td data-l="Due">${esc(t.due||"—")}</td></tr>`;}).join("")}
-    </tbody></table></div>`:"";
-
-  // log
-  const pt=l=>l.length?l.map(p=>esc(portionText(p))).join(", "):"—";
-  const logRows=(detailed?st.log:st.log.slice(-7));
-  const logSec=`<div class="rp-sec"><h4>${detailed?"Daily log":"Recent log (last 7 entries)"}</h4>
-    <table class="rp-tbl rp-stack"><thead><tr><th>Date</th><th>✓</th><th>New lesson</th><th>Lines</th><th>Sabq</th><th>Old lesson</th></tr></thead><tbody>
-    ${logRows.map(r=>`<tr class="${r.off?"off":""}"><td class="rp-first" data-l="Date">${dLabel(r.ds)}${r.off?' <span class="rp-small">(holiday)</span>':""}</td>
-      <td data-l="Present">${r.p===1?'<span class="rp-ok">✓</span>':r.p===0?'<span class="rp-no">✗ Absent</span>':"·"}</td>
-      ${r.ev?`<td data-l="Event" colspan="4" class="rp-ev">${r.ev.type==="juz"?`Juz ${r.ev.juz} submission — ${r.ev.result==="pass"?"completed":"try again"}`:"Exam day"}${r.ln?` · ${r.ln} lines`:""}</td>`
-      :`<td data-l="New lesson">${pt(r.nl)}</td><td data-l="Lines">${r.ln||"—"}</td><td data-l="Sabq">${pt(r.sq)}</td><td data-l="Old lesson">${pt(r.ol)}</td>`}</tr>`).join("")}
-    </tbody></table>${!logRows.length?'<div class="rp-small">No entries.</div>':""}</div>`;
-
-  const sign=`<div class="rp-sec"><h4>Teacher’s remarks</h4><div class="rp-remarks">&nbsp;</div>
-    <div class="rp-sign"><div>Teacher</div><div>Parent</div><div>Date</div></div></div>`;
-
-  const body=head+verdictBand+kpis+shelf+charts+insights+planSec+(detailed?cycleSec+juzTbl+examSec+taskSec:"")+tips+logSec+sign+foot();
-  // one wrapper per labelled cell so stacked phone rows keep label | content on one line
-  return body.replace(/(<td[^>]*data-l="[^"]*"[^>]*>)([\s\S]*?)(<\/td>)/g,(m,o,inner,c)=>o+"<div>"+inner+"</div>"+c);
-  function foot(){return`<div class="rp-foot"><span>ManzilulQuran E-learning Academy · manzilulquran.in</span><span>info@manzilulquran.in</span></div>`;}
+      return`<tr><td class="rp-first nw" data-l="Date">${e.date?dLabel(e.date):"—"}</td><td data-l="Portion">${por}</td><td data-l="Result"><b>${Math.round(pct*100)}%</b> ${esc(g)}</td></tr>`;})
+    .concat(st.juzTests.slice(-2).map(t=>`<tr><td class="rp-first nw" data-l="Date">${dLabel(t.ds)}</td><td data-l="Portion">Juz ${t.juz} submission</td><td data-l="Result">${t.result==="pass"?'<span class="rp-ok">★ Passed</span>':'<span class="rp-no">Retry</span>'}</td></tr>`)).join("");
+  const tasks=S.tasks.slice(0,4);
+  const assess=(exRows||tasks.length)?`<div class="rp-h">Assessments &amp; tasks</div><div class="rp-grid g2">
+    <div>${exRows?`<table class="rp-tbl rp-stack"><thead><tr><th>Date</th><th>Exam / juz test</th><th>Result</th></tr></thead><tbody>${exRows}</tbody></table>`:'<div class="rp-small">No exams in this period.</div>'}</div>
+    <div class="rp-card"><div class="ct">Memorisation tasks</div>${tasks.length?`<div class="rp-prog">${tasks.map(t=>{const pc=t.target?Math.min(100,t.done/t.target*100):0;
+      return`<div class="r"><div class="top"><span>${esc(t.name)}</span><b>${t.done}/${t.target}</b></div><div class="bar"><i style="width:${pc.toFixed(0)}%"></i></div></div>`;}).join("")}</div>`:'<div class="rp-small">No tasks set.</div>'}</div></div>`:"";
+  const order=["neglect","attendance","revision","pace","accuracy","consistency"].filter(k=>A.needs.has(k));
+  const pick=[];order.forEach(k=>TIPS[k].forEach(t=>pick.push(t)));TIPS.general.forEach(t=>pick.push(t));
+  const tips=`<div class="rp-h">How to improve memory <small>chosen for ${first}</small></div><ol class="rp-tips">${pick.slice(0,4).map(x=>`<li><b>${esc(x[0])}</b><span>${esc(x[1])}</span></li>`).join("")}</ol>`;
+  const p3=sheet(slim("Plan, guidance & duʿā’",3)+`<div class="rp-body">
+    ${planSec}${cycSec}${assess}${tips}
+    ${done.length
+      ?`<div class="rp-h">Celebration, motivation &amp; duʿā’ <span class="rp-ar">مبروك</span></div><div class="rp-grid g2">${celebrateHTML(first,done,false,motivationText(first,V,st,A,cap))}${duaCard(DUA.zidni,"Duʿā’ for more knowledge")}</div>`
+      :`<div class="rp-h">Motivation &amp; duʿā’</div><div class="rp-grid g2">${motiv}${duaCard(DUA.sharh,"Duʿā’ for ease in learning")}</div>`}
+    ${remarks}</div>`+foot);
+  return p1+p2+p3;
 }
 
 function whatsappText(){
@@ -573,11 +715,26 @@ function whatsappText(){
   return L.join("\n");
 }
 
+/* fit each sheet to A4 before printing (Complete: 1 page per sheet, Minimal: 2 pages) */
+function fitSheets(on){
+  const docs=$$("#rpDoc .rp-doc");
+  document.body.classList.toggle("rp-fit",!!on&&docs.length>0);
+  docs.forEach(d=>{d.style.zoom="";});
+  if(!on||!docs.length)return;
+  const PAGE=1040,lim=docs.length>1?PAGE:PAGE*2-120;          // px at 96dpi, A4 minus 8mm margins, small safety
+  docs.forEach(d=>{const h=d.offsetHeight;if(h>lim)d.style.zoom=(lim/h).toFixed(3);});
+}
+window.__rpFit=fitSheets;
+window.addEventListener("beforeprint",()=>{const v=$("#v-progress");if(v&&v.offsetParent!==null)fitSheets(true);});
+window.addEventListener("afterprint",()=>fitSheets(false));
+
 window.renderProgress=function(){
   const root=$("#progressArea");if(!root)return;
-  if(!monthKeys().length){root.innerHTML=renderControls()+`<div class="rp-doc"><div class="rp-empty">Add a month in the Daily Log to generate a report.</div></div>`;bindControls();return;}
+  if(!monthKeys().length){root.innerHTML=renderControls()+`<div class="rp-docs"><article class="rp-doc"><div class="rp-empty">Add a month in the Daily Log to generate a report.</div></article></div>`;bindControls();return;}
   const ctl=renderControls();                    // normalises RP.key first
-  root.innerHTML=ctl+`<article class="rp-doc" id="rpDoc">${buildReport()}</article>`;
+  // one wrapper per labelled cell so stacked phone rows keep label | content on one line
+  const html=buildReport().replace(/(<td[^>]*data-l="[^"]*"[^>]*>)([\s\S]*?)(<\/td>)/g,(m,o,inner,c)=>o+"<div>"+inner+"</div>"+c);
+  root.innerHTML=ctl+`<div class="rp-docs" id="rpDoc">${html}</div>`;
   bindControls();
 };
 function bindControls(){
