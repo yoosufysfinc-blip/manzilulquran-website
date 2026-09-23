@@ -767,6 +767,7 @@ window.addEventListener("beforeprint",()=>{const v=$("#v-progress");if(v&&v.offs
 window.addEventListener("afterprint",()=>fitSheets(false));
 
 window.renderProgress=function(){
+  if(LINK){const r=$("#progressArea");if(r)r.innerHTML="";return;}   // admin-only feature
   if(!window.qrcode&&studentLink())loadLib("qr").then(()=>{if($("#v-progress")&&$("#v-progress").offsetParent!==null)renderProgress();}).catch(()=>{});
   const root=$("#progressArea");if(!root)return;
   if(!monthKeys().length){root.innerHTML=renderControls()+`<div class="rp-docs"><article class="rp-doc"><div class="rp-empty">Add a month in the Daily Log to generate a report.</div></article></div>`;bindControls();return;}
