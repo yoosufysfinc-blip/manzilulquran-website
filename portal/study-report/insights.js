@@ -555,7 +555,7 @@ function renderControls(){
     </div>
     <span class="grow"></span>
     <div class="rp-actions">
-      <button class="btn gold ix-btn" id="rpPdf">⬇ Download PDF</button>
+      <button class="btn gold ix-btn" id="rpPdf">⬇ Download HD PDF</button>
       <button class="btn ghost ix-btn" id="rpCopy">Copy WhatsApp summary</button>
     </div></div>`;
 }
@@ -809,7 +809,7 @@ function linkRect(sheet){
   return{x:r.left-s.left,y:r.top-s.top,w:r.width,h:r.height,url:a.getAttribute("href")};
 }
 async function downloadPDF(btn){
-  const label=btn.textContent;btn.disabled=true;btn.textContent="Preparing PDF…";
+  const label=btn.textContent;btn.disabled=true;btn.textContent="Preparing HD PDF…";
   let ifr=null;
   try{
     await Promise.all([loadLib("h2c"),loadLib("pdf"),loadLib("qr").catch(()=>{})]);
@@ -821,18 +821,27 @@ async function downloadPDF(btn){
     const k=Math.min(.75,14000/H);                                       // css px → pt; PDF pages max out at 14400pt
     const pdf=new window.jspdf.jsPDF({unit:"pt",format:[W*k,H*k],orientation:"portrait",compress:true});
     pdf.setFillColor(7,20,15);pdf.rect(0,0,W*k,H*k,"F");
-    let y=PAD;
+    // HD: 4× resolution, lossless PNG, captured in horizontal strips so each canvas stays
+    // well under the iOS canvas-area limit (~16.7M px) however long the report is.
+    const SCALE=4,MAXPX=12e6;
+    const stripH=Math.max(200,Math.floor(MAXPX/(sw*SCALE*SCALE)));
+    const win=d.defaultView;let y=PAD;
     for(let i=0;i<sheets.length;i++){
-      const el=sheets[i],h=hs[i];
-      const scale=sw*h*4>14e6?1.5:2;                                       // stay under iOS canvas area limit
-      const c=await window.html2canvas(el,{scale,useCORS:true,backgroundColor:BG,windowWidth:PHONE_W,logging:false});
-      pdf.addImage(c.toDataURL("image/jpeg",.92),"JPEG",PAD*k,y*k,sw*k,h*k);
+      const el=sheets[i],h=hs[i],r=el.getBoundingClientRect(),top=r.top+win.scrollY,left=r.left+win.scrollX;
+      for(let off=0;off<h;off+=stripH){
+        const th=Math.min(stripH,h-off);
+        btn.textContent=`Preparing HD PDF… ${Math.round((y+off)/H*100)}%`;
+        const c=await window.html2canvas(el,{scale:SCALE,useCORS:true,backgroundColor:BG,logging:false,
+          x:left,y:top+off,width:sw,height:th,windowWidth:PHONE_W,scrollX:0,scrollY:0});
+        pdf.addImage(c.toDataURL("image/png"),"PNG",PAD*k,(y+off)*k,sw*k,th*k,undefined,"FAST");
+        c.width=c.height=0;                                                // free memory right away (iOS)
+      }
       const L=linkRect(el);if(L)pdf.link((PAD+L.x)*k,(y+L.y)*k,L.w*k,L.h*k,{url:L.url});
       y+=h+GAP;
     }
     const nm=String(S.config.student||"Student").replace(/[\\/:*?"<>|]/g,"");
     pdf.save(`Hifz Report - ${nm} - ${periodLabel({type:RP.type,key:RP.key}).replace(/[·]/g,"-")}.pdf`);
-    toast("PDF downloaded ✓");
+    toast("HD PDF downloaded ✓");
   }catch(e){console.error(e);toast("Couldn't build the PDF — check the connection and try again");}
   finally{if(ifr)ifr.remove();btn.disabled=false;btn.textContent=label;}
 }
