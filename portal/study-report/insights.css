@@ -359,9 +359,9 @@
 .rp-poster .u{display:inline-block;margin-top:6px;font-size:10.5px;font-weight:600;color:#3d2a00;background:linear-gradient(90deg,#f2c94c,#ffe08a);
   padding:3px 10px;border-radius:99px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* PDF frame (insights.js buildFrame): full-bleed A4 width, no preview chrome */
-body.rp-pdf .rp-doc{width:794px!important;max-width:none!important;margin:0!important;border-radius:0!important;box-shadow:none!important}
-body.rp-pdf{-webkit-font-smoothing:antialiased}
+/* PDF frame (insights.js buildFrame): phone-width layout, same as the preview, no shadow */
+body.rp-phone .rp-doc{box-shadow:none!important}
+body.rp-phone{-webkit-font-smoothing:antialiased}
 
 /* phone: stacked tables */
 @media(max-width:640px){
