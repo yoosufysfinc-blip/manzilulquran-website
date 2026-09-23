@@ -340,6 +340,29 @@
   background:linear-gradient(90deg,#064e3b,#047857)}
 .rp-empty{text-align:center;padding:40px 10px;color:var(--mut)}
 
+/* No inset box-shadows in the report: html2canvas (PDF) paints them as solid fills. Use borders. */
+/* ---------------- live-report poster (bottom of every report) ---------------- */
+.rp-poster{display:grid;grid-template-columns:84px 1fr;gap:14px;align-items:center;margin-top:14px;padding:12px 14px;
+  border-radius:16px;text-decoration:none;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(125deg,#064e3b 0%,#065f46 55%,#047857 100%);
+  border:2px solid #e6b422}
+.rp-poster::after{content:"";position:absolute;right:-50px;top:-60px;width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle,rgba(242,201,76,.22),transparent 65%);pointer-events:none}
+.rp-poster .qr{width:84px;height:84px;padding:7px;border-radius:12px;background:#fff;display:grid;place-items:center;
+  box-shadow:0 0 0 2px #f2c94c}
+.rp-poster .qr svg{width:100%;height:100%;display:block}
+.rp-poster .tx{min-width:0;position:relative;z-index:1}
+.rp-poster .k{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#f2c94c}
+.rp-poster .k .rp-ar{letter-spacing:0;font-size:13px;font-weight:400;color:#ffe08a}
+.rp-poster .h{font-size:14px;font-weight:800;color:#ffe08a;line-height:1.3;margin-top:2px}
+.rp-poster .d{font-size:11px;color:#d7efe4;margin-top:2px}
+.rp-poster .u{display:inline-block;margin-top:6px;font-size:10.5px;font-weight:600;color:#3d2a00;background:linear-gradient(90deg,#f2c94c,#ffe08a);
+  padding:3px 10px;border-radius:99px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* PDF frame (insights.js buildFrame): full-bleed A4 width, no preview chrome */
+body.rp-pdf .rp-doc{width:794px!important;max-width:none!important;margin:0!important;border-radius:0!important;box-shadow:none!important}
+body.rp-pdf{-webkit-font-smoothing:antialiased}
+
 /* phone: stacked tables */
 @media(max-width:640px){
   .rp-tbl.rp-stack thead{display:none}
@@ -404,7 +427,7 @@
 
 .rp-hero{background:linear-gradient(135deg,#fff6dc 0%,#fffdf6 65%);border:1px solid var(--gline)}
 .rp-sum b{color:var(--gd)}
-.rp-grade{background:linear-gradient(90deg,var(--g8),var(--g6));box-shadow:inset 0 0 0 1px rgba(242,201,76,.5)}
+.rp-grade{background:linear-gradient(90deg,var(--g8),var(--g6));border:1px solid rgba(242,201,76,.55)}
 
 .rp-kpi,.rp-card,.rp-journey,.rp-wk,.rp-tips li{background:rgba(255,255,255,.72);border-color:var(--gline)}
 .rp-kpi .ic{background:linear-gradient(135deg,#fff3c9,#fde7a3);color:var(--gd)}
@@ -439,7 +462,7 @@
 
 .rp-tips li::before{background:linear-gradient(135deg,#b8860b,#f2c94c);color:#3d2a00}
 
-.rp-motiv{box-shadow:inset 0 0 0 1px rgba(242,201,76,.45)}
+.rp-motiv{border:1px solid rgba(242,201,76,.5)}
 .rp-motiv .msg{color:#fff5cf}
 .rp-motiv .next{color:#ffe08a;opacity:1}
 .rp-motiv .next b{color:#fff}
@@ -450,7 +473,7 @@
 .rp-dua .tr{color:var(--gm)}
 .rp-remarks{border-color:var(--gline);background:rgba(255,255,255,.6)}
 .rp-sign div{border-bottom-color:var(--gm)}
-.rp-foot{color:#ffe08a;background:linear-gradient(90deg,#064e3b,#047857);box-shadow:inset 0 3px 0 -1px #e6b422}
+.rp-foot{color:#ffe08a;background:linear-gradient(90deg,#064e3b,#047857);border-top:2px solid #e6b422}
 .rp-legend{color:#7a6a45}
 
 /* ---------------- print ----------------
