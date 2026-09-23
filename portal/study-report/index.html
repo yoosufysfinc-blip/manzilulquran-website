@@ -593,6 +593,7 @@ footer b{color:var(--gold)}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="/portal/study-report/insights.css?v=20260923">
 </head>
 <body>
 <div class="app">
@@ -627,6 +628,7 @@ footer b{color:var(--gold)}
     <button data-v="exams">🎓 Exams</button>
     <button data-v="reports">📊 Reports</button>
     <button data-v="memorised">🌙 Memorised</button>
+    <button data-v="progress">📜 Progress Report</button>
   </nav>
 
   <div class="tabdots" id="tabDots" style="display:none">
@@ -635,6 +637,7 @@ footer b{color:var(--gold)}
       <span class="tdot" data-v="daily"></span><span class="tdot" data-v="dash"></span>
       <span class="tdot" data-v="tasks"></span><span class="tdot" data-v="exams"></span>
       <span class="tdot" data-v="reports"></span><span class="tdot" data-v="memorised"></span>
+      <span class="tdot" data-v="progress"></span>
     </div>
     <button class="tdarrow" id="dotNext" aria-label="Next tab">›</button>
     <span class="tabdots-lbl" id="tabDotsLbl"></span>
@@ -669,6 +672,7 @@ footer b{color:var(--gold)}
       <h2>Students · Hifz Systems</h2>
       <span style="color:var(--dim);font-size:13px" id="rosterCount"></span>
       <span style="flex:1"></span>
+      <button class="btn gold sm" id="insightsBtn">🏆 Insights</button>
       <button class="btn ghost sm" id="rosterRefresh">↻ Refresh</button>
       <button class="btn ghost sm" id="logoutBtn">🔒 Lock</button>
     </div>
@@ -812,6 +816,20 @@ footer b{color:var(--gold)}
     <div class="card" style="padding:0;overflow:hidden">
       <div id="memArea"></div>
     </div>
+  </section>
+
+  <!-- ================= PROGRESS REPORT (insights.js) ================= -->
+  <section class="view" id="v-progress">
+    <div class="rep-head no-print">
+      <h2 class="rep-h2">📜 Progress Report</h2>
+      <p class="rep-sub">Monthly, yearly or all-time report for this student — minimal for a quick parent update, complete for the full record. Print or save as PDF.</p>
+    </div>
+    <div id="progressArea"></div>
+  </section>
+
+  <!-- ================= ACADEMY INSIGHTS (insights.js, admin only) ================= -->
+  <section class="view" id="v-insights">
+    <div id="insightsArea"></div>
   </section>
 
   <!-- ================= SETTINGS ================= -->
@@ -1252,7 +1270,7 @@ function activeCongrats(){
 function openSide(v){$("#nav").classList.toggle("open",v);$("#sideScrim").classList.toggle("open",v);}
 $("#menuFab").addEventListener("click",()=>openSide(!$("#nav").classList.contains("open")));
 $("#sideScrim").addEventListener("click",()=>openSide(false));
-const TAB_ORDER=["daily","dash","tasks","exams","reports","memorised"];
+const TAB_ORDER=["daily","dash","tasks","exams","reports","memorised","progress"];
 function gotoView(v){
   if(!TAB_ORDER.includes(v))return;
   $$("#nav button").forEach(x=>x.classList.toggle("active",x.dataset.v===v));
@@ -1290,7 +1308,7 @@ function updateDots(v){
   const i=TAB_ORDER.indexOf(v);
   wrap.style.display = i<0 ? "none" : "flex";
   $$("#tabDots .tdot").forEach((d,di)=>d.classList.toggle("on",di===i));
-  const lbl={daily:"Daily Log",dash:"Dashboard",tasks:"Tasks",exams:"Exams",reports:"Reports",memorised:"Memorised"}[v]||"";
+  const lbl={daily:"Daily Log",dash:"Dashboard",tasks:"Tasks",exams:"Exams",reports:"Reports",memorised:"Memorised",progress:"Progress Report"}[v]||"";
   const L=$("#tabDotsLbl"); if(L)L.textContent=lbl;
 }
 (function(){
@@ -2156,6 +2174,7 @@ function renderAll(){
   if(on==="v-reports")renderReports();
   if(on==="v-memorised")renderMemorised();
   if(on==="v-settings")renderSettings();
+  if(on==="v-progress"&&window.renderProgress)renderProgress();
 }
 renderChip();
 </script>
@@ -2181,7 +2200,7 @@ function showOnly(id){
   if(LINK&&id==="v-settings")id="v-dash";   // settings is admin-only
   $$(".view").forEach(v=>v.classList.remove("on"));
   $("#"+id).classList.add("on");
-  const inSystem=["v-dash","v-daily","v-tasks","v-exams","v-settings","v-reports","v-memorised"].includes(id);
+  const inSystem=["v-dash","v-daily","v-tasks","v-exams","v-settings","v-reports","v-memorised","v-progress"].includes(id);
   $("#nav").style.display=inSystem?"flex":"none";
   const mf=$("#menuFab"); if(mf)mf.style.display=inSystem?"grid":"none";
   $("#backRoster").style.display=inSystem?"inline-flex":"none";
@@ -2222,7 +2241,7 @@ function bootBackend(){
 async function linkBoot(sid,tok){
   sb=window.supabase.createClient(CONN.url,CONN.key);
   showOnly("v-roster");$("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">Opening student system…</div>';
-  $("#logoutBtn").style.display="none";$("#rosterRefresh").style.display="none";
+  $("#logoutBtn").style.display="none";$("#rosterRefresh").style.display="none";$("#insightsBtn").style.display="none";
   const{data,error}=await sb.rpc("get_student_by_token",{sid,tok});
   if(error||!data||!data.length){
     $("#rosterGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">This link is invalid or has been revoked.<br>Ask the academy admin for a fresh link.</div>';
@@ -2386,6 +2405,7 @@ function renderRoster(){
   $("#addStudentCard").onclick=()=>openStudentModal(null);
 }
 $("#rosterRefresh").onclick=fetchRoster;
+$("#insightsBtn").onclick=()=>{if(window.openInsights)openInsights();else toast("Insights module didn't load — hard-refresh the page");};
 
 /* add / rename student */
 function openStudentModal(id){
@@ -2465,5 +2485,6 @@ window.addEventListener("beforeunload",()=>{if(pushTimer){/* last resort: cache 
 
 bootBackend();
 </script>
+<script src="/portal/study-report/insights.js?v=20260923"></script>
 </body>
 </html>
