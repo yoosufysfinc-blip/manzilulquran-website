@@ -777,13 +777,15 @@ window.renderProgress=function(){
   root.innerHTML=ctl+`<div class="rp-docs" id="rpDoc">${html}</div>`;
   bindControls();
 };
-/* ---------- PDF: render the sheets in a fixed 794px (A4 @96dpi) frame, then canvas → jsPDF ----------
-   Same pixels on every phone/laptop: no browser print engine, no font swap, no mobile re-layout. */
-const A4W=794,A4H=1123;               // px at 96dpi
+/* ---------- PDF: phone layout, one continuous page (no A4 page breaks) ----------
+   The sheets are laid out in a hidden 400px-wide frame — the same phone layout as the
+   on-screen preview on any device — captured with html2canvas, then stacked on a single
+   tall PDF page. Each sheet is captured separately to stay under iOS canvas limits. */
+const PHONE_W=400,PAD=12,GAP=12,BG="#07140f";
 async function buildFrame(){
   const ifr=document.createElement("iframe");
   ifr.setAttribute("aria-hidden","true");
-  ifr.style.cssText=`position:fixed;left:-12000px;top:0;width:${A4W}px;height:${A4H}px;border:0;`;
+  ifr.style.cssText=`position:fixed;left:-12000px;top:0;width:${PHONE_W}px;height:900px;border:0;`;
   document.body.appendChild(ifr);
   const links=[...document.querySelectorAll('link[rel="stylesheet"]')].filter(l=>/fonts\.googleapis|insights\.css/.test(l.href))
     .map(l=>`<link rel="stylesheet" href="${l.href}">`).join("");
@@ -791,9 +793,9 @@ async function buildFrame(){
   const d=ifr.contentDocument;
   const loaded=new Promise(res=>{ifr.onload=res;setTimeout(res,9000);});
   d.open();
-  d.write(`<!doctype html><html><head><meta charset="utf-8"><base href="${location.origin}/">
+  d.write(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=${PHONE_W}"><base href="${location.origin}/">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=block">${links}
-    </head><body class="rp-fit rp-pdf" style="margin:0;background:#fff">${html}</body></html>`);
+    </head><body class="rp-phone" style="margin:0;background:${BG}"><div class="rp-docs" style="padding:${PAD}px;gap:${GAP}px">${html}</div></body></html>`);
   d.close();
   await loaded;
   try{await Promise.race([d.fonts.ready,new Promise(r=>setTimeout(r,6000))]);}catch(e){}
@@ -814,42 +816,19 @@ async function downloadPDF(btn){
     if(window.qrcode&&!$("#rpDoc .rp-poster svg"))renderProgress();      // make sure the QR is in the sheet
     ifr=await buildFrame();
     const d=ifr.contentDocument,sheets=[...d.querySelectorAll(".rp-doc")];
-    const pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4",compress:true});
-    const PW=210,PH=297,mm=PW/A4W;                                       // mm per css px
-    const snap=async el=>window.html2canvas(el,{scale:2,useCORS:true,backgroundColor:"#fffdf6",windowWidth:A4W,logging:false});
-    const bg=()=>{pdf.setFillColor(255,253,246);pdf.rect(0,0,PW,PH,"F");};
-    if(sheets.length>1){
-      // Complete: one designed sheet per page, scaled down only if it is taller than A4
-      for(let i=0;i<sheets.length;i++){
-        const el=sheets[i],c=await snap(el),hPx=el.offsetHeight;
-        const k=Math.min(1,A4H/hPx),w=PW*k,x=(PW-w)/2;
-        if(i)pdf.addPage();bg();
-        pdf.addImage(c.toDataURL("image/jpeg",.92),"JPEG",x,0,w,hPx*mm*k);
-        const L=linkRect(el);if(L)pdf.link(x+L.x*mm*k,L.y*mm*k,L.w*mm*k,L.h*mm*k,{url:L.url});
-      }
-    }else{
-      // Minimal: one long sheet cut into A4 pages between sections (never through one).
-      // Pick the largest scale (100% → 80%) that keeps it to 2 pages; otherwise 100% over more pages.
-      const el=sheets[0],c=await snap(el),H=el.offsetHeight,sc=c.height/H;
-      const top=el.getBoundingClientRect().top;
-      const cuts=[...el.querySelectorAll(".rp-band,.rp-body>*,.rp-foot")].map(n=>n.getBoundingClientRect().bottom-top).sort((a,b)=>a-b);
-      const PAD=24;
-      const paginate=k=>{const pagePx=A4H/k,out=[];let start=0;
-        while(start<H-2){const room=pagePx-(out.length?PAD:0);
-          let cut=cuts.filter(y=>y>start+40&&y<=start+room).pop();if(!cut)cut=Math.min(H,start+room);
-          out.push([start,cut]);start=cut;}
-        return out;};
-      let k=1,pages=paginate(1);
-      if(pages.length>2){for(let t=.98;t>=.8;t-=.02){const p=paginate(t);if(p.length<=2){k=t;pages=p;break;}}}
-      const L=linkRect(el),w=PW*k,x=(PW-w)/2;
-      pages.forEach(([start,cut],page)=>{
-        const slice=document.createElement("canvas");slice.width=c.width;slice.height=Math.max(1,Math.round((cut-start)*sc));
-        slice.getContext("2d").drawImage(c,0,Math.round(start*sc),c.width,slice.height,0,0,c.width,slice.height);
-        if(page)pdf.addPage();bg();
-        const y0=page?PAD*mm:0;
-        pdf.addImage(slice.toDataURL("image/jpeg",.92),"JPEG",x,y0,w,(cut-start)*mm*k);
-        if(L&&L.y>=start&&L.y+L.h<=cut)pdf.link(x+L.x*mm*k,y0+(L.y-start)*mm*k,L.w*mm*k,L.h*mm*k,{url:L.url});
-      });
+    const sw=sheets[0].offsetWidth,hs=sheets.map(el=>el.offsetHeight);
+    const W=PHONE_W,H=PAD*2+hs.reduce((a,b)=>a+b,0)+GAP*(sheets.length-1);
+    const k=Math.min(.75,14000/H);                                       // css px → pt; PDF pages max out at 14400pt
+    const pdf=new window.jspdf.jsPDF({unit:"pt",format:[W*k,H*k],orientation:"portrait",compress:true});
+    pdf.setFillColor(7,20,15);pdf.rect(0,0,W*k,H*k,"F");
+    let y=PAD;
+    for(let i=0;i<sheets.length;i++){
+      const el=sheets[i],h=hs[i];
+      const scale=sw*h*4>14e6?1.5:2;                                       // stay under iOS canvas area limit
+      const c=await window.html2canvas(el,{scale,useCORS:true,backgroundColor:BG,windowWidth:PHONE_W,logging:false});
+      pdf.addImage(c.toDataURL("image/jpeg",.92),"JPEG",PAD*k,y*k,sw*k,h*k);
+      const L=linkRect(el);if(L)pdf.link((PAD+L.x)*k,(y+L.y)*k,L.w*k,L.h*k,{url:L.url});
+      y+=h+GAP;
     }
     const nm=String(S.config.student||"Student").replace(/[\\/:*?"<>|]/g,"");
     pdf.save(`Hifz Report - ${nm} - ${periodLabel({type:RP.type,key:RP.key}).replace(/[·]/g,"-")}.pdf`);
