@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-books.v9.js. v9: Welcome letter button on the profile, and its terms editable in Settings. */
+/* Academic Service — ws-books.v10.js. v10: setting for fixed monthly pay, shown only when the teacher taught that month. */
 /* one line per individual student on a teacher's month — rule, amount and an Override button */
 function payLinesHtml(pv){
   const L = (pv && pv.indLines) || [];
@@ -1287,6 +1287,10 @@ Pages.settings = function(){
         '<textarea class="input" id="set_welcomeTerms" rows="5" placeholder="One line per term">' +
         esc(s.welcomeTerms || "") + '</textarea>' +
         '<span class="hint">Printed under “Terms &amp; Conditions” in the welcome letter. Leave empty to use the standard four lines (rescheduling, leave notice, advance fee, Hifz concession).</span></div>' +
+      field("Fixed monthly teacher pay", '<select class="input" id="set_monthlyPayOnlyIfTaught">' +
+        optList([{ value: "no", label: "Every month, whether they taught or not" },
+                 { value: "yes", label: "Only in a month where they taught" }],
+                s.monthlyPayOnlyIfTaught || "no") + '</select>') +
       field("Prepaid due date", '<select class="input" id="set_prepaidDue">' +
         optList([{ value: "studentDay", label: "Each student's own day, in the month before" },
                  { value: "advance",    label: "Same day for everyone, X days before the month" }],
