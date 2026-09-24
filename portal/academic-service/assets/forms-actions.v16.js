@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v15.js. v15: welcome letter for a new student, built from their live class details. */
+/* Academic Service — forms-actions.v16.js. v16: stopping a plan can waive the unpaid months; welcome letter is editable, 12-hour times, new look. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -1014,7 +1014,24 @@ const Actions = {
     onSubmit: function(d, form){
       d.days = readDays(form); d.perWeek = d.days.length; d.id = id;
       ["duration","rate","discount","dueDay"].concat(RULE_NUM).forEach(k => d[k] = +d[k] || 0);
+      const was = DataService.getPlan(id) || {};
       DataService.savePlan(d);
+      /* stopping only stops future months — offer to clear the months already raised and unpaid */
+      if (was.status === "Active" && d.status === "Stopped") {
+        const open = Logic.feeViews({ planId: id }).filter(v => v.balance > 0 && !v.waived);
+        if (open.length) {
+          setTimeout(() => confirmAction({ title: "Waive the unpaid months?",
+            note: "Stopping a plan does not touch months already raised. " + open.length +
+              " month" + (open.length > 1 ? "s are" : " is") + " still unpaid for this student.",
+            message: open.map(v => monthLabel(v.month) + " · " + money(v.balance)).join(" · "),
+            submitText: "Waive them", cancelText: "Keep them owing",
+            onConfirm: function(){
+              open.forEach(v => DataService.saveFee({ id: v.id, waived: true, locked: true,
+                remarks: (v.remarks ? v.remarks + " · " : "") + "Waived — class plan stopped" }));
+              toast(open.length + " month" + (open.length > 1 ? "s" : "") + " waived", "ok"); render();
+            } }), 120);
+        }
+      }
       toast("Plan updated. Recalculate the month if the rate changed.", "ok", 4200); render();
     } }),
   "class-new": (id) => {
@@ -1726,7 +1743,7 @@ Object.assign(Actions, {
     const patch = {};
     ["academyName","academyTagline","website","email","contactPhone","whatsappNumber","currency","countryCode",
      "defaultDueDay","defaultFeeMethod","billingMode","advanceDays","prepaidDue","teacherLinkBase","apiUrl",
-     "syncKey","syncEvery","admissionFeeDefault","welcomeTerms"].forEach(k => {
+     "syncKey","syncEvery","admissionFeeDefault","welcomeTerms","monthlyPayOnlyIfTaught"].forEach(k => {
       const el = $("#set_" + k); if (el) patch[k] = el.value;
     });
     patch.defaultDueDay = +patch.defaultDueDay || 5;
@@ -1918,6 +1935,19 @@ function welcomeTerms(){
   const raw = String(Settings().welcomeTerms || "").trim();
   return raw ? raw.split("\n").map(x => x.trim()).filter(Boolean) : WELCOME_TERMS_DEFAULT;
 }
+/* the app stores class times as 24-hour ("18:00"); letters read better as 6:00 PM */
+function time12(t){
+  const m = /^(\d{1,2}):(\d{2})/.exec(String(t || "").trim());
+  if (!m) return String(t || "");
+  let h = +m[1]; const mi = m[2], ap = h >= 12 ? "PM" : "AM";
+  h = h % 12; if (!h) h = 12;
+  return h + ":" + mi + " " + ap;
+}
+function timeRange(start, end, mins){
+  const a = time12(start), b = end ? time12(end) : "";
+  if (!a) return "";
+  return a + (b ? " – " + b : "") + (mins ? " (" + mins + " min)" : "");
+}
 const DOW_FULL = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
 function welcomeHoliday(days){
   const all = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -1934,7 +1964,7 @@ function welcomeData(st, src){
     const p = DataService.getPlans().find(x => x.id === id); if (!p) return out;
     const t = DataService.getTeacher(p.teacherId);
     out.course = p.course || "Individual class";
-    out.time = p.time ? p.time + (p.duration ? " (" + p.duration + " min)" : "") : "";
+    out.time = p.time ? timeRange(p.time, "", p.duration) : "";
     out.perWeek = (p.days || []).length || p.perWeek || "";
     out.holiday = welcomeHoliday(p.days);
     out.startDate = p.startDate || st.joiningDate || "";
@@ -1949,8 +1979,7 @@ function welcomeData(st, src){
     const t = DataService.getTeacher((sc && sc.teacherId) || b.teacherId);
     out.course = b.course || b.name || "Batch class";
     const t1 = (sc && sc.startTime) || b.startTime, t2 = (sc && sc.endTime) || b.endTime;
-    const mins = (sc && sc.duration) || b.duration;
-    out.time = t1 ? (t1 + (t2 ? "–" + t2 : "") + (mins ? " (" + mins + " min)" : "")) : "";
+    out.time = timeRange(t1, t2, (sc && sc.duration) || b.duration);
     out.perWeek = days.length;
     out.holiday = welcomeHoliday(days);
     out.startDate = e.joiningDate || st.joiningDate || "";
@@ -1964,8 +1993,8 @@ function welcomeData(st, src){
 function welcomeFields(w){
   return '<div class="form-grid" style="padding:0">' +
     field("Course", '<input class="input" name="course" value="' + esc(w.course || "") + '">') +
-    field("Class time", '<input class="input" name="time" value="' + esc(w.time || "") + '" placeholder="e.g. 7:00–7:45 AM (IST)">') +
-    field("Class starting", '<input class="input" type="date" name="startDate" value="' + esc(w.startDate || "") + '">') +
+    field("Class time", '<input class="input" name="time" value="' + esc(w.time || "") + '" placeholder="e.g. 7:00 AM – 7:45 AM">') +
+    field("First class date", '<input class="input" type="date" name="startDate" value="' + esc(w.startDate || "") + '">') +
     field("Next due date", '<input class="input" type="date" name="dueDate" value="' + esc(w.dueDate || "") + '">') +
     field("Classes per week", '<input class="input" type="number" min="0" max="7" name="perWeek" value="' + esc(w.perWeek || "") + '">') +
     field("Weekly holiday", '<input class="input" name="holiday" value="' + esc(w.holiday || "") + '">') +
@@ -1982,7 +2011,7 @@ function welcomeLetterHTML(st, w){
   if (w.batchName) rows.push(["Batch", w.batchName]);
   if (w.teacher) rows.push(["Teacher", w.teacher]);
   if (st.joiningDate) rows.push(["Joining date", fmtDate(st.joiningDate)]);
-  rows.push(["Class starting", w.startDate ? fmtDate(w.startDate) : "—"]);
+  rows.push(["First class", w.startDate ? fmtDate(w.startDate) : "—"]);
   rows.push(["Class time", w.time || "As arranged with your teacher"]);
   if (w.perWeek) rows.push(["Class days", w.perWeek + " per week"]);
   rows.push(["Weekly holiday", w.holiday || "As arranged with your teacher"]);
@@ -1995,13 +2024,22 @@ function welcomeLetterHTML(st, w){
   '<style>' +
   '@page{ size:A4; margin:16mm 14mm; }' +
   '*{ box-sizing:border-box; }' +
-  'body{ margin:0; background:#FBF7EF; color:#2C2E2A; font-family:Georgia,"Times New Roman",serif; font-size:11.4pt; line-height:1.55; }' +
-  '.sheet{ max-width:190mm; margin:0 auto; background:#FBF7EF; padding:0 0 18mm; }' +
-  '.hd{ text-align:center; border-bottom:2px solid #C9A96E; padding:18px 0 14px; margin-bottom:18px; }' +
-  '.mark{ width:54px; height:54px; border-radius:50%; margin:0 auto 8px; background:#0B4D3B; color:#E6CE9C;' +
-  ' display:flex; align-items:center; justify-content:center; font-size:26px; }' +
-  '.hd h1{ margin:0; font-size:19pt; color:#0B4D3B; letter-spacing:.3px; }' +
+  'body{ margin:0; background:#EFE9DC; color:#262824; font-family:Georgia,"Times New Roman",serif; font-size:11.4pt; line-height:1.58; }' +
+  '.sheet{ max-width:190mm; margin:14px auto; background:#FDFBF5; padding:22px 26px 26px; position:relative;' +
+  ' border:1px solid #E2D6BC; border-radius:6px; box-shadow:0 10px 30px rgba(0,0,0,.09); }' +
+  '.sheet:before{ content:""; position:absolute; inset:7px; border:1px solid #E6CE9C; border-radius:4px; pointer-events:none; }' +
+  '.sheet.editing{ outline:2px dashed #1B7A5A; outline-offset:6px; }' +
+  '.wm{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;' +
+  ' font-size:150pt; color:#0B4D3B; opacity:.035; }' +
+  '.hd{ text-align:center; padding:8px 0 14px; margin-bottom:16px; position:relative; }' +
+  '.mark{ width:58px; height:58px; border-radius:50%; margin:0 auto 9px; background:#0B4D3B; color:#E6CE9C;' +
+  ' display:flex; align-items:center; justify-content:center; font-size:27px; border:2px solid #C9A96E; }' +
+  '.hd h1{ margin:0; font-size:19.5pt; color:#0B4D3B; letter-spacing:.3px; }' +
   '.hd .tag{ margin-top:5px; font-size:9.5pt; letter-spacing:.22em; text-transform:uppercase; color:#B08D57; }' +
+  '.rule{ margin:12px auto 0; width:62%; height:10px; position:relative; }' +
+  '.rule:before{ content:""; position:absolute; top:5px; left:0; right:0; height:1px; background:' +
+  'linear-gradient(90deg,rgba(201,169,110,0),#C9A96E,rgba(201,169,110,0)); }' +
+  '.rule span{ position:absolute; left:50%; top:0; transform:translateX(-50%); background:#FDFBF5; padding:0 8px; color:#C9A96E; font-size:11pt; }' +
   'h4{ margin:20px 0 7px; font-size:11.5pt; color:#0B4D3B; border-bottom:1px solid #E6CE9C; padding-bottom:4px; }' +
   '.greet{ color:#1B7A5A; font-style:italic; }' +
   '.dear{ margin:10px 0 6px; font-weight:bold; }' +
@@ -2019,18 +2057,29 @@ function welcomeLetterHTML(st, w){
   '.hadith{ text-align:center; border-top:1px solid #E6CE9C; border-bottom:1px solid #E6CE9C; padding:12px; margin:12px 0; font-style:italic; color:#0B4D3B; }' +
   '.hadith .src{ font-style:normal; font-size:9.5pt; color:#8A8F86; margin-top:4px; }' +
   '.sig{ margin-top:16px; }' +
-  '.ft{ margin-top:18px; border-top:2px solid #C9A96E; padding-top:8px; display:flex; justify-content:space-between; font-size:9.5pt; color:#6B6F66; }' +
+  '.ft{ margin-top:18px; border-top:1px solid #C9A96E; padding-top:8px; display:flex; justify-content:space-between; font-size:9.5pt; color:#6B6F66; }' +
+  '.tipline{ font-size:10pt; color:#4A5A50; margin-top:7px; }' +
   '.noprint{ text-align:center; padding:12px; }' +
   '.noprint button{ font:inherit; font-size:11pt; padding:9px 18px; margin:0 5px; border-radius:9px; border:1px solid #0B4D3B;' +
   ' background:#0B4D3B; color:#fff; cursor:pointer; }' +
   '.noprint .alt{ background:#fff; color:#0B4D3B; }' +
-  '@media print{ .noprint{ display:none; } body{ background:#fff; } .sheet{ background:#fff; } }' +
-  '</style></head><body>' +
-  '<div class="noprint"><button onclick="window.print()">Save as PDF / Print</button>' +
-  '<button class="alt" onclick="window.close()">Close</button></div>' +
+  '@media print{ .noprint{ display:none; } body{ background:#fff; } .sheet{ background:#fff; box-shadow:none; } }' +
+  '</style>' +
+  '<script>function toggleEdit(){var s=document.querySelector(".sheet"),b=document.getElementById("edit"),t=document.getElementById("tipline");' +
+  'var on=s.getAttribute("contenteditable")==="true";s.setAttribute("contenteditable",on?"false":"true");' +
+  's.classList.toggle("editing",!on);b.textContent=on?"Edit the text":"Done editing";' +
+  't.textContent=on?"Anything can be changed before printing — tap \\u201CEdit the text\\u201D, correct it, then print.":"Editing: tap any line and type. Changes are for this printout only.";' +
+  'if(!on)s.focus();}<\/script></head><body>' +
+  '<div class="noprint">' +
+    '<button onclick="window.print()">Save as PDF / Print</button>' +
+    '<button class="alt" id="edit" onclick="toggleEdit()">Edit the text</button>' +
+    '<button class="alt" onclick="window.close()">Close</button>' +
+    '<div class="tipline" id="tipline">Anything can be changed before printing — tap “Edit the text”, correct it, then print.</div>' +
+  '</div>' +
   '<div class="sheet">' +
+    '<div class="wm">☾</div>' +
     '<div class="hd"><div class="mark">☾</div><h1>' + esc(s.academyName || "ManzilulQuran E-learning Academy") + '</h1>' +
-      '<div class="tag">Admission Confirmation</div></div>' +
+      '<div class="tag">Admission Confirmation</div><div class="rule"><span>✦</span></div></div>' +
     '<div class="greet">Assalamu Alaikum wa Rahmatullahi wa Barakatuh,</div>' +
     '<div class="dear">Dear ' + esc(st.name) + ',</div>' +
     '<div>We are delighted to welcome you to the ' + esc(s.academyName || "ManzilulQuran") + ' family. May Allah make this the beginning of a blessed and lasting journey with His Book. Your admission is confirmed and the details of your classes are set out below. Our teachers look forward to meeting you and supporting you at every step.</div>' +
