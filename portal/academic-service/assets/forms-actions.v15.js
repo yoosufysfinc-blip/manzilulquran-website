@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v14.js. v14: the type-to-find box lists matching people as you type, with one tap to pick. */
+/* Academic Service — forms-actions.v15.js. v15: welcome letter for a new student, built from their live class details. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -1457,6 +1457,39 @@ Object.assign(Actions, {
           '<button type="button" class="btn" data-act="print-receipt">Save as PDF</button>' +
           '<button type="button" class="btn btn-wa" data-act="wa-received" data-id="' + p.id + '">Send on WhatsApp</button></div>' });
   },
+  /* ---- welcome letter ----
+     Everything comes from the student's live plan or batch enrolment, so a change to the
+     class time today is in the letter printed tomorrow. Terms are edited in Settings. */
+  "welcome": (id) => {
+    const st = DataService.getStudent(id);
+    if (!st) { toast("Student not found", "bad"); return; }
+    const str = Logic.streamsOf(st.id);
+    const opts = [];
+    if (str.individual) opts.push({ v: "plan:" + str.individual.id, label: (str.individual.course || "Individual class") + " · one-to-one" });
+    if (str.batch) {
+      const b = DataService.getBatch(str.batch.batchId);
+      opts.push({ v: "enrol:" + str.batch.id, label: (b ? b.name : str.batch.batchId) + " · batch" });
+    }
+    if (!opts.length) { toast("Give " + st.name + " a class plan or a batch enrolment first", "warn", 5000); return; }
+    const w = welcomeData(st, opts[0].v);
+    openModal({ title: "Welcome letter — " + st.name, wide: true, submitText: "Open the letter",
+      body: '<div class="note">Everything below is filled in from the class details already saved. Change anything here for this letter only — the wording of the terms is edited in Settings.</div>' +
+        '<div class="form-grid">' +
+        (opts.length > 1 ? '<div class="field span2"><label>Which class</label>' +
+          sel("src", optList(opts.map(o => ({ value: o.v, label: o.label })), opts[0].v), 'data-act="wl-src" data-id="' + esc(st.id) + '"') + '</div>' : 
+          '<input type="hidden" name="src" value="' + esc(opts[0].v) + '">') +
+        '<div class="field span2" id="wlFields">' + welcomeFields(w) + '</div>' +
+        '</div>',
+      onSubmit: function(d){
+        const w2 = welcomeData(st, d.src);
+        ["startDate", "time", "perWeek", "holiday", "dueDate", "fee", "course", "note"].forEach(k => { if (d[k] !== undefined) w2[k] = d[k]; });
+        openWelcomeLetter(st, w2);
+      } });
+  },
+  "wl-src": (sid, el) => {
+    const box = document.getElementById("wlFields");
+    if (box) box.innerHTML = welcomeFields(welcomeData(DataService.getStudent(sid), el.value));
+  },
   "print-receipt": () => {
     document.body.classList.add("print-receipt");
     window.print();
@@ -1693,7 +1726,7 @@ Object.assign(Actions, {
     const patch = {};
     ["academyName","academyTagline","website","email","contactPhone","whatsappNumber","currency","countryCode",
      "defaultDueDay","defaultFeeMethod","billingMode","advanceDays","prepaidDue","teacherLinkBase","apiUrl",
-     "syncKey","syncEvery","admissionFeeDefault"].forEach(k => {
+     "syncKey","syncEvery","admissionFeeDefault","welcomeTerms"].forEach(k => {
       const el = $("#set_" + k); if (el) patch[k] = el.value;
     });
     patch.defaultDueDay = +patch.defaultDueDay || 5;
@@ -1842,4 +1875,186 @@ function voidDialog(kind, id){
       if (isT) DataService.voidTeacherPayment(id, d.reason.trim()); else DataService.voidPayment(id, d.reason.trim());
       toast(money(p.amount) + " voided — taken out of the totals", "ok", 4200); render();
     } });
+}
+
+/* ---- welcome letter: the live details, the page, and the print window ---- */
+const WELCOME_DUA = {
+  ar: "رَبِّ زِدْنِي عِلْمًا",
+  tr: "Rabbi zidni ilma",
+  en: "My Lord, increase me in knowledge.",
+  src: "Surah Ta-Ha 20:114"
+};
+const WELCOME_HADITH = {
+  en: "The best of you are those who learn the Quran and teach it.",
+  src: "Prophet Muhammad ﷺ · Sahih al-Bukhari"
+};
+const WELCOME_COURSE = {
+  hifz: "A structured memorisation programme built around daily new lessons (sabaq), recent revision (sabqi) and long-term revision (manzil), so the Quran is preserved firmly in the heart.",
+  base: "Foundational recitation focusing on correct pronunciation (makharij), the Arabic letters and the basics of tajweed for clear, confident reading.",
+  advanced: "Refined recitation that masters the finer rules of tajweed, rhythm and fluency for beautiful and accurate recitation.",
+  batch: "Group Islamic studies covering Quran reading alongside the essentials of faith, worship and good character.",
+  individual: "One-to-one Islamic studies at your own pace, covering the Quran and the foundations of deen.",
+  tarteel: "Clear, measured recitation of the Quran with correct pronunciation and the rules of tajweed.",
+  madrasa: "Islamic studies covering the Quran along with the essentials of faith, worship and good character."
+};
+function welcomeCourseText(course){
+  const c = String(course || "").toLowerCase();
+  const key = ["hifz", "advanced", "base", "batch", "individual", "tarteel", "madrasa"].find(k => c.indexOf(k) >= 0);
+  return key ? WELCOME_COURSE[key] : "A guided programme of Quran and Islamic studies suited to your level.";
+}
+const WELCOME_CHECKLIST = ["A clean copy of the Quran or Mushaf suited to your level",
+  "A notebook and pen for lesson notes", "A stable internet connection and a charged device",
+  "A quiet, well-lit place, with headphones if possible", "Join the class a few minutes early"];
+const WELCOME_COMMITMENTS = ["Attend regularly and arrive on time", "Revise a little every day, even on busy days",
+  "Keep the camera on during class when requested", "Keep respectful and modest conduct",
+  "Tell us early whenever you need support"];
+const WELCOME_TERMS_DEFAULT = [
+  "If a teacher is on leave the class is rescheduled. Where rescheduling is not possible, appropriate compensation is given.",
+  "Students who tell us of their leave at least one day in advance are equally eligible for a rescheduled class or compensation.",
+  "Fees are paid in advance for the coming month, on the due date shown above.",
+  "Hifz students who consistently complete their assigned tasks may be given a special fee concession, in sha Allah."
+];
+function welcomeTerms(){
+  const raw = String(Settings().welcomeTerms || "").trim();
+  return raw ? raw.split("\n").map(x => x.trim()).filter(Boolean) : WELCOME_TERMS_DEFAULT;
+}
+const DOW_FULL = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
+function welcomeHoliday(days){
+  const all = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const off = all.filter(d => (days || []).indexOf(d) < 0).map(d => DOW_FULL[d]);
+  if (!days || !days.length) return "As arranged with your teacher";
+  if (!off.length) return "No weekly holiday";
+  return off.length > 2 ? off.slice(0, -1).join(", ") + " and " + off[off.length - 1] : off.join(" and ");
+}
+/* pull everything the letter needs out of the plan or the enrolment */
+function welcomeData(st, src){
+  const kind = String(src || "").split(":")[0], id = String(src || "").split(":")[1];
+  const out = { kind: kind, note: "", fee: "", course: "", time: "", perWeek: "", holiday: "", startDate: "", dueDate: "", teacher: "" };
+  if (kind === "plan") {
+    const p = DataService.getPlans().find(x => x.id === id); if (!p) return out;
+    const t = DataService.getTeacher(p.teacherId);
+    out.course = p.course || "Individual class";
+    out.time = p.time ? p.time + (p.duration ? " (" + p.duration + " min)" : "") : "";
+    out.perWeek = (p.days || []).length || p.perWeek || "";
+    out.holiday = welcomeHoliday(p.days);
+    out.startDate = p.startDate || st.joiningDate || "";
+    out.dueDate = Logic.feeDueDate(addMonths(currentMonth(), 1), p.dueDay || 5);
+    out.fee = p.feeType === "manual" ? "" : money(p.rate);
+    out.teacher = t ? t.name : "";
+  } else {
+    const e = DataService.getEnrollments().find(x => x.id === id); if (!e) return out;
+    const b = DataService.getBatch(e.batchId) || {};
+    const sc = e.subClassId ? DataService.getSubclass(e.subClassId) : null;
+    const days = (sc && sc.days && sc.days.length ? sc.days : b.days) || [];
+    const t = DataService.getTeacher((sc && sc.teacherId) || b.teacherId);
+    out.course = b.course || b.name || "Batch class";
+    const t1 = (sc && sc.startTime) || b.startTime, t2 = (sc && sc.endTime) || b.endTime;
+    const mins = (sc && sc.duration) || b.duration;
+    out.time = t1 ? (t1 + (t2 ? "–" + t2 : "") + (mins ? " (" + mins + " min)" : "")) : "";
+    out.perWeek = days.length;
+    out.holiday = welcomeHoliday(days);
+    out.startDate = e.joiningDate || st.joiningDate || "";
+    out.dueDate = Logic.feeDueDate(addMonths(currentMonth(), 1), e.dueDay || 5);
+    out.fee = e.feeMode === "manual" ? "" : money(+e.monthlyFee || +b.monthlyFee || 0);
+    out.teacher = t ? t.name : "";
+    out.batchName = b.name || e.batchId;
+  }
+  return out;
+}
+function welcomeFields(w){
+  return '<div class="form-grid" style="padding:0">' +
+    field("Course", '<input class="input" name="course" value="' + esc(w.course || "") + '">') +
+    field("Class time", '<input class="input" name="time" value="' + esc(w.time || "") + '" placeholder="e.g. 7:00–7:45 AM (IST)">') +
+    field("Class starting", '<input class="input" type="date" name="startDate" value="' + esc(w.startDate || "") + '">') +
+    field("Next due date", '<input class="input" type="date" name="dueDate" value="' + esc(w.dueDate || "") + '">') +
+    field("Classes per week", '<input class="input" type="number" min="0" max="7" name="perWeek" value="' + esc(w.perWeek || "") + '">') +
+    field("Weekly holiday", '<input class="input" name="holiday" value="' + esc(w.holiday || "") + '">') +
+    field("Monthly fee", '<input class="input" name="fee" value="' + esc(w.fee || "") + '">') +
+    '<div class="field span2"><label>Personal note <span class="hint">(optional)</span></label>' +
+      '<textarea class="input" name="note" rows="2" placeholder="A short line to the family"></textarea></div>' +
+  '</div>';
+}
+function welcomeLetterHTML(st, w){
+  const s = Settings();
+  const rows = [["Student name", st.name], ["Admission no.", st.id]];
+  if (st.guardian) rows.push(["Guardian", st.guardian]);
+  rows.push(["Course", w.course || "—"]);
+  if (w.batchName) rows.push(["Batch", w.batchName]);
+  if (w.teacher) rows.push(["Teacher", w.teacher]);
+  if (st.joiningDate) rows.push(["Joining date", fmtDate(st.joiningDate)]);
+  rows.push(["Class starting", w.startDate ? fmtDate(w.startDate) : "—"]);
+  rows.push(["Class time", w.time || "As arranged with your teacher"]);
+  if (w.perWeek) rows.push(["Class days", w.perWeek + " per week"]);
+  rows.push(["Weekly holiday", w.holiday || "As arranged with your teacher"]);
+  if (w.dueDate) rows.push(["Next due date", fmtDate(w.dueDate)]);
+  if (w.fee) rows.push(["Monthly fee", w.fee]);
+  const contact = [s.whatsappNumber || s.contactPhone, s.email].filter(Boolean).join("  ·  ") || s.website || "manzilulquran.in";
+  const list = a => '<ul>' + a.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul>';
+  const sec = t => '<h4>' + esc(t) + '</h4>';
+  return '<!doctype html><html><head><meta charset="utf-8"><title>Welcome — ' + esc(st.name) + '</title>' +
+  '<style>' +
+  '@page{ size:A4; margin:16mm 14mm; }' +
+  '*{ box-sizing:border-box; }' +
+  'body{ margin:0; background:#FBF7EF; color:#2C2E2A; font-family:Georgia,"Times New Roman",serif; font-size:11.4pt; line-height:1.55; }' +
+  '.sheet{ max-width:190mm; margin:0 auto; background:#FBF7EF; padding:0 0 18mm; }' +
+  '.hd{ text-align:center; border-bottom:2px solid #C9A96E; padding:18px 0 14px; margin-bottom:18px; }' +
+  '.mark{ width:54px; height:54px; border-radius:50%; margin:0 auto 8px; background:#0B4D3B; color:#E6CE9C;' +
+  ' display:flex; align-items:center; justify-content:center; font-size:26px; }' +
+  '.hd h1{ margin:0; font-size:19pt; color:#0B4D3B; letter-spacing:.3px; }' +
+  '.hd .tag{ margin-top:5px; font-size:9.5pt; letter-spacing:.22em; text-transform:uppercase; color:#B08D57; }' +
+  'h4{ margin:20px 0 7px; font-size:11.5pt; color:#0B4D3B; border-bottom:1px solid #E6CE9C; padding-bottom:4px; }' +
+  '.greet{ color:#1B7A5A; font-style:italic; }' +
+  '.dear{ margin:10px 0 6px; font-weight:bold; }' +
+  'table.det{ width:100%; border-collapse:collapse; margin-top:4px; }' +
+  'table.det td{ padding:6px 8px; border-bottom:1px solid #EFE7D6; vertical-align:top; }' +
+  'table.det td.k{ width:42%; color:#6B6F66; font-size:10.4pt; }' +
+  'table.det td.v{ font-weight:bold; }' +
+  'ul{ margin:6px 0 0 18px; padding:0; } li{ margin:3px 0; }' +
+  '.callout{ background:#F8F0DD; border-left:4px solid #C9A96E; padding:9px 12px; margin:10px 0; border-radius:0 8px 8px 0; }' +
+  '.dua{ text-align:center; background:#EAF3EE; border:1px solid #CFE3D8; border-radius:12px; padding:14px; margin:18px 0 10px; }' +
+  '.dua .ar{ font-family:"Traditional Arabic","Scheherazade New","Amiri","Noto Naskh Arabic",serif; font-size:21pt;' +
+  ' direction:rtl; color:#0B4D3B; line-height:1.9; }' +
+  '.dua .tr{ font-style:italic; color:#1B7A5A; margin-top:4px; }' +
+  '.dua .en{ margin-top:2px; } .dua .src{ font-size:9.5pt; color:#8A8F86; margin-top:4px; }' +
+  '.hadith{ text-align:center; border-top:1px solid #E6CE9C; border-bottom:1px solid #E6CE9C; padding:12px; margin:12px 0; font-style:italic; color:#0B4D3B; }' +
+  '.hadith .src{ font-style:normal; font-size:9.5pt; color:#8A8F86; margin-top:4px; }' +
+  '.sig{ margin-top:16px; }' +
+  '.ft{ margin-top:18px; border-top:2px solid #C9A96E; padding-top:8px; display:flex; justify-content:space-between; font-size:9.5pt; color:#6B6F66; }' +
+  '.noprint{ text-align:center; padding:12px; }' +
+  '.noprint button{ font:inherit; font-size:11pt; padding:9px 18px; margin:0 5px; border-radius:9px; border:1px solid #0B4D3B;' +
+  ' background:#0B4D3B; color:#fff; cursor:pointer; }' +
+  '.noprint .alt{ background:#fff; color:#0B4D3B; }' +
+  '@media print{ .noprint{ display:none; } body{ background:#fff; } .sheet{ background:#fff; } }' +
+  '</style></head><body>' +
+  '<div class="noprint"><button onclick="window.print()">Save as PDF / Print</button>' +
+  '<button class="alt" onclick="window.close()">Close</button></div>' +
+  '<div class="sheet">' +
+    '<div class="hd"><div class="mark">☾</div><h1>' + esc(s.academyName || "ManzilulQuran E-learning Academy") + '</h1>' +
+      '<div class="tag">Admission Confirmation</div></div>' +
+    '<div class="greet">Assalamu Alaikum wa Rahmatullahi wa Barakatuh,</div>' +
+    '<div class="dear">Dear ' + esc(st.name) + ',</div>' +
+    '<div>We are delighted to welcome you to the ' + esc(s.academyName || "ManzilulQuran") + ' family. May Allah make this the beginning of a blessed and lasting journey with His Book. Your admission is confirmed and the details of your classes are set out below. Our teachers look forward to meeting you and supporting you at every step.</div>' +
+    (w.note ? '<div class="callout">' + esc(w.note) + '</div>' : "") +
+    sec("Your Academic Details") +
+    '<table class="det">' + rows.map(r => '<tr><td class="k">' + esc(r[0]) + '</td><td class="v">' + esc(r[1]) + '</td></tr>').join("") + '</table>' +
+    sec("About Your Course") + '<div>' + esc(welcomeCourseText(w.course)) + '</div>' +
+    sec("Terms & Conditions") + list(welcomeTerms()) +
+    sec("Before Your First Class") + list(WELCOME_CHECKLIST) +
+    sec("Our Shared Commitment") + list(WELCOME_COMMITMENTS) +
+    sec("Staying in Touch") + '<div>For rescheduling, fee queries or any support, reach us at <b>' + esc(contact) + '</b>. We are always happy to help.</div>' +
+    '<div class="dua"><div class="ar">' + WELCOME_DUA.ar + '</div><div class="tr">' + esc(WELCOME_DUA.tr) + '</div>' +
+      '<div class="en">“' + esc(WELCOME_DUA.en) + '”</div><div class="src">' + esc(WELCOME_DUA.src) + '</div></div>' +
+    '<div class="hadith">“' + esc(WELCOME_HADITH.en) + '”<div class="src">' + esc(WELCOME_HADITH.src) + '</div></div>' +
+    '<div>We look forward to walking this path of learning with you.' +
+      '<div class="sig">With warm regards,<br><b>The ' + esc(s.academyName || "ManzilulQuran") + ' Team</b></div></div>' +
+    '<div class="ft"><span>' + esc(s.website || "manzilulquran.in") + '</span><span>' + esc(contact) + '</span></div>' +
+  '</div></body></html>';
+}
+function openWelcomeLetter(st, w){
+  const html = welcomeLetterHTML(st, w);
+  const win = window.open("", "_blank");
+  if (!win) { toast("Allow pop-ups for this site, then try again", "bad", 6000); return; }
+  win.document.open(); win.document.write(html); win.document.close();
+  closeModal();
+  toast("Welcome letter ready — use Save as PDF", "ok", 4200);
 }
