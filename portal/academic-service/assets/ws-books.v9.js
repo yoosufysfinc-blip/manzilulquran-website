@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-books.v8.js. v8: more ways to sort students, teachers and staff (joining date, ID, date of birth). */
+/* Academic Service — ws-books.v9.js. v9: Welcome letter button on the profile, and its terms editable in Settings. */
 /* one line per individual student on a teacher's month — rule, amount and an Override button */
 function payLinesHtml(pv){
   const L = (pv && pv.indLines) || [];
@@ -1148,6 +1148,7 @@ Pages.profile = function(){
     '<button class="btn" data-act="student-assign" data-id="' + s.id + '">Batch</button>' +
     '<button class="btn" data-act="plan-new" data-id="' + s.id + '">Individual plan</button>' +
     (dueAll > 0 ? '<button class="btn btn-wa" data-act="wa-student" data-id="' + s.id + '">WhatsApp reminder</button>' : "") +
+    '<button class="btn" data-act="welcome" data-id="' + s.id + '">Welcome letter</button>' +
     '<button class="btn" data-act="rep-statement" data-id="' + s.id + '">Statement</button>' +
     '<button class="btn" data-act="print">Print</button>' +
   '</div>' +
@@ -1282,6 +1283,10 @@ Pages.settings = function(){
                  { value: "postpaid", label: "Postpaid — bill after the classes" }], s.billingMode || "prepaid") + '</select>') +
       field("Days before the month that fees fall due",
         '<input class="input" type="number" min="0" max="31" id="set_advanceDays" value="' + esc(s.advanceDays || 0) + '">') +
+      '<div class="field span2"><label>Welcome letter — terms &amp; conditions</label>' +
+        '<textarea class="input" id="set_welcomeTerms" rows="5" placeholder="One line per term">' +
+        esc(s.welcomeTerms || "") + '</textarea>' +
+        '<span class="hint">Printed under “Terms &amp; Conditions” in the welcome letter. Leave empty to use the standard four lines (rescheduling, leave notice, advance fee, Hifz concession).</span></div>' +
       field("Prepaid due date", '<select class="input" id="set_prepaidDue">' +
         optList([{ value: "studentDay", label: "Each student's own day, in the month before" },
                  { value: "advance",    label: "Same day for everyone, X days before the month" }],
