@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — logic.v3.js. v3: prepaid months fall due on each student's own day in the month before. */
+/* Academic Service — logic.v4.js. v4: waived months leave the dues; payroll leaves out teachers who left and can skip fixed monthly in an untaught month. */
 /* ==========================================================================
    LOGIC
    ========================================================================== */
@@ -192,9 +192,10 @@ const Logic = {
     const st = DataService.getStudent(f.studentId);
     const te = DataService.getTeacher(f.teacherId);
     const carry = round2(+f.carry || 0);
-    const net = round2(Math.max(0, (+f.gross || 0) - (+f.discount || 0) + carry));
+    /* a waived month is not owed: it must drop out of the dues and the receivable, not just change its label */
+    const net = f.waived ? 0 : round2(Math.max(0, (+f.gross || 0) - (+f.discount || 0) + carry));
     const paid = Logic.paidOn(f.id);
-    const balance = round2(Math.max(0, net - paid));
+    const balance = f.waived ? 0 : round2(Math.max(0, net - paid));
     const t = today();
     let status;
     if (f.waived)                     status = "Waived";
@@ -555,7 +556,12 @@ Object.assign(Logic, {
     if (t.indRateType === "perClass") { ind = dcs.completed * rate; indBasis = dcs.completed + " classes × " + money(rate); }
     else if (t.indRateType === "perDay") { ind = dcs.days * rate; indBasis = dcs.days + " days × " + money(rate); }
     else if (t.indRateType === "perHour") { ind = (dcs.minutes / 60) * rate; indBasis = round2(dcs.minutes / 60) + " hours × " + money(rate); }
-    else if (t.indRateType === "monthly") { ind = rate; indBasis = "Monthly fixed"; }
+    else if (t.indRateType === "monthly") {
+      /* optional: a fixed monthly salary only counts in a month where they actually taught */
+      const only = (Settings().monthlyPayOnlyIfTaught || "no") === "yes";
+      if (only && !Logic.taughtIn(t, month)) { ind = 0; indBasis = "Monthly fixed — no teaching this month"; }
+      else { ind = rate; indBasis = "Monthly fixed"; }
+    }
     else if (t.indRateType === "percent") {
       const base = Logic.feeViews({ month: month, source: "individual", teacherId: t.id })
         .filter(v => !handled[v.planId]).reduce((s, v) => s + v.netFee, 0);
@@ -625,7 +631,18 @@ Object.assign(Logic, {
       status: balance <= 0 && paid > 0 ? "Paid" : (paid > 0 ? "Partial" : (payable > 0 ? "Pending" : "Nil"))
     };
   },
-  payrollMonth(month){ return DataService.getTeachers().map(t => Logic.payrollView(t, month)); },
+  /* a teacher who has left should not appear on the payroll — their history stays on their own page */
+  payrollMonth(month){
+    return DataService.getTeachers().filter(t => (t.status || "Active") === "Active")
+      .map(t => Logic.payrollView(t, month));
+  },
+  /* did this teacher actually teach in this month? (a logged class, an active student, or a batch) */
+  taughtIn(t, month){
+    if (DataService.getClasses({ teacherId: t.id, month: month }).length) return true;
+    if (DataService.getAttendance({ teacherId: t.id, month: month }).length) return true;
+    if (DataService.getPlans({ teacherId: t.id, status: "Active" }).length) return true;
+    return DataService.getBatches().some(b => b.teacherId === t.id && (b.status || "Active") === "Active");
+  },
 
   /* ---- ONE LEDGER for both streams. Nothing is posted by hand. ---- */
   ledger(){
