@@ -258,6 +258,7 @@
             <input type="text" id="rSid" placeholder="Student ID" autocomplete="off" />
             <input type="email" id="rEmail" placeholder="Email for sign-in" autocomplete="off" />
             <input type="date" id="rDob" />
+            <input type="text" id="rMqId" placeholder="MQ ID (optional)" autocomplete="off" />
           </div>
           <div class="r-add-actions">
             <span class="r-add-note">The student signs in with this email and date of birth.</span>
@@ -441,6 +442,10 @@
           <div class="field full">
             <label>Hifz Report Link <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— paste from the Hifz Command Center (share ▸). Shows a button on the class sheet.</span></label>
             <input type="url" id="fHifzLink" placeholder="https://manzilulquran.in/portal/study-report/?s=...&t=..." />
+          </div>
+          <div class="field full">
+            <label>MQ ID <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— links this sheet to the same student in Academic Service</span></label>
+            <input type="text" id="fMqId" placeholder="MQ4156" autocomplete="off" />
           </div>
           <div class="field full">
             <label>Contact Number <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— admin only, never shown on the share link</span></label>
@@ -1337,7 +1342,7 @@ function renderRoster(){
       </label>
       <div class="r-who">
         <div class="r-name">${escapeHtml(st.studentName)}</div>
-        <div class="r-meta">${escapeHtml(st.studentId)} · ${escapeHtml(st.email)} · ${escapeHtml(st.dob)}</div>
+        <div class="r-meta">${escapeHtml(st.studentId)}${st.mqId ? ' · ' + escapeHtml(st.mqId) : ''} · ${escapeHtml(st.email)} · ${escapeHtml(st.dob)}</div>
       </div>
       <div class="r-flags">
         <span class="r-flag${st.devices >= 2 ? ' full' : ''}">${st.devices}/2 devices</span>
@@ -1360,33 +1365,15 @@ function updatePaidCount(){
 /* Dates are handled as plain yyyy-mm-dd strings throughout — never as Date
    objects, which is what turned the month column into a date and broke
    every tick. */
-/* The end date is shown, never typed. It is derived the same way the
-   server derives it, so what the admin sees and what the door enforces
-   cannot drift apart. Inclusive of the first day. */
-function sessionEndStr(start, days){
-  const n = parseInt(days, 10);
-  if(!start || isNaN(n) || n < 1) return "";
-  const d = new Date(start + "T00:00:00Z");
-  if(isNaN(d.getTime())) return "";
-  d.setUTCDate(d.getUTCDate() + n - 1);
-  return d.toISOString().slice(0, 10);
-}
 
 function refreshRowEnd(row){
   const start = row.querySelector(".r-start").value;
   const days  = row.querySelector(".r-days").value;
-  const end   = sessionEndStr(start, days);
+  const end   = sessionEnd(start, days);
   row.querySelector("[data-end]").textContent = end ? fmtDate(end) : "—";
   return end;
 }
 
-function addDaysStr(dateStr, n){
-  const base = dateStr ? new Date(dateStr + "T00:00:00Z") : new Date();
-  if(isNaN(base.getTime())) return "";
-  base.setUTCDate(base.getUTCDate() + n);
-  return base.toISOString().slice(0, 10);
-}
-function todayISO(){ return new Date().toISOString().slice(0, 10); }
 
 
 
@@ -1455,11 +1442,12 @@ $("rAddBtn").addEventListener("click", async () => {
   const out = await postBatch({
     action: "saveRosterStudent",
     batchId: rosterBatch,
-    studentId: sid, studentName: name, email: email, dob: dob
+    studentId: sid, studentName: name, email: email, dob: dob,
+    mqId: ($("rMqId").value || "").trim()
   });
   if(out.result !== "success") return toast(out.error || "Could not add the student", true);
 
-  ["rName","rSid","rEmail","rDob"].forEach(id => $(id).value = "");
+  ["rName","rSid","rEmail","rDob","rMqId"].forEach(id => $(id).value = "");
   await loadRoster();
   toast("Student added — they still need a paid tick for this month");
 });
@@ -1532,19 +1520,8 @@ function renderSession(){
   refreshSesEnd();
 }
 
-/* The end date is shown, never typed, and derived exactly as the server
-   derives it — so what the admin sees and what the door enforces cannot
-   drift apart. Inclusive of the first day. */
-function sessionEndStr(start, days){
-  const n = parseInt(days, 10);
-  if(!start || isNaN(n) || n < 1) return "";
-  const d = new Date(start + "T00:00:00Z");
-  if(isNaN(d.getTime())) return "";
-  d.setUTCDate(d.getUTCDate() + n - 1);
-  return d.toISOString().slice(0, 10);
-}
 function refreshSesEnd(){
-  const end = sessionEndStr($("rSesStart").value, $("rSesDays").value);
+  const end = sessionEnd($("rSesStart").value, $("rSesDays").value);
   $("rSesEnd").textContent = end ? fmtDate(end) : "—";
 }
 ["rSesStart","rSesDays"].forEach(id => $(id).addEventListener("input", refreshSesEnd));
@@ -1989,6 +1966,7 @@ function openForm(c){
 
   $("fName").value      = c ? (c["Student Name"] || "") : "";
   $("fStudentId").value = c ? (c["Student ID"] || "") : "";
+  $("fMqId").value = c ? (c["mqId"] || "") : "";
   fillCourseSelects(c ? (c["Course"] || "") : "");
   buildSubjects(c ? smSubjects(c) : []);
   $("fJoinDate").value  = c ? toDateInput(c["Join Date"]) : "";
@@ -2027,6 +2005,7 @@ $("formSaveBtn").onclick = async () => {
       studentName: $("fName").value.trim(),
       studentId:   $("fStudentId").value.trim(),
       course:      $("fCourse").value,
+      mqId:        $("fMqId").value.trim(),
       subjects:    collectSubjects(),
       joinDate:    $("fJoinDate").value,
       whatsapp:    $("fWhatsapp").value.trim(),
