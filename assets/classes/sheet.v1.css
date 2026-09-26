@@ -958,3 +958,180 @@
   .ntc-badge, .ntc-status, .crs-sub{
     box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
   }
+
+  /* =================================================================
+     ░░  AURORA  ░░   premium pass, 2026-09-26
+     -----------------------------------------------------------------
+     A pure-CSS override layer. It changes no markup and no class names —
+     every rule below re-skins something already on the page, so this is
+     a one-file change and reverting it means deleting this block.
+
+     The identity stays midnight-azure. What changes is depth: saturated
+     indigo → violet → azure gradients, real glow on the things a student
+     acts on, and light that moves slowly enough to feel alive without
+     ever competing with the text.
+     ================================================================= */
+
+  :root{
+    --au-indigo:#3b2fd4;
+    --au-violet:#7c3aed;
+    --au-cyan:#22d3ee;
+    --au-azure:#4d8dff;
+    --au-mint:#2dd4bf;
+    --au-pink:#f472b6;
+    --au-glow:0 0 0 1px rgba(124,58,237,.22), 0 18px 48px -12px rgba(59,47,212,.55);
+  }
+
+  /* ---------- Ground: a deeper, more saturated night ---------- */
+  body{
+    background:
+      radial-gradient(1200px 680px at 12% -8%,  rgba(124,58,237,.30), transparent 62%),
+      radial-gradient(1000px 620px at 88% -4%,  rgba(34,211,238,.20), transparent 60%),
+      radial-gradient(900px  760px at 50% 108%, rgba(59,47,212,.28), transparent 66%),
+      linear-gradient(180deg,#070a1c 0%,#050817 55%,#03050f 100%);
+    background-attachment:fixed;
+  }
+
+  /* The existing aurora layer, given colour and a slow drift. */
+  .aurora{
+    background:
+      conic-gradient(from 210deg at 30% 20%, rgba(124,58,237,.35), rgba(34,211,238,.22), rgba(59,47,212,.32), rgba(124,58,237,.35));
+    filter:blur(90px) saturate(140%);
+    opacity:.55;
+    animation:auroraDrift 24s ease-in-out infinite alternate;
+  }
+  @keyframes auroraDrift{
+    from{ transform:translate3d(-3%,-2%,0) scale(1.05); }
+    to  { transform:translate3d(3%,2%,0)  scale(1.18); }
+  }
+
+  /* ---------- Surfaces: saturated glass, lit from the top ---------- */
+  .card, .info-item, .cal-card, .day, .ntc-card, .login-card, .ntc-modal-card{
+    background:
+      linear-gradient(160deg, rgba(124,58,237,.10), rgba(77,141,255,.05) 45%, rgba(255,255,255,.02));
+    border:1px solid rgba(140,170,255,.16);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.16),
+      inset 0 0 0 1px rgba(124,58,237,.06),
+      0 12px 40px -16px rgba(0,0,0,.7);
+  }
+  /* A single hairline of light across the top edge of each card.
+     Drawn as a border-image rather than an ::before, so the card needs
+     neither position:relative nor overflow:hidden — both of which would
+     change the containing block for anything absolutely positioned
+     inside it, and the halo behind the logo lives in there. */
+  .card{
+    border-top:1px solid transparent;
+    border-image:linear-gradient(90deg, transparent, rgba(160,190,255,.75), transparent) 1;
+    border-image-slice:1;
+  }
+
+  /* ---------- The name: gradient type, the one flourish ---------- */
+  #studentName .accent, .brand{
+    background:linear-gradient(105deg, var(--au-cyan), var(--au-azure) 40%, var(--au-violet));
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+  }
+  .brand-sub{ color:rgba(180,200,255,.62); letter-spacing:3px; }
+
+  /* The divider rules pick up the same light. */
+  .rule i{
+    background:linear-gradient(90deg, transparent, rgba(124,58,237,.55), transparent);
+  }
+
+  /* ---------- Join: the button that matters, and it looks it ---------- */
+  a.btn-join{
+    background:linear-gradient(135deg, var(--au-cyan), var(--au-azure) 55%, var(--au-violet));
+    border:none; color:#04101f; font-weight:800;
+    box-shadow:0 8px 26px -8px rgba(77,141,255,.85), inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  a.btn-join:hover{ filter:brightness(1.08) saturate(115%); }
+  .btn-join.dead{
+    background:rgba(255,255,255,.045);
+    color:rgba(233,238,252,.32);
+    box-shadow:none; border:1px solid rgba(140,170,255,.12);
+  }
+  .btn-invite{
+    background:linear-gradient(135deg, rgba(45,212,191,.92), rgba(34,211,238,.92));
+    border:none; color:#04231f; font-weight:800;
+    box-shadow:0 8px 24px -10px rgba(45,212,191,.8);
+  }
+  .btn-wa{ box-shadow:0 8px 24px -10px rgba(37,211,102,.55); }
+
+  /* ---------- Today and the invited day: lit, not just tinted ---------- */
+  .day.today, .day.spotlight{
+    background:linear-gradient(135deg, rgba(77,141,255,.20), rgba(124,58,237,.12));
+    border-color:rgba(120,170,255,.55);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.2),
+      0 0 0 1px rgba(77,141,255,.28),
+      0 14px 42px -18px rgba(77,141,255,.9);
+  }
+  .day.spotlight{ animation:spotPulse 3.2s ease-in-out infinite; }
+  @keyframes spotPulse{
+    0%,100%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 0 0 1px rgba(77,141,255,.28), 0 14px 42px -18px rgba(77,141,255,.9); }
+    50%    { box-shadow:inset 0 1px 0 rgba(255,255,255,.26), 0 0 0 1px rgba(124,58,237,.45), 0 18px 54px -16px rgba(124,58,237,.95); }
+  }
+  .day.past{ opacity:.46; }
+  .day.off{ background:linear-gradient(160deg, rgba(255,255,255,.03), transparent); }
+
+  /* ---------- Tabs: a lit pill, not a flat one ---------- */
+  .tab{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(140,170,255,.14);
+  }
+  .tab.active{
+    background:linear-gradient(135deg, var(--au-cyan), var(--au-azure) 55%, var(--au-violet));
+    color:#04101f; border-color:transparent;
+    box-shadow:0 8px 26px -10px rgba(77,141,255,.9);
+  }
+
+  /* ---------- Small type that should still catch the eye ---------- */
+  .pill, .subj-pill, .cal-chip{
+    background:linear-gradient(135deg, rgba(34,211,238,.13), rgba(124,58,237,.13));
+    border:1px solid rgba(140,170,255,.22);
+    color:#cfe0ff;
+  }
+  .cal-chip.active{
+    background:linear-gradient(135deg, var(--au-cyan), var(--au-violet));
+    color:#04101f; font-weight:800; border-color:transparent;
+    box-shadow:0 6px 20px -8px rgba(124,58,237,.9);
+  }
+  .today-tag, .invited-tag{
+    background:linear-gradient(135deg, var(--au-cyan), var(--au-azure));
+    color:#04101f; font-weight:800; border:none;
+  }
+
+  /* ---------- Sign-in and announcements ---------- */
+  .login-btn, .ntc-got{
+    background:linear-gradient(135deg, var(--au-cyan), var(--au-azure) 55%, var(--au-violet));
+    color:#04101f;
+    box-shadow:0 10px 30px -10px rgba(77,141,255,.9);
+  }
+  .login-card, .ntc-modal-card{ box-shadow:var(--au-glow); }
+  .login-logo{
+    background:linear-gradient(160deg, rgba(124,58,237,.22), rgba(34,211,238,.12));
+    border-color:rgba(140,170,255,.3);
+  }
+
+  /* ---------- Stars, warmed slightly so they read as light ---------- */
+  .star{ box-shadow:0 0 6px rgba(160,190,255,.85); }
+
+  /* ---------- The loading orb ---------- */
+  .loading-orb{
+    background:conic-gradient(from 0deg, var(--au-cyan), var(--au-violet), var(--au-cyan));
+    filter:saturate(140%);
+  }
+
+  /* Weak phones: blur and big shadows are the expensive parts. The
+     gradients alone still read as a lit surface, so nothing breaks. */
+  @supports not (backdrop-filter: blur(1px)){
+    .card, .info-item, .day, .login-card{ background:rgba(12,18,44,.94); }
+  }
+
+  /* A student who asked their phone for less motion gets a still page.
+     Every animation here is decoration; none of it carries meaning. */
+  @media (prefers-reduced-motion: reduce){
+    .aurora{ animation:none; }
+    .day.spotlight{ animation:none; }
+  }
