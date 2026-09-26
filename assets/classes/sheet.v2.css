@@ -1365,3 +1365,96 @@
     .aurora, .day.today, .day.spotlight, a.btn-join::after{ animation:none; }
     .state.show *, .day, .tab-panel{ animation:none !important; }
   }
+
+  /* =================================================================
+     REFINEMENT PASS — density, type, and the notices tab
+     ================================================================= */
+
+  /* ---------- Day rows: one list, not 36 cards ----------
+     The Emerald block above gave every .day the same card treatment as
+     .card, so each row grew its own background, border and shadow and
+     the list read as a stack of blocks. A schedule is a list: one
+     container, hairline dividers, nothing else. */
+  .days{
+    border:1px solid var(--e-line);
+    border-radius:16px;
+    overflow:hidden;
+    background:linear-gradient(170deg, rgba(16,185,129,.045), rgba(255,255,255,.012));
+  }
+  .day{
+    background:transparent;
+    border:none;
+    border-bottom:1px solid rgba(120,190,165,.085);
+    box-shadow:none;
+    border-radius:0;
+    padding:13px 16px;
+  }
+  .day:last-child{ border-bottom:none; }
+
+  /* Today is the one row allowed to stand out, and it does it with an
+     inset bar rather than a box — no border, so the list stays even. */
+  .day.today, .day.spotlight{
+    background:linear-gradient(90deg, rgba(16,185,129,.13), rgba(16,185,129,.02) 60%);
+    border-bottom-color:rgba(52,211,153,.22);
+    box-shadow:inset 3px 0 0 var(--e-emerald);
+    animation:eBreatheBar 5s ease-in-out infinite;
+  }
+  @keyframes eBreatheBar{
+    0%,100%{ box-shadow:inset 3px 0 0 var(--e-emerald); }
+    50%    { box-shadow:inset 3px 0 0 var(--e-emerald-hi), 0 0 22px -14px var(--e-glow); }
+  }
+  .day.off{ background:transparent; }
+  .day.past{ opacity:.4; }
+
+  /* ---------- Type ----------
+     Manrope is already loaded in five weights; the gain is in how it is
+     set, not in another font. Dates get tabular figures so every row
+     aligns on the same grid — the single change that makes a schedule
+     look engineered rather than typed. */
+  .day-date, .info-value, .cal-summary, .meta{
+    font-variant-numeric:tabular-nums;
+    font-feature-settings:"tnum" 1, "cv11" 1;
+  }
+  .day-date{
+    font-size:16px; font-weight:700;
+    letter-spacing:-.2px;          /* tighter: numerals read as one unit */
+    color:var(--e-text);
+  }
+  .day-dow{
+    font-size:12.5px; font-weight:500;
+    color:var(--e-faint); letter-spacing:0;
+  }
+  .day-n{
+    font-size:9.5px; font-weight:700;
+    letter-spacing:1.6px; color:var(--e-faint);
+    opacity:.75;
+  }
+  .day-holiday{
+    font-size:10.5px; font-weight:700; letter-spacing:1.6px;
+  }
+  .btn-join, .btn-join.dead{
+    font-size:11.5px; font-weight:800; letter-spacing:1.3px;
+  }
+  /* Finished rows should recede. A dead pill with a full border draws
+     as much ink as a live one. */
+  .btn-join.dead{
+    background:transparent;
+    border:1px solid rgba(120,190,165,.13);
+    color:rgba(238,245,241,.28);
+  }
+
+  h1, #studentName{
+    letter-spacing:-.7px;          /* large type needs less tracking */
+    font-weight:800;
+  }
+  .info-label, .brand-sub, .rule span{
+    font-weight:700; letter-spacing:2.4px;
+  }
+  .info-value{ font-weight:600; letter-spacing:-.1px; }
+
+  /* ---------- Notices: the bell only ----------
+     The bell in the corner already carries an unread count and opens the
+     same panel. A tab as well meant two controls for one thing, and the
+     tab row was wide enough to scroll sideways on a phone. The panel is
+     untouched — the bell still opens it. */
+  #tabNotices{ display:none !important; }
