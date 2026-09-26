@@ -522,27 +522,11 @@ function render(d){
    a browser console, the server would still refuse.
    ================================================================= */
 const BATCH_SESSION_KEY = 'mq_batch_session_';
-const BATCH_DEVICE_KEY  = 'mq_device_id';
 
 let batchToken = '';
 let batchMode  = false;   // this sheet is a batch (student or teacher view)
 let batchShare = '';      // the batch's STUDENT link token, for invites
 
-/* A random id for this browser, kept locally. It is not an identifier
-   of the person — it exists so the academy can cap how many devices one
-   student signs in from, and so a returning phone keeps its slot. */
-function deviceId(){
-  try{
-    let d = localStorage.getItem(BATCH_DEVICE_KEY);
-    if(!d){
-      d = 'dv' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
-      localStorage.setItem(BATCH_DEVICE_KEY, d);
-    }
-    return d;
-  }catch(e){
-    return 'dv-nostore';   // private browsing: works, just never remembered
-  }
-}
 
 function batchSession(){
   try{ return localStorage.getItem(BATCH_SESSION_KEY + batchToken) || ''; }catch(e){ return ''; }
