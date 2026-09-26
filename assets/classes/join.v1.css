@@ -297,3 +297,185 @@
       background:rgba(11,24,48,.9);
     }
   }
+
+
+  /* =================================================================
+     ░░  EMERALD NOIR  ░░   v2 — colour and motion only
+     -----------------------------------------------------------------
+     No markup changes. Every rule re-skins something already on the
+     page, so reverting means pointing the page back at join.v1.css.
+
+     PALETTE. Near-black with a green cast, emerald as the one action
+     colour, gold used sparingly as a hairline. It matches the logo and
+     the admin side, so a student moving between pages sees one academy
+     rather than two products.
+
+     MOTION. One easing curve, used for everything:
+         cubic-bezier(.32,.72,0,1)  — quick start, long soft settle
+     Entrances 380ms, taps 140ms, nothing over 500ms, and only transform
+     and opacity are animated. Nothing loops. The twinkling stars and the
+     drifting aurora are deliberately stilled: on a page a student sees
+     for three seconds, movement reads as urgency, not polish.
+     ================================================================= */
+
+  :root{
+    --e-void:#040706;
+    --e-deep:#071210;
+    --e-panel:#0b1a16;
+    --e-line:rgba(120,190,165,.16);
+
+    --e-emerald:#10b981;
+    --e-emerald-lo:#059669;
+    --e-emerald-hi:#34d399;
+    --e-glow:rgba(16,185,129,.42);
+
+    --e-gold:#c9a961;
+    --e-gold-hi:#e4c987;
+
+    --e-text:#eef5f1;
+    --e-dim:rgba(238,245,241,.62);
+    --e-faint:rgba(238,245,241,.34);
+
+    --ease:cubic-bezier(.32,.72,0,1);
+  }
+
+  /* ---------- Ground ---------- */
+  body{
+    background:
+      radial-gradient(1000px 620px at 50% -10%, rgba(16,185,129,.16), transparent 62%),
+      radial-gradient(760px 520px at 12% 106%, rgba(5,150,105,.12), transparent 64%),
+      linear-gradient(180deg,#06100d 0%,#040908 60%,#020504 100%);
+    background-attachment:fixed;
+    color:var(--e-text);
+  }
+  .aurora{
+    background:radial-gradient(60% 50% at 50% 0%, rgba(16,185,129,.22), transparent 70%);
+    filter:blur(70px);
+    opacity:.6;
+    animation:none;            /* stilled on purpose */
+  }
+  .star{
+    background:rgba(190,230,214,.75);
+    box-shadow:0 0 5px rgba(120,220,180,.5);
+    animation:none;            /* no twinkle */
+  }
+
+  /* ---------- Type ---------- */
+  .brand{
+    color:var(--e-text);
+    background:none; -webkit-text-fill-color:currentColor;
+  }
+  .brand-sub{ color:var(--e-faint); letter-spacing:3.4px; }
+  .rule span{ color:var(--e-gold); letter-spacing:2.6px; }
+  .rule i{ background:linear-gradient(90deg,transparent,rgba(201,169,97,.42),transparent); }
+  h1#who{ color:var(--e-text); }
+  h1#who .accent{
+    color:var(--e-emerald-hi);
+    background:none; -webkit-text-fill-color:currentColor;
+  }
+  .meta{ color:var(--e-dim); }
+  .status{ color:var(--e-faint); }
+  .foot{ color:var(--e-faint); }
+
+  /* ---------- Logo, halo, countdown ----------
+     The three pulsing halos are replaced by one still gold hairline.
+     The ring keeps its job — it is the only thing on the page that
+     must move, because it is showing time passing. */
+  .halo{ display:none; }
+  .logo-circle{
+    border:1.5px solid rgba(201,169,97,.55);
+    box-shadow:0 0 0 1px rgba(16,185,129,.12), 0 14px 40px -14px rgba(16,185,129,.5);
+    background:#0b1a16;
+  }
+  .ring .track{ stroke:rgba(120,190,165,.14); }
+  .ring .prog{
+    stroke:var(--e-emerald);
+    filter:drop-shadow(0 0 5px var(--e-glow));
+    transition:stroke-dashoffset .12s linear;
+  }
+  .count span{ color:var(--e-emerald-hi); }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    border-radius:14px;
+    transition:transform .14s var(--ease), filter .14s var(--ease), opacity .14s var(--ease);
+  }
+  .btn-meet{
+    background:linear-gradient(135deg,var(--e-emerald-hi) 0%,var(--e-emerald) 52%,var(--e-emerald-lo) 100%);
+    border:none; color:#02120c; font-weight:800;
+    box-shadow:0 10px 30px -12px var(--e-glow), inset 0 1px 0 rgba(255,255,255,.34);
+  }
+  .btn-meet svg{ stroke:#02120c; }
+  .btn.ghost, #goNowBtn{
+    background:rgba(255,255,255,.035);
+    border:1px solid var(--e-line);
+    color:var(--e-text);
+  }
+  .btn:active{ transform:scale(.97); }
+  .btn:hover{ filter:brightness(1.06); }
+
+  .renew-note{
+    color:#ffe0c4;
+    background:rgba(201,169,97,.08);
+    border:1px solid rgba(201,169,97,.26);
+  }
+  .renew-note b{ color:var(--e-gold-hi); }
+  .fallback{ color:var(--e-faint); }
+
+  /* ---------- Error card ---------- */
+  .err-icon{
+    color:#ffb4b4;
+    background:rgba(255,140,140,.09);
+    border:1px solid rgba(255,140,140,.24);
+  }
+  .err-title{ color:var(--e-text); }
+  .err-text{ color:var(--e-dim); }
+
+  /* =================================================================
+     MOTION
+     One curve, short durations, transform and opacity only. Each piece
+     arrives 50ms after the one above it, which is what reads as
+     "considered" rather than "everything at once".
+     ================================================================= */
+  @keyframes eRise{
+    from{ opacity:0; transform:translate3d(0,8px,0) scale(.985); }
+    to  { opacity:1; transform:none; }
+  }
+
+  .state.show .logo-wrap,
+  .state.show .brand,
+  .state.show .brand-sub,
+  .state.show .rule,
+  .state.show h1,
+  .state.show .meta,
+  .state.show .status,
+  .state.show .btn,
+  .state.show .renew-note,
+  .state.show .fallback,
+  .state.show .err-icon,
+  .state.show .err-title,
+  .state.show .err-text{
+    animation:eRise .38s var(--ease) both;
+  }
+  .state.show .brand      { animation-delay:.05s }
+  .state.show .brand-sub  { animation-delay:.08s }
+  .state.show .rule       { animation-delay:.12s }
+  .state.show h1          { animation-delay:.16s }
+  .state.show .meta       { animation-delay:.20s }
+  .state.show .status     { animation-delay:.24s }
+  .state.show .btn-meet   { animation-delay:.28s }
+  .state.show #goNowBtn   { animation-delay:.33s }
+  .state.show .renew-note { animation-delay:.33s }
+  .state.show .fallback   { animation-delay:.38s }
+  .state.show .err-title  { animation-delay:.08s }
+  .state.show .err-text   { animation-delay:.14s }
+
+  /* The logo settles rather than spinning or bouncing in. */
+  .logo-wrap{ animation:eRise .46s var(--ease) both; }
+
+  /* A student who asked their phone for less motion gets a still page.
+     Nothing here carries meaning, so nothing is lost. */
+  @media (prefers-reduced-motion: reduce){
+    .state.show *, .logo-wrap{ animation:none !important; }
+    .ring .prog{ transition:none; }
+  }
