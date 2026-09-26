@@ -231,6 +231,13 @@ function fetchBatchAdmin(batchId, month){
   return mqGet('getBatchAdmin', { password: mqAdminPassword(), batchId: batchId, month: month });
 }
 
+/* Fee status for one student, by their Academic Service id.
+   THE ONE SEAM. Today the server answers from the Classes spreadsheet;
+   after the migration it answers from Supabase. Callers never change. */
+function fetchFeeStatus(mqId, month){
+  return mqGet('getFeeStatus', { password: mqAdminPassword(), mqId: mqId, month: month });
+}
+
 /* =================================================================
    ADMIN — WRITE
    ================================================================= */
@@ -248,6 +255,10 @@ function toggleNoticeApi(noticeId, active){
 }
 
 function saveBatchApi(payload){       return mqPostAdmin(Object.assign({ action: 'saveBatch' }, payload)); }
+function setBatchSessionApi(payload){ return mqPostAdmin(Object.assign({ action: 'setBatchSession' }, payload)); }
+function deactivateCourseApi(courseId, active){
+  return mqPostAdmin({ action: 'deactivateCourse', courseId: courseId, active: active });
+}
 function deleteBatchApi(batchId){     return mqPostAdmin({ action: 'deleteBatch', batchId: batchId }); }
 function resetBatchTokenApi(batchId){ return mqPostAdmin({ action: 'resetBatchToken', batchId: batchId }); }
 function resetTeacherTokenApi(batchId){ return mqPostAdmin({ action: 'resetTeacherToken', batchId: batchId }); }
