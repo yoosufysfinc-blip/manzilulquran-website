@@ -157,3 +157,87 @@ function classesLeft(cal){
   const t = today0().getTime();
   return buildDays(cal).filter(d => !d.isOff && d.date.getTime() >= t).length;
 }
+
+/* =================================================================
+   BATCH SESSION RULES  (v10)
+   -----------------------------------------------------------------
+   Shared so that the admin screen, the student sheet and any future
+   page derive session dates the same way — and, critically, the SAME
+   way the server does.
+
+   A WORD ON WHAT THIS IS NOT. None of this enforces anything. Access is
+   decided on the server, on every read, and nothing here can grant a
+   student entry. These functions exist so the screen agrees with the
+   server about what it is showing. Anyone editing this file must keep
+   sessionEnd() identical to sessionEnd() in the Apps Script; if the two
+   drift, the admin sees one end date and the door enforces another.
+   ================================================================= */
+
+/* Inclusive of the first day: 20 Sep for 30 days ends 19 Oct. */
+function sessionEnd(start, days){
+  const n = parseInt(days, 10);
+  if(!start || isNaN(n) || n < 1) return "";
+  const d = new Date(start + "T00:00:00Z");
+  if(isNaN(d.getTime())) return "";
+  d.setUTCDate(d.getUTCDate() + n - 1);
+  return d.toISOString().slice(0, 10);
+}
+
+function todayISO(){
+  return new Date().toISOString().slice(0, 10);
+}
+
+/* Whole days from today to a yyyy-mm-dd date. Negative once it has passed. */
+function daysUntilDate(dateStr){
+  if(!dateStr) return null;
+  const a = new Date(todayISO() + "T00:00:00Z").getTime();
+  const b = new Date(dateStr + "T00:00:00Z").getTime();
+  if(isNaN(b)) return null;
+  return Math.round((b - a) / 86400000);
+}
+
+/* The day the next session should begin: the day after this one ends, so
+   sessions run back to back with no gap and no overlap. If the current
+   one already lapsed, today — nobody is credited for the weeks they were
+   locked out. */
+function nextSessionStart(currentEnd){
+  const today = todayISO();
+  if(!currentEnd || currentEnd < today) return today;
+  const d = new Date(currentEnd + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
+/* How a session should be described on screen. Returns a plain object so
+   the page decides the wording, not this file. */
+function sessionState(session){
+  if(!session || !session.start || !session.days){
+    return { set: false, left: null, ended: false };
+  }
+  const end = session.end || sessionEnd(session.start, session.days);
+  const left = daysUntilDate(end);
+  return {
+    set: true,
+    end: end,
+    left: left,
+    ended: (left !== null && left < 0),
+    endingSoon: (left !== null && left >= 0 && left <= 5)
+  };
+}
+
+/* A device id for this browser. Not an identifier of the person: it
+   exists so the academy can cap how many devices one student signs in
+   from, and so a returning phone keeps its slot. */
+const MQ_DEVICE_KEY = 'mq_device_id';
+function deviceId(){
+  try{
+    let d = localStorage.getItem(MQ_DEVICE_KEY);
+    if(!d){
+      d = 'dv' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+      localStorage.setItem(MQ_DEVICE_KEY, d);
+    }
+    return d;
+  }catch(e){
+    return 'dv-nostore';   // private browsing: works, just never remembered
+  }
+}
