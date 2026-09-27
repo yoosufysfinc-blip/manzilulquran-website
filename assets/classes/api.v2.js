@@ -255,6 +255,15 @@ function toggleNoticeApi(noticeId, active){
 }
 
 function saveBatchApi(payload){       return mqPostAdmin(Object.assign({ action: 'saveBatch' }, payload)); }
+function setClassTimeApi(classId, classTime){
+  return mqPostAdmin({ action: 'setClassTime', classId: classId, classTime: classTime });
+}
+function setClassTimesApi(entries){
+  return mqPostAdmin({ action: 'setClassTimes', entries: entries });
+}
+function setBatchTimeApi(batchId, classTime){
+  return mqPostAdmin({ action: 'setBatchTime', batchId: batchId, classTime: classTime });
+}
 function setBatchSessionApi(payload){ return mqPostAdmin(Object.assign({ action: 'setBatchSession' }, payload)); }
 function deactivateCourseApi(courseId, active){
   return mqPostAdmin({ action: 'deactivateCourse', courseId: courseId, active: active });
