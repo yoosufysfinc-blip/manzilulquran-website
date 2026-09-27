@@ -49,6 +49,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M6.5 6.5a7.8 7.8 0 000 11M17.5 6.5a7.8 7.8 0 010 11"/></svg>
           Live
         </button>
+        <button class="btn-ghost" id="timesBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+          Times
+        </button>
         <button class="btn-ghost" id="noticesBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
           Notices
@@ -188,6 +192,10 @@
         </div>
         <div class="field-row">
           <div class="field">
+            <label>Class time · IST</label>
+            <input type="time" id="bTime" step="300" />
+          </div>
+          <div class="field">
             <label>Grace days</label>
             <input type="number" id="bGrace" min="0" max="28" value="5" />
           </div>
@@ -275,6 +283,50 @@
       </div>
       <div class="modal-foot">
         <button class="btn-outline" id="rCloseBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONE CLASS TIME -->
+  <div class="modal-backdrop" id="timeModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Class <span class="accent">Time</span></h3>
+        <p id="timeFor">—</p>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Start time · IST</label>
+          <input type="time" id="tmInput" step="300" />
+        </div>
+        <div class="b-hint">Always the academy's time (IST), whatever country the student is in. The class counts as live for 60 minutes from this time.</div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="tmClear">Clear</button>
+        <button class="btn-outline" id="tmCancel">Cancel</button>
+        <button class="btn-solid" id="tmSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALL CLASS TIMES — for filling in the sheets that already exist -->
+  <div class="modal-backdrop" id="timesModal">
+    <div class="modal modal-wide">
+      <div class="modal-head">
+        <h3>Class <span class="accent">Times</span></h3>
+        <p id="timesSub">Set times for sheets that already exist. Only changed rows are saved.</p>
+      </div>
+      <div class="modal-body">
+        <div class="times-bar">
+          <label class="times-toggle"><input type="checkbox" id="timesMissingOnly" checked /> <span>Only those with no time</span></label>
+          <label class="times-toggle"><input type="checkbox" id="timesActiveOnly" checked /> <span>Active only</span></label>
+          <span class="times-count" id="timesChanged">0 changed</span>
+        </div>
+        <div id="timesList"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="timesCancel">Close</button>
+        <button class="btn-solid" id="timesSave" disabled>Save changes</button>
       </div>
     </div>
   </div>
@@ -1193,11 +1245,12 @@ function renderBatches(){
         <div class="b-num"><b>${b.online}</b><span>signed in</span></div>
       </div>
       <div class="b-btns">
-        <button class="btn-solid sm" data-act="roster">Roster &amp; fees</button>
-        <button class="btn-ghost sm" data-act="cal">Calendars</button>
-        <button class="btn-ghost sm" data-act="share">Share link</button>
-        <button class="btn-ghost sm" data-act="edit">Edit</button>
-        <button class="btn-ghost sm danger" data-act="del">Delete</button>
+        <button class="btn-solid sm" data-act="roster">${ic('roster')}Roster &amp; fees</button>
+        <button class="btn-ghost sm ${b.classTime ? 'has-time' : 'no-time'}" data-act="btime">${ic('time')}${b.classTime ? escapeHtml(formatTime(b.classTime)) : 'Set time'}</button>
+        <button class="btn-ghost sm" data-act="cal">${ic('cal')}Calendars</button>
+        <button class="btn-ghost sm" data-act="share">${ic('share')}Share link</button>
+        <button class="btn-ghost sm" data-act="edit">${ic('edit')}Edit</button>
+        <button class="btn-ghost sm danger" data-act="del">${ic('del')}Delete</button>
       </div>
     </div>`;
   }).join("");
@@ -1247,6 +1300,7 @@ function openBatchForm(b){
   bBuildSubjects(b ? (b.subjects || []) : []);
   $("bWhatsapp").value = b ? (b.whatsapp || "") : "";
   $("bGrace").value = b ? b.graceDays : 5;
+  $("bTime").value = b ? (b.classTime || "") : "";
   $("bStatus").value = b ? b.status : "Active";
   document.querySelectorAll("#batchModal .field").forEach(f => f.classList.remove("invalid"));
   openModal("batchModal");
@@ -1272,6 +1326,7 @@ $("bSaveBtn").addEventListener("click", async () => {
     subjects: [...$("bSubjects").querySelectorAll("input:checked")].map(c => c.value),
     whatsapp: $("bWhatsapp").value.trim(),
     graceDays: $("bGrace").value,
+    classTime: $("bTime").value,
     status: $("bStatus").value
   });
   if(out.result !== "success") return toast(out.error || "Could not save the batch", true);
@@ -1290,6 +1345,7 @@ $("bList").addEventListener("click", async (e) => {
   const act = e.target.dataset.act;
 
   if(act === "roster") return openRoster(b.batchId);
+  if(act === "btime")  return openTimeModal(b.batchId, "batch");
   if(act === "cal")    { window.location.href = "calendars.html?id=" + encodeURIComponent(b.batchId); return; }
 
   if(act === "share"){
@@ -1598,6 +1654,26 @@ $("rList").addEventListener("change", (e) => {
 });
 
 
+
+/* ---------------- Action icons ----------------
+   One small set, drawn once and reused, so every Calendars button in the
+   system carries the same calendar. Stroke icons at 1.8 weight to match
+   the text beside them rather than overpower it. */
+const IC = {
+  time:   '<path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/>',
+  cal:    '<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  open:   '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v4a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h4"/>',
+  share:  '<circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3"/>',
+  edit:   '<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/>',
+  del:    '<path d="M4 7h16M9 7V4.8A.8.8 0 019.8 4h4.4a.8.8 0 01.8.8V7M6.5 7l1 12.2a1.8 1.8 0 001.8 1.8h5.4a1.8 1.8 0 001.8-1.8L17.5 7"/>',
+  roster: '<circle cx="9" cy="8" r="3.4"/><path d="M3.5 19a5.5 5.5 0 0111 0"/><path d="M16 5.2a3.2 3.2 0 010 5.6M18 19a5 5 0 00-2.4-4.3"/>',
+  join:   '<path d="M15.5 10.5l5-3v9l-5-3"/><rect x="3" y="6.5" width="12.5" height="11" rx="2.2"/>'
+};
+function ic(name){
+  return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (IC[name] || '') + '</svg>';
+}
+
 /* ---------------- Live today ----------------
    Everything about who is in class now comes from engine.v1.js, which
    decides on the ACADEMY's clock (IST), not the viewer's. An admin
@@ -1667,9 +1743,9 @@ function renderLive(){
       <div class="live-note">${escapeHtml(note)}</div>
       <div class="live-btns">
         ${r.link
-          ? `<a class="btn-solid sm" href="${escapeHtml(r.link)}" target="_blank" rel="noopener">Join</a>`
+          ? `<a class="btn-solid sm" href="${escapeHtml(r.link)}" target="_blank" rel="noopener">${ic('join')}Join</a>`
           : `<span class="btn-ghost sm dim">No link</span>`}
-        <button class="btn-ghost sm" data-act="livetime">Time</button>
+        <button class="btn-ghost sm" data-act="livetime">${ic('time')}Time</button>
       </div>
     </div>`;
   }).join("");
@@ -1697,30 +1773,166 @@ $("liveList").addEventListener("click", (e) => {
   if(row) promptClassTime(row.dataset.id, row.dataset.kind);
 });
 
-/* ---------------- Quick time edit ----------------
-   One field, one write. Sending the whole record back through
-   updateClass would overwrite anything changed elsewhere in between. */
-async function promptClassTime(id, kind){
-  const isBatch = (kind === "batch");
-  const current = isBatch
+/* ---------------- One class time ----------------
+   A proper time field rather than a browser prompt: on a phone
+   <input type="time"> opens the native wheel, which is faster than typing
+   "7:00 pm" and cannot produce an unreadable value. */
+let timeTarget = null;     // { id, kind }
+
+function currentTime(id, kind){
+  return kind === "batch"
     ? ((batches.find(b => b.batchId === id) || {}).classTime || "")
     : ((classes.find(c => c["Class ID"] === id) || {})["Class Time"] || "");
+}
+function targetName(id, kind){
+  return kind === "batch"
+    ? ((batches.find(b => b.batchId === id) || {}).name || id)
+    : ((classes.find(c => c["Class ID"] === id) || {})["Student Name"] || id);
+}
 
-  const val = window.prompt("Class time in IST — 19:00 or 7:00 pm.\nLeave empty to clear.", current);
-  if(val === null) return;                       // cancelled
+function openTimeModal(id, kind){
+  timeTarget = { id: id, kind: kind };
+  $("timeFor").textContent = targetName(id, kind) + (kind === "batch" ? " · batch" : "");
+  $("tmInput").value = currentTime(id, kind);
+  openModal("timeModal");
+  setTimeout(() => $("tmInput").focus(), 60);
+}
 
-  const out = await postBatch({
-    action: isBatch ? "setBatchTime" : "setClassTime",
-    batchId: isBatch ? id : undefined,
-    classId: isBatch ? undefined : id,
-    classTime: val.trim()
-  });
+async function saveOneTime(value){
+  if(!timeTarget) return;
+  const out = timeTarget.kind === "batch"
+    ? await setBatchTimeApi(timeTarget.id, value)
+    : await setClassTimeApi(timeTarget.id, value);
   if(out.result !== "success") return toast(out.error || "Could not save the time", true);
 
-  if(isBatch){ await loadBatches(); } else { await loadClasses(); }
-  if(!$("liveModal").hidden && $("liveModal").classList.contains("show")) renderLive();
+  closeModal("timeModal");
+  if(timeTarget.kind === "batch"){ await loadBatches(); } else { await loadClasses(); }
+  if($("liveModal").classList.contains("show")) renderLive();
   toast(out.classTime ? `Time set to ${formatTime(out.classTime)}` : "Time cleared");
 }
+
+$("tmSave").addEventListener("click", () => saveOneTime($("tmInput").value));
+$("tmClear").addEventListener("click", () => saveOneTime(""));
+$("tmCancel").addEventListener("click", () => closeModal("timeModal"));
+$("tmInput").addEventListener("keydown", e => { if(e.key === "Enter") saveOneTime($("tmInput").value); });
+
+// kept for existing callers
+function promptClassTime(id, kind){ openTimeModal(id, kind); }
+
+/* ---------------- All class times ----------------
+   For the sheets that already exist with no time. One screen, one row
+   each, and ONE request for all the class sheets together — setting sixty
+   times one call at a time would take a minute of spinners. */
+let timesDraft = {};       // key -> new value, only rows the admin touched
+
+function timesRows(){
+  const missingOnly = $("timesMissingOnly").checked;
+  const activeOnly  = $("timesActiveOnly").checked;
+  const rows = [];
+
+  classes.forEach(c => {
+    const active = String(c["Status"] || "Active") === "Active";
+    if(activeOnly && !active) return;
+    const t = c["Class Time"] || "";
+    if(missingOnly && t) return;
+    rows.push({ key: "c:" + c["Class ID"], id: c["Class ID"], kind: "class",
+                name: c["Student Name"] || "—",
+                sub: [c["Student ID"], c["Course"]].filter(Boolean).join(" · "),
+                time: t });
+  });
+  batches.forEach(b => {
+    if(activeOnly && b.status !== "Active") return;
+    const t = b.classTime || "";
+    if(missingOnly && t) return;
+    rows.push({ key: "b:" + b.batchId, id: b.batchId, kind: "batch",
+                name: b.name, sub: [b.batchId, b.course, "batch"].filter(Boolean).join(" · "),
+                time: t });
+  });
+  return rows;
+}
+
+function renderTimes(){
+  const rows = timesRows();
+  const total = classes.length + batches.length;
+  const missing = classes.filter(c => !c["Class Time"]).length + batches.filter(b => !b.classTime).length;
+  $("timesSub").textContent = `${missing} of ${total} have no time yet. Only changed rows are saved.`;
+
+  if(!rows.length){
+    $("timesList").innerHTML = '<div class="empty-state">Every sheet in this view already has a time.</div>';
+  } else {
+    $("timesList").innerHTML = rows.map(r => {
+      const v = (r.key in timesDraft) ? timesDraft[r.key] : r.time;
+      return `<div class="times-row${(r.key in timesDraft) ? ' changed' : ''}" data-key="${escapeHtml(r.key)}">
+        <div class="times-who">
+          <div class="times-name">${escapeHtml(r.name)}${r.kind === "batch" ? ' <span class="times-kind">batch</span>' : ''}</div>
+          <div class="times-sub">${escapeHtml(r.sub)}</div>
+        </div>
+        <input type="time" class="times-input" step="300" value="${escapeHtml(v)}" />
+      </div>`;
+    }).join("");
+  }
+  const n = Object.keys(timesDraft).length;
+  $("timesChanged").textContent = n + " changed";
+  $("timesSave").disabled = n === 0;
+}
+
+$("timesBtn").addEventListener("click", async () => {
+  timesDraft = {};
+  if(!batches.length) await loadBatches();
+  renderTimes();
+  openModal("timesModal");
+});
+["timesMissingOnly","timesActiveOnly"].forEach(id => $(id).addEventListener("change", renderTimes));
+
+$("timesList").addEventListener("input", (e) => {
+  if(!e.target.classList.contains("times-input")) return;
+  const row = e.target.closest(".times-row");
+  timesDraft[row.dataset.key] = e.target.value;
+  row.classList.add("changed");
+  const n = Object.keys(timesDraft).length;
+  $("timesChanged").textContent = n + " changed";
+  $("timesSave").disabled = n === 0;
+});
+
+$("timesCancel").addEventListener("click", () => {
+  if(Object.keys(timesDraft).length && !confirm("Discard the times you have entered?")) return;
+  timesDraft = {};
+  closeModal("timesModal");
+});
+
+$("timesSave").addEventListener("click", async () => {
+  const keys = Object.keys(timesDraft);
+  if(!keys.length) return;
+  $("timesSave").disabled = true;
+  $("timesSave").textContent = "Saving…";
+
+  const classEntries = keys.filter(k => k.startsWith("c:"))
+                           .map(k => ({ classId: k.slice(2), classTime: timesDraft[k] }));
+  const batchKeys    = keys.filter(k => k.startsWith("b:"));
+
+  let saved = 0, refused = 0;
+  try{
+    if(classEntries.length){
+      const out = await setClassTimesApi(classEntries);
+      if(out.result !== "success") throw new Error(out.error || "Could not save");
+      saved += out.saved; refused += (out.refused || []).length;
+    }
+    // Batches are few; one call each is fine.
+    for(const k of batchKeys){
+      const out = await setBatchTimeApi(k.slice(2), timesDraft[k]);
+      if(out.result === "success") saved++; else refused++;
+    }
+  }catch(err){
+    toast(err.message, true);
+  }
+
+  $("timesSave").textContent = "Save changes";
+  timesDraft = {};
+  await loadClasses();
+  if(batchKeys.length) await loadBatches();
+  renderTimes();
+  toast(refused ? `${saved} saved, ${refused} refused` : `${saved} time${saved === 1 ? '' : 's'} saved`, refused > 0);
+});
 
 /* ---------------- Needs attention: collapse ----------------
    Remembered, because an admin who folds it away means it. */
@@ -1997,12 +2209,12 @@ function renderList(items){
       <td class="date" data-label="Joined">${fmtDate(c["Join Date"])}</td>
       <td data-label="Status"><span class="pill ${isActive ? 'active':'inactive'}">${isActive ? 'Active':'Inactive'}</span></td>
       <td class="actions">
-        <button data-act="time"  data-id="${escapeHtml(c["Class ID"])}">${c["Class Time"] ? escapeHtml(formatTime(c["Class Time"])) : "Set time"}</button>
-        <button data-act="cal"   data-id="${escapeHtml(c["Class ID"])}">Calendars</button>
-        <button data-act="open"  data-id="${escapeHtml(c["Class ID"])}">Open</button>
-        <button data-act="share" data-id="${escapeHtml(c["Class ID"])}">Share</button>
-        <button data-act="edit"  data-id="${escapeHtml(c["Class ID"])}">Edit</button>
-        <button data-act="del"   data-id="${escapeHtml(c["Class ID"])}" class="danger">Delete</button>
+        <button data-act="time"  data-id="${escapeHtml(c["Class ID"])}" class="${c["Class Time"] ? 'has-time' : 'no-time'}">${ic('time')}${c["Class Time"] ? escapeHtml(formatTime(c["Class Time"])) : "Set time"}</button>
+        <button data-act="cal"   data-id="${escapeHtml(c["Class ID"])}">${ic('cal')}Calendars</button>
+        <button data-act="open"  data-id="${escapeHtml(c["Class ID"])}">${ic('open')}Open</button>
+        <button data-act="share" data-id="${escapeHtml(c["Class ID"])}">${ic('share')}Share</button>
+        <button data-act="edit"  data-id="${escapeHtml(c["Class ID"])}">${ic('edit')}Edit</button>
+        <button data-act="del"   data-id="${escapeHtml(c["Class ID"])}" class="danger">${ic('del')}Delete</button>
       </td>
     </tr>`;
   }).join('');
