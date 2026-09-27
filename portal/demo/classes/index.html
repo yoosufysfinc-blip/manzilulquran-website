@@ -45,6 +45,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Batch
         </button>
+        <button class="btn-ghost" id="liveBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M6.5 6.5a7.8 7.8 0 000 11M17.5 6.5a7.8 7.8 0 010 11"/></svg>
+          Live
+        </button>
         <button class="btn-ghost" id="noticesBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
           Notices
@@ -96,6 +100,9 @@
           <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>
         <h4>Needs attention</h4>
+        <button class="alerts-toggle" id="alertsToggle" aria-expanded="true" title="Collapse">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
         <span class="count" id="alertCount">0</span>
       </div>
       <div id="alertRows"></div>
@@ -272,6 +279,23 @@
     </div>
   </div>
 
+  <!-- LIVE — today's classes, in time order -->
+  <div class="modal-backdrop" id="liveModal">
+    <div class="modal modal-wide">
+      <div class="modal-head">
+        <h3>Live <span class="accent">Today</span></h3>
+        <p id="liveSub">Classes running today, in time order. Holidays and finished plans are left out.</p>
+      </div>
+      <div class="modal-body">
+        <div id="liveList"><div class="loading"><div class="loading-spin"></div><div>Working out today's classes…</div></div></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="liveRefresh">Refresh</button>
+        <button class="btn-solid" id="liveCloseBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
   <!-- NOTICE BOARD -->
   <div class="modal-backdrop" id="noticesModal">
     <div class="modal modal-wide">
@@ -442,6 +466,10 @@
           <div class="field full">
             <label>Hifz Report Link <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— paste from the Hifz Command Center (share ▸). Shows a button on the class sheet.</span></label>
             <input type="url" id="fHifzLink" placeholder="https://manzilulquran.in/portal/study-report/?s=...&t=..." />
+          </div>
+          <div class="field">
+            <label>Class Time <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— IST, e.g. 19:00</span></label>
+            <input type="text" id="fClassTime" placeholder="19:00" autocomplete="off" />
           </div>
           <div class="field full">
             <label>MQ ID <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— links this sheet to the same student in Academic Service</span></label>
@@ -1569,6 +1597,146 @@ $("rList").addEventListener("change", (e) => {
   if(e.target.classList.contains("r-allow")) updatePaidCount();
 });
 
+
+/* ---------------- Live today ----------------
+   Everything about who is in class now comes from engine.v1.js, which
+   decides on the ACADEMY's clock (IST), not the viewer's. An admin
+   opening this from another country sees the academy's day. */
+let liveTimer = null;
+
+function renderLive(){
+  const entries = [];
+
+  classes.forEach(c => {
+    entries.push({
+      id: c["Class ID"],
+      name: c["Student Name"] || "—",
+      sub: [c["Student ID"], c["Course"]].filter(Boolean).join(" · "),
+      kind: "class",
+      classTime: c["Class Time"] || "",
+      calendars: c.calendars || []
+    });
+  });
+
+  batches.forEach(b => {
+    entries.push({
+      id: b.batchId,
+      name: b.name,
+      sub: [b.batchId, b.course, b.students + " students"].filter(Boolean).join(" · "),
+      kind: "batch",
+      classTime: b.classTime || "",
+      calendars: b.calendars || []
+    });
+  });
+
+  const rows = buildLiveList(entries);
+  const live = rows.filter(r => r.state === "live").length;
+  const noTime = rows.filter(r => !r.classTime).length;
+
+  $("liveSub").textContent =
+    rows.length
+      ? `${rows.length} class${rows.length === 1 ? "" : "es"} today · ${live} running now` +
+        (noTime ? ` · ${noTime} with no time set` : "")
+      : "No classes today. Holidays and finished plans are left out.";
+
+  if(!rows.length){
+    $("liveList").innerHTML = '<div class="empty-state">Nothing scheduled for today.</div>';
+    return;
+  }
+
+  $("liveList").innerHTML = rows.map(r => {
+    let badge = "", note = "";
+    if(r.state === "live"){
+      badge = '<span class="live-badge">Live now</span>';
+      note = `${r.minutes} min left`;
+    } else if(r.state === "soon"){
+      const h = Math.floor(r.minutes / 60), m = r.minutes % 60;
+      note = "in " + (h ? h + "h " : "") + m + "m";
+    } else if(r.state === "done"){
+      note = "finished";
+    } else {
+      badge = '<span class="live-badge none">No time set</span>';
+    }
+
+    return `<div class="live-row ${escapeHtml(r.state)}" data-id="${escapeHtml(r.id)}" data-kind="${escapeHtml(r.kind)}">
+      <div class="live-time">${r.timeLabel ? escapeHtml(r.timeLabel) : "—"}</div>
+      <div class="live-who">
+        <div class="live-name">${escapeHtml(r.name)} ${badge}</div>
+        <div class="live-sub">${escapeHtml(r.sub)} · Day ${r.dayNo} of ${escapeHtml(r.calName)}</div>
+      </div>
+      <div class="live-note">${escapeHtml(note)}</div>
+      <div class="live-btns">
+        ${r.link
+          ? `<a class="btn-solid sm" href="${escapeHtml(r.link)}" target="_blank" rel="noopener">Join</a>`
+          : `<span class="btn-ghost sm dim">No link</span>`}
+        <button class="btn-ghost sm" data-act="livetime">Time</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function openLive(){
+  openModal("liveModal");
+  // The live list needs both sides, and the batch list is only fetched
+  // when that workspace is first opened.
+  if(!batches.length) await loadBatches();
+  renderLive();
+  // Re-draw every 30s so "live now" and the countdown stay true while the
+  // panel sits open — a stale live list is worse than none.
+  clearInterval(liveTimer);
+  liveTimer = setInterval(renderLive, 30000);
+}
+
+$("liveBtn").addEventListener("click", openLive);
+$("liveRefresh").addEventListener("click", async () => { await loadClasses(); await loadBatches(); renderLive(); });
+$("liveCloseBtn").addEventListener("click", () => { clearInterval(liveTimer); closeModal("liveModal"); });
+
+$("liveList").addEventListener("click", (e) => {
+  if(e.target.dataset.act !== "livetime") return;
+  const row = e.target.closest(".live-row");
+  if(row) promptClassTime(row.dataset.id, row.dataset.kind);
+});
+
+/* ---------------- Quick time edit ----------------
+   One field, one write. Sending the whole record back through
+   updateClass would overwrite anything changed elsewhere in between. */
+async function promptClassTime(id, kind){
+  const isBatch = (kind === "batch");
+  const current = isBatch
+    ? ((batches.find(b => b.batchId === id) || {}).classTime || "")
+    : ((classes.find(c => c["Class ID"] === id) || {})["Class Time"] || "");
+
+  const val = window.prompt("Class time in IST — 19:00 or 7:00 pm.\nLeave empty to clear.", current);
+  if(val === null) return;                       // cancelled
+
+  const out = await postBatch({
+    action: isBatch ? "setBatchTime" : "setClassTime",
+    batchId: isBatch ? id : undefined,
+    classId: isBatch ? undefined : id,
+    classTime: val.trim()
+  });
+  if(out.result !== "success") return toast(out.error || "Could not save the time", true);
+
+  if(isBatch){ await loadBatches(); } else { await loadClasses(); }
+  if(!$("liveModal").hidden && $("liveModal").classList.contains("show")) renderLive();
+  toast(out.classTime ? `Time set to ${formatTime(out.classTime)}` : "Time cleared");
+}
+
+/* ---------------- Needs attention: collapse ----------------
+   Remembered, because an admin who folds it away means it. */
+const ALERTS_KEY = "mq_alerts_collapsed";
+function applyAlertsCollapsed(on){
+  const box = $("alerts");
+  box.classList.toggle("collapsed", on);
+  $("alertsToggle").setAttribute("aria-expanded", on ? "false" : "true");
+  $("alertsToggle").title = on ? "Expand" : "Collapse";
+  try{ localStorage.setItem(ALERTS_KEY, on ? "1" : "0"); }catch(e){}
+}
+$("alertsToggle").addEventListener("click", () => {
+  applyAlertsCollapsed(!$("alerts").classList.contains("collapsed"));
+});
+try{ if(localStorage.getItem(ALERTS_KEY) === "1") applyAlertsCollapsed(true); }catch(e){}
+
 /* ---------------- Lock ---------------- */
 function isUnlocked(){
   try{
@@ -1829,6 +1997,7 @@ function renderList(items){
       <td class="date" data-label="Joined">${fmtDate(c["Join Date"])}</td>
       <td data-label="Status"><span class="pill ${isActive ? 'active':'inactive'}">${isActive ? 'Active':'Inactive'}</span></td>
       <td class="actions">
+        <button data-act="time"  data-id="${escapeHtml(c["Class ID"])}">${c["Class Time"] ? escapeHtml(formatTime(c["Class Time"])) : "Set time"}</button>
         <button data-act="cal"   data-id="${escapeHtml(c["Class ID"])}">Calendars</button>
         <button data-act="open"  data-id="${escapeHtml(c["Class ID"])}">Open</button>
         <button data-act="share" data-id="${escapeHtml(c["Class ID"])}">Share</button>
@@ -1852,7 +2021,8 @@ function renderList(items){
       const c = classes.find(x => x["Class ID"] === btn.dataset.id);
       if(!c) return;
       const act = btn.dataset.act;
-      if(act === "cal")   window.location.href = "calendars.html?id=" + encodeURIComponent(c["Class ID"]);
+      if(act === "time")  return promptClassTime(c["Class ID"], "class");
+  if(act === "cal")   window.location.href = "calendars.html?id=" + encodeURIComponent(c["Class ID"]);
       if(act === "open")  window.open(shareUrl(c), "_blank");
       if(act === "share") openShare(c);
       if(act === "edit")  openForm(c);
@@ -1967,6 +2137,7 @@ function openForm(c){
   $("fName").value      = c ? (c["Student Name"] || "") : "";
   $("fStudentId").value = c ? (c["Student ID"] || "") : "";
   $("fMqId").value = c ? (c["mqId"] || "") : "";
+  $("fClassTime").value = c ? (c["Class Time"] || "") : "";
   fillCourseSelects(c ? (c["Course"] || "") : "");
   buildSubjects(c ? smSubjects(c) : []);
   $("fJoinDate").value  = c ? toDateInput(c["Join Date"]) : "";
@@ -2006,6 +2177,7 @@ $("formSaveBtn").onclick = async () => {
       studentId:   $("fStudentId").value.trim(),
       course:      $("fCourse").value,
       mqId:        $("fMqId").value.trim(),
+      classTime:   $("fClassTime").value.trim(),
       subjects:    collectSubjects(),
       joinDate:    $("fJoinDate").value,
       whatsapp:    $("fWhatsapp").value.trim(),
