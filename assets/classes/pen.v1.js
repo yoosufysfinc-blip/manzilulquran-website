@@ -120,6 +120,54 @@
   }
   .mqboard.dark .mqboard-hint{ color:rgba(238,245,241,.25); }
 
+  /* ---------- Full-screen whiteboard ----------
+     The surface fills the screen and never scrolls: moving around it is
+     done by the camera (pan and zoom), so the page underneath is locked. */
+  .mqboard-full{
+    position:fixed;inset:0;z-index:85;display:none;
+    background-color:#fbfaf6;
+  }
+  .mqboard-full.show{ display:block; }
+  .mqboard-full.grid{
+    background-image:
+      linear-gradient(rgba(16,60,48,.09) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16,60,48,.09) 1px, transparent 1px);
+  }
+  .mqboard-full.dark{ background-color:#0c1512; }
+  .mqboard-full.dark.grid{
+    background-image:
+      linear-gradient(rgba(190,230,214,.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(190,230,214,.07) 1px, transparent 1px);
+  }
+  body.mq-board-open{ overflow:hidden; }
+
+  /* Fixed controls: they stay put while the board pans and zooms under them. */
+  .mqboard-top{
+    position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:50%;
+    z-index:96;display:none;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;
+    transform:translateX(-50%);max-width:calc(100vw - 20px);
+    padding:7px 9px;border-radius:18px;
+    background:rgba(8,20,17,.86);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);
+    border:1px solid rgba(120,190,165,.22);
+    box-shadow:0 14px 40px -14px rgba(0,0,0,.7);
+  }
+  .mqboard-top.show{ display:flex; }
+  .mqboard-top button{
+    min-width:36px;height:34px;padding:0 11px;border-radius:11px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:5px;
+    font:inherit;font-size:12px;font-weight:700;color:rgba(238,245,241,.82);
+    background:rgba(255,255,255,.05);border:1px solid transparent;
+    -webkit-tap-highlight-color:transparent;transition:transform .12s ease;
+  }
+  .mqboard-top button:active{ transform:scale(.93); }
+  .mqboard-top button.active{ color:#02120c;background:#34d399; }
+  .mqboard-top button svg{width:17px;height:17px}
+  .mqboard-top .zpct{min-width:52px;font-variant-numeric:tabular-nums;cursor:pointer}
+  .mqboard-top .exit{ color:#ffb4b4; }
+  .mqpen-btn.board-only{ display:none; }
+  body.mq-board-open .mqpen-btn.board-only{ display:flex; }
+
   /* ---------- Study material reader ---------- */
   .mqreader{
     position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;
@@ -159,6 +207,10 @@
     undo:  '<path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 010 10h-3"/>',
     clear: '<path d="M4 7h16M9 7V4.8A.8.8 0 019.8 4h4.4a.8.8 0 01.8.8V7M6.5 7l1 12.2a1.8 1.8 0 001.8 1.8h5.4a1.8 1.8 0 001.8-1.8L17.5 7"/>',
     eye:   '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    hand:  '<path d="M8 13V5.5a1.5 1.5 0 013 0V12M11 11V4.5a1.5 1.5 0 013 0V11M14 11V6a1.5 1.5 0 013 0v7a7 7 0 01-7 7h-.6a6 6 0 01-4.8-2.4L4.6 16a1.6 1.6 0 012.4-2.1L8 15"/>',
+    zin:   '<circle cx="11" cy="11" r="7"/><path d="M11 8v6M8 11h6M20 20l-4-4"/>',
+    zout:  '<circle cx="11" cy="11" r="7"/><path d="M8 11h6M20 20l-4-4"/>',
+    fit:   '<path d="M4 9V5a1 1 0 011-1h4M20 9V5a1 1 0 00-1-1h-4M4 15v4a1 1 0 001 1h4M20 15v4a1 1 0 01-1 1h-4"/>',
     close: '<path d="M6 6l12 12M18 6L6 18"/>'
   };
   const svg = (d) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
@@ -181,6 +233,52 @@
   function board(){
     if(!boards[context]) boards[context] = { strokes: [], undone: [] };
     return boards[context];
+  }
+
+  /* ---------------- The whiteboard's camera ----------------
+     Everywhere else, a drawing sits on the SCREEN: it is an annotation
+     over the page, and scrolling the page does not move it.
+
+     The whiteboard is different. It is its own infinite surface, so its
+     strokes live in BOARD coordinates and a camera (pan x/y, zoom s)
+     decides which part of the board is on screen. Its controls stay
+     position:fixed and never move with it. */
+  const view = { x: 0, y: 0, s: 1 };
+  const ZOOM_MIN = 0.25, ZOOM_MAX = 4;
+
+  function isBoard(){ return context === 'board'; }
+
+  // Screen point -> the point it covers on the board.
+  function toWorld(sx, sy){
+    if(!isBoard()) return { x: sx, y: sy };
+    return { x: (sx - view.x) / view.s, y: (sy - view.y) / view.s };
+  }
+
+  /* Zoom about a screen point, keeping whatever is under it still. That
+     is what makes pinch and wheel zoom feel anchored rather than sliding
+     off towards a corner. */
+  function zoomAt(sx, sy, nextScale){
+    const s2 = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, nextScale));
+    const wx = (sx - view.x) / view.s, wy = (sy - view.y) / view.s;
+    view.s = s2;
+    view.x = sx - wx * s2;
+    view.y = sy - wy * s2;
+    applyView();
+  }
+  function resetView(){ view.x = 0; view.y = 0; view.s = 1; applyView(); }
+
+  /* The board's background grid follows the camera, so panning visibly
+     moves the surface instead of only the ink. */
+  function applyView(){
+    const surf = document.getElementById('mqBoardFull');
+    if(surf){
+      const g = 28 * view.s;
+      surf.style.backgroundSize = g + 'px ' + g + 'px';
+      surf.style.backgroundPosition = view.x + 'px ' + view.y + 'px';
+    }
+    const z = document.getElementById('mqZoomPct');
+    if(z) z.textContent = Math.round(view.s * 100) + '%';
+    redraw();
   }
 
   /* ---------------- Canvas ---------------- */
@@ -232,18 +330,25 @@
   }
 
   function redraw(){
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+    // On the board the camera applies; stroke widths scale with zoom so a
+    // line keeps its weight relative to the drawing around it.
+    if(isBoard()) ctx.setTransform(dpr * view.s, 0, 0, dpr * view.s, dpr * view.x, dpr * view.y);
     const b = board();
     b.strokes.forEach(drawStroke);
     if(current) drawStroke(current);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   /* Stroke-level eraser: touching a stroke removes it whole, and undo
      brings it back. Pixel erasing would leave ragged half-lines and could
      not be undone cleanly. */
-  function eraseAt(x, y){
+  function eraseAt(sx, sy){
+    const w0 = toWorld(sx, sy);
+    const x = w0.x, y = w0.y;
     const b = board();
-    const r = 14;
+    const r = 14 / (isBoard() ? view.s : 1);   // same size on screen at any zoom
     for(let i = b.strokes.length - 1; i >= 0; i--){
       const pts = b.strokes[i].points;
       for(let j = 0; j < pts.length; j++){
@@ -260,40 +365,117 @@
 
   /* ---------------- Pointer input ----------------
      Pointer events cover mouse, finger and stylus with one code path.
-     Only the pen that started a stroke may continue it, so a resting
-     palm on a tablet cannot add a second line. */
+
+     Off the board: one pointer draws, and any second one is ignored, so
+     a resting palm on a tablet cannot add a stray line.
+
+     On the board: one pointer draws; a SECOND pointer turns the gesture
+     into pan-and-pinch, and the half-drawn stroke from the first finger is
+     dropped rather than left as a stray mark. The hand tool, a held
+     Space bar, or the middle mouse button pan with a single pointer. */
   let activePointer = null;
+  const pointers = new Map();    // id -> {x,y}, only while on the board
+  let gesture = null;            // { d0, s0, mx0, my0, vx0, vy0 }
+  let panDrag = null;            // single-pointer pan
+  let spaceDown = false;
+
+  function startGesture(){
+    const pts = [...pointers.values()];
+    const a = pts[0], b = pts[1];
+    gesture = {
+      d0: Math.hypot(b.x - a.x, b.y - a.y) || 1,
+      s0: view.s,
+      mx0: (a.x + b.x) / 2, my0: (a.y + b.y) / 2,
+      vx0: view.x, vy0: view.y
+    };
+  }
 
   canvas.addEventListener('pointerdown', (e) => {
-    if(!penOn || activePointer !== null) return;
+    if(!penOn) return;
+    e.preventDefault();
+
+    if(isBoard()){
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+
+      if(pointers.size === 2){
+        current = null;                    // second finger: this is a gesture
+        activePointer = null;
+        startGesture();
+        redraw();
+        return;
+      }
+      if(pointers.size > 2) return;
+
+      // single-pointer pan
+      if(tool === 'hand' || spaceDown || e.button === 1){
+        panDrag = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y, id: e.pointerId };
+        return;
+      }
+    } else if(activePointer !== null){
+      return;                              // palm rejection off the board
+    }
+
     activePointer = e.pointerId;
     try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
-    e.preventDefault();
 
     if(tool === 'erase'){ eraseAt(e.clientX, e.clientY); return; }
 
+    const w0 = toWorld(e.clientX, e.clientY);
     current = {
       tool: tool,
       color: tool === 'hl' ? (color === '#ffffff' ? '#fde047' : color) : color,
-      size: tool === 'hl' ? size * 3.2 : size,
-      points: [{ x: e.clientX, y: e.clientY }]
+      // Width is set on screen, then stored in board units, so a line drawn
+      // while zoomed in is not hair-thin when you zoom back out.
+      size: (tool === 'hl' ? size * 3.2 : size) / (isBoard() ? view.s : 1),
+      points: [w0]
     };
-    board().undone = [];       // a new stroke ends the redo trail
+    board().undone = [];
     redraw();
   });
 
   canvas.addEventListener('pointermove', (e) => {
+    if(isBoard() && pointers.has(e.pointerId)){
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if(gesture && pointers.size >= 2){
+        e.preventDefault();
+        const pts = [...pointers.values()];
+        const a = pts[0], b = pts[1];
+        const d = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+        // pan with the midpoint, then zoom about it
+        view.x = gesture.vx0 + (mx - gesture.mx0);
+        view.y = gesture.vy0 + (my - gesture.my0);
+        view.s = gesture.s0;
+        zoomAt(mx, my, gesture.s0 * d / gesture.d0);
+        return;
+      }
+      if(panDrag && panDrag.id === e.pointerId){
+        e.preventDefault();
+        view.x = panDrag.vx + (e.clientX - panDrag.x);
+        view.y = panDrag.vy + (e.clientY - panDrag.y);
+        applyView();
+        return;
+      }
+    }
+
     if(e.pointerId !== activePointer) return;
     e.preventDefault();
     if(tool === 'erase'){ eraseAt(e.clientX, e.clientY); return; }
     if(!current) return;
     // Coalesced events give the full stylus trail, not one sample a frame.
     const evs = (e.getCoalescedEvents && e.getCoalescedEvents()) || [e];
-    evs.forEach(ev => current.points.push({ x: ev.clientX, y: ev.clientY }));
+    evs.forEach(ev => current.points.push(toWorld(ev.clientX, ev.clientY)));
     redraw();
   });
 
   function endStroke(e){
+    if(pointers.has(e.pointerId)){
+      pointers.delete(e.pointerId);
+      if(pointers.size < 2) gesture = null;
+      if(panDrag && panDrag.id === e.pointerId) panDrag = null;
+    }
     if(e.pointerId !== activePointer) return;
     activePointer = null;
     if(current && current.points.length){ board().strokes.push(current); }
@@ -302,6 +484,23 @@
   }
   canvas.addEventListener('pointerup', endStroke);
   canvas.addEventListener('pointercancel', endStroke);
+
+  /* Wheel and trackpad, on the board only. A pinch on a trackpad arrives
+     as a wheel event with ctrlKey set; a plain wheel pans. */
+  canvas.addEventListener('wheel', (e) => {
+    if(!penOn || !isBoard()) return;
+    e.preventDefault();
+    if(e.ctrlKey || e.metaKey){
+      zoomAt(e.clientX, e.clientY, view.s * Math.exp(-e.deltaY * 0.0022));
+    } else {
+      view.x -= e.deltaX;
+      view.y -= e.deltaY;
+      applyView();
+    }
+  }, { passive: false });
+
+  document.addEventListener('keydown', (e) => { if(e.code === 'Space' && isBoard() && penOn){ spaceDown = true; } });
+  document.addEventListener('keyup',   (e) => { if(e.code === 'Space'){ spaceDown = false; } });
 
   /* ---------------- Toolbar ---------------- */
   const fab = document.createElement('button');
@@ -331,7 +530,9 @@
   const bPen = btn('pen', I.pen, 'Pen');
   const bHl  = btn('hl', I.hl, 'Highlighter');
   const bEr  = btn('erase', I.erase, 'Eraser');
-  bar.append(bPen, bHl, bEr, sep());
+  const bHand = btn('hand', I.hand, 'Move the board');
+  bHand.classList.add('board-only');
+  bar.append(bPen, bHl, bEr, bHand, sep());
 
   const dots = COLORS.map(c => {
     const d = document.createElement('button');
@@ -373,6 +574,7 @@
     bPen.classList.toggle('active', tool === 'pen');
     bHl.classList.toggle('active', tool === 'hl');
     bEr.classList.toggle('active', tool === 'erase');
+    bHand.classList.toggle('active', tool === 'hand');
     dots.forEach(d => d.classList.toggle('active', d.dataset.color === color && tool !== 'erase'));
     sizeBtns.forEach(b => b.classList.toggle('active', +b.dataset.size === size));
     bEye.classList.toggle('active', inkHidden);
@@ -394,12 +596,13 @@
   bar.addEventListener('click', (e) => {
     const t = e.target.closest('button');
     if(!t) return;
-    if(t.dataset.color){ color = t.dataset.color; if(tool === 'erase') tool = 'pen'; syncBar(); return; }
+    if(t.dataset.color){ color = t.dataset.color; if(tool === 'erase' || tool === 'hand') tool = 'pen'; syncBar(); return; }
     if(t.dataset.size){ size = +t.dataset.size; syncBar(); return; }
     switch(t.dataset.act){
       case 'pen':   tool = 'pen'; break;
       case 'hl':    tool = 'hl'; break;
       case 'erase': tool = 'erase'; break;
+      case 'hand':  tool = 'hand'; break;
       case 'undo':  undo(); break;
       case 'clear': clearBoard(); break;
       case 'eye':   inkHidden = !inkHidden; canvas.classList.toggle('hidden-ink', inkHidden); break;
@@ -451,46 +654,105 @@
   }
 
   let readerOpen = null;
+  let lastTab = 'overview';
+
   const tabObserver = new MutationObserver(() => {
-    if(!readerOpen) setContext(currentTab());
-    // The Whiteboard exists to be drawn on: opening it switches the pen on.
-    if(currentTab() === 'board' && !readerOpen && !penOn){
+    const t = currentTab();
+    if(!readerOpen) setContext(t);
+    if(t === 'board') openBoard(); else { closeBoard(); lastTab = t; }
+  });
+
+  /* ---------------- Whiteboard ----------------
+     Opens full screen. The surface is fixed and never scrolls; you move
+     around it with the camera. Its controls are fixed too, so they stay
+     in reach wherever you have panned to. */
+  let boardDark = false, boardGrid = false;
+  let boardEl = null, topEl = null;
+
+  function buildBoard(){
+    if(boardEl) return;
+    boardEl = document.createElement('div');
+    boardEl.className = 'mqboard-full';
+    boardEl.id = 'mqBoardFull';
+    document.body.appendChild(boardEl);
+
+    topEl = document.createElement('div');
+    topEl.className = 'mqboard-top';
+    topEl.innerHTML =
+      '<button type="button" data-bg="light" class="active">White</button>' +
+      '<button type="button" data-bg="grid">Grid</button>' +
+      '<button type="button" data-bg="dark">Dark</button>' +
+      '<span class="mqpen-sep"></span>' +
+      '<button type="button" data-z="out" title="Zoom out" aria-label="Zoom out">' + svg(I.zout) + '</button>' +
+      '<button type="button" class="zpct" id="mqZoomPct" data-z="reset" title="Reset to 100%">100%</button>' +
+      '<button type="button" data-z="in" title="Zoom in" aria-label="Zoom in">' + svg(I.zin) + '</button>' +
+      '<button type="button" data-z="fit" title="Back to the start" aria-label="Back to the start">' + svg(I.fit) + '</button>' +
+      '<span class="mqpen-sep"></span>' +
+      '<button type="button" data-bg="clear">Clear</button>' +
+      '<button type="button" class="exit" data-exit="1">Exit</button>';
+    document.body.appendChild(topEl);
+
+    topEl.addEventListener('click', (e) => {
+      const b = e.target.closest('button');
+      if(!b) return;
+      const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+      if(b.dataset.z === 'in')    return zoomAt(cx, cy, view.s * 1.25);
+      if(b.dataset.z === 'out')   return zoomAt(cx, cy, view.s / 1.25);
+      if(b.dataset.z === 'reset') return zoomAt(cx, cy, 1);
+      if(b.dataset.z === 'fit')   return resetView();
+      if(b.dataset.exit){
+        const back = document.querySelector('.tab[data-tab="' + lastTab + '"]') ||
+                     document.querySelector('.tab[data-tab="overview"]');
+        if(back) back.click();
+        return;
+      }
+      if(b.dataset.bg === 'clear'){ clearBoard(); return; }
+
+      if(b.dataset.bg === 'grid'){ boardGrid = !boardGrid; b.classList.toggle('active', boardGrid); }
+      else {
+        boardDark = (b.dataset.bg === 'dark');
+        topEl.querySelectorAll('[data-bg="light"],[data-bg="dark"]').forEach(x =>
+          x.classList.toggle('active', x === b));
+        // Keep the ink visible on the new background.
+        if(boardDark && color === '#111827') color = '#ffffff';
+        if(!boardDark && color === '#ffffff') color = '#111827';
+        syncBar();
+      }
+      boardEl.classList.toggle('dark', boardDark);
+      boardEl.classList.toggle('grid', boardGrid);
+      applyView();
+    });
+  }
+
+  function openBoard(){
+    buildBoard();
+    boardEl.classList.add('show');
+    topEl.classList.add('show');
+    document.body.classList.add('mq-board-open');
+    applyView();
+    // The whiteboard exists to be drawn on: opening it switches the pen on.
+    if(!penOn){
       tool = 'pen';
       if(color === '#ffffff' && !boardDark) color = COLORS[4];
       setPenOn(true);
     }
-  });
+  }
+  function closeBoard(){
+    if(!boardEl) return;
+    boardEl.classList.remove('show');
+    topEl.classList.remove('show');
+    document.body.classList.remove('mq-board-open');
+    pointers.clear(); gesture = null; panDrag = null;
+    if(tool === 'hand') tool = 'pen';
+    syncBar();
+  }
 
-  /* ---------------- Whiteboard ---------------- */
-  let boardDark = false;
   function setupBoard(){
     const panel = document.getElementById('panel-board');
-    if(!panel || panel.dataset.mqready) return;
-    panel.dataset.mqready = '1';
-    panel.innerHTML =
-      '<div class="mqboard-bar">' +
-        '<button type="button" data-bg="light" class="active">White</button>' +
-        '<button type="button" data-bg="grid">Grid</button>' +
-        '<button type="button" data-bg="dark">Dark</button>' +
-        '<button type="button" data-bg="clear">Clear board</button>' +
-      '</div>' +
-      '<div class="mqboard" id="mqBoard"><div class="mqboard-hint">Draw anywhere with the pen.<br>Nothing here is saved.</div></div>';
-
-    panel.querySelector('.mqboard-bar').addEventListener('click', (e) => {
-      const b = e.target.closest('button');
-      if(!b) return;
-      const surf = document.getElementById('mqBoard');
-      if(b.dataset.bg === 'clear'){ clearBoard(); return; }
-      surf.classList.remove('dark', 'grid');
-      if(b.dataset.bg !== 'light') surf.classList.add(b.dataset.bg);
-      boardDark = (b.dataset.bg === 'dark');
-      // Pick an ink that shows on the new background.
-      if(boardDark && color === '#111827') color = '#ffffff';
-      if(!boardDark && color === '#ffffff') color = '#111827';
-      panel.querySelectorAll('.mqboard-bar [data-bg]').forEach(x =>
-        x.classList.toggle('active', x === b));
-      syncBar();
-    });
+    if(panel && !panel.dataset.mqready){
+      panel.dataset.mqready = '1';
+      panel.innerHTML = '<div class="mqboard-hint" style="position:static;padding:30px 10px">The whiteboard opens full screen.</div>';
+    }
   }
 
   /* ---------------- Study material reader ----------------
