@@ -1093,3 +1093,54 @@
      folding it away turns into forgetting about it. */
   .alerts.collapsed #alertRows{ display:none; }
   .alerts.collapsed{ padding-bottom:14px; }
+
+  /* ---------- Action icons ---------- */
+  .ic{width:14px;height:14px;flex:0 0 auto;margin-right:6px;vertical-align:-2px}
+  .actions button, .b-btns button, .live-btns > *, .btn-ghost.sm, .btn-solid.sm{
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  /* A sheet with no time set should be noticeable in the list, because it
+     silently drops out of the live view until it is fixed. */
+  button.no-time{ color:var(--gold-warm); border-color:rgba(255,184,107,.34); }
+  button.has-time{ color:var(--emerald-glow); border-color:rgba(45,212,164,.32); font-variant-numeric:tabular-nums; }
+
+  /* ---------- Time picker ---------- */
+  #tmInput{
+    font-size:26px;font-weight:800;letter-spacing:.5px;text-align:center;
+    padding:14px;color-scheme:dark;font-variant-numeric:tabular-nums;
+  }
+
+  /* ---------- All class times ---------- */
+  .times-bar{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding-bottom:12px;margin-bottom:12px;
+    border-bottom:1px solid rgba(201,169,110,.14);
+  }
+  .times-toggle{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--cream-dim);cursor:pointer}
+  .times-toggle input{accent-color:var(--gold);width:15px;height:15px}
+  .times-count{margin-left:auto;font-size:12px;font-weight:700;color:var(--gold-light)}
+  .times-row{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 13px;border-radius:12px;margin-bottom:7px;
+    background:rgba(255,255,255,.03);border:1px solid rgba(201,169,110,.12);
+  }
+  .times-row.changed{ border-color:rgba(45,212,164,.45); background:rgba(45,212,164,.06); }
+  .times-who{flex:1;min-width:0}
+  .times-name{font-size:14px;font-weight:700;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .times-kind{
+    font-size:9.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+    padding:2px 7px;border-radius:999px;margin-left:5px;vertical-align:1px;
+    color:var(--gold-light);background:rgba(201,169,110,.14);
+  }
+  .times-sub{font-size:11.5px;color:var(--cream-dim);margin-top:1px}
+  .times-input{
+    width:118px;flex:0 0 auto;padding:9px 10px;border-radius:9px;
+    font:inherit;font-size:14px;font-weight:700;text-align:center;
+    font-variant-numeric:tabular-nums;color:var(--cream);color-scheme:dark;
+    background:rgba(0,0,0,.3);border:1px solid rgba(201,169,110,.22);
+  }
+  .times-input:focus{outline:none;border-color:var(--gold)}
+  @media (max-width:520px){
+    .times-count{margin-left:0;width:100%}
+    .times-input{width:104px}
+  }
