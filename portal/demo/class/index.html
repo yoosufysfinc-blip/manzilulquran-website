@@ -86,6 +86,7 @@
           <button class="tab" data-tab="calendar">Calendar Sheets</button>
           <button class="tab" data-tab="material" id="tabMaterial" hidden>Study Material</button>
           <button class="tab" data-tab="notices" id="tabNotices" hidden>Notices <span class="tab-dot" id="tabNoticesDot" hidden></span></button>
+          <button class="tab" data-tab="board" id="tabBoard">Whiteboard</button>
           <button class="tab tab-hifz" data-tab="hifz" id="tabHifz" hidden>🕮 Hifz Report</button>
         </div>
 
@@ -165,6 +166,8 @@
           <div class="ntc-list" id="ntcList"></div>
         </div>
 
+        <div class="tab-panel" id="panel-board"></div>
+
         <div class="tab-panel" id="panel-hifz">
           <div class="hifz-hero">
             <div class="hifz-crest"><img src="/logo.png" alt="ManzilulQuran" onerror="this.replaceWith(document.createTextNode('🕮'))"></div>
@@ -226,6 +229,7 @@ window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMo
 <script src="/assets/classes/api.v2.js"></script>
 <script src="/assets/classes/catalog.v1.js"></script>
 <script src="/assets/classes/notices.v1.js"></script>
+<script src="/assets/classes/pen.v1.js"></script>
 <script>
 /* =================================================================
    ░░  CLASS SHEET (shared view) — page logic  ░░
