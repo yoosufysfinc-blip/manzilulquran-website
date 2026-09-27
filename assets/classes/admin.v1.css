@@ -1030,3 +1030,66 @@
   .ntc-badge, .ntc-status, .crs-sub{
     box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
   }
+
+  /* ---------- Live today ---------- */
+  .live-row{
+    display:flex;align-items:center;gap:13px;flex-wrap:wrap;
+    padding:13px 15px;border-radius:13px;margin-bottom:9px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(201,169,110,.13);
+  }
+  .live-row.live{
+    background:linear-gradient(90deg, rgba(45,212,164,.14), rgba(45,212,164,.02) 62%);
+    border-color:rgba(45,212,164,.4);
+    box-shadow:inset 3px 0 0 var(--emerald-glow);
+  }
+  .live-row.done{ opacity:.5; }
+  .live-time{
+    min-width:74px;font-size:15px;font-weight:800;color:var(--gold-light);
+    font-variant-numeric:tabular-nums;
+  }
+  .live-row.live .live-time{ color:var(--emerald-glow); }
+  .live-who{flex:1;min-width:170px}
+  .live-name{font-size:14.5px;font-weight:700;color:var(--cream);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .live-sub{font-size:11.5px;color:var(--cream-dim);margin-top:2px}
+  .live-note{font-size:12px;color:var(--cream-dim);white-space:nowrap}
+  .live-btns{display:flex;gap:7px;flex-wrap:wrap}
+  .btn-ghost.sm.dim{opacity:.45;cursor:default}
+  .live-badge{
+    font-size:9.5px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
+    padding:3px 9px;border-radius:999px;
+    color:#04211a;background:var(--emerald-glow);
+  }
+  /* The one looping animation in the admin, and it is load-bearing: it
+     marks the class that is happening right now. */
+  .live-row.live .live-badge{ animation:livePulse 2.4s ease-in-out infinite; }
+  @keyframes livePulse{
+    0%,100%{ opacity:1 }
+    50%    { opacity:.55 }
+  }
+  .live-badge.none{ background:rgba(255,184,107,.9); color:#2a1703; }
+
+  @media (max-width:560px){
+    .live-time{min-width:100%}
+    .live-btns{width:100%}
+    .live-btns > *{flex:1;text-align:center}
+  }
+
+  /* ---------- Needs attention: collapsed ---------- */
+  .alerts{ position:relative; }
+  .alerts-toggle{
+    position:absolute;top:14px;right:14px;
+    width:30px;height:30px;border-radius:9px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--cream-dim);background:rgba(255,255,255,.05);
+    border:1px solid rgba(201,169,110,.18);
+    transition:transform .18s ease, color .15s ease;
+  }
+  .alerts-toggle svg{width:15px;height:15px}
+  .alerts-toggle:hover{color:var(--cream)}
+  .alerts.collapsed .alerts-toggle{ transform:rotate(180deg); }
+  /* Collapsing hides the rows only. The heading and its count badge stay,
+     so a folded panel still says how many need attention — otherwise
+     folding it away turns into forgetting about it. */
+  .alerts.collapsed #alertRows{ display:none; }
+  .alerts.collapsed{ padding-bottom:14px; }
