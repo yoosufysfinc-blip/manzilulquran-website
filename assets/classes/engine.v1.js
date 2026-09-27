@@ -241,3 +241,122 @@ function deviceId(){
     return 'dv-nostore';   // private browsing: works, just never remembered
   }
 }
+
+/* =================================================================
+   LIVE CLASSES  (v11)
+   -----------------------------------------------------------------
+   Who is in class right now, and who is next today.
+
+   TIMEZONE. Class times are stored and compared in the academy's own
+   timezone, Asia/Kolkata, never the viewer's. An admin opening this
+   from anywhere must see the same list the academy sees, so every
+   comparison below runs on IST, not on the device clock.
+
+   A class only appears if TODAY IS A TEACHING DAY for it — inside a
+   running calendar and not a weekly off. Holidays drop out by
+   themselves rather than being filtered afterwards.
+   ================================================================= */
+
+const LIVE_WINDOW_MIN = 60;   // individual runs 45–60, batches 60
+
+/* Minutes since midnight, IST, right now. Derived from the UTC clock and
+   a fixed +5:30, so a laptop set to the wrong timezone cannot shift it. */
+function istNowMinutes(){
+  const now = new Date();
+  const ist = new Date(now.getTime() + (5 * 60 + 30) * 60000);
+  return ist.getUTCHours() * 60 + ist.getUTCMinutes();
+}
+
+function istTodayISO(){
+  const now = new Date();
+  const ist = new Date(now.getTime() + (5 * 60 + 30) * 60000);
+  return ist.toISOString().slice(0, 10);
+}
+
+function timeToMinutes(hhmm){
+  const m = String(hhmm || '').match(/^(\d{1,2}):(\d{2})$/);
+  if(!m) return null;
+  const h = +m[1], mi = +m[2];
+  if(h > 23 || mi > 59) return null;
+  return h * 60 + mi;
+}
+
+/* 19:00 → "7:00 pm". Written out rather than relying on toLocaleTimeString,
+   which would format in the VIEWER's locale and could show a 24h clock to
+   one admin and a 12h clock to another. */
+function formatTime(hhmm){
+  const mins = timeToMinutes(hhmm);
+  if(mins === null) return '';
+  let h = Math.floor(mins / 60);
+  const mi = mins % 60;
+  const ampm = h >= 12 ? 'pm' : 'am';
+  h = h % 12; if(h === 0) h = 12;
+  return h + ':' + String(mi).padStart(2, '0') + ' ' + ampm;
+}
+
+/* Today's teaching day for one calendar set, or null if today is a weekly
+   off, outside every plan, or the plan is switched off. Returns the day
+   with its rotated link, so the caller gets the same link the student
+   would see. */
+function todaysClassDay(calendars){
+  const today = istTodayISO();
+  const list = calendars || [];
+  for(let i = 0; i < list.length; i++){
+    const cal = list[i];
+    if(!joinAllowed(cal)) continue;
+    const days = buildDays(cal);
+    for(let j = 0; j < days.length; j++){
+      const d = days[j];
+      if(isoDate(d.date) !== today) continue;
+      if(d.isOff) return null;              // holiday: not a class at all
+      return { day: d, cal: cal };
+    }
+  }
+  return null;
+}
+
+/* live | soon | done, against the academy clock. */
+function liveState(hhmm){
+  const start = timeToMinutes(hhmm);
+  if(start === null) return { state: 'unknown', minutes: null };
+  const now = istNowMinutes();
+  const end = start + LIVE_WINDOW_MIN;
+  if(now >= start && now < end) return { state: 'live', minutes: end - now };
+  if(now < start)               return { state: 'soon', minutes: start - now };
+  return { state: 'done', minutes: now - end };
+}
+
+/* The whole live list, sorted by time. Rows with no time set sink to the
+   bottom rather than disappearing, so a missing time is visible and can
+   be fixed instead of silently hiding a class. */
+function buildLiveList(entries){
+  const out = [];
+  (entries || []).forEach(function(e){
+    const found = todaysClassDay(e.calendars);
+    if(!found) return;                      // no class today, or a holiday
+    const st = liveState(e.classTime);
+    out.push({
+      id: e.id,
+      name: e.name,
+      sub: e.sub || '',
+      kind: e.kind || 'class',
+      classTime: e.classTime || '',
+      timeLabel: formatTime(e.classTime),
+      link: found.day.link || '',
+      dayNo: found.day.n,
+      calName: found.cal.name || '',
+      state: st.state,
+      minutes: st.minutes
+    });
+  });
+
+  const rank = { live: 0, soon: 1, done: 2, unknown: 3 };
+  out.sort(function(a, b){
+    if(rank[a.state] !== rank[b.state]) return rank[a.state] - rank[b.state];
+    const ta = timeToMinutes(a.classTime), tb = timeToMinutes(b.classTime);
+    if(ta === null) return 1;
+    if(tb === null) return -1;
+    return ta - tb;
+  });
+  return out;
+}
