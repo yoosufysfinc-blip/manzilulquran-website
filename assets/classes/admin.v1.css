@@ -1144,3 +1144,80 @@
     .times-count{margin-left:0;width:100%}
     .times-input{width:104px}
   }
+
+  /* ============================================================
+     ICON BUTTONS — solid, no text
+     The icon carries the meaning; the name appears on hover (and is
+     always read out by screen readers via aria-label). Each action has
+     its own colour so the eye learns the row without reading it:
+     emerald to go, gold to change, red to destroy.
+     ============================================================ */
+  .ib{
+    --ib-bg:rgba(255,255,255,.07);
+    --ib-fg:var(--cream);
+    --ib-glow:rgba(255,255,255,.14);
+    position:relative;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    min-width:40px;height:40px;padding:0 11px;border-radius:13px;
+    border:none;cursor:pointer;text-decoration:none;
+    color:var(--ib-fg);background:var(--ib-bg);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 6px 16px -10px var(--ib-glow);
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .16s cubic-bezier(.32,.72,0,1), filter .16s ease, box-shadow .2s ease;
+  }
+  .ib .ic{ width:18px;height:18px;margin:0;stroke-width:2.1; }
+  .ib:hover{ filter:brightness(1.12); transform:translateY(-1px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 10px 22px -10px var(--ib-glow); }
+  /* The response: a press sinks, then springs back on release. */
+  .ib:active{ transform:scale(.9); filter:brightness(.95); transition-duration:.08s; }
+  .ib:focus-visible{ outline:2px solid var(--gold-light); outline-offset:2px; }
+
+  .ib-join  { --ib-bg:linear-gradient(135deg,#34d399,#10b981); --ib-fg:#03140e; --ib-glow:rgba(16,185,129,.7); }
+  .ib-roster{ --ib-bg:linear-gradient(135deg,var(--gold-light),var(--gold)); --ib-fg:#1a1206; --ib-glow:rgba(201,169,97,.6); }
+  .ib-cal   { --ib-bg:rgba(45,212,164,.14);  --ib-fg:#8ff0d4; --ib-glow:rgba(45,212,164,.4); }
+  .ib-open  { --ib-bg:rgba(147,197,253,.14); --ib-fg:#bcd8ff; --ib-glow:rgba(147,197,253,.4); }
+  .ib-share { --ib-bg:rgba(196,181,253,.14); --ib-fg:#d8ccff; --ib-glow:rgba(196,181,253,.4); }
+  .ib-edit  { --ib-bg:rgba(228,201,135,.14); --ib-fg:var(--gold-light); --ib-glow:rgba(228,201,135,.4); }
+  .ib-del   { --ib-bg:rgba(255,153,153,.12); --ib-fg:#ffb0b0; --ib-glow:rgba(255,153,153,.4); }
+
+  /* Time is the one button that shows text, because the text is DATA —
+     the class time — not a label for the button. */
+  .ib-time.no-time { --ib-bg:rgba(255,184,107,.16); --ib-fg:var(--gold-warm); --ib-glow:rgba(255,184,107,.45); }
+  .ib-time.has-time{ --ib-bg:rgba(45,212,164,.14);  --ib-fg:var(--emerald-glow); --ib-glow:rgba(45,212,164,.4); }
+  .ib .tval{ font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap; }
+
+  /* ---------- Tooltip ----------
+     Pure CSS from data-tip. It fades and lifts in after a short delay,
+     so sweeping the mouse across a row does not flash six labels. */
+  .ib[data-tip]::after{
+    content:attr(data-tip);
+    position:absolute;bottom:calc(100% + 9px);left:50%;
+    transform:translate(-50%,4px);
+    padding:6px 10px;border-radius:9px;white-space:nowrap;pointer-events:none;
+    font-size:11.5px;font-weight:700;letter-spacing:.2px;
+    color:var(--cream);background:rgba(3,27,19,.96);
+    border:1px solid rgba(201,169,110,.28);
+    box-shadow:0 8px 22px -8px rgba(0,0,0,.6);
+    opacity:0;transition:opacity .15s ease, transform .2s cubic-bezier(.32,.72,0,1);
+    z-index:20;
+  }
+  @media (hover:hover){
+    .ib[data-tip]:hover::after{ opacity:1;transform:translate(-50%,0);transition-delay:.35s; }
+  }
+
+  /* ---------- Entrance ----------
+     Buttons in a freshly opened row arrive in sequence, 30ms apart. */
+  @keyframes ibIn{ from{ opacity:0;transform:translateY(6px) scale(.9); } to{ opacity:1;transform:none; } }
+  .actions .ib, .b-btns .ib, .live-btns .ib{ animation:ibIn .32s cubic-bezier(.32,.72,0,1) both; }
+  .actions .ib:nth-child(2), .b-btns .ib:nth-child(2){ animation-delay:.03s }
+  .actions .ib:nth-child(3), .b-btns .ib:nth-child(3){ animation-delay:.06s }
+  .actions .ib:nth-child(4), .b-btns .ib:nth-child(4){ animation-delay:.09s }
+  .actions .ib:nth-child(5), .b-btns .ib:nth-child(5){ animation-delay:.12s }
+  .actions .ib:nth-child(6), .b-btns .ib:nth-child(6){ animation-delay:.15s }
+
+  .actions, .b-btns, .live-btns{ display:flex;gap:7px;flex-wrap:wrap;align-items:center; }
+
+  @media (prefers-reduced-motion: reduce){
+    .ib, .ib::after{ transition:none; }
+    .actions .ib, .b-btns .ib, .live-btns .ib{ animation:none; }
+  }
