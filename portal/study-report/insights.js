@@ -803,6 +803,56 @@ async function buildFrame(){
   await new Promise(r=>setTimeout(r,120));
   return ifr;
 }
+/* SVG sharpening for the PDF.
+   html2canvas draws inline SVG as an <img>. WebKit (iPhone/iPad) rasterises such an image at
+   1× and then stretches it, so charts, the score ring, QR and icons come out soft; and an SVG
+   used as an image can't reach the page's web fonts, so SVG text falls back to a system font.
+   Fix: pre-render every SVG ourselves at SCALE× with Plus Jakarta Sans embedded as data-URL
+   @font-face, and swap it for a same-size <img> before capture. Failures leave the SVG as is. */
+let _svgFontCSS=null;
+function svgFontCSS(){
+  if(_svgFontCSS)return _svgFontCSS;
+  _svgFontCSS=(async()=>{
+    try{
+      const css=await (await fetch("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=block")).text();
+      const blocks=css.split("@font-face").filter(b=>/U\+0000-00FF/.test(b));           // latin subset only
+      const out=await Promise.all(blocks.map(async b=>{
+        const w=(b.match(/font-weight:\s*(\d+)/)||[])[1],u=(b.match(/url\((https:[^)]+)\)/)||[])[1];if(!u)return"";
+        const buf=await (await fetch(u)).arrayBuffer();let bin="";const a=new Uint8Array(buf);
+        for(let i=0;i<a.length;i+=0x8000)bin+=String.fromCharCode.apply(null,a.subarray(i,i+0x8000));
+        return `@font-face{font-family:'Plus Jakarta Sans';font-weight:${w};src:url(data:font/woff2;base64,${btoa(bin)}) format('woff2');}`;
+      }));
+      return out.join("");
+    }catch(e){return"";}
+  })();
+  return _svgFontCSS;
+}
+async function sharpenSVGs(d,scale){
+  const fonts=await Promise.race([svgFontCSS(),new Promise(r=>setTimeout(()=>r(""),6000))]);
+  const NS="http://www.w3.org/2000/svg";
+  for(const svg of [...d.querySelectorAll(".rp-doc svg")]){
+    try{
+      const r=svg.getBoundingClientRect();if(r.width<1||r.height<1)continue;
+      const W=Math.round(r.width*scale),H=Math.round(r.height*scale);
+      const cl=svg.cloneNode(true);
+      cl.setAttribute("xmlns",NS);
+      if(!cl.getAttribute("viewBox"))cl.setAttribute("viewBox",`0 0 ${r.width} ${r.height}`);
+      cl.setAttribute("width",W);cl.setAttribute("height",H);
+      cl.removeAttribute("class");cl.setAttribute("style",`color:${d.defaultView.getComputedStyle(svg).color}`);
+      if(fonts&&cl.querySelector("text")){const st=d.createElementNS(NS,"style");st.textContent=fonts;cl.insertBefore(st,cl.firstChild);}
+      const img=new Image();
+      img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(new XMLSerializer().serializeToString(cl));
+      await img.decode();
+      const cv=document.createElement("canvas");cv.width=W;cv.height=H;
+      const g=cv.getContext("2d");g.imageSmoothingQuality="high";g.drawImage(img,0,0,W,H);
+      const out=d.createElement("img");
+      out.src=cv.toDataURL("image/png");cv.width=cv.height=0;
+      out.alt="";out.style.cssText=`display:block;width:${r.width}px;height:${r.height}px;max-width:none;flex:0 0 auto`;
+      await out.decode().catch(()=>{});
+      svg.replaceWith(out);
+    }catch(e){/* keep the original SVG */}
+  }
+}
 function linkRect(sheet){
   const a=sheet.querySelector(".rp-poster");if(!a)return null;
   const s=sheet.getBoundingClientRect(),r=a.getBoundingClientRect();
@@ -815,6 +865,8 @@ async function downloadPDF(btn){
     await Promise.all([loadLib("h2c"),loadLib("pdf"),loadLib("qr").catch(()=>{})]);
     if(window.qrcode&&!$("#rpDoc .rp-poster svg"))renderProgress();      // make sure the QR is in the sheet
     ifr=await buildFrame();
+    btn.textContent="Preparing HD PDF… sharpening graphics";
+    await sharpenSVGs(ifr.contentDocument,4);
     const d=ifr.contentDocument,sheets=[...d.querySelectorAll(".rp-doc")];
     const sw=sheets[0].offsetWidth,hs=sheets.map(el=>el.offsetHeight);
     const W=PHONE_W,H=PAD*2+hs.reduce((a,b)=>a+b,0)+GAP*(sheets.length-1);
