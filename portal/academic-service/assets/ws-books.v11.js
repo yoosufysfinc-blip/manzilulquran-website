@@ -1,20 +1,42 @@
 "use strict";
-/* Academic Service — ws-books.v10.js. v10: setting for fixed monthly pay, shown only when the teacher taught that month. */
+/* Academic Service — ws-books.v11.js. v11: student-wise salary table with per-student additions and deductions, and the salary report. */
 /* one line per individual student on a teacher's month — rule, amount and an Override button */
+/* The student-wise salary table: every student the teacher taught this month, their own
+   attendance, their own base, and the additions and deductions entered against them. */
 function payLinesHtml(pv){
   const L = (pv && pv.indLines) || [];
   if (!L.length) return "";
-  return '<div class="sub-hd">Individual students</div>' + L.map(function(x){
-    const amt = x.source === "default" ? '<small style="opacity:.7">in default</small>'
-      : x.needsAmount ? '<span class="badge b-warn">Needs amount</span>' : money(x.amount);
-    return '<div class="minirow" style="flex-wrap:wrap;gap:6px"><span style="flex:1 1 200px">' + esc(x.studentName) +
-      ' <span class="tag">' + x.classes + ' cl</span> — ' + esc(x.basis) +
-      (x.source === "override" ? ' <span class="tag">override</span>' : "") + '</span>' +
-      '<b>' + amt + '</b>' +
-      '<button class="btn btn-sm" data-act="tline-edit" data-id="' + esc(pv.teacherId + "|" + x.planId) + '">' +
-        (x.source === "override" || x.needsAmount ? "Edit" : "Override") + '</button></div>';
-  }).join("") + (L.some(x => x.source !== "default")
-    ? '<div class="minirow"><span>Teacher default (other students)</span><b>' + money(pv.indDefaultAmount) + '</b></div>' : "");
+  const cell = (v, cls) => '<td class="num' + (cls ? " " + cls : "") + '">' + v + '</td>';
+  const body = L.map(function(x){
+    const amt = x.needsAmount ? '<span class="badge b-warn">Needs amount</span>' : money(x.amount);
+    return '<tr>' +
+      '<td><b>' + esc(x.studentName) + '</b>' +
+        '<small>' + esc([x.course, x.time ? time12(x.time) : "", x.perWeek ? x.perWeek + "/week" : ""].filter(Boolean).join(" · ")) + '</small>' +
+        '<small>' + esc(x.basis) + (x.note ? " · " + esc(x.note) : "") + '</small></td>' +
+      cell(x.planned) + cell(x.taken) +
+      cell((x.studentAbsent + x.studentLeave) || "—") +
+      cell((x.teacherAbsent + x.substitute) || "—") +
+      cell('<b>' + x.counted + '</b>') +
+      cell(money(x.base)) +
+      cell(x.add ? '<span class="pos">+' + money(x.add) + '</span>' : "—") +
+      cell(x.deduct ? '<span class="neg">−' + money(x.deduct) + '</span>' : "—") +
+      cell('<b>' + amt + '</b>') +
+      '<td class="num"><button class="btn btn-sm" data-act="tline-edit" data-id="' +
+        esc(pv.teacherId + "|" + x.planId) + '">Edit</button></td></tr>';
+  }).join("");
+  const sum = k => L.reduce((a, x) => a + (+x[k] || 0), 0);
+  return '<div class="sub-hd">Student-wise salary · ' + L.length + (L.length === 1 ? " student" : " students") + '</div>' +
+    '<div class="tblwrap"><table class="paytbl"><thead><tr>' +
+      '<th>Student</th><th class="num">Plan</th><th class="num">Taken</th><th class="num">Stu. abs/leave</th>' +
+      '<th class="num">Tchr leave</th><th class="num">Counted</th><th class="num">Base</th>' +
+      '<th class="num">Add</th><th class="num">Deduct</th><th class="num">Payable</th><th></th>' +
+    '</tr></thead><tbody>' + body + '</tbody><tfoot><tr>' +
+      '<td><b>Total</b></td>' + cell(sum("planned")) + cell(sum("taken")) +
+      cell(sum("studentAbsent") + sum("studentLeave")) + cell(sum("teacherAbsent") + sum("substitute")) +
+      cell('<b>' + sum("counted") + '</b>') + cell(money(sum("base"))) +
+      cell(sum("add") ? "+" + money(sum("add")) : "—") + cell(sum("deduct") ? "−" + money(sum("deduct")) : "—") +
+      cell('<b>' + money(sum("amount")) + '</b>') + '<td></td>' +
+    '</tr></tfoot></table></div>';
 }
 /* ==========================================================================
    BOOKS WORKSPACE
@@ -415,6 +437,7 @@ Pages.teachers = function(){
       acts('<button class="btn btn-sm" data-act="teacher-edit" data-id="' + t.id + '">Edit</button>' +
         (t.pv.balance > 0 ? '<button class="btn btn-sm btn-primary" data-act="tpay-new" data-id="' + t.id + '">Pay ' + money(t.pv.balance) + '</button>' : "") +
         '<button class="btn btn-sm" data-act="tadj-edit" data-id="' + t.id + '">Bonus / deduction</button>' +
+        '<button class="btn btn-sm btn-primary" data-act="salary-report" data-id="' + t.id + '">Salary report</button>' +
         '<button class="btn btn-sm" data-act="tstatement" data-id="' + t.id + '">Statement</button>'),
       sorts: [{ key: "name", label: "Name A–Z", val: t => t.name },
               { key: "nameZ", label: "Name Z–A", val: t => t.name, desc: true },
@@ -1287,6 +1310,13 @@ Pages.settings = function(){
         '<textarea class="input" id="set_welcomeTerms" rows="5" placeholder="One line per term">' +
         esc(s.welcomeTerms || "") + '</textarea>' +
         '<span class="hint">Printed under “Terms &amp; Conditions” in the welcome letter. Leave empty to use the standard four lines (rescheduling, leave notice, advance fee, Hifz concession).</span></div>' +
+      '<div class="field span2"><label>Class states that earn the teacher money</label>' +
+        '<div class="chips">' + CLASS_STATUSES.map(function(x){
+          const on = paidStatuses().indexOf(x.value) >= 0;
+          return '<label class="chip' + (on ? " on" : "") + '"><input type="checkbox" class="set_payStatus" value="' +
+            esc(x.value) + '"' + (on ? " checked" : "") + '> ' + esc(x.code) + ' ' + esc(x.label) + '</label>';
+        }).join("") + '</div>' +
+        '<span class="hint">Used for “classes counted” on the salary report. Default: class taken, student absent and student leave.</span></div>' +
       field("Fixed monthly teacher pay", '<select class="input" id="set_monthlyPayOnlyIfTaught">' +
         optList([{ value: "no", label: "Every month, whether they taught or not" },
                  { value: "yes", label: "Only in a month where they taught" }],
