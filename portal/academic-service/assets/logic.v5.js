@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — logic.v4.js. v4: waived months leave the dues; payroll leaves out teachers who left and can skip fixed monthly in an untaught month. */
+/* Academic Service — logic.v5.js. v5: student-wise teacher salary — attendance counted per student, with additions and deductions per student. */
 /* ==========================================================================
    LOGIC
    ========================================================================== */
@@ -19,6 +19,7 @@ const IND_RATE_TYPES = [
   { value: "percent",  label: "Percentage of their students' fees" }, { value: "custom", label: "Custom each month" },
   { value: "hybridH1", label: "Base + per class" }, { value: "hybridH2", label: "Package + extra classes" },
   { value: "hybridH3", label: "Per class with min / max" },
+  { value: "monthlyProrata", label: "Monthly, shared over the month's class days" },
   { value: "none",     label: "Not paid for individual classes" }
 ];
 /* teacher pay set on ONE student's plan — overrides the teacher's default for that student only */
@@ -27,7 +28,9 @@ const PLAN_PAY_TYPES = [
   { value: "perClass", label: "Per class" }, { value: "perDay", label: "Per day" }, { value: "perHour", label: "Per hour" },
   { value: "monthly",  label: "Fixed monthly" }, { value: "percent", label: "Percentage of this student's fee" },
   { value: "hybridH1", label: "Base + per class" }, { value: "hybridH2", label: "Package + extra classes" },
-  { value: "hybridH3", label: "Per class with min / max" }, { value: "manual", label: "Manual each month" },
+  { value: "hybridH3", label: "Per class with min / max" },
+  { value: "monthlyProrata", label: "Monthly, shared over the month's class days" },
+  { value: "manual", label: "Manual each month" },
   { value: "none",     label: "Not paid for this student" }
 ];
 /* batch enrolment fee: fixed (the existing monthly fee) or typed in each month */
@@ -40,6 +43,24 @@ const BATCH_PAY_TYPES = [
   { value: "none",       label: "Not paid for batch classes" }
 ];
 const SOURCES = { batch: "Batch class", individual: "Individual class" };
+
+/* every state a logged class can be in, and the letter used on the salary report grid */
+const CLASS_STATUSES = [
+  { value: "Completed",      code: "✓", label: "Class taken",              pays: true },
+  { value: "Student Absent", code: "A", label: "Student absent",           pays: true },
+  { value: "Student Leave",  code: "L", label: "Student leave",            pays: true },
+  { value: "Teacher Absent", code: "T", label: "Teacher leave",            pays: false },
+  { value: "Substitute",     code: "S", label: "Taken by another teacher", pays: false },
+  { value: "Rescheduled",    code: "R", label: "Rescheduled",              pays: false },
+  { value: "Cancelled",      code: "C", label: "Cancelled",                pays: false }
+];
+const CLASS_CODE = {}; CLASS_STATUSES.forEach(x => CLASS_CODE[x.value] = x.code);
+/* which states earn the teacher money. Settings().payCountStatuses (comma separated) overrides the defaults. */
+function paidStatuses(){
+  const set = Settings().payCountStatuses;
+  if (!set) return CLASS_STATUSES.filter(x => x.pays).map(x => x.value);
+  return String(set).split(",").map(x => x.trim()).filter(Boolean);
+}
 
 const Logic = {
   methodLabel(v){ const m = FEE_METHODS.find(x => x.value === v); return m ? m.label : v; },
@@ -64,11 +85,18 @@ const Logic = {
   classStats(rows){
     const done = rows.filter(c => c.status === "Completed"), days = {};
     done.forEach(c => days[c.date] = true);
+    const pay = paidStatuses(), counted = rows.filter(c => pay.indexOf(c.status) >= 0);
     return { total: rows.length, completed: done.length,
       cancelled: rows.filter(c => c.status === "Cancelled").length,
       studentAbsent: rows.filter(c => c.status === "Student Absent").length,
+      studentLeave: rows.filter(c => c.status === "Student Leave").length,
       teacherAbsent: rows.filter(c => c.status === "Teacher Absent").length,
+      substitute: rows.filter(c => c.status === "Substitute").length,
       rescheduled: rows.filter(c => c.status === "Rescheduled").length,
+      /* counted = what the teacher is paid for; completed = what the student actually had */
+      counted: counted.length,
+      countedDays: Object.keys(counted.reduce((m, c) => (m[c.date] = 1, m), {})).length,
+      countedMinutes: counted.reduce((x, c) => x + (+c.duration || 0), 0),
       days: Object.keys(days).length,
       minutes: done.reduce((s, c) => s + (+c.duration || 0), 0) };
   },
@@ -80,6 +108,12 @@ const Logic = {
     if (feeType === "perHour")  return round2((st.minutes / 60) * rate);
     if (feeType === "hybridH1") return round2((+x.base || 0) + st.completed * rate);
     if (feeType === "hybridH2") return round2((+x.base || 0) + Math.max(0, st.completed - (+x.included || 0)) * rate);
+    if (feeType === "monthlyProrata") {
+      /* a monthly amount shared across the month's class days, paid for the days counted */
+      const planned = +x.planned || 0, counted = st.counted !== undefined ? st.counted : st.completed;
+      if (!planned) return 0;
+      return round2(rate * Math.min(counted, planned) / planned);
+    }
     if (feeType === "hybridH3") {
       let v = st.completed * rate;
       if (+x.min > 0) v = Math.max(v, +x.min);
@@ -97,6 +131,7 @@ const Logic = {
     if (feeType === "hybridH1") return money(x.base) + " base + " + st.completed + " classes";
     if (feeType === "hybridH2") return money(x.base) + " for " + (+x.included || 0) + " classes + " +
                                        Math.max(0, st.completed - (+x.included || 0)) + " extra";
+    if (feeType === "monthlyProrata") return (st.counted !== undefined ? st.counted : st.completed) + " of " + (+x.planned || 0) + " class days";
     if (feeType === "hybridH3") return st.completed + " classes (min " + money(x.min) + (+x.max > 0 ? ", max " + money(x.max) : "") + ")";
     if (feeType === "manual")   return "Manual";
     return "—";
@@ -490,6 +525,96 @@ const Logic = {
 /* ---- TEACHER PAY: individual part + batch part, shown separately so the
         two streams can never be confused with each other ---- */
 Object.assign(Logic, {
+  /* ---- student-wise salary for one teacher and month ----
+     One line per student: their own attendance, their own rule, their own additions
+     and deductions. The teacher's total is the sum of the lines (plus the batch side
+     and any month-wide bonus/deduction). Nothing here writes; it only reads. */
+  salaryLines(t, month){
+    const rows = DataService.getClasses({ teacherId: t.id, month: month });
+    const ov = Logic.parseLines((DataService.getAdjust(t.id, month) || {}).planLines);
+    const seen = {}, planIds = [];
+    rows.forEach(r => { if (r.planId && !seen[r.planId]) { seen[r.planId] = true; planIds.push(r.planId); } });
+    DataService.getPlans({ teacherId: t.id }).forEach(function(p){
+      if (seen[p.id] || p.status !== "Active") return;
+      if (p.startDate && p.startDate > monthEnd(month)) return;
+      seen[p.id] = true; planIds.push(p.id);
+    });
+    Object.keys(ov).forEach(function(pid){ if (!seen[pid] && DataService.getPlan(pid)) { seen[pid] = true; planIds.push(pid); } });
+
+    return planIds.map(function(pid){
+      const pl = DataService.getPlan(pid); if (!pl) return null;
+      const st = DataService.getStudent(pl.studentId);
+      const mine = rows.filter(r => r.planId === pid);
+      const cs = Logic.classStats(mine);
+      const planned = Logic.plannedStats(pl, month);
+      const o = ov[pid] || {};
+      /* pay is worked out from the classes that COUNT, not only the ones taken:
+         a student absence or student leave still pays the teacher, teacher leave does not */
+      const pcs = Object.assign({}, cs, { completed: cs.counted, days: cs.countedDays, minutes: cs.countedMinutes });
+      const px = Object.assign(Logic.ruleExtra(pl, "pay"), { planned: planned.total });
+      const type = pl.payType || "", pr = +pl.payRate || 0;
+
+      let base = 0, basis = "", needsAmount = false, source = "plan";
+      if (type === "manual") { needsAmount = true; basis = "Manual — enter the amount"; }
+      else if (type === "none") basis = "Not paid for this student";
+      else if (type === "percent") {
+        const fee = Logic.feeViews({ month: month, source: "individual" }).filter(v => v.planId === pid)
+          .reduce((x, v) => x + v.netFee, 0);
+        base = round2(fee * pr / 100); basis = pr + "% of " + money(fee) + " fee";
+      } else if (type) {
+        base = Logic.computeGross(type, pr, pcs, px);
+        basis = Logic.feeBasis(type, pcs, px) + (type === "monthly" ? "" : " × " + money(pr));
+      } else {
+        /* no rule on the plan: fall back to the teacher's own rule, applied to this student only */
+        source = "default";
+        const tr = +t.indRate || 0, tx = Object.assign(Logic.ruleExtra(t, "ind"), { planned: planned.total });
+        const tt = t.indRateType || "";
+        if (tt === "percent") {
+          const fee = Logic.feeViews({ month: month, source: "individual" }).filter(v => v.planId === pid)
+            .reduce((x, v) => x + v.netFee, 0);
+          base = round2(fee * tr / 100); basis = "teacher's default · " + tr + "% of " + money(fee);
+        } else if (tt === "manual" || tt === "custom") { needsAmount = true; basis = "teacher's default · manual"; }
+        else if (tt && tt !== "none") {
+          base = Logic.computeGross(tt, tr, pcs, tx);
+          basis = "teacher's default · " + Logic.feeBasis(tt, pcs, tx) + (tt === "monthly" ? "" : " × " + money(tr));
+        } else basis = "teacher's default · not paid";
+      }
+
+      /* the month's own edits for this student */
+      const hasOverride = o.amount !== undefined && o.amount !== "";
+      if (hasOverride) { base = round2(+o.amount || 0); basis = "Amount set for this month"; needsAmount = false; source = "override"; }
+      const add = round2(+o.add || 0), deduct = round2(+o.deduct || 0);
+      const final = round2(Math.max(0, base + add - deduct));
+
+      return { planId: pid, studentId: pl.studentId, studentName: st ? st.name : pl.studentId,
+        course: pl.course || "", time: pl.time || "", days: (pl.days || []).slice(),
+        perWeek: (pl.days || []).length || +pl.perWeek || 0, startDate: pl.startDate || "",
+        payType: type, payRate: pr,
+        planned: planned.total, holidays: planned.holidays || 0,
+        taken: cs.completed, studentAbsent: cs.studentAbsent, studentLeave: cs.studentLeave,
+        teacherAbsent: cs.teacherAbsent, substitute: cs.substitute, cancelled: cs.cancelled,
+        rescheduled: cs.rescheduled, counted: cs.counted, logged: cs.total,
+        base: round2(base), add: add, deduct: deduct, amount: final,
+        basis: basis, note: o.note || "", needsAmount: needsAmount, source: source,
+        rows: mine.slice().sort((a, b) => String(a.date).localeCompare(String(b.date))) };
+    }).filter(Boolean).sort((a, b) => String(a.studentName).localeCompare(String(b.studentName)));
+  },
+  /* the day-by-day grid: one row per student, one cell per day of the month */
+  salaryGrid(t, month, lines){
+    const n = daysInMonth(month);
+    return (lines || Logic.salaryLines(t, month)).map(function(L){
+      const byDate = {};
+      L.rows.forEach(r => { byDate[r.date] = CLASS_CODE[r.status] || "·"; });
+      const cells = [];
+      for (let i = 1; i <= n; i++) {
+        const ds = month + "-" + pad2(i);
+        const onPlan = (L.days.indexOf(DOW[parseYMD(ds).getDay()]) >= 0) &&
+          (!L.startDate || ds >= L.startDate) && !Logic.isHoliday(ds);
+        cells.push({ day: i, date: ds, code: byDate[ds] || "", onPlan: onPlan });
+      }
+      return { studentName: L.studentName, planId: L.planId, cells: cells };
+    });
+  },
   payrollView(t, month){
     /* Other staff: fixed monthly salary + incentive, no class-based math */
     if (t.kind === "staff") {
@@ -505,81 +630,24 @@ Object.assign(Logic, {
         deduction: +adj.deduction || 0, remarks: adj.remarks || "", payable: payable, paid: paid, balance: balance,
         status: balance <= 0 && paid > 0 ? "Paid" : (paid > 0 ? "Partial" : (payable > 0 ? "Pending" : "Nil")) };
     }
-    /* individual side, from the class log */
+    /* ---- individual side: one line per student (see salaryLines) ----
+       Each student is worked out from their own class log and their own rule, then the
+       lines are added up. The teacher is never paid from a single lump calculation. */
     const rows = DataService.getClasses({ teacherId: t.id, month: month });
     const cs = Logic.classStats(rows);
-    const rate = +t.indRate || 0;
-
-    /* per-student lines: a plan with its own pay rule, or a month override, is paid on its own line;
-       everything else falls to the teacher's default below — exactly as before when no plan has a rule */
-    const ov = Logic.parseLines((DataService.getAdjust(t.id, month) || {}).planLines);
-    const seenPlan = {}, planIds = [];
-    rows.forEach(r => { if (r.planId && !seenPlan[r.planId]) { seenPlan[r.planId] = true; planIds.push(r.planId); } });
-    DataService.getPlans({ teacherId: t.id }).forEach(function(p){
-      if (seenPlan[p.id] || p.status !== "Active") return;
-      if (p.startDate && p.startDate > monthEnd(month)) return;
-      seenPlan[p.id] = true; planIds.push(p.id);
-    });
-    const handled = {}, indLines = [];
-    let lineSum = 0, needsN = 0;
-    planIds.forEach(function(pid){
-      const pl = DataService.getPlan(pid); if (!pl) return;
-      const st = DataService.getStudent(pl.studentId);
-      const pcs = Logic.classStats(rows.filter(r => r.planId === pid));
-      const L = { planId: pid, studentId: pl.studentId, studentName: st ? st.name : pl.studentId, course: pl.course || "",
-        classes: pcs.completed, payType: pl.payType || "", amount: 0, basis: "", source: "default", needsAmount: false, note: "" };
-      const o = ov[pid];
-      if (o && o.amount !== undefined && o.amount !== "") {
-        L.source = "override"; L.amount = round2(+o.amount || 0); L.note = o.note || "";
-        L.basis = "Override" + (o.note ? " — " + o.note : "");
-      } else if (pl.payType) {
-        L.source = "plan"; const pr = +pl.payRate || 0;
-        if (pl.payType === "manual") { L.needsAmount = true; L.basis = "Manual — enter this month's amount"; needsN++; }
-        else if (pl.payType === "none") L.basis = "Not paid for this student";
-        else if (pl.payType === "percent") {
-          const base = Logic.feeViews({ month: month, source: "individual" }).filter(v => v.planId === pid).reduce((s, v) => s + v.netFee, 0);
-          L.amount = round2(base * pr / 100); L.basis = pr + "% of " + money(base) + " fee";
-        } else {
-          const px = Logic.ruleExtra(pl, "pay");
-          L.amount = Logic.computeGross(pl.payType, pr, pcs, px);
-          L.basis = Logic.feeBasis(pl.payType, pcs, px) + (pl.payType === "monthly" ? "" : " × " + money(pr));
-        }
-      } else { L.basis = "Teacher's default"; }
-      if (L.source !== "default") { handled[pid] = true; lineSum += L.amount; }
-      indLines.push(L);
-    });
-    const anyHandled = Object.keys(handled).length > 0;
-    const drows = anyHandled ? rows.filter(r => !handled[r.planId]) : rows;
-    const dcs = anyHandled ? Logic.classStats(drows) : cs;
-
-    let ind = 0, indBasis = "Not paid for individual classes";
-    if (t.indRateType === "perClass") { ind = dcs.completed * rate; indBasis = dcs.completed + " classes × " + money(rate); }
-    else if (t.indRateType === "perDay") { ind = dcs.days * rate; indBasis = dcs.days + " days × " + money(rate); }
-    else if (t.indRateType === "perHour") { ind = (dcs.minutes / 60) * rate; indBasis = round2(dcs.minutes / 60) + " hours × " + money(rate); }
-    else if (t.indRateType === "monthly") {
-      /* optional: a fixed monthly salary only counts in a month where they actually taught */
-      const only = (Settings().monthlyPayOnlyIfTaught || "no") === "yes";
-      if (only && !Logic.taughtIn(t, month)) { ind = 0; indBasis = "Monthly fixed — no teaching this month"; }
-      else { ind = rate; indBasis = "Monthly fixed"; }
+    const indLines = Logic.salaryLines(t, month);
+    const needsN = indLines.filter(L => L.needsAmount).length;
+    let ind = round2(indLines.reduce((x, L) => x + L.amount, 0));
+    const defaultAmount = round2(indLines.filter(L => L.source === "default").reduce((x, L) => x + L.amount, 0));
+    if (t.indRateType === "custom") {
+      const ac = DataService.getAdjust(t.id, month);
+      ind = round2(ind + (ac ? (+ac.custom || 0) : 0));
     }
-    else if (t.indRateType === "percent") {
-      const base = Logic.feeViews({ month: month, source: "individual", teacherId: t.id })
-        .filter(v => !handled[v.planId]).reduce((s, v) => s + v.netFee, 0);
-      ind = base * rate / 100; indBasis = rate + "% of " + money(base) + " individual fees";
-    } else if (t.indRateType === "custom") {
-      const a = DataService.getAdjust(t.id, month);
-      ind = a ? (+a.custom || 0) : 0; indBasis = "Custom amount";
-    } else if (Logic.isHybrid(t.indRateType)) {
-      const tx = Logic.ruleExtra(t, "ind");
-      ind = Logic.computeGross(t.indRateType, rate, dcs, tx);
-      indBasis = Logic.feeBasis(t.indRateType, dcs, tx) + " × " + money(rate);
-    }
-    const defaultAmount = round2(ind);
-    if (anyHandled) {
-      const n = Object.keys(handled).length;
-      indBasis = "Default: " + indBasis + " + " + n + " student rule" + (n > 1 ? "s" : "");
-      ind += lineSum;
-    }
+    const nStu = indLines.length;
+    let indBasis = nStu ? nStu + (nStu === 1 ? " student" : " students") + " · " +
+        indLines.reduce((x, L) => x + L.counted, 0) + " classes counted"
+      : "No individual students this month";
+    if (needsN) indBasis += " · " + needsN + " need an amount";
 
     /* batch side — worked out per teaching group, so every sub-class is paid on its own */
     const groups = Logic.groupsOf(t.id);
