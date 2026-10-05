@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v16.js. v16: stopping a plan can waive the unpaid months; welcome letter is editable, 12-hour times, new look. */
+/* Academic Service — forms-actions.v17.js. v17: per-student salary editing (base, additions, deductions) and the teacher salary report. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -210,10 +210,11 @@ function classForm(c, presetPlan, presetStudent){
     field("Teacher", sel("teacherId", teacherOpts(c.teacherId || (pl ? pl.teacherId : ""), "Select teacher"))) +
     field("Duration (min)", '<input class="input" type="number" name="duration" min="0" value="' +
       esc(c.duration !== undefined ? c.duration : (pl ? pl.duration : 45)) + '">') +
-    field("Class status", sel("status", optList(["Completed","Cancelled","Student Absent","Teacher Absent","Rescheduled"], c.status || "Completed"))) +
+    field("Class status", sel("status", optList(CLASS_STATUSES.map(x => ({ value: x.value, label: x.code + "  " + x.label })), c.status || "Completed"))) +
     '<div></div>' +
     '<div class="field span2"><label>Notes</label><input class="input" name="notes" value="' + esc(c.notes || "") + '"></div>' +
-    '<div class="field span2"><div class="note" style="margin:0">Only a <b>Completed</b> class counts towards the student fee and the teacher payment.</div></div>' +
+    '<div class="field span2"><div class="note" style="margin:0">Only a <b>Completed</b> class counts towards the <b>student fee</b>. ' +
+      'For the <b>teacher</b>, the states that count are set in Settings — by default class taken, student absent and student leave.</div></div>' +
   '</div>';
 }
 function teacherForm(t){
@@ -1268,32 +1269,61 @@ const Actions = {
         toast("Fee method saved", "ok"); render();
       } });
   },
-  /* one student's line on a teacher's month: type the amount (override) or go back to the rule */
+  /* ---- one student's salary line for the month ----
+     Shows the attendance it was worked out from, lets you change the base, add an
+     extra payment, take off a deduction, and leave a note. Nothing else is touched. */
   "tline-edit": (key) => {
     const parts = String(key).split("|"), teacherId = parts[0], planId = parts[1];
     const m = State.tpay.month || State.month, t = DataService.getTeacher(teacherId);
-    const v = Logic.payrollView(t, m), L = (v.indLines || []).find(x => x.planId === planId);
-    if (!L) { toast("That line is not in this month", "bad"); return; }
-    const a = DataService.getAdjust(teacherId, m) || {}, lines = Logic.parseLines(a.planLines), cur = lines[planId];
-    openModal({ title: "Pay for " + L.studentName + " — " + monthLabel(m),
-      body: '<div class="note">' + esc(t.name) + ' · ' + esc(L.course) + ' · ' + L.classes + ' classes. Rule: ' +
-        esc(cur ? "override" : (L.source === "plan" ? Logic.planPayLabel(L.payType) : "teacher's default")) +
-        '. The amount typed here is used for this month only.</div>' +
+    if (!t) { toast("Teacher not found", "bad"); return; }
+    const L = Logic.salaryLines(t, m).find(x => x.planId === planId);
+    if (!L) { toast("That student is not in this month", "bad"); return; }
+    const a = DataService.getAdjust(teacherId, m) || {}, lines = Logic.parseLines(a.planLines), cur = lines[planId] || {};
+    const row = (k, v) => '<tr><td>' + k + '</td><td class="num">' + v + '</td></tr>';
+    openModal({ title: L.studentName + " — " + monthLabel(m), wide: true, submitText: "Save",
+      body:
+        '<div class="note">' + esc(t.name) + ' · ' + esc(L.course || "—") +
+          (L.time ? ' · ' + esc(time12(L.time)) : "") + ' · ' + esc(L.basis) + '</div>' +
+        '<div class="tblwrap"><table class="paytbl small"><tbody>' +
+          row("Class days in " + monthShort(m), L.planned + (L.holidays ? " (" + L.holidays + " holiday)" : "")) +
+          row("Classes taken", L.taken) +
+          row("Student absent / leave", L.studentAbsent + " / " + L.studentLeave) +
+          row("Teacher leave / taken by another", L.teacherAbsent + " / " + L.substitute) +
+          row("<b>Classes counted for pay</b>", "<b>" + L.counted + "</b>") +
+        '</tbody></table></div>' +
         '<div class="form-grid">' +
-        field("Amount for this month", '<input class="input" type="number" min="0" step="0.01" name="amount" value="' + (cur ? (+cur.amount || 0) : (L.source === "plan" ? L.amount : "")) + '">') +
-        field("Note", '<input class="input" name="note" value="' + esc(cur ? cur.note || "" : "") + '" placeholder="e.g. agreed extra for revision week">') +
-        (cur ? '<div class="field span2"><label style="display:flex;gap:8px;align-items:center;font-size:13.5px"><input type="checkbox" name="clear"> Remove the override — use the rule again</label></div>' : "") +
-        '</div>',
-      submitText: "Save",
+        field("Base amount", '<input class="input" type="number" min="0" step="0.01" name="amount" value="' +
+          (cur.amount !== undefined && cur.amount !== "" ? esc(cur.amount) : esc(L.base)) + '">') +
+        '<div class="field"><label>&nbsp;</label><label style="display:flex;gap:8px;align-items:center;font-size:13px">' +
+          '<input type="checkbox" name="auto"' + (cur.amount === undefined || cur.amount === "" ? " checked" : "") +
+          '> Keep it automatic</label></div>' +
+        field("Additional payment", '<input class="input" type="number" min="0" step="0.01" name="add" value="' + esc(+cur.add || 0) + '">') +
+        field("Deduction", '<input class="input" type="number" min="0" step="0.01" name="deduct" value="' + esc(+cur.deduct || 0) + '">') +
+        '<div class="field span2"><label>Note <span class="hint">(printed on the salary report)</span></label>' +
+          '<input class="input" name="note" value="' + esc(cur.note || "") + '" placeholder="e.g. extra revision week, late joining"></div>' +
+        '</div>' +
+        (cur.amount !== undefined || cur.add || cur.deduct || cur.note
+          ? '<div class="btn-row"><button type="button" class="btn btn-danger btn-sm" data-act="tline-clear" data-id="' +
+            esc(teacherId + "|" + planId) + '">Clear this student\'s edits</button></div>' : ""),
       onSubmit: function(d){
-        if (d.clear) delete lines[planId];
-        else {
-          if (d.amount === "" || isNaN(+d.amount)) { toast("Type an amount", "bad"); return false; }
-          lines[planId] = { amount: round2(+d.amount), note: d.note || "" };
-        }
+        const e = {};
+        if (!d.auto) e.amount = round2(+d.amount || 0);
+        if (+d.add) e.add = round2(+d.add);
+        if (+d.deduct) e.deduct = round2(+d.deduct);
+        if (String(d.note || "").trim()) e.note = String(d.note).trim();
+        if (Object.keys(e).length) lines[planId] = e; else delete lines[planId];
         DataService.saveAdjust({ teacherId: teacherId, month: m, planLines: JSON.stringify(lines) });
-        toast(d.clear ? "Override removed" : "Amount saved for " + L.studentName, "ok"); render();
+        const after = Logic.salaryLines(t, m).find(x => x.planId === planId);
+        toast(L.studentName + " · " + money(after ? after.amount : 0), "ok", 3600); render();
       } });
+  },
+  "tline-clear": (key) => {
+    const parts = String(key).split("|"), teacherId = parts[0], planId = parts[1];
+    const m = State.tpay.month || State.month;
+    const a = DataService.getAdjust(teacherId, m) || {}, lines = Logic.parseLines(a.planLines);
+    delete lines[planId];
+    DataService.saveAdjust({ teacherId: teacherId, month: m, planLines: JSON.stringify(lines) });
+    closeModal(); toast("Back to the automatic amount", "ok"); render();
   },
   "fees-csv": (id, el) => {
     const src = el.dataset.src;
@@ -1477,6 +1507,31 @@ Object.assign(Actions, {
   /* ---- welcome letter ----
      Everything comes from the student's live plan or batch enrolment, so a change to the
      class time today is in the letter printed tomorrow. Terms are edited in Settings. */
+  /* ---- teacher salary report ----
+     Student by student, with the attendance it was worked out from, the additions and
+     deductions, the day-by-day grid and the total. Opens as a print page. */
+  "salary-report": (id) => {
+    const m = State.tpay.month || State.month, t = DataService.getTeacher(id);
+    if (!t) { toast("Teacher not found", "bad"); return; }
+    const pv = Logic.payrollView(t, m), lines = pv.indLines || [];
+    if (!lines.length && !(pv.groups || []).length) { toast("Nothing to report for " + monthLabel(m), "warn"); return; }
+    const auto = [];
+    lines.forEach(function(L){
+      if (L.note) auto.push(L.studentName + " · " + L.note);
+      L.rows.forEach(function(r){ if (r.notes) auto.push(L.studentName + " · " + fmtDate(r.date) + ": " + r.notes); });
+    });
+    openModal({ title: "Salary report — " + t.name, wide: true, submitText: "Open the report",
+      body: '<div class="note">' + monthLabel(m) + ' · ' + lines.length + ' student' + (lines.length === 1 ? "" : "s") +
+          ' · total payable <b>' + money(pv.payable) + '</b>. Edit a student first if an amount is wrong — the report always prints the saved figures.</div>' +
+        '<div class="form-grid">' +
+        field("Period from", '<input class="input" type="date" name="from" value="' + monthStart(m) + '">') +
+        field("Period to", '<input class="input" type="date" name="to" value="' + monthEnd(m) + '">') +
+        field("Issued on", '<input class="input" type="date" name="issued" value="' + today() + '">') +
+        '<div class="field span2"><label>Notes <span class="hint">(one per line, printed at the bottom)</span></label>' +
+          '<textarea class="input" name="notes" rows="4">' + esc(auto.join("\n")) + '</textarea></div>' +
+        '</div>',
+      onSubmit: function(d){ openSalaryReport(t, m, d); } });
+  },
   "welcome": (id) => {
     const st = DataService.getStudent(id);
     if (!st) { toast("Student not found", "bad"); return; }
@@ -1754,7 +1809,11 @@ Object.assign(Actions, {
     const file = $("#set_logoFile");
     if (file && file.files && file.files[0]) {
       const r = new FileReader();
-      r.onload = function(){ patch.logo = r.result; DataService.saveSettings(patch); toast("Settings saved", "ok"); render(); };
+      r.onload = function(){ patch.logo = r.result; /* which class states earn the teacher money (checkbox chips) */
+    const picked = Array.prototype.slice.call(document.querySelectorAll(".set_payStatus"))
+      .filter(c => c.checked).map(c => c.value);
+    if (document.querySelector(".set_payStatus")) patch.payCountStatuses = picked.join(",");
+    DataService.saveSettings(patch); toast("Settings saved", "ok"); render(); };
       r.readAsDataURL(file.files[0]);
       return;
     }
@@ -2106,4 +2165,155 @@ function openWelcomeLetter(st, w){
   win.document.open(); win.document.write(html); win.document.close();
   closeModal();
   toast("Welcome letter ready — use Save as PDF", "ok", 4200);
+}
+
+/* ---- the salary report page ---- */
+function salaryReportHTML(t, m, opt){
+  const s = Settings();
+  const pv = Logic.payrollView(t, m), lines = pv.indLines || [];
+  const grid = Logic.salaryGrid(t, m, lines);
+  const n = daysInMonth(m);
+  const notes = String(opt.notes || "").split("\n").map(x => x.trim()).filter(Boolean);
+  const courses = [];
+  lines.forEach(L => { if (L.course && courses.indexOf(L.course) < 0) courses.push(L.course); });
+  const sum = k => lines.reduce((a, x) => a + (+x[k] || 0), 0);
+  const dayHd = (() => {
+    let h = "";
+    for (let i = 1; i <= n; i++) {
+      const dt = parseYMD(m + "-" + pad2(i));
+      h += '<th><span class="dw">' + DOW[dt.getDay()].slice(0, 1) + '</span><span class="dn">' + i + '</span></th>';
+    }
+    return h;
+  })();
+  const codeClass = { "✓": "c-ok", "A": "c-abs", "L": "c-lv", "T": "c-tl", "S": "c-sub", "R": "c-rs", "C": "c-cx" };
+  const gridRows = grid.map(function(g){
+    return '<tr><th class="gname">' + esc(g.studentName) + '</th>' + g.cells.map(function(c){
+      if (c.code) return '<td class="' + (codeClass[c.code] || "") + '">' + c.code + '</td>';
+      return '<td class="' + (c.onPlan ? "c-none" : "c-off") + '"></td>';
+    }).join("") + '</tr>';
+  }).join("");
+  const legend = CLASS_STATUSES.map(x => '<span class="lg"><i class="' + (codeClass[x.code] || "") + '">' + x.code + '</i>' +
+    esc(x.label) + '</span>').join("") + '<span class="lg"><i class="c-none"></i>No class logged</span>';
+  const studentRows = lines.map(function(L){
+    return '<tr>' +
+      '<td><b>' + esc(L.studentName) + '</b><small>' + esc([L.course, L.time ? time12(L.time) : ""].filter(Boolean).join(" · ")) + '</small></td>' +
+      '<td>' + (L.perWeek ? L.perWeek + " days/week" : "—") + '<small>' + esc((L.days || []).join(" ")) + '</small></td>' +
+      '<td class="num">' + (L.startDate ? fmtDate(L.startDate) : "—") + '</td>' +
+      '<td class="num">' + L.planned + '</td>' +
+      '<td class="num">' + L.taken + '</td>' +
+      '<td class="num">' + (L.studentAbsent + L.studentLeave) + '</td>' +
+      '<td class="num">' + (L.teacherAbsent + L.substitute) + '</td>' +
+      '<td class="num"><b>' + L.counted + '</b></td>' +
+      '<td class="num">' + money(L.base) + '</td>' +
+      '<td class="num">' + (L.add ? "+" + money(L.add) : "—") + '</td>' +
+      '<td class="num">' + (L.deduct ? "−" + money(L.deduct) : "—") + '</td>' +
+      '<td class="num"><b>' + money(L.amount) + '</b></td></tr>';
+  }).join("");
+  const batchRows = (pv.groups || []).filter(g => g.amount).map(g =>
+    '<tr><td colspan="7"><b>' + esc(g.label) + '</b><small>batch · ' + esc(g.basis) + '</small></td>' +
+    '<td class="num">' + g.sessions + '</td><td class="num">' + money(g.amount) + '</td>' +
+    '<td class="num">—</td><td class="num">—</td><td class="num"><b>' + money(g.amount) + '</b></td></tr>').join("");
+  const kpi = (v, l, strong) => '<div class="kpi' + (strong ? " strong" : "") + '"><b>' + v + '</b><span>' + esc(l) + '</span></div>';
+  return '<!doctype html><html><head><meta charset="utf-8"><title>Salary — ' + esc(t.name) + ' — ' + esc(monthLabel(m)) + '</title><style>' +
+  '@page{ size:A4; margin:12mm 10mm; }' +
+  '*{ box-sizing:border-box; }' +
+  'body{ margin:0; background:#EFE9DC; color:#262824; font-family:"Segoe UI",Helvetica,Arial,sans-serif; font-size:9.6pt; }' +
+  '.sheet{ max-width:196mm; margin:12px auto; background:#FDFBF5; padding:0 0 18px; border:1px solid #E2D6BC; }' +
+  '.hd{ background:linear-gradient(135deg,#0B4D3B,#17684F); color:#EAF3EE; padding:18px 22px; display:flex; justify-content:space-between; align-items:center; }' +
+  '.hd h1{ margin:0; font-size:17pt; font-family:Georgia,serif; color:#fff; }' +
+  '.hd .sub{ font-size:8.6pt; color:#BCE7CE; margin-top:2px; }' +
+  '.hd .rt{ text-align:right; font-size:9pt; color:#E6CE9C; }' +
+  '.who{ display:flex; justify-content:space-between; padding:16px 22px 10px; border-bottom:1px solid #E6CE9C; }' +
+  '.who h2{ margin:0; font-size:14pt; font-family:Georgia,serif; color:#0B4D3B; }' +
+  '.who .meta{ text-align:right; font-size:9pt; color:#5D6B62; line-height:1.6; }' +
+  '.kpis{ display:flex; gap:10px; padding:14px 22px; }' +
+  '.kpi{ flex:1; border:1px solid #DCE7E0; border-radius:10px; padding:9px 12px; background:#fff; }' +
+  '.kpi b{ display:block; font-size:15pt; color:#0B4D3B; }' +
+  '.kpi span{ font-size:8.4pt; color:#6B6F66; }' +
+  '.kpi.strong{ background:#0B4D3B; border-color:#0B4D3B; } .kpi.strong b, .kpi.strong span{ color:#fff; }' +
+  'h3{ margin:14px 22px 6px; font-size:10.5pt; color:#0B4D3B; }' +
+  'table{ width:calc(100% - 44px); margin:0 22px; border-collapse:collapse; }' +
+  'th,td{ padding:6px 7px; border-bottom:1px solid #EFE7D6; text-align:left; vertical-align:top; }' +
+  'thead th{ background:#F3F7F4; font-size:8.2pt; color:#5D6B62; text-transform:uppercase; letter-spacing:.04em; }' +
+  'td small{ display:block; font-size:8pt; color:#8A8F86; }' +
+  '.num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }' +
+  'tfoot td{ background:#F3F7F4; font-weight:700; border-top:1px solid #C9A96E; }' +
+  '.gridtbl th,.gridtbl td{ padding:0; border:1px solid #EFE7D6; text-align:center; font-size:7.4pt; height:16px; }' +
+  '.gridtbl .gname{ text-align:left; padding:2px 6px; font-weight:600; font-size:8.4pt; white-space:nowrap; background:#FDFBF5; }' +
+  '.gridtbl thead th{ background:#FDFBF5; }' +
+  '.dw{ display:block; font-size:6.4pt; color:#8A8F86; } .dn{ display:block; font-size:7pt; }' +
+  '.c-ok{ background:#1B7A5A; color:#fff; } .c-abs{ background:#CFE3D8; } .c-lv{ background:#F6E6C3; }' +
+  '.c-tl{ background:#F6D9D2; } .c-sub{ background:#D9E4F6; } .c-rs{ background:#EFE7D6; } .c-cx{ background:#E6E6E6; }' +
+  '.c-none{ background:#F7F9F8; } .c-off{ background:#fff; }' +
+  '.legend{ margin:6px 22px 0; font-size:8.2pt; color:#5D6B62; }' +
+  '.lg{ margin-right:12px; white-space:nowrap; } .lg i{ display:inline-block; width:12px; height:11px; border:1px solid #DCE7E0;' +
+  ' margin-right:4px; font-style:normal; font-size:7pt; line-height:11px; text-align:center; vertical-align:-1px; }' +
+  'ul.notes{ margin:4px 22px 0 40px; padding:0; font-size:9pt; } ul.notes li{ margin:2px 0; }' +
+  '.total{ margin:14px 22px 0; border:1px solid #C9A96E; border-radius:10px; background:#F6FAF7; padding:10px 14px; }' +
+  '.total .row{ display:flex; justify-content:space-between; padding:3px 0; }' +
+  '.total .big{ font-size:13pt; font-weight:700; color:#0B4D3B; border-top:1px solid #E6CE9C; margin-top:5px; padding-top:7px; }' +
+  '.sign{ display:flex; justify-content:space-between; margin:26px 22px 0; font-size:9pt; color:#5D6B62; }' +
+  '.sign div{ width:44%; border-top:1px solid #9AA8A0; padding-top:5px; }' +
+  '.ft{ text-align:center; font-size:8.2pt; color:#8A8F86; margin-top:16px; }' +
+  '.noprint{ text-align:center; padding:12px; }' +
+  '.noprint button{ font:inherit; padding:9px 18px; margin:0 5px; border-radius:9px; border:1px solid #0B4D3B; background:#0B4D3B; color:#fff; cursor:pointer; }' +
+  '.noprint .alt{ background:#fff; color:#0B4D3B; }' +
+  '.sheet.editing{ outline:2px dashed #1B7A5A; outline-offset:5px; }' +
+  '@media print{ .noprint{ display:none; } body{ background:#fff; } .sheet{ border:0; margin:0; } }' +
+  '</style>' +
+  '<script>function toggleEdit(){var s=document.querySelector(".sheet"),b=document.getElementById("edit");' +
+  'var on=s.getAttribute("contenteditable")==="true";s.setAttribute("contenteditable",on?"false":"true");' +
+  's.classList.toggle("editing",!on);b.textContent=on?"Edit the text":"Done editing";if(!on)s.focus();}<\/script>' +
+  '</head><body>' +
+  '<div class="noprint"><button onclick="window.print()">Save as PDF / Print</button>' +
+    '<button class="alt" id="edit" onclick="toggleEdit()">Edit the text</button>' +
+    '<button class="alt" onclick="window.close()">Close</button></div>' +
+  '<div class="sheet">' +
+    '<div class="hd"><div><h1>' + esc(s.academyName || "ManzilulQuran") + '</h1>' +
+      '<div class="sub">' + esc(s.academyTagline || "E-learning Academy") + ' · ' + esc(s.website || "manzilulquran.in") + '</div></div>' +
+      '<div class="rt">Teacher Payment Report<br>' + esc(monthLabel(m)) + '</div></div>' +
+    '<div class="who"><div><h2>' + esc(t.name) + '</h2>' +
+      '<div class="sub" style="color:#5D6B62;font-size:9pt">' + lines.length + ' student' + (lines.length === 1 ? "" : "s") +
+      (courses.length ? ' · ' + esc(courses.join(", ")) : "") + '</div></div>' +
+      '<div class="meta">Period: ' + esc(fmtDate(opt.from || monthStart(m))) + ' – ' + esc(fmtDate(opt.to || monthEnd(m))) + '<br>' +
+      'Issued: ' + esc(fmtDate(opt.issued || today())) + '</div></div>' +
+    '<div class="kpis">' + kpi(sum("taken"), "Classes taken") + kpi(sum("counted"), "Classes counted") +
+      kpi(lines.length, "Students") + kpi(money(pv.payable), "Total payable", true) + '</div>' +
+    '<h3>Students</h3>' +
+    '<table><thead><tr><th>Student</th><th>Weekly plan</th><th class="num">From</th><th class="num">Class days</th>' +
+      '<th class="num">Taken</th><th class="num">Stu. abs/leave</th><th class="num">Tchr leave</th><th class="num">Counted</th>' +
+      '<th class="num">Base</th><th class="num">Add</th><th class="num">Deduct</th><th class="num">Amount</th></tr></thead>' +
+      '<tbody>' + studentRows + batchRows + '</tbody>' +
+      '<tfoot><tr><td colspan="3">Total</td><td class="num">' + sum("planned") + '</td><td class="num">' + sum("taken") + '</td>' +
+      '<td class="num">' + (sum("studentAbsent") + sum("studentLeave")) + '</td>' +
+      '<td class="num">' + (sum("teacherAbsent") + sum("substitute")) + '</td>' +
+      '<td class="num">' + sum("counted") + '</td><td class="num">' + money(sum("base")) + '</td>' +
+      '<td class="num">' + (sum("add") ? "+" + money(sum("add")) : "—") + '</td>' +
+      '<td class="num">' + (sum("deduct") ? "−" + money(sum("deduct")) : "—") + '</td>' +
+      '<td class="num">' + money(pv.indAmount + pv.batchAmount) + '</td></tr></tfoot></table>' +
+    (grid.length ? '<h3>Day by day</h3><table class="gridtbl"><thead><tr><th class="gname"></th>' + dayHd + '</tr></thead>' +
+      '<tbody>' + gridRows + '</tbody></table><div class="legend">' + legend + '</div>' : "") +
+    (notes.length ? '<h3>Notes</h3><ul class="notes">' + notes.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul>' : "") +
+    '<div class="total">' +
+      '<div class="row"><span>Individual classes</span><span>' + money(pv.indAmount) + '</span></div>' +
+      (pv.batchAmount ? '<div class="row"><span>Batch classes</span><span>' + money(pv.batchAmount) + '</span></div>' : "") +
+      (pv.bonus ? '<div class="row"><span>Bonus</span><span>+' + money(pv.bonus) + '</span></div>' : "") +
+      (pv.incentive ? '<div class="row"><span>Incentive</span><span>+' + money(pv.incentive) + '</span></div>' : "") +
+      (pv.deduction ? '<div class="row"><span>Deduction (whole month)</span><span>−' + money(pv.deduction) + '</span></div>' : "") +
+      (pv.paid ? '<div class="row"><span>Already paid</span><span>' + money(pv.paid) + '</span></div>' : "") +
+      '<div class="row big"><span>Total payable</span><span>' + money(pv.payable) + '</span></div>' +
+      (pv.paid ? '<div class="row"><span>Balance to pay</span><span>' + money(pv.balance) + '</span></div>' : "") +
+    '</div>' +
+    '<div class="sign"><div>Prepared by · ' + esc(s.academyName || "ManzilulQuran") + '</div>' +
+      '<div>Received by · ' + esc(t.name) + '</div></div>' +
+    '<div class="ft">' + esc(s.academyName || "ManzilulQuran") + ' ' + esc(s.academyTagline || "") + ' · ' +
+      esc(s.email || "") + ' · ' + esc(s.contactPhone || "") + ' · ' + esc(s.whatsappNumber || "") + '</div>' +
+  '</div></body></html>';
+}
+function openSalaryReport(t, m, opt){
+  const win = window.open("", "_blank");
+  if (!win) { toast("Allow pop-ups for this site, then try again", "bad", 6000); return; }
+  win.document.open(); win.document.write(salaryReportHTML(t, m, opt || {})); win.document.close();
+  closeModal();
+  toast("Salary report ready — use Save as PDF", "ok", 4200);
 }
