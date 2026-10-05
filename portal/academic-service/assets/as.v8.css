@@ -262,6 +262,21 @@ button,input,select,textarea{ font:inherit; color:inherit; }
 .lbar{ flex-wrap:wrap; }
 .lbar button{ margin-left:auto; }
 .lsort{ display:flex; align-items:center; gap:6px; margin:0; font-size:11.5px; color:var(--muted); }
+/* student-wise salary table */
+.tblwrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin:6px 0 2px; }
+.paytbl{ width:100%; border-collapse:collapse; font-size:12.6px; min-width:620px; }
+.paytbl th,.paytbl td{ padding:7px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+.paytbl thead th{ font-size:10.4px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted-2);
+  background:var(--card-2); white-space:nowrap; }
+.paytbl td small{ display:block; font-size:10.8px; color:var(--muted); }
+.paytbl .num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.paytbl tfoot td{ background:var(--card-2); font-weight:700; border-top:1px solid var(--mint); }
+.paytbl.small{ min-width:0; font-size:12.4px; }
+.paytbl .pos{ color:var(--ok); } .paytbl .neg{ color:var(--bad); }
+.chips{ display:flex; flex-wrap:wrap; gap:7px; margin-top:4px; }
+.chip{ display:flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:999px;
+  padding:5px 11px; font-size:12.4px; background:#fff; cursor:pointer; }
+.chip.on{ border-color:var(--mint); background:var(--tint); color:var(--pri-dk); }
 /* type-to-find box */
 .pickwrap{ position:relative; }
 .pickmenu{ position:absolute; left:0; right:0; top:calc(100% - 16px); z-index:40; max-height:250px; overflow:auto;
