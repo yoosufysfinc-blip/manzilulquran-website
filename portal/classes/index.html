@@ -11,483 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<style>
-  :root{
-    --emerald-deepest:#031b13;
-    --emerald-deep:#0a3d2e;
-    --emerald:#125c44;
-    --emerald-light:#1a7a5a;
-    --emerald-glow:#2dd4a4;
-    --gold:#c9a961;
-    --gold-light:#e4c987;
-    --gold-warm:#ffb86b;
-    --cream:#faf6ee;
-    --cream-dim:rgba(250,246,238,0.7);
-    --ink:#0e1a14;
-    --err:#ff9999;
-    --glow-warm:rgba(255,200,140,0.3);
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{
-    font-family:'Manrope',sans-serif;
-    background:radial-gradient(ellipse at top,var(--emerald-deep) 0%,var(--emerald-deepest) 65%,#000 100%);
-    color:var(--cream);min-height:100vh;padding:36px 20px 60px;
-  }
-
-  /* ---------- Lock ---------- */
-  .lock-screen{
-    max-width:420px;width:100%;background:#fff;color:var(--ink);
-    border-radius:22px;padding:44px 32px 36px;
-    box-shadow:0 30px 80px rgba(0,0,0,0.4);text-align:center;
-    animation:riseIn .35s ease;margin:80px auto 0;
-  }
-  @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-  .lock-logo{width:80px;height:80px;border-radius:50%;border:3px solid var(--emerald-light);margin:0 auto 22px;overflow:hidden;background:#fff}
-  .lock-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
-  .lock-title{font-size:22px;font-weight:800;color:var(--emerald);margin-bottom:6px}
-  .lock-sub{font-size:13.5px;color:#5B6B63;font-weight:500;margin-bottom:24px}
-  .lock-input{
-    width:100%;font-family:'Manrope',sans-serif;font-size:16px;font-weight:600;color:var(--ink);
-    border:2px solid var(--emerald-light);border-radius:12px;padding:14px 16px;
-    text-align:center;letter-spacing:4px;transition:border-color .2s;
-  }
-  .lock-input:focus{outline:none;border-color:var(--emerald);box-shadow:0 0 0 3px rgba(27,122,90,.15)}
-  .lock-input.wrong{border-color:#c0392b;animation:shake .4s}
-  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-  .lock-btn{
-    width:100%;margin-top:16px;font-family:'Manrope',sans-serif;font-size:15px;font-weight:800;
-    color:#fff;background:var(--emerald);border:none;border-radius:12px;padding:14px;cursor:pointer;
-  }
-  .lock-btn:hover{background:var(--emerald-light)}
-  .lock-error{color:#c0392b;font-size:12.5px;font-weight:600;margin-top:12px;min-height:16px}
-  .lock-hint{margin-top:22px;padding-top:20px;border-top:1px solid #E8F3EE;font-size:11.5px;color:#5B6B63}
-  .lock-hint a{color:var(--emerald-light);text-decoration:none;font-weight:600}
-
-  /* ---------- Admin shell ---------- */
-  .admin{display:none;max-width:1180px;margin:0 auto}
-  .admin.show{display:block;animation:riseIn .35s ease}
-  .admin-head{
-    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
-    margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid rgba(201,169,110,0.2);
-  }
-  .admin-head-left{display:flex;align-items:center;gap:16px}
-  .admin-logo{width:56px;height:56px;border-radius:50%;border:2px solid rgba(201,169,110,0.5);overflow:hidden;background:#fff;flex:0 0 auto}
-  .admin-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
-  .admin-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--cream);line-height:1.1}
-  .admin-title .accent{color:var(--gold-light);font-style:italic;font-weight:500}
-  .admin-sub{font-size:12px;color:var(--cream-dim);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
-  .admin-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-
-  .btn-ghost{
-    font-family:'Manrope',sans-serif;font-size:12px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
-    color:rgba(255,255,255,0.75);background:transparent;border:1px solid rgba(255,255,255,0.2);
-    border-radius:100px;padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
-    transition:background .2s;
-  }
-  .btn-ghost:hover{background:rgba(255,255,255,0.08)}
-  .btn-ghost svg{width:12px;height:12px}
-  .btn-gold{
-    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
-    color:var(--emerald-deepest);
-    background:linear-gradient(135deg,var(--gold-light),var(--gold));
-    border:none;border-radius:100px;padding:10px 20px;cursor:pointer;
-    display:inline-flex;align-items:center;gap:7px;
-    box-shadow:0 6px 20px -8px rgba(201,169,110,0.6);
-    transition:transform .15s, box-shadow .2s;
-  }
-  .btn-gold:hover{transform:translateY(-1px);box-shadow:0 10px 26px -8px rgba(201,169,110,0.8)}
-  .btn-gold svg{width:13px;height:13px}
-
-  /* ---------- Stats ---------- */
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
-  .stat{background:rgba(3,27,19,0.5);border:1px solid rgba(201,169,110,0.2);border-radius:14px;padding:16px 18px}
-  .stat-label{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:6px}
-  .stat-value{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--cream);line-height:1}
-
-  /* ---------- Attention / expiring soon ---------- */
-  .alerts{
-    background:linear-gradient(160deg, rgba(255,184,107,0.09), rgba(3,27,19,0.5));
-    border:1px solid rgba(255,184,107,0.3);
-    border-radius:16px;padding:18px 20px;margin-bottom:22px;
-    display:none;
-  }
-  .alerts.show{display:block;animation:riseIn .35s ease}
-  .alerts-head{
-    display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;
-  }
-  .alerts-head svg{width:17px;height:17px;color:var(--gold-warm);flex:0 0 auto}
-  .alerts-head h4{
-    font-family:'Manrope',sans-serif;
-    font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
-    color:var(--gold-warm);
-  }
-  .alerts-head .count{
-    font-size:10.5px;font-weight:800;letter-spacing:1px;
-    background:var(--gold-warm);color:var(--emerald-deepest);
-    padding:2px 9px;border-radius:100px;
-  }
-  .alert-row{
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:11px 14px;margin-bottom:8px;flex-wrap:wrap;
-    background:rgba(3,27,19,0.5);
-    border:1px solid rgba(255,184,107,0.16);
-    border-radius:11px;
-  }
-  .alert-row:last-child{margin-bottom:0}
-  .alert-info{flex:1;min-width:190px}
-  .alert-name{font-size:14.5px;font-weight:700;color:var(--cream);letter-spacing:-.2px}
-  .alert-sub{font-size:11.5px;color:var(--cream-dim);margin-top:3px}
-  .alert-sub b{color:var(--gold-light);font-weight:700}
-  .alert-btns{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-  .tag{
-    display:inline-block;padding:2px 9px;border-radius:100px;
-    font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
-    margin-left:7px;vertical-align:middle;
-  }
-  .tag.ending{background:rgba(255,184,107,0.16);color:var(--gold-warm);border:1px solid rgba(255,184,107,0.4)}
-  .tag.none  {background:rgba(255,153,153,0.12);color:var(--err);border:1px solid rgba(255,153,153,0.35)}
-  .btn-wa-sm{
-    font-family:'Manrope',sans-serif;
-    font-size:10.5px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
-    background:#25D366;color:#04301a;border:none;border-radius:100px;
-    padding:8px 14px;cursor:pointer;
-    display:inline-flex;align-items:center;gap:5px;
-    transition:background .2s, transform .15s;
-  }
-  .btn-wa-sm:hover{background:#1ebe5b;transform:translateY(-1px)}
-  .btn-wa-sm svg{width:11px;height:11px}
-  .btn-wa-sm.off{
-    background:rgba(255,255,255,0.06);color:var(--cream-faint);
-    cursor:not-allowed;border:1px solid rgba(255,255,255,0.1);
-  }
-  .btn-wa-sm.off:hover{transform:none;background:rgba(255,255,255,0.06)}
-
-  /* ---------- Controls ---------- */
-  .list-wrap{background:rgba(3,27,19,0.5);border:1px solid rgba(201,169,110,0.2);border-radius:14px;overflow:hidden}
-  .list-search{
-    padding:16px 20px;border-bottom:1px solid rgba(201,169,110,0.15);
-    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-  }
-  .list-search svg{width:18px;height:18px;color:var(--gold-light);flex:0 0 auto}
-  .list-search input{
-    flex:1;min-width:150px;font-family:'Manrope',sans-serif;font-size:14px;
-    color:var(--cream);background:transparent;border:none;outline:none;
-  }
-  .list-search input::placeholder{color:rgba(250,246,238,0.4)}
-  #resultCount{font-size:12px;color:var(--gold-light);font-weight:600;white-space:nowrap}
-
-  .filters{
-    display:flex;gap:10px;flex-wrap:wrap;
-    padding:14px 20px;border-bottom:1px solid rgba(201,169,110,0.15);
-  }
-  .filters select{
-    font-family:'Manrope',sans-serif;font-size:12.5px;font-weight:600;color:var(--cream);
-    background:rgba(3,27,19,0.75);border:1px solid rgba(201,169,110,0.25);
-    border-radius:100px;padding:8px 32px 8px 14px;cursor:pointer;outline:none;appearance:none;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c9a961' stroke-width='3' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
-    background-repeat:no-repeat;background-position:right 12px center;
-  }
-  .filters select:focus{border-color:var(--gold)}
-  .filters select option{background:var(--emerald-deepest);color:var(--cream)}
-
-  /* ---------- Table ---------- */
-  .list-table{width:100%;border-collapse:collapse}
-  .list-table thead th{
-    text-align:left;padding:14px 20px;font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-    color:var(--gold-light);background:rgba(3,27,19,0.4);border-bottom:1px solid rgba(201,169,110,0.15);
-  }
-  .list-table tbody tr{border-bottom:1px solid rgba(201,169,110,0.08);transition:background .2s}
-  .list-table tbody tr:hover{background:rgba(201,169,110,0.05)}
-  .list-table tbody tr:last-child{border-bottom:none}
-  .list-table td{padding:13px 20px;font-size:14px;color:var(--cream);vertical-align:middle}
-  .list-table td.date,.list-table td.sid{color:rgba(250,246,238,0.6);font-size:12.5px}
-  .list-table td.actions{text-align:right;white-space:nowrap}
-  .list-table td.actions button{
-    background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold-light);
-    padding:5px 11px;border-radius:100px;cursor:pointer;font-size:11px;font-weight:600;
-    letter-spacing:.8px;text-transform:uppercase;margin-left:5px;font-family:'Manrope',sans-serif;transition:all .2s;
-  }
-  .list-table td.actions button:hover{background:var(--gold);color:var(--emerald-deepest);border-color:var(--gold)}
-  .list-table td.actions button.danger{color:var(--err);border-color:rgba(255,153,153,0.3)}
-  .list-table td.actions button.danger:hover{background:#c0392b;color:#fff;border-color:#c0392b}
-
-  .pill{
-    display:inline-block;padding:3px 11px;border-radius:100px;
-    font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-  }
-  .pill.active{background:rgba(45,212,164,0.15);color:var(--emerald-glow);border:1px solid rgba(45,212,164,0.4)}
-  .pill.inactive{background:rgba(255,153,153,0.1);color:var(--err);border:1px solid rgba(255,153,153,0.3)}
-
-  .loading{text-align:center;padding:60px 20px;color:var(--cream-dim);font-size:14px}
-  .loading-spin{
-    display:inline-block;width:26px;height:26px;
-    border:3px solid rgba(201,169,110,0.2);border-top-color:var(--gold);
-    border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px;
-  }
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .empty-state{text-align:center;padding:60px 20px;color:var(--cream-dim);font-size:14px;line-height:1.7}
-
-  /* ---------- Modal ---------- */
-  .modal-backdrop{
-    display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);
-    backdrop-filter:blur(6px);z-index:100;
-    align-items:flex-start;justify-content:center;padding:30px 20px;overflow-y:auto;
-  }
-  .modal-backdrop.show{display:flex;animation:fadeIn .25s ease}
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  .modal{
-    background:linear-gradient(160deg,rgba(18,92,68,0.97) 0%,rgba(3,27,19,0.99) 100%);
-    border:1px solid rgba(201,169,110,0.3);
-    max-width:560px;width:100%;border-radius:20px;overflow:hidden;
-    box-shadow:0 40px 100px rgba(0,0,0,0.6);
-    animation:modalIn .35s cubic-bezier(.2,.9,.3,1.1) both;
-  }
-  @keyframes modalIn{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
-  .modal-head{
-    padding:26px 30px 20px;border-bottom:1px solid rgba(201,169,110,0.2);
-  }
-  .modal-head h3{
-    font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--cream);
-  }
-  .modal-head h3 .accent{color:var(--gold-light);font-style:italic;font-weight:500}
-  .modal-head p{font-size:12.5px;color:var(--cream-dim);margin-top:5px}
-  .modal-body{padding:24px 30px}
-  .modal-foot{
-    padding:16px 30px;display:flex;justify-content:flex-end;gap:10px;
-    border-top:1px solid rgba(201,169,110,0.2);background:rgba(3,27,19,0.4);
-  }
-
-  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .field{display:flex;flex-direction:column;gap:7px}
-  .field.full{grid-column:1/-1}
-  .field label{font-size:10.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-light)}
-  .field label .req{color:var(--gold-warm)}
-  .field input,.field select{
-    font-family:'Manrope',sans-serif;font-size:14.5px;font-weight:500;color:var(--cream);
-    background:rgba(3,27,19,0.7);border:1.5px solid rgba(201,169,110,0.25);
-    border-radius:11px;padding:12px 14px;width:100%;outline:none;appearance:none;
-    transition:border-color .25s, box-shadow .25s;
-  }
-  .field input::placeholder{color:rgba(250,246,238,0.32)}
-  /* ---------- study material picker (multi-course) ---------- */
-  .sm-wrap{margin-top:10px;display:flex;flex-direction:column;gap:9px}
-  .sm-course{border:1.5px solid rgba(201,169,110,0.25);border-radius:12px;background:rgba(3,27,19,0.45);overflow:hidden;transition:.2s}
-  .sm-course.on{border-color:var(--gold);background:rgba(201,169,110,0.07)}
-  .sm-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
-  .sm-head input{width:auto;margin:0;accent-color:var(--gold);cursor:pointer;flex:0 0 auto}
-  .sm-head b{font-family:'Manrope',sans-serif;font-size:13.5px;font-weight:700;color:var(--cream-dim);letter-spacing:.2px}
-  .sm-course.on .sm-head b{color:var(--cream)}
-  .sm-head .sm-count{margin-left:auto;font-size:11px;font-weight:700;color:var(--gold-light);white-space:nowrap}
-  .sm-body{padding:0 14px 13px;display:none}
-  .sm-course.on .sm-body{display:block}
-  .sm-hint{font-size:11.5px;color:var(--cream-dim);margin-bottom:9px;line-height:1.5}
-  .sm-lessons{display:flex;flex-wrap:wrap;gap:6px}
-  .sm-chk{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--cream-dim);
-    background:rgba(3,27,19,0.7);border:1.5px solid rgba(201,169,110,0.22);border-radius:99px;padding:6px 12px;cursor:pointer;transition:.2s;user-select:none}
-  .sm-chk:hover{border-color:rgba(201,169,110,0.5);color:var(--cream)}
-  .sm-chk input{width:auto;margin:0;accent-color:var(--gold)}
-  .sm-chk.on{background:rgba(201,169,110,0.18);border-color:var(--gold);color:var(--cream)}
-  .sm-tools{display:flex;gap:8px;margin-top:10px}
-  .sm-tools button{font-family:'Manrope',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
-    background:transparent;border:1.5px solid rgba(201,169,110,0.3);color:var(--gold-light);border-radius:8px;padding:5px 11px;cursor:pointer;transition:.2s}
-  .sm-tools button:hover{background:var(--gold);color:var(--emerald-deepest);border-color:var(--gold)}
-  /* ---------- study material summary (opens the popup) ---------- */
-  .sm-summary{
-    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
-    background:rgba(3,27,19,0.7);border:1.5px solid rgba(201,169,110,0.25);border-radius:11px;padding:12px 14px;
-  }
-  .sm-summary span{font-family:'Manrope',sans-serif;font-size:12.5px;font-weight:600;color:var(--cream-dim)}
-  .sm-summary-btn{padding:10px 18px;font-size:10.5px;flex:0 0 auto}
-  /* ---------- study material popup — liquid glass, saturated, playful ---------- */
-  .sm-modal-backdrop{
-    z-index:200;
-    background:rgba(6,20,26,0.45);
-    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  }
-  .sm-modal{
-    max-width:600px;border-radius:28px;
-    background:
-      linear-gradient(135deg, rgba(45,212,164,0.38) 0%, rgba(56,178,235,0.30) 45%, rgba(201,169,110,0.38) 100%);
-    backdrop-filter:blur(30px) saturate(220%);-webkit-backdrop-filter:blur(30px) saturate(220%);
-    border:1px solid rgba(255,255,255,0.4);
-    box-shadow:0 24px 70px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
-  }
-  .sm-modal .modal-head{border-bottom-color:rgba(255,255,255,0.25)}
-  .sm-modal .modal-foot{background:rgba(255,255,255,0.08);border-top-color:rgba(255,255,255,0.25)}
-  .sm-modal .sm-course{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.3)}
-  .sm-modal .sm-course.on{background:rgba(45,212,164,0.22);border-color:var(--gold-light)}
-  .sm-modal .sm-chk{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.28)}
-  .sm-modal .sm-chk.on{background:linear-gradient(135deg, rgba(45,212,164,0.55), rgba(201,169,110,0.55));border-color:var(--gold-light);color:var(--cream)}
-  .sm-modal .sm-tools button:hover{background:var(--gold-light)}
-  .field input:focus,.field select:focus{
-    border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,0.14);
-  }
-  .field select{
-    cursor:pointer;padding-right:38px;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%23c9a961' stroke-width='2.5' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
-    background-repeat:no-repeat;background-position:right 14px center;
-  }
-  .field select option{background:var(--emerald-deepest);color:var(--cream)}
-  .field input[type="date"]{color-scheme:dark}
-  .field .err-msg{font-size:11.5px;color:var(--err);display:none}
-  .field.invalid input,.field.invalid select{border-color:var(--err)}
-  .field.invalid .err-msg{display:block}
-
-  .btn-solid{
-    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
-    background:linear-gradient(135deg,var(--gold-light),var(--gold));color:var(--emerald-deepest);
-    border:none;border-radius:100px;padding:12px 24px;cursor:pointer;
-    display:inline-flex;align-items:center;gap:7px;
-  }
-  .btn-solid:hover{background:linear-gradient(135deg,var(--gold-warm),var(--gold-light))}
-  .btn-solid[disabled]{opacity:.6;cursor:not-allowed}
-  .btn-solid.danger{background:#c0392b;color:#fff}
-  .btn-solid.danger:hover{background:#e74c3c}
-  .btn-outline{
-    font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
-    background:transparent;color:var(--gold-light);border:1.5px solid rgba(201,169,110,0.5);
-    border-radius:100px;padding:11px 24px;cursor:pointer;
-  }
-  .btn-outline:hover{background:rgba(201,169,110,0.12)}
-
-  /* ---------- Share modal ---------- */
-  .share-link-box{
-    display:flex;align-items:center;gap:10px;
-    background:rgba(3,27,19,0.8);border:1.5px solid rgba(201,169,110,0.3);
-    border-radius:11px;padding:12px 14px;margin-bottom:16px;
-  }
-  .share-link-box input{
-    flex:1;background:transparent;border:none;outline:none;
-    font-family:'Manrope',sans-serif;font-size:13px;color:var(--gold-light);
-    font-weight:500;
-  }
-  .share-actions{display:flex;gap:10px;flex-wrap:wrap}
-  .share-actions button{flex:1;min-width:130px;justify-content:center}
-  .btn-wa{
-    font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
-    background:#25D366;color:#04301a;border:none;border-radius:100px;padding:12px 20px;cursor:pointer;
-    display:inline-flex;align-items:center;gap:7px;
-  }
-  .btn-wa:hover{background:#1ebe5b}
-  .btn-wa svg{width:14px;height:14px}
-  .warn-box{
-    background:rgba(255,153,153,0.08);border:1px solid rgba(255,153,153,0.3);
-    border-radius:11px;padding:13px 15px;margin-top:16px;
-    font-size:12.5px;color:var(--cream-dim);line-height:1.6;
-  }
-  .warn-box b{color:var(--err)}
-
-  .toast{
-    position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);
-    background:var(--emerald-deepest);border:1px solid var(--gold);
-    color:var(--cream);padding:13px 24px;border-radius:100px;
-    font-size:13px;font-weight:600;z-index:200;opacity:0;
-    transition:all .3s cubic-bezier(.2,.9,.3,1.2);
-    box-shadow:0 12px 40px rgba(0,0,0,0.5);
-  }
-  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-  .toast.err{border-color:var(--err);color:var(--err)}
-
-  @media (max-width:700px){
-    .admin-title{font-size:22px}
-    .fgrid{grid-template-columns:1fr}
-
-    /* ── Rows become chips ──────────────────────────────────────────
-       The label/value card ran ~600px per student — five stacked rows
-       plus five wrapped buttons. Scanning 50 students meant scrolling
-       for a minute. A chip is ~62px: the three things you actually scan
-       by (name, ID, course) stay visible, everything else waits behind
-       a tap.
-    ──────────────────────────────────────────────────────────────── */
-    .list-table thead{display:none}
-    .list-table,.list-table tbody{display:block;width:100%}
-
-    .list-table tr{
-      position:relative;
-      display:flex;flex-wrap:wrap;align-items:center;
-      gap:2px 7px;
-      margin:8px 14px;padding:12px 38px 12px 14px;
-      width:auto;cursor:pointer;
-      background:rgba(3,27,19,0.5);
-      border:1px solid rgba(201,169,110,0.18);
-      border-radius:14px;
-      transition:border-color .2s, background .2s;
-    }
-    .list-table tr:hover{background:rgba(3,27,19,0.5)}
-    .list-table tr.open{
-      background:rgba(3,27,19,0.8);
-      border-color:rgba(201,169,110,0.45);
-    }
-
-    /* chevron — the only hint that there's more behind the tap */
-    .list-table tr::after{
-      content:'';position:absolute;right:16px;top:19px;
-      width:7px;height:7px;
-      border-right:2px solid var(--gold-light);
-      border-bottom:2px solid var(--gold-light);
-      transform:rotate(45deg);opacity:.4;
-      transition:transform .25s, opacity .2s;
-    }
-    .list-table tr.open::after{transform:rotate(-135deg);top:22px;opacity:.9}
-
-    .list-table td{display:inline;padding:0;border:none;background:none}
-    .list-table td::before{content:none}
-
-    /* Status becomes a dot in front of the name. A whole labelled row
-       to say one word was the worst offender. */
-    .list-table td:nth-child(5){order:0;flex:0 0 8px;line-height:0}
-    .list-table td:nth-child(5) .pill{
-      display:block;width:8px;height:8px;border-radius:50%;
-      font-size:0;padding:0;border:none;letter-spacing:0;
-    }
-    .list-table td:nth-child(5) .pill.active{background:var(--emerald-glow);box-shadow:0 0 7px rgba(45,212,164,.6)}
-    .list-table td:nth-child(5) .pill.inactive{background:var(--err);box-shadow:0 0 7px rgba(255,153,153,.5)}
-
-    /* Name fills the rest of line 1 exactly (8px dot + 7px gap = 15px),
-       which forces ID and Course to wrap onto line 2 together. */
-    .list-table td:nth-child(1){
-      order:1;flex:1 1 calc(100% - 15px);min-width:0;
-      font-size:14.5px;font-weight:700;color:var(--cream);letter-spacing:-.2px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    }
-
-    /* line 2: ID · Course */
-    .list-table td:nth-child(2){
-      order:2;flex:0 0 auto;margin-left:15px;
-      font-size:11.5px;color:var(--cream-faint);font-variant-numeric:tabular-nums;
-    }
-    .list-table td:nth-child(3){
-      order:3;flex:1 1 auto;min-width:0;
-      font-size:11.5px;color:var(--cream-dim);
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    }
-    .list-table td:nth-child(3)::before{
-      content:'·';margin-right:5px;color:var(--cream-faint);opacity:.5;
-    }
-
-    /* Behind the tap */
-    .list-table td:nth-child(4){display:none}
-    .list-table td.actions{display:none}
-
-    .list-table tr.open td:nth-child(4){
-      display:block;order:4;flex:1 1 100%;
-      margin:9px 0 0 15px;
-      font-size:11.5px;color:var(--cream-faint);
-    }
-    .list-table tr.open td:nth-child(4)::before{
-      content:'Joined ';color:var(--gold-light);font-weight:700;
-      font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;
-      opacity:.85;
-    }
-    .list-table tr.open td.actions{
-      display:flex;order:5;flex:1 1 100%;flex-wrap:wrap;gap:6px;
-      justify-content:flex-start;
-      padding-top:11px;margin-top:10px;
-      border-top:1px solid rgba(201,169,110,0.15);
-    }
-    .list-table tr.open td.actions button{margin-left:0;padding:8px 13px;flex:0 0 auto}
-  }
-</style>
+<link rel="stylesheet" href="/assets/classes/admin.v1.css" />
 </head>
 <body>
 
@@ -517,6 +41,26 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Class Sheet
         </button>
+        <button class="btn-gold" id="newBatchBtn" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Batch
+        </button>
+        <button class="btn-ghost" id="liveBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M6.5 6.5a7.8 7.8 0 000 11M17.5 6.5a7.8 7.8 0 010 11"/></svg>
+          Live
+        </button>
+        <button class="btn-ghost" id="timesBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+          Times
+        </button>
+        <button class="btn-ghost" id="noticesBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+          Notices
+        </button>
+        <button class="btn-ghost" id="coursesBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          Courses
+        </button>
         <button class="btn-ghost" id="refreshBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
           Refresh
@@ -528,6 +72,31 @@
       </div>
     </div>
 
+    <!-- =========================================================
+         WORKSPACES. Individual is the system that has always been
+         here. Batch is new and starts empty. Switching is a local
+         toggle only — it fetches nothing and writes nothing.
+         ========================================================= -->
+    <div class="ws-tabs" role="tablist">
+      <button class="ws-tab active" data-ws="individual" role="tab" aria-selected="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        Individual
+        <span class="ws-count" id="wsCountIndividual">—</span>
+      </button>
+      <button class="ws-tab" data-ws="batch" role="tab" aria-selected="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+        Batch
+        <span class="ws-count" id="wsCountBatch">—</span>
+      </button>
+    </div>
+
+    <div class="ws" id="wsIndividual">
+
     <div class="alerts" id="alerts">
       <div class="alerts-head">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -535,6 +104,9 @@
           <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>
         <h4>Needs attention</h4>
+        <button class="alerts-toggle" id="alertsToggle" aria-expanded="true" title="Collapse">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
         <span class="count" id="alertCount">0</span>
       </div>
       <div id="alertRows"></div>
@@ -577,6 +149,314 @@
         <div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>
       </div>
     </div>
+    </div><!-- /wsIndividual -->
+
+    <!-- BATCH WORKSPACE — shell only. Nothing here talks to the server yet. -->
+    <div class="ws" id="wsBatch" hidden>
+      <div class="stats" id="bStats">
+        <div class="stat"><div class="stat-label">Batches</div><div class="stat-value" id="bStatTotal">—</div></div>
+        <div class="stat"><div class="stat-label">Students</div><div class="stat-value" id="bStatStudents">—</div></div>
+        <div class="stat"><div class="stat-label">Paid this month</div><div class="stat-value" id="bStatPaid">—</div></div>
+      </div>
+      <div id="bList"><div class="loading"><div class="loading-spin"></div><div>Loading batches…</div></div></div>
+    </div>
+  </div>
+    </div>
+  </div>
+
+  <!-- BATCH: create / edit -->
+  <div class="modal-backdrop" id="batchModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="bFormTitle">New <span class="accent">Batch</span></h3>
+        <p>One share link for the whole batch. Who may open it is decided by the monthly tick, not the link.</p>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Batch name</label>
+          <input type="text" id="bName" placeholder="e.g. Madrasa Evening" autocomplete="off" />
+          <span class="err-msg">A batch needs a name.</span>
+        </div>
+        <div class="field">
+          <label>Course</label>
+          <select id="bCourse"><option value="">Select course</option></select>
+        </div>
+        <div class="field" id="bSubjectsField" hidden>
+          <label>Subjects <span class="opt">optional</span></label>
+          <div class="subj-wrap" id="bSubjects"></div>
+          <div class="subj-none" id="bSubjectsNone" hidden>This course has no subjects yet.</div>
+        </div>
+        <div class="field">
+          <label>WhatsApp group <span class="opt">optional</span></label>
+          <input type="url" id="bWhatsapp" placeholder="https://chat.whatsapp.com/…" autocomplete="off" />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Class time · IST</label>
+            <input type="time" id="bTime" step="300" />
+          </div>
+          <div class="field">
+            <label>Grace days</label>
+            <input type="number" id="bGrace" min="0" max="28" value="5" />
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="bStatus"><option value="Active">Active</option><option value="Paused">Paused</option></select>
+          </div>
+        </div>
+        <div class="b-hint">Grace days let last month&rsquo;s paid students still get in for the first few days of a new month, so a late fee doesn&rsquo;t lock a child out on the 1st. Set 0 to switch it off.</div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="bCancelBtn">Cancel</button>
+        <button class="btn-solid" id="bSaveBtn">Create batch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BATCH: roster + monthly access -->
+  <div class="modal-backdrop" id="rosterModal">
+    <div class="modal modal-wide">
+      <div class="modal-head">
+        <h3 id="rTitle">Roster</h3>
+        <p>Who is on this batch, and who has paid this month.</p>
+      </div>
+      <div class="modal-body">
+        <div class="t-link">
+          <div class="t-link-head">
+            <span class="t-link-title">Teacher link</span>
+            <span class="t-link-note">Opens without signing in. No fee check, no device limit.</span>
+          </div>
+          <input type="text" id="tLinkInput" readonly />
+          <div class="t-link-btns">
+            <button class="btn-outline sm" id="tCopyBtn">Copy</button>
+            <button class="btn-outline sm" id="tWaBtn">WhatsApp</button>
+            <button class="btn-ghost sm danger" id="tResetBtn">Reset</button>
+          </div>
+        </div>
+
+        <div class="r-session">
+          <div class="r-session-head">
+            <span class="r-session-title">Batch session <b id="rSesNo">—</b></span>
+            <span class="r-session-sub" id="rSesLine">One window for the whole batch. Everyone on the roster sits inside it.</span>
+          </div>
+          <div class="r-session-grid">
+            <div class="r-fld">
+              <label>Start</label>
+              <input type="date" id="rSesStart" />
+            </div>
+            <div class="r-fld r-fld-days">
+              <label>Days</label>
+              <input type="number" id="rSesDays" min="1" max="400" placeholder="30" />
+            </div>
+            <div class="r-fld">
+              <label>Ends</label>
+              <div class="r-end" id="rSesEnd">—</div>
+            </div>
+          </div>
+          <div class="r-session-btns">
+            <button class="btn-outline sm" id="rSesSave">Save dates</button>
+            <button class="btn-gold sm" id="rSesNext">Start next session</button>
+          </div>
+          <div class="r-session-warn">Starting the next session unticks everyone. Last session's record is kept.</div>
+        </div>
+
+        <div class="r-ticksbar">
+          <span id="rPaidCount">—</span>
+          <button class="btn-solid sm" id="rSaveAccess">Save ticks</button>
+        </div>
+        <div id="rList"><div class="loading"><div class="loading-spin"></div><div>Loading roster…</div></div></div>
+
+        <div class="r-add">
+          <div class="r-add-title">Add a student</div>
+          <div class="r-add-grid">
+            <input type="text" id="rName" placeholder="Full name" autocomplete="off" />
+            <input type="text" id="rSid" placeholder="Student ID" autocomplete="off" />
+            <input type="email" id="rEmail" placeholder="Email for sign-in" autocomplete="off" />
+            <input type="date" id="rDob" />
+            <input type="text" id="rMqId" placeholder="MQ ID (optional)" autocomplete="off" />
+          </div>
+          <div class="r-add-actions">
+            <span class="r-add-note">The student signs in with this email and date of birth.</span>
+            <button class="btn-solid sm" id="rAddBtn">Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="rCloseBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONE CLASS TIME -->
+  <div class="modal-backdrop" id="timeModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Class <span class="accent">Time</span></h3>
+        <p id="timeFor">—</p>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Start time · IST</label>
+          <input type="time" id="tmInput" step="300" />
+        </div>
+        <div class="b-hint">Always the academy's time (IST), whatever country the student is in. The class counts as live for 60 minutes from this time.</div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="tmClear">Clear</button>
+        <button class="btn-outline" id="tmCancel">Cancel</button>
+        <button class="btn-solid" id="tmSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALL CLASS TIMES — for filling in the sheets that already exist -->
+  <div class="modal-backdrop" id="timesModal">
+    <div class="modal modal-wide">
+      <div class="modal-head">
+        <h3>Class <span class="accent">Times</span></h3>
+        <p id="timesSub">Set times for sheets that already exist. Only changed rows are saved.</p>
+      </div>
+      <div class="modal-body">
+        <div class="times-bar">
+          <label class="times-toggle"><input type="checkbox" id="timesMissingOnly" checked /> <span>Only those with no time</span></label>
+          <label class="times-toggle"><input type="checkbox" id="timesActiveOnly" checked /> <span>Active only</span></label>
+          <span class="times-count" id="timesChanged">0 changed</span>
+        </div>
+        <div id="timesList"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="timesCancel">Close</button>
+        <button class="btn-solid" id="timesSave" disabled>Save changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE — today's classes, in time order -->
+  <div class="modal-backdrop" id="liveModal">
+    <div class="modal modal-wide">
+      <div class="modal-head">
+        <h3>Live <span class="accent">Today</span></h3>
+        <p id="liveSub">Classes running today, in time order. Holidays and finished plans are left out.</p>
+      </div>
+      <div class="modal-body">
+        <div id="liveList"><div class="loading"><div class="loading-spin"></div><div>Working out today's classes…</div></div></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="liveRefresh">Refresh</button>
+        <button class="btn-solid" id="liveCloseBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTICE BOARD -->
+  <div class="modal-backdrop" id="noticesModal">
+    <div class="modal modal-wide">
+      <div class="modal-head">
+        <h3>Notice <span class="accent">Board</span></h3>
+        <p>Announcements to one student, a course, or everyone.</p>
+      </div>
+      <div class="modal-body">
+
+        <div class="ntc-admin-grid">
+          <!-- composer -->
+          <div class="ntc-compose">
+            <div class="field">
+              <label>Title</label>
+              <input type="text" id="nTitle" maxlength="80" placeholder="e.g. Eid holiday" autocomplete="off" />
+              <span class="err-msg">A notice needs a title.</span>
+            </div>
+
+            <div class="field">
+              <label>Message</label>
+              <textarea id="nMessage" rows="3" maxlength="500" placeholder="What should the students know?"></textarea>
+              <span class="err-msg">A notice needs a message.</span>
+            </div>
+
+            <div class="field">
+              <label>Type</label>
+              <div class="ntc-types" id="nTypes">
+                <button type="button" class="ntc-type on" data-type="info">Info</button>
+                <button type="button" class="ntc-type" data-type="urgent">Important</button>
+                <button type="button" class="ntc-type" data-type="holiday">Holiday</button>
+                <button type="button" class="ntc-type" data-type="celebration">Good news</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Who sees it</label>
+              <select id="nAudience">
+                <option value="all">Everyone</option>
+                <option value="course">Selected courses</option>
+                <option value="students">Selected students</option>
+              </select>
+            </div>
+
+            <div class="field" id="nTargetField" hidden>
+              <label id="nTargetLabel">Courses</label>
+              <input type="text" id="nTargetSearch" placeholder="Search…" autocomplete="off" />
+              <div class="ntc-targets" id="nTargets"></div>
+              <span class="err-msg">Pick at least one.</span>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label>From <span class="opt">optional</span></label>
+                <input type="date" id="nStart" />
+              </div>
+              <div class="field">
+                <label>Until <span class="opt">optional</span></label>
+                <input type="date" id="nEnd" />
+              </div>
+            </div>
+
+            <label class="ntc-pin">
+              <input type="checkbox" id="nPinned" />
+              <span>Pin it — also runs in the ticker under the header</span>
+            </label>
+
+            <div class="ntc-compose-actions">
+              <button class="btn-outline" id="nCancelBtn" hidden>Cancel edit</button>
+              <button class="btn-solid" id="nSaveBtn">Post notice</button>
+            </div>
+          </div>
+
+          <!-- live preview -->
+          <div class="ntc-preview">
+            <div class="ntc-preview-label">How it will look</div>
+            <div class="ntc-phone">
+              <div class="ntc-phone-in" id="nPreview"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ntc-board-label">Posted notices</div>
+        <div id="nList"><div class="loading"><div class="loading-spin"></div><div>Loading notices…</div></div></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="nCloseBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COURSES & SUBJECTS -->
+  <div class="modal-backdrop" id="coursesModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Courses &amp; <span class="accent">Subjects</span></h3>
+        <p>The course list the form offers, and the subjects under each one.</p>
+      </div>
+      <div class="modal-body">
+        <div id="crsList"><div class="loading"><div class="loading-spin"></div><div>Loading courses…</div></div></div>
+
+        <div class="crs-add">
+          <input type="text" id="crsNewName" placeholder="New course name" autocomplete="off" />
+          <button class="btn-solid" id="crsAddBtn">Add course</button>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-outline" id="crsCloseBtn">Done</button>
+      </div>
+    </div>
   </div>
 
   <!-- CREATE / EDIT MODAL -->
@@ -607,15 +487,14 @@
             <label>Course <span class="req">*</span></label>
             <select id="fCourse">
               <option value="" disabled selected>Select course</option>
-              <option value="Hifzul Qur'an">Hifzul Qur'an</option>
-              <option value="Tartheel">Tartheel</option>
-              <option value="Quranul Yawmi">Quranul Yawmi</option>
-              <option value="Madrasa Studies">Madrasa Studies</option>
-              <option value="Tajweedul Qur'an">Tajweedul Qur'an</option>
-              <option value="Tafseerul Qur'an">Tafseerul Qur'an</option>
-              <option value="Dawra">Dawra</option>
             </select>
             <span class="err-msg">Please select a course.</span>
+          </div>
+
+          <div class="field" id="fSubjectsField" hidden>
+            <label>Subjects <span class="opt">optional</span></label>
+            <div class="subj-wrap" id="fSubjects"></div>
+            <div class="subj-none" id="fSubjectsNone" hidden>This course has no subjects yet. Add them in Courses &amp; Subjects.</div>
           </div>
           <div class="field">
             <label>Status</label>
@@ -639,6 +518,14 @@
           <div class="field full">
             <label>Hifz Report Link <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— paste from the Hifz Command Center (share ▸). Shows a button on the class sheet.</span></label>
             <input type="url" id="fHifzLink" placeholder="https://manzilulquran.in/portal/study-report/?s=...&t=..." />
+          </div>
+          <div class="field">
+            <label>Class Time <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— IST, e.g. 19:00</span></label>
+            <input type="text" id="fClassTime" placeholder="19:00" autocomplete="off" />
+          </div>
+          <div class="field full">
+            <label>MQ ID <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— links this sheet to the same student in Academic Service</span></label>
+            <input type="text" id="fMqId" placeholder="MQ4156" autocomplete="off" />
           </div>
           <div class="field full">
             <label>Contact Number <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— admin only, never shown on the share link</span></label>
@@ -719,72 +606,38 @@
 
   <div class="toast" id="toast"></div>
 
+<!-- LIVE BUILD — the live Classes spreadsheet. -->
+<script>
+window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
+</script>
+
+<script src="/assets/classes/engine.v1.js"></script>
+<script src="/assets/classes/api.v2.js"></script>
+<script src="/assets/classes/catalog.v1.js"></script>
 <script>
 /* =================================================================
    ░░  CLASSES ADMIN  ░░
    ================================================================= */
 
 // CONFIG — paste the Classes Apps Script Web App URL here
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
+const SCRIPT_URL = window.MQ_SCRIPT_URL;
 const PORTAL_PASSWORD = "mqwing7safwa";     // Classes only — separate from the main portal
-const ADMIN_API_PASSWORD = "manzil2026admin"; // must match ADMIN_PASSWORD in apps-script-classes.gs
-const SHARE_BASE = window.location.origin + "/class/";
+const ADMIN_API_PASSWORD = "manzil2026admin";
+/* Handed to the API layer, which reads it at call time. Student pages
+   never set it, so an admin action from one sends no password. */
+window.MQ_ADMIN_PASSWORD = ADMIN_API_PASSWORD; // must match ADMIN_PASSWORD in apps-script-classes.gs
+const SHARE_BASE = window.location.origin + mqUrl("/class/");
 
 const SESSION_KEY = "mq_classes_unlocked_at";  // own key, so a portal unlock does NOT open Classes
 const SESSION_MAX_MS = 24 * 60 * 60 * 1000;
 
-const $ = (id) => document.getElementById(id);
 let classes = [];
 let editingId = null;      // null = creating, otherwise Class ID
 let shareTarget = null;    // class object currently in the share modal
 let confirmAction = null;  // function to run on confirm
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const DAYS_FULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-
-// Flag a student once their running plan has fewer than this many classes left
 const LOW_CLASS_THRESHOLD = 6;
-
-/* ---------------- Calendar engine ----------------
-   Same rules as /class/ and /join/. Kept inline rather than shared so each
-   page stays a single self-contained upload.
-------------------------------------------------- */
-function parseDate(s){
-  const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if(!m) return null;
-  return new Date(+m[1], +m[2]-1, +m[3]);
-}
-function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
-function today0(){ const t = new Date(); t.setHours(0,0,0,0); return t; }
-function endDate(cal){
-  const s = parseDate(cal.startDate);
-  return s ? addDays(s, (cal.days||1)-1) : null;
-}
-function calStatus(cal){
-  if(!cal.active) return 'Inactive';
-  const s = parseDate(cal.startDate), e = endDate(cal);
-  if(!s || !e) return 'Inactive';
-  const t = today0();
-  if(t < s) return 'Upcoming';
-  if(t > e) return 'Completed';
-  return 'Active';
-}
-function buildDays(cal){
-  const start = parseDate(cal.startDate);
-  if(!start) return [];
-  const off = new Set((cal.weeklyOff||[]).map(n => DAYS_FULL.indexOf(n)).filter(i => i>=0));
-  const links = cal.links || [];
-  const out = [];
-  let linkIdx = 0;
-  for(let i=0;i<cal.days;i++){
-    const date = addDays(start, i);
-    const isOff = off.has(date.getDay());
-    let link = null;
-    if(!isOff && links.length){ link = links[linkIdx % links.length]; linkIdx++; }
-    out.push({ n:i+1, date, isOff, link });
-  }
-  return out;
-}
 
 /* ---------------- Who needs attention? ----------------
    Two things worth chasing:
@@ -812,6 +665,1288 @@ function classAlert(c){
   return { kind:'none', left:0, cal:null };
 }
 
+
+/* ---------------- Workspaces ----------------
+   A local toggle between the Individual system and the Batch shell.
+   It fetches nothing and writes nothing: switching tabs only shows
+   and hides sections that are already in the page. The choice is
+   kept for the tab session so a refresh lands where you left off. */
+const WS_KEY = "mq_classes_ws";
+
+function setWorkspace(name){
+  const batch = (name === "batch");
+
+  $("wsIndividual").hidden = batch;
+  $("wsBatch").hidden      = !batch;
+
+  document.querySelectorAll(".ws-tab").forEach(function(t){
+    const on = (t.dataset.ws === name);
+    t.classList.toggle("active", on);
+    t.setAttribute("aria-selected", on ? "true" : "false");
+  });
+
+  // The header action belongs to whichever workspace is open.
+  $("newClassBtn").hidden = batch;
+  $("newBatchBtn").hidden = !batch;
+
+  try{ sessionStorage.setItem(WS_KEY, name); }catch(e){}
+
+  // The batch list is fetched the first time that workspace is opened,
+  // not on unlock — most sessions never leave the Individual tab.
+  if(batch && !batches.length) loadBatches();
+}
+
+document.querySelectorAll(".ws-tab").forEach(function(t){
+  t.addEventListener("click", function(){ setWorkspace(t.dataset.ws); });
+});
+
+
+/* ---------------- Courses & Subjects ----------------
+   The course list used to be seven <option> tags frozen into this file.
+   It is now a sheet, so the academy can add a course without an upload.
+   Subjects hang off the course; a student gets a subset of them.
+
+   Renaming is handled entirely on the server: it rewrites every class row
+   holding the old name in the same call, so nothing is left orphaned. */
+let courses = [];
+
+async function loadCourses(){
+  try{
+    const out = await fetchCourses();
+    courses = (out.result === "success") ? (out.courses || []) : [];
+  }catch(e){
+    console.error(e);
+    courses = [];
+  }
+  fillCourseSelects();
+}
+
+/* The form offers active courses only, but an existing student may sit on
+   a course that was since switched off. That option is added back just for
+   them, so opening their record never silently changes their course. */
+function fillCourseSelects(keepValue){
+  const sel = $("fCourse");
+  const want = keepValue !== undefined ? keepValue : sel.value;
+
+  let opts = '<option value="" disabled' + (want ? '' : ' selected') + '>Select course</option>';
+  courses.filter(c => c.active).forEach(c => {
+    opts += `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`;
+  });
+  if(want && !courses.some(c => c.active && c.name === want)){
+    opts += `<option value="${escapeHtml(want)}">${escapeHtml(want)} (inactive)</option>`;
+  }
+  sel.innerHTML = opts;
+  if(want) sel.value = want;
+}
+
+/* listClasses returns the raw cell, getClassAdmin returns a parsed array.
+   Accept both rather than making the caller care. */
+function smSubjects(c){
+  const v = c && c["Subjects"];
+  if(Array.isArray(v)) return v;
+  if(!v) return [];
+  try{ const a = JSON.parse(v); return Array.isArray(a) ? a : []; }catch(e){ return []; }
+}
+
+function courseByName(name){
+  return courses.find(c => c.name === name) || null;
+}
+
+/* Subject chips for whichever course is selected. Ticks are preserved
+   when they still exist on the new course, dropped when they do not. */
+function buildSubjects(selected){
+  const course = courseByName($("fCourse").value);
+  const field  = $("fSubjectsField");
+  const wrap   = $("fSubjects");
+  const none   = $("fSubjectsNone");
+
+  if(!course){ field.hidden = true; wrap.innerHTML = ""; return; }
+
+  field.hidden = false;
+  const list = course.subjects || [];
+  const on = new Set(selected || []);
+
+  if(!list.length){
+    wrap.innerHTML = "";
+    none.hidden = false;
+    return;
+  }
+  none.hidden = true;
+  wrap.innerHTML = list.map(sub => `
+    <label class="subj-chip${on.has(sub) ? ' on' : ''}">
+      <input type="checkbox" value="${escapeHtml(sub)}"${on.has(sub) ? ' checked' : ''}>
+      <span>${escapeHtml(sub)}</span>
+    </label>`).join("");
+
+  wrap.querySelectorAll(".subj-chip input").forEach(cb => {
+    cb.addEventListener("change", () => cb.closest(".subj-chip").classList.toggle("on", cb.checked));
+  });
+}
+
+function collectSubjects(){
+  return [...$("fSubjects").querySelectorAll("input:checked")].map(cb => cb.value);
+}
+
+/* ---------------- Courses manager ---------------- */
+function renderCourses(){
+  if(!courses.length){
+    $("crsList").innerHTML = '<div class="empty-state">No courses yet. Add the first one below.</div>';
+    return;
+  }
+  $("crsList").innerHTML = courses.map(c => {
+    const used = classes.filter(x => (x["Course"] || "") === c.name).length;
+    return `<div class="crs-row${c.active ? '' : ' off'}" data-id="${c.courseId}">
+      <div class="crs-top">
+        <input type="text" class="crs-name" value="${escapeHtml(c.name)}" />
+        <span class="crs-used">${used} student${used === 1 ? '' : 's'}</span>
+        <button class="crs-toggle" data-act="toggle" title="${c.active ? 'Switch off' : 'Switch on'}">${c.active ? 'On' : 'Off'}</button>
+      </div>
+      <div class="crs-subs">
+        ${(c.subjects || []).map(sb => `<span class="crs-sub">${escapeHtml(sb)}<b data-act="delsub" data-sub="${escapeHtml(sb)}">&times;</b></span>`).join("")}
+        <input type="text" class="crs-subadd" placeholder="+ subject" />
+      </div>
+      <div class="crs-actions">
+        <button class="btn-outline crs-save" data-act="save">Save</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function saveCourse(courseId, name, subjects, active){
+  return await saveCourseApi({
+    courseId: courseId || "",
+    name: name,
+    subjects: subjects,
+    active: active
+  });
+}
+
+$("coursesBtn").addEventListener("click", async () => {
+  openModal("coursesModal");
+  await loadCourses();
+  renderCourses();
+});
+$("crsCloseBtn").addEventListener("click", () => closeModal("coursesModal"));
+
+$("crsAddBtn").addEventListener("click", async () => {
+  const name = ($("crsNewName").value || "").trim();
+  if(!name) return toast("Type a course name first", true);
+
+  const out = await saveCourse("", name, [], true);
+  if(out.result !== "success") return toast(out.error || "Could not add the course", true);
+
+  $("crsNewName").value = "";
+  await loadCourses();
+  renderCourses();
+  toast("Course added");
+});
+
+/* One delegated handler for the whole list — rows are rebuilt often. */
+$("crsList").addEventListener("click", async (e) => {
+  const row = e.target.closest(".crs-row");
+  if(!row) return;
+  const id = row.dataset.id;
+  const course = courses.find(c => c.courseId === id);
+  if(!course) return;
+
+  const act = e.target.dataset.act;
+  const subs = [...row.querySelectorAll(".crs-sub")].map(x => x.childNodes[0].nodeValue.trim());
+
+  if(act === "delsub"){
+    e.target.closest(".crs-sub").remove();
+    return;                      // removed on screen; Save writes it
+  }
+  if(act === "toggle"){
+    const used = classes.filter(x => (x["Course"] || "") === course.name).length;
+    if(course.active && used){
+      askConfirm("Switch off this course?",
+        `${used} student${used === 1 ? ' is' : 's are'} on ${course.name}. They keep it — it just stops being offered for new sheets.`,
+        async () => {
+          const out = await saveCourse(id, course.name, course.subjects, false);
+          if(out.result !== "success") return toast(out.error || "Could not switch it off", true);
+          await loadCourses(); renderCourses(); toast("Course switched off");
+        });
+      return;
+    }
+    const out = await saveCourse(id, course.name, course.subjects, !course.active);
+    if(out.result !== "success") return toast(out.error || "Could not change it", true);
+    await loadCourses(); renderCourses();
+    return;
+  }
+  if(act === "save"){
+    const name = (row.querySelector(".crs-name").value || "").trim();
+    if(!name) return toast("A course needs a name", true);
+
+    const pending = (row.querySelector(".crs-subadd").value || "").trim();
+    const all = pending ? subs.concat([pending]) : subs;
+
+    const renaming = (name !== course.name);
+    const used = classes.filter(x => (x["Course"] || "") === course.name).length;
+
+    const go = async () => {
+      const out = await saveCourse(id, name, all, course.active);
+      if(out.result !== "success") return toast(out.error || "Could not save", true);
+      await loadCourses(); renderCourses();
+      if(out.renamed) await loadClasses();
+      toast(out.renamed ? `Saved — ${out.renamed} class sheet${out.renamed === 1 ? '' : 's'} updated` : "Saved");
+    };
+
+    if(renaming && used){
+      askConfirm("Rename this course?",
+        `${used} class sheet${used === 1 ? '' : 's'} will be updated from "${course.name}" to "${name}".`, go);
+      return;
+    }
+    await go();
+  }
+});
+
+/* Enter adds a subject without leaving the keyboard. */
+$("crsList").addEventListener("keydown", (e) => {
+  if(e.key !== "Enter" || !e.target.classList.contains("crs-subadd")) return;
+  e.preventDefault();
+  const val = (e.target.value || "").trim();
+  if(!val) return;
+  const chip = document.createElement("span");
+  chip.className = "crs-sub";
+  chip.innerHTML = `${escapeHtml(val)}<b data-act="delsub" data-sub="${escapeHtml(val)}">&times;</b>`;
+  e.target.parentNode.insertBefore(chip, e.target);
+  e.target.value = "";
+});
+
+$("fCourse").addEventListener("change", () => buildSubjects([]));
+
+
+/* ---------------- Notice board ----------------
+   Audience is decided HERE only for the admin's convenience. The server
+   filters again on every read, so a student can never receive a notice
+   addressed to someone else even if this page is tampered with. */
+let notices = [];
+let editingNotice = null;
+let nType = "info";
+
+async function loadNotices(){
+  try{
+    const out = await fetchNotices();
+    notices = (out.result === "success") ? (out.notices || []) : [];
+  }catch(e){ console.error(e); notices = []; }
+  renderNoticeList();
+}
+
+function noticeStatusClass(st){
+  return st === "Live" ? "live" : st === "Scheduled" ? "sched" : st === "Expired" ? "exp" : "off";
+}
+
+function audienceText(n){
+  if(n.audience === "all") return "Everyone";
+  if(!n.targets.length) return "Nobody";
+  if(n.audience === "course") return n.targets.join(", ");
+  // students: show names where we have them, IDs where we don't
+  return n.targets.map(id => {
+    const c = classes.find(x => String(x["Student ID"]) === String(id));
+    return c ? c["Student Name"] : id;
+  }).join(", ");
+}
+
+function renderNoticeList(){
+  if(!notices.length){
+    $("nList").innerHTML = '<div class="empty-state">No notices posted yet.</div>';
+    return;
+  }
+  $("nList").innerHTML = notices.map(n => `
+    <div class="ntc-item" data-id="${n.noticeId}">
+      <div class="ntc-item-main">
+        <div class="ntc-item-top">
+          <span class="ntc-badge ntc-b-${escapeHtml(n.type)}">${escapeHtml(n.type)}</span>
+          <span class="ntc-status ${noticeStatusClass(n.status)}">${escapeHtml(n.status)}</span>
+          ${n.pinned ? '<span class="ntc-pinned">Pinned</span>' : ''}
+        </div>
+        <div class="ntc-item-title">${escapeHtml(n.title)}</div>
+        <div class="ntc-item-meta">${escapeHtml(audienceText(n))}${
+          n.start || n.end
+            ? ' · ' + (n.start ? fmtDate(n.start) : 'now') + ' to ' + (n.end ? fmtDate(n.end) : 'no end')
+            : ''}</div>
+      </div>
+      <div class="ntc-item-btns">
+        <button class="btn-ghost sm" data-act="edit">Edit</button>
+        <button class="btn-ghost sm" data-act="toggle">${n.active ? 'Switch off' : 'Switch on'}</button>
+        <button class="btn-ghost sm danger" data-act="del">Delete</button>
+      </div>
+    </div>`).join("");
+}
+
+/* ---------------- Composer ---------------- */
+function nResetForm(){
+  editingNotice = null;
+  nType = "info";
+  $("nTitle").value = "";
+  $("nMessage").value = "";
+  $("nAudience").value = "all";
+  $("nStart").value = "";
+  $("nEnd").value = "";
+  $("nPinned").checked = false;
+  $("nTargetSearch").value = "";
+  document.querySelectorAll(".ntc-type").forEach(b => b.classList.toggle("on", b.dataset.type === "info"));
+  $("nSaveBtn").textContent = "Post notice";
+  $("nCancelBtn").hidden = true;
+  nSyncAudience([]);
+  nPreview();
+  document.querySelectorAll("#noticesModal .field").forEach(f => f.classList.remove("invalid"));
+}
+
+function nFillForm(n){
+  editingNotice = n.noticeId;
+  nType = n.type;
+  $("nTitle").value = n.title;
+  $("nMessage").value = n.message;
+  $("nAudience").value = n.audience;
+  $("nStart").value = n.start || "";
+  $("nEnd").value = n.end || "";
+  $("nPinned").checked = n.pinned;
+  document.querySelectorAll(".ntc-type").forEach(b => b.classList.toggle("on", b.dataset.type === n.type));
+  $("nSaveBtn").textContent = "Save changes";
+  $("nCancelBtn").hidden = false;
+  nSyncAudience(n.targets);
+  nPreview();
+}
+
+/* The target list is courses or students depending on the audience. */
+function nSyncAudience(selected){
+  const aud = $("nAudience").value;
+  const field = $("nTargetField");
+  if(aud === "all"){ field.hidden = true; $("nTargets").innerHTML = ""; return; }
+
+  field.hidden = false;
+  $("nTargetLabel").textContent = aud === "course" ? "Courses" : "Students";
+  $("nTargetSearch").placeholder = aud === "course" ? "Search courses…" : "Search students…";
+  nRenderTargets(selected || nCollectTargets());
+}
+
+function nRenderTargets(selected){
+  const aud = $("nAudience").value;
+  const q = ($("nTargetSearch").value || "").trim().toLowerCase();
+  const on = new Set((selected || []).map(String));
+
+  let items = [];
+  if(aud === "course"){
+    items = courses.filter(c => c.active || on.has(c.name))
+                   .map(c => ({ value: c.name, label: c.name, sub: "" }));
+  } else {
+    items = classes.map(c => ({
+      value: String(c["Student ID"]),
+      label: c["Student Name"] || c["Student ID"],
+      sub: c["Course"] || ""
+    }));
+  }
+  // A ticked item stays visible while filtering — otherwise a search can
+  // silently hide a selection the admin already made.
+  if(q) items = items.filter(i => on.has(i.value) ||
+                 i.label.toLowerCase().includes(q) || i.value.toLowerCase().includes(q));
+
+  $("nTargets").innerHTML = items.length
+    ? items.map(i => `
+        <label class="ntc-target${on.has(i.value) ? ' on' : ''}">
+          <input type="checkbox" value="${escapeHtml(i.value)}"${on.has(i.value) ? " checked" : ""}>
+          <span class="ntc-target-l">${escapeHtml(i.label)}</span>
+          ${i.sub ? `<span class="ntc-target-s">${escapeHtml(i.sub)}</span>` : ""}
+        </label>`).join("")
+    : '<div class="ntc-target-none">Nothing matches that search.</div>';
+
+  $("nTargets").querySelectorAll("input").forEach(cb => {
+    cb.addEventListener("change", () => {
+      cb.closest(".ntc-target").classList.toggle("on", cb.checked);
+      nPreview();
+    });
+  });
+}
+
+function nCollectTargets(){
+  return [...$("nTargets").querySelectorAll("input:checked")].map(cb => cb.value);
+}
+
+/* How many students this notice actually reaches. Worth showing before
+   posting, because "everyone" and "one course" look identical until sent. */
+function nReach(){
+  const aud = $("nAudience").value;
+  if(aud === "all") return classes.length;
+  const t = new Set(nCollectTargets().map(x => x.toLowerCase()));
+  if(aud === "course") return classes.filter(c => t.has(String(c["Course"] || "").toLowerCase())).length;
+  return classes.filter(c => t.has(String(c["Student ID"] || "").toLowerCase())).length;
+}
+
+const N_LABEL = { info:"Notice", urgent:"Important", holiday:"Holiday", celebration:"Good news" };
+
+function nPreview(){
+  const title = $("nTitle").value.trim() || "Your title here";
+  const msg   = $("nMessage").value.trim() || "Your message will appear here.";
+  const reach = nReach();
+
+  $("nPreview").innerHTML = `
+    <div class="ntc-prev-card ntc-p-${nType}">
+      <div class="ntc-prev-kind">${escapeHtml(N_LABEL[nType] || "Notice")}</div>
+      <div class="ntc-prev-title">${escapeHtml(title)}</div>
+      <div class="ntc-prev-msg">${escapeHtml(msg).replace(/\n/g, "<br>")}</div>
+      <div class="ntc-prev-btn">Got it</div>
+    </div>
+    <div class="ntc-prev-reach">${reach} student${reach === 1 ? "" : "s"} will see this</div>`;
+}
+
+/* ---------------- Wiring ---------------- */
+$("noticesBtn").addEventListener("click", async () => {
+  openModal("noticesModal");
+  if(!courses.length) await loadCourses();
+  nResetForm();
+  await loadNotices();
+});
+$("nCloseBtn").addEventListener("click", () => closeModal("noticesModal"));
+$("nCancelBtn").addEventListener("click", nResetForm);
+
+document.querySelectorAll(".ntc-type").forEach(b => {
+  b.addEventListener("click", () => {
+    nType = b.dataset.type;
+    document.querySelectorAll(".ntc-type").forEach(x => x.classList.toggle("on", x === b));
+    nPreview();
+  });
+});
+
+$("nAudience").addEventListener("change", () => { nSyncAudience([]); nPreview(); });
+$("nTargetSearch").addEventListener("input", () => nRenderTargets(nCollectTargets()));
+["nTitle","nMessage"].forEach(id => $(id).addEventListener("input", nPreview));
+
+$("nSaveBtn").addEventListener("click", async () => {
+  const title = $("nTitle").value.trim();
+  const msg   = $("nMessage").value.trim();
+  const aud   = $("nAudience").value;
+  const targets = aud === "all" ? [] : nCollectTargets();
+
+  $("nTitle").closest(".field").classList.toggle("invalid", !title);
+  $("nMessage").closest(".field").classList.toggle("invalid", !msg);
+  $("nTargetField").classList.toggle("invalid", aud !== "all" && !targets.length);
+  if(!title || !msg || (aud !== "all" && !targets.length)) return;
+
+  const start = $("nStart").value, end = $("nEnd").value;
+  if(start && end && end < start) return toast("The end date is before the start date", true);
+
+  const body = {
+    action: "saveNotice",
+    password: ADMIN_API_PASSWORD,
+    noticeId: editingNotice || "",
+    title: title, message: msg, type: nType,
+    audience: aud, targets: targets,
+    start: start, end: end,
+    pinned: $("nPinned").checked
+  };
+
+  const out = await mqPost(body);
+  if(out.result !== "success") return toast(out.error || "Could not save the notice", true);
+
+  const was = editingNotice;
+  nResetForm();
+  await loadNotices();
+  toast(was ? "Notice updated" : `Notice posted to ${nReachOf(body)} student${nReachOf(body) === 1 ? "" : "s"}`);
+});
+
+// Reach for a payload we just sent (the form has been reset by now).
+function nReachOf(body){
+  if(body.audience === "all") return classes.length;
+  const t = new Set(body.targets.map(x => String(x).toLowerCase()));
+  if(body.audience === "course") return classes.filter(c => t.has(String(c["Course"] || "").toLowerCase())).length;
+  return classes.filter(c => t.has(String(c["Student ID"] || "").toLowerCase())).length;
+}
+
+$("nList").addEventListener("click", async (e) => {
+  const row = e.target.closest(".ntc-item");
+  if(!row) return;
+  const n = notices.find(x => x.noticeId === row.dataset.id);
+  if(!n) return;
+  const act = e.target.dataset.act;
+
+  if(act === "edit"){
+    nFillForm(n);
+    $("nTitle").scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  if(act === "toggle"){
+    const out = await postNotice({ action: "toggleNotice", noticeId: n.noticeId, active: !n.active });
+    if(out.result !== "success") return toast(out.error || "Could not change it", true);
+    await loadNotices();
+    return;
+  }
+  if(act === "del"){
+    askConfirm("Delete this notice?",
+      `"${n.title}" will be removed for everyone. This cannot be undone.`,
+      async () => {
+        const out = await postNotice({ action: "deleteNotice", noticeId: n.noticeId });
+        if(out.result !== "success") return toast(out.error || "Could not delete it", true);
+        if(editingNotice === n.noticeId) nResetForm();
+        await loadNotices();
+        toast("Notice deleted");
+      });
+  }
+});
+
+async function postNotice(body){
+  return await mqPostAdmin(body);
+}
+
+
+/* =================================================================
+   BATCH WORKSPACE
+   -----------------------------------------------------------------
+   One share link per batch. The link alone opens nothing: the student
+   signs in with their email and date of birth, and the server checks
+   the monthly tick on every read. Nothing on this page can grant
+   access — it only records who has paid.
+   ================================================================= */
+let batches = [];
+let editingBatch = null;
+let rosterBatch = null;     // the batch whose roster is open
+let rosterData = null;      // its last loaded payload
+let shareBatch = null;      // set when the share modal is showing a batch
+
+// Batch links carry ?b= so the class sheet knows to ask for a sign-in.
+function batchShareUrl(b){
+  return window.location.origin + mqUrl("/class/") + "?b=" + encodeURIComponent(b.token);
+}
+
+async function loadBatches(){
+  try{
+    const out = await fetchBatches();
+    batches = (out.result === "success") ? (out.batches || []) : [];
+  }catch(e){ console.error(e); batches = []; }
+  renderBatches();
+}
+
+function renderBatches(){
+  $("wsCountBatch").textContent  = batches.length;
+  $("bStatTotal").textContent    = batches.length;
+  $("bStatStudents").textContent = batches.reduce((n, b) => n + b.students, 0);
+  $("bStatPaid").textContent     = batches.reduce((n, b) => n + b.allowed, 0);
+
+  if(!batches.length){
+    $("bList").innerHTML = '<div class="empty-state">No batches yet. Create the first one with the New Batch button.</div>';
+    return;
+  }
+
+  $("bList").innerHTML = batches.map(b => {
+    const unpaid = b.students - b.allowed;
+    return `<div class="b-card${b.status === 'Active' ? '' : ' paused'}" data-id="${b.batchId}">
+      <div class="b-top">
+        <div class="b-id">${escapeHtml(b.batchId)}</div>
+        <div class="b-name">${escapeHtml(b.name)}</div>
+        <div class="b-course">${escapeHtml(b.course || '—')}${b.status === 'Active' ? '' : ' · Paused'}</div>
+      </div>
+      <div class="b-nums">
+        <div class="b-num"><b>${b.students}</b><span>on roster</span></div>
+        <div class="b-num${b.allowed ? ' good' : ''}"><b>${b.allowed}</b><span>paid</span></div>
+        <div class="b-num${unpaid > 0 ? ' warn' : ''}"><b>${unpaid}</b><span>unpaid</span></div>
+        <div class="b-num"><b>${b.calendars}</b><span>calendars</span></div>
+        <div class="b-num"><b>${b.online}</b><span>signed in</span></div>
+      </div>
+      <div class="b-btns">
+        <button class="ib ib-roster" data-act="roster" data-tip="Roster &amp; fees" aria-label="Roster &amp; fees">${ic('roster')}</button>
+        <button class="ib ib-time ${b.classTime ? 'has-time' : 'no-time'}" data-act="btime" data-tip="${b.classTime ? 'Change time' : 'Set time'}" aria-label="${b.classTime ? 'Class time ' + escapeHtml(formatTime(b.classTime)) : 'Set class time'}">${ic('time')}${b.classTime ? '<span class="tval">' + escapeHtml(formatTime(b.classTime)) + '</span>' : ''}</button>
+        <button class="ib ib-cal" data-act="cal" data-tip="Calendars" aria-label="Calendars">${ic('cal')}</button>
+        <button class="ib ib-share" data-act="share" data-tip="Share link" aria-label="Share link">${ic('share')}</button>
+        <button class="ib ib-edit" data-act="edit" data-tip="Edit" aria-label="Edit">${ic('edit')}</button>
+        <button class="ib ib-del" data-act="del" data-tip="Delete" aria-label="Delete">${ic('del')}</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function postBatch(body){
+  return await mqPostAdmin(body);
+}
+
+/* ---------------- Batch form ---------------- */
+function bFillCourses(keep){
+  let opts = '<option value="">Select course</option>';
+  courses.filter(c => c.active).forEach(c => {
+    opts += `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`;
+  });
+  if(keep && !courses.some(c => c.active && c.name === keep)){
+    opts += `<option value="${escapeHtml(keep)}">${escapeHtml(keep)} (inactive)</option>`;
+  }
+  $("bCourse").innerHTML = opts;
+  if(keep) $("bCourse").value = keep;
+}
+
+function bBuildSubjects(selected){
+  const course = courseByName($("bCourse").value);
+  const field = $("bSubjectsField"), wrap = $("bSubjects"), none = $("bSubjectsNone");
+  if(!course){ field.hidden = true; wrap.innerHTML = ""; return; }
+
+  field.hidden = false;
+  const list = course.subjects || [];
+  const on = new Set(selected || []);
+  if(!list.length){ wrap.innerHTML = ""; none.hidden = false; return; }
+  none.hidden = true;
+  wrap.innerHTML = list.map(sub => `
+    <label class="subj-chip${on.has(sub) ? ' on' : ''}">
+      <input type="checkbox" value="${escapeHtml(sub)}"${on.has(sub) ? ' checked' : ''}><span>${escapeHtml(sub)}</span>
+    </label>`).join("");
+  wrap.querySelectorAll("input").forEach(cb =>
+    cb.addEventListener("change", () => cb.closest(".subj-chip").classList.toggle("on", cb.checked)));
+}
+
+function openBatchForm(b){
+  editingBatch = b ? b.batchId : null;
+  $("bFormTitle").innerHTML = b ? 'Edit <span class="accent">Batch</span>' : 'New <span class="accent">Batch</span>';
+  $("bSaveBtn").textContent = b ? "Save changes" : "Create batch";
+  $("bName").value = b ? b.name : "";
+  bFillCourses(b ? b.course : "");
+  bBuildSubjects(b ? (b.subjects || []) : []);
+  $("bWhatsapp").value = b ? (b.whatsapp || "") : "";
+  $("bGrace").value = b ? b.graceDays : 5;
+  $("bTime").value = b ? (b.classTime || "") : "";
+  $("bStatus").value = b ? b.status : "Active";
+  document.querySelectorAll("#batchModal .field").forEach(f => f.classList.remove("invalid"));
+  openModal("batchModal");
+}
+
+$("newBatchBtn").addEventListener("click", async () => {
+  if(!courses.length) await loadCourses();
+  openBatchForm(null);
+});
+$("bCancelBtn").addEventListener("click", () => closeModal("batchModal"));
+$("bCourse").addEventListener("change", () => bBuildSubjects([]));
+
+$("bSaveBtn").addEventListener("click", async () => {
+  const name = $("bName").value.trim();
+  $("bName").closest(".field").classList.toggle("invalid", !name);
+  if(!name) return;
+
+  const out = await postBatch({
+    action: "saveBatch",
+    batchId: editingBatch || "",
+    name: name,
+    course: $("bCourse").value,
+    subjects: [...$("bSubjects").querySelectorAll("input:checked")].map(c => c.value),
+    whatsapp: $("bWhatsapp").value.trim(),
+    graceDays: $("bGrace").value,
+    classTime: $("bTime").value,
+    status: $("bStatus").value
+  });
+  if(out.result !== "success") return toast(out.error || "Could not save the batch", true);
+
+  closeModal("batchModal");
+  await loadBatches();
+  toast(editingBatch ? "Batch updated" : "Batch created");
+});
+
+/* ---------------- Batch card actions ---------------- */
+$("bList").addEventListener("click", async (e) => {
+  const card = e.target.closest(".b-card");
+  if(!card) return;
+  const b = batches.find(x => x.batchId === card.dataset.id);
+  if(!b) return;
+  const act = e.target.dataset.act;
+
+  if(act === "roster") return openRoster(b.batchId);
+  if(act === "btime")  return openTimeModal(b.batchId, "batch");
+  if(act === "cal")    { window.location.href = "calendars.html?id=" + encodeURIComponent(b.batchId); return; }
+
+  if(act === "share"){
+    /* The share modal is shared with the Individual workspace, and its
+       WhatsApp and Reset buttons read shareTarget. Setting shareBatch
+       instead of leaving shareTarget stale is what makes those buttons
+       act on THIS batch rather than on whichever student was shared last. */
+    shareTarget = null;
+    shareBatch  = b;
+    $("shareSubtitle").textContent = b.name + " · anyone with this link must still sign in";
+    $("shareLinkInput").value = batchShareUrl(b);
+    openModal("shareModal");
+    return;
+  }
+  if(act === "edit"){
+    if(!courses.length) await loadCourses();
+    const out = await fetchBatchAdmin(b.batchId, "");
+    if(out.result !== "success") return toast(out.error || "Could not open the batch", true);
+    openBatchForm(out.batch);
+    return;
+  }
+  if(act === "del"){
+    askConfirm("Delete this batch?",
+      `${escapeHtml(b.name)} has ${b.students} student${b.students === 1 ? '' : 's'}. The roster, the fee ticks, the calendars and the share link all go with it. This cannot be undone.`,
+      async () => {
+        const out = await postBatch({ action: "deleteBatch", batchId: b.batchId });
+        if(out.result !== "success") return toast(out.error || "Could not delete it", true);
+        await loadBatches();
+        toast("Batch deleted");
+      });
+  }
+});
+
+/* ---------------- Roster & monthly access ---------------- */
+function thisMonth(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+}
+
+async function openRoster(batchId){
+  rosterBatch = batchId;
+  openModal("rosterModal");
+  await loadRoster();
+}
+
+async function loadRoster(){
+  /* The billing month is only a filing label now — access is decided by
+     the batch session, not by the month. */
+  const month = thisMonth();
+  try{
+    rosterData = await fetchBatchAdmin(rosterBatch, month);
+  }catch(e){ console.error(e); rosterData = null; }
+
+  if(!rosterData || rosterData.result !== "success"){
+    $("rList").innerHTML = '<div class="empty-state">Could not load the roster.</div>';
+    return;
+  }
+  $("rTitle").textContent = rosterData.batch.name + " · Roster & fees";
+  renderTeacherLink();
+  renderSession();
+  renderRoster();
+}
+
+function renderRoster(){
+  const r = rosterData.roster || [];
+  if(!r.length){
+    $("rList").innerHTML = '<div class="empty-state">Nobody on this batch yet. Add the first student below.</div>';
+    return;
+  }
+
+  /* One date per student, not one tick per month. A class that starts on
+     the 15th runs to the 15th, and each child keeps their own cycle. */
+  $("rList").innerHTML = r.map(st => `
+    <div class="r-row${st.active ? '' : ' off'}" data-sid="${escapeHtml(st.studentId)}">
+      <label class="r-tick">
+        <input type="checkbox" class="r-allow"${st.allowed ? " checked" : ""}>
+        <span>Paid</span>
+      </label>
+      <div class="r-who">
+        <div class="r-name">${escapeHtml(st.studentName)}</div>
+        <div class="r-meta">${escapeHtml(st.studentId)}${st.mqId ? ' · ' + escapeHtml(st.mqId) : ''} · ${escapeHtml(st.email)} · ${escapeHtml(st.dob)}</div>
+      </div>
+      <div class="r-flags">
+        <span class="r-flag${st.devices >= 2 ? ' full' : ''}">${st.devices}/2 devices</span>
+      </div>
+      <div class="r-btns">
+        <button class="btn-ghost sm" data-act="devices">Reset devices</button>
+        <button class="btn-ghost sm danger" data-act="remove">Remove</button>
+      </div>
+    </div>`).join("");
+
+  updatePaidCount();
+}
+
+function updatePaidCount(){
+  const boxes = [...$("rList").querySelectorAll(".r-allow")];
+  const n = boxes.filter(b => b.checked).length;
+  $("rPaidCount").textContent = `${n} of ${boxes.length} paid for this session`;
+}
+
+/* Dates are handled as plain yyyy-mm-dd strings throughout — never as Date
+   objects, which is what turned the month column into a date and broke
+   every tick. */
+
+function refreshRowEnd(row){
+  const start = row.querySelector(".r-start").value;
+  const days  = row.querySelector(".r-days").value;
+  const end   = sessionEnd(start, days);
+  row.querySelector("[data-end]").textContent = end ? fmtDate(end) : "—";
+  return end;
+}
+
+
+
+
+
+$("rCloseBtn").addEventListener("click", async () => {
+  closeModal("rosterModal");
+  await loadBatches();      // the card counts will have moved
+});
+
+/* Adds 30 days to everyone at once. From their existing date if it has
+   not passed, otherwise from today — so a lapsed student does not get
+   credited for the weeks they were locked out. On screen only; nothing is
+   written until Save dates. */
+
+
+$("rSaveAccess").addEventListener("click", async () => {
+  if(!rosterData) return;
+  const entries = [...$("rList").querySelectorAll(".r-row")].map(row => ({
+    studentId: row.dataset.sid,
+    allowed: row.querySelector(".r-allow").checked
+  }));
+  const out = await postBatch({
+    action: "setAccess",
+    batchId: rosterBatch,
+    entries: entries
+  });
+  if(out.result !== "success") return toast(out.error || "Could not save", true);
+  await loadRoster();
+  const paid = entries.filter(e => e.allowed).length;
+  toast(`Saved — ${paid} of ${entries.length} can open the batch`);
+});
+
+$("rList").addEventListener("click", async (e) => {
+  const row = e.target.closest(".r-row");
+  if(!row) return;
+  const sid = row.dataset.sid;
+  const act = e.target.dataset.act;
+
+  if(act === "devices"){
+    const out = await postBatch({ action: "resetDevices", batchId: rosterBatch, studentId: sid });
+    if(out.result !== "success") return toast(out.error || "Could not reset", true);
+    await loadRoster();
+    toast("Devices reset — they can sign in again");
+    return;
+  }
+  if(act === "remove"){
+    const st = rosterData.roster.find(x => x.studentId === sid);
+    askConfirm("Remove this student?",
+      `${escapeHtml(st ? st.studentName : sid)} will be taken off the batch and signed out. Their fee history for past months stays.`,
+      async () => {
+        const out = await postBatch({ action: "removeRosterStudent", batchId: rosterBatch, studentId: sid });
+        if(out.result !== "success") return toast(out.error || "Could not remove", true);
+        await loadRoster();
+        toast("Student removed");
+      });
+  }
+});
+
+$("rAddBtn").addEventListener("click", async () => {
+  const name = $("rName").value.trim();
+  const sid   = $("rSid").value.trim();
+  const email = $("rEmail").value.trim();
+  const dob   = $("rDob").value;
+  if(!name || !sid || !email || !dob) return toast("Name, ID, email and date of birth are all needed", true);
+
+  const out = await postBatch({
+    action: "saveRosterStudent",
+    batchId: rosterBatch,
+    studentId: sid, studentName: name, email: email, dob: dob,
+    mqId: ($("rMqId").value || "").trim()
+  });
+  if(out.result !== "success") return toast(out.error || "Could not add the student", true);
+
+  ["rName","rSid","rEmail","rDob","rMqId"].forEach(id => $(id).value = "");
+  await loadRoster();
+  toast("Student added — they still need a paid tick for this month");
+});
+
+
+/* ---------------- Teacher link ----------------
+   A second token per batch. Resetting it kills only the teacher's link —
+   students stay signed in, which matters when a teacher is replaced
+   mid-month and thirty children are mid-course. */
+function teacherLinkUrl(){
+  if(!rosterData || !rosterData.batch || !rosterData.batch.teacherToken) return "";
+  return window.location.origin + mqUrl("/class/") + "?tb=" + encodeURIComponent(rosterData.batch.teacherToken);
+}
+
+function renderTeacherLink(){
+  $("tLinkInput").value = teacherLinkUrl();
+}
+
+$("tCopyBtn").addEventListener("click", () => {
+  const v = teacherLinkUrl();
+  if(!v) return;
+  navigator.clipboard.writeText(v).then(() => toast("Teacher link copied"),
+                                        () => toast("Could not copy — select it by hand", true));
+});
+
+$("tWaBtn").addEventListener("click", () => {
+  const v = teacherLinkUrl();
+  if(!v || !rosterData) return;
+  const msg = `Assalamu Alaikum 👋\n\n*${rosterData.batch.name}* — teacher link:\n${v}\n\nThis opens the batch timetable directly, no sign-in needed.`;
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+});
+
+$("tResetBtn").addEventListener("click", () => {
+  if(!rosterData) return;
+  askConfirm("Reset the teacher link?",
+    "The current teacher link stops working immediately. Students are not affected — nobody is signed out and the student link does not change.",
+    async () => {
+      const out = await postBatch({ action: "resetTeacherToken", batchId: rosterBatch });
+      if(out.result !== "success") return toast(out.error || "Could not reset the link", true);
+      rosterData.batch.teacherToken = out.token;
+      renderTeacherLink();
+      toast("New teacher link created");
+    });
+});
+
+
+/* ---------------- Batch session ----------------
+   ONE window for the whole batch. Students sit inside it whether they
+   joined on day 1 or day 20, and each pays for the same window. Starting
+   the next session issues a new number on the server, which is what
+   unticks everyone — last session's record is kept, not wiped. */
+function renderSession(){
+  const ses = rosterData && rosterData.session;
+  if(ses){
+    $("rSesNo").textContent   = "#" + ses.no;
+    $("rSesStart").value      = ses.start;
+    $("rSesDays").value       = ses.days;
+    $("rSesEnd").textContent  = fmtDate(ses.end);
+    const left = Math.round((new Date(ses.end + "T00:00:00Z") - new Date(todayISO() + "T00:00:00Z")) / 86400000);
+    $("rSesLine").textContent = left >= 0
+      ? `${ses.days} days from ${fmtDate(ses.start)} · ${left} day${left === 1 ? '' : 's'} left`
+      : `Ended ${Math.abs(left)} day${Math.abs(left) === 1 ? '' : 's'} ago — start the next session`;
+  } else {
+    $("rSesNo").textContent   = "—";
+    $("rSesStart").value      = "";
+    $("rSesDays").value       = "";
+    $("rSesEnd").textContent  = "—";
+    $("rSesLine").textContent = "No session yet. Set a start date and length, then Save dates.";
+  }
+  refreshSesEnd();
+}
+
+function refreshSesEnd(){
+  const end = sessionEnd($("rSesStart").value, $("rSesDays").value);
+  $("rSesEnd").textContent = end ? fmtDate(end) : "—";
+}
+["rSesStart","rSesDays"].forEach(id => $(id).addEventListener("input", refreshSesEnd));
+
+async function saveSession(advance){
+  const start = $("rSesStart").value, days = $("rSesDays").value;
+  if(!start || !days) return toast("A session needs a start date and a length", true);
+
+  const out = await postBatch({
+    action: "setBatchSession",
+    batchId: rosterBatch,
+    sessionStart: start,
+    sessionDays: days,
+    advance: advance === true
+  });
+  if(out.result !== "success") return toast(out.error || "Could not save the session", true);
+
+  await loadRoster();
+  toast(out.reset ? "New session started — everyone is unticked" : "Session dates saved");
+}
+
+$("rSesSave").addEventListener("click", () => saveSession(false));
+$("rSesNext").addEventListener("click", () => {
+  const cur = rosterData && rosterData.session;
+  // The next session begins the day after this one ends, so sessions run
+  // back to back with no gap and no overlap.
+  const nextStart = cur ? (function(){
+    const d = new Date(cur.end + "T00:00:00Z");
+    d.setUTCDate(d.getUTCDate() + 1);
+    return d.toISOString().slice(0, 10);
+  })() : todayISO();
+  const days = (cur && cur.days) || 30;
+
+  askConfirm("Start the next session?",
+    `The new session runs ${days} days from ${fmtDate(nextStart)}. Every student becomes unticked and must be marked paid again. This session's record is kept.`,
+    async () => {
+      $("rSesStart").value = nextStart;
+      $("rSesDays").value = days;
+      refreshSesEnd();
+      await saveSession(true);
+    });
+});
+
+$("rList").addEventListener("change", (e) => {
+  if(e.target.classList.contains("r-allow")) updatePaidCount();
+});
+
+
+
+/* ---------------- Action icons ----------------
+   One small set, drawn once and reused, so every Calendars button in the
+   system carries the same calendar. Stroke icons at 1.8 weight to match
+   the text beside them rather than overpower it. */
+const IC = {
+  time:   '<path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/>',
+  cal:    '<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  open:   '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v4a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h4"/>',
+  share:  '<circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3"/>',
+  edit:   '<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/>',
+  del:    '<path d="M4 7h16M9 7V4.8A.8.8 0 019.8 4h4.4a.8.8 0 01.8.8V7M6.5 7l1 12.2a1.8 1.8 0 001.8 1.8h5.4a1.8 1.8 0 001.8-1.8L17.5 7"/>',
+  roster: '<circle cx="9" cy="8" r="3.4"/><path d="M3.5 19a5.5 5.5 0 0111 0"/><path d="M16 5.2a3.2 3.2 0 010 5.6M18 19a5 5 0 00-2.4-4.3"/>',
+  join:   '<path d="M15.5 10.5l5-3v9l-5-3"/><rect x="3" y="6.5" width="12.5" height="11" rx="2.2"/>'
+};
+function ic(name){
+  return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (IC[name] || '') + '</svg>';
+}
+
+/* ---------------- Live today ----------------
+   Everything about who is in class now comes from engine.v1.js, which
+   decides on the ACADEMY's clock (IST), not the viewer's. An admin
+   opening this from another country sees the academy's day. */
+let liveTimer = null;
+
+function renderLive(){
+  const entries = [];
+
+  classes.forEach(c => {
+    entries.push({
+      id: c["Class ID"],
+      name: c["Student Name"] || "—",
+      sub: [c["Student ID"], c["Course"]].filter(Boolean).join(" · "),
+      kind: "class",
+      classTime: c["Class Time"] || "",
+      calendars: c.calendars || []
+    });
+  });
+
+  batches.forEach(b => {
+    entries.push({
+      id: b.batchId,
+      name: b.name,
+      sub: [b.batchId, b.course, b.students + " students"].filter(Boolean).join(" · "),
+      kind: "batch",
+      classTime: b.classTime || "",
+      calendars: b.calendars || []
+    });
+  });
+
+  const rows = buildLiveList(entries);
+  const live = rows.filter(r => r.state === "live").length;
+  const noTime = rows.filter(r => !r.classTime).length;
+
+  $("liveSub").textContent =
+    rows.length
+      ? `${rows.length} class${rows.length === 1 ? "" : "es"} today · ${live} running now` +
+        (noTime ? ` · ${noTime} with no time set` : "")
+      : "No classes today. Holidays and finished plans are left out.";
+
+  if(!rows.length){
+    $("liveList").innerHTML = '<div class="empty-state">Nothing scheduled for today.</div>';
+    return;
+  }
+
+  $("liveList").innerHTML = rows.map(r => {
+    let badge = "", note = "";
+    if(r.state === "live"){
+      badge = '<span class="live-badge">Live now</span>';
+      note = `${r.minutes} min left`;
+    } else if(r.state === "soon"){
+      const h = Math.floor(r.minutes / 60), m = r.minutes % 60;
+      note = "in " + (h ? h + "h " : "") + m + "m";
+    } else if(r.state === "done"){
+      note = "finished";
+    } else {
+      badge = '<span class="live-badge none">No time set</span>';
+    }
+
+    return `<div class="live-row ${escapeHtml(r.state)}" data-id="${escapeHtml(r.id)}" data-kind="${escapeHtml(r.kind)}">
+      <div class="live-time">${r.timeLabel ? escapeHtml(r.timeLabel) : "—"}</div>
+      <div class="live-who">
+        <div class="live-name">${escapeHtml(r.name)} ${badge}</div>
+        <div class="live-sub">${escapeHtml(r.sub)} · Day ${r.dayNo} of ${escapeHtml(r.calName)}</div>
+      </div>
+      <div class="live-note">${escapeHtml(note)}</div>
+      <div class="live-btns">
+        ${r.link
+          ? `<a class="ib ib-join" href="${escapeHtml(r.link)}" target="_blank" rel="noopener" data-tip="Join class" aria-label="Join class">${ic('join')}</a>`
+          : `<span class="btn-ghost sm dim">No link</span>`}
+        <button class="ib ib-time" data-act="livetime" data-tip="Change time" aria-label="Change time">${ic('time')}</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function openLive(){
+  openModal("liveModal");
+  // The live list needs both sides, and the batch list is only fetched
+  // when that workspace is first opened.
+  if(!batches.length) await loadBatches();
+  renderLive();
+  // Re-draw every 30s so "live now" and the countdown stay true while the
+  // panel sits open — a stale live list is worse than none.
+  clearInterval(liveTimer);
+  liveTimer = setInterval(renderLive, 30000);
+}
+
+$("liveBtn").addEventListener("click", openLive);
+$("liveRefresh").addEventListener("click", async () => { await loadClasses(); await loadBatches(); renderLive(); });
+$("liveCloseBtn").addEventListener("click", () => { clearInterval(liveTimer); closeModal("liveModal"); });
+
+$("liveList").addEventListener("click", (e) => {
+  if(e.target.dataset.act !== "livetime") return;
+  const row = e.target.closest(".live-row");
+  if(row) promptClassTime(row.dataset.id, row.dataset.kind);
+});
+
+/* ---------------- One class time ----------------
+   A proper time field rather than a browser prompt: on a phone
+   <input type="time"> opens the native wheel, which is faster than typing
+   "7:00 pm" and cannot produce an unreadable value. */
+let timeTarget = null;     // { id, kind }
+
+function currentTime(id, kind){
+  return kind === "batch"
+    ? ((batches.find(b => b.batchId === id) || {}).classTime || "")
+    : ((classes.find(c => c["Class ID"] === id) || {})["Class Time"] || "");
+}
+function targetName(id, kind){
+  return kind === "batch"
+    ? ((batches.find(b => b.batchId === id) || {}).name || id)
+    : ((classes.find(c => c["Class ID"] === id) || {})["Student Name"] || id);
+}
+
+function openTimeModal(id, kind){
+  timeTarget = { id: id, kind: kind };
+  $("timeFor").textContent = targetName(id, kind) + (kind === "batch" ? " · batch" : "");
+  $("tmInput").value = currentTime(id, kind);
+  openModal("timeModal");
+  setTimeout(() => $("tmInput").focus(), 60);
+}
+
+async function saveOneTime(value){
+  if(!timeTarget) return;
+  const out = timeTarget.kind === "batch"
+    ? await setBatchTimeApi(timeTarget.id, value)
+    : await setClassTimeApi(timeTarget.id, value);
+  if(out.result !== "success") return toast(out.error || "Could not save the time", true);
+
+  closeModal("timeModal");
+  if(timeTarget.kind === "batch"){ await loadBatches(); } else { await loadClasses(); }
+  if($("liveModal").classList.contains("show")) renderLive();
+  toast(out.classTime ? `Time set to ${formatTime(out.classTime)}` : "Time cleared");
+}
+
+$("tmSave").addEventListener("click", () => saveOneTime($("tmInput").value));
+$("tmClear").addEventListener("click", () => saveOneTime(""));
+$("tmCancel").addEventListener("click", () => closeModal("timeModal"));
+$("tmInput").addEventListener("keydown", e => { if(e.key === "Enter") saveOneTime($("tmInput").value); });
+
+// kept for existing callers
+function promptClassTime(id, kind){ openTimeModal(id, kind); }
+
+/* ---------------- All class times ----------------
+   For the sheets that already exist with no time. One screen, one row
+   each, and ONE request for all the class sheets together — setting sixty
+   times one call at a time would take a minute of spinners. */
+let timesDraft = {};       // key -> new value, only rows the admin touched
+
+function timesRows(){
+  const missingOnly = $("timesMissingOnly").checked;
+  const activeOnly  = $("timesActiveOnly").checked;
+  const rows = [];
+
+  classes.forEach(c => {
+    const active = String(c["Status"] || "Active") === "Active";
+    if(activeOnly && !active) return;
+    const t = c["Class Time"] || "";
+    if(missingOnly && t) return;
+    rows.push({ key: "c:" + c["Class ID"], id: c["Class ID"], kind: "class",
+                name: c["Student Name"] || "—",
+                sub: [c["Student ID"], c["Course"]].filter(Boolean).join(" · "),
+                time: t });
+  });
+  batches.forEach(b => {
+    if(activeOnly && b.status !== "Active") return;
+    const t = b.classTime || "";
+    if(missingOnly && t) return;
+    rows.push({ key: "b:" + b.batchId, id: b.batchId, kind: "batch",
+                name: b.name, sub: [b.batchId, b.course, "batch"].filter(Boolean).join(" · "),
+                time: t });
+  });
+  return rows;
+}
+
+function renderTimes(){
+  const rows = timesRows();
+  const total = classes.length + batches.length;
+  const missing = classes.filter(c => !c["Class Time"]).length + batches.filter(b => !b.classTime).length;
+  $("timesSub").textContent = `${missing} of ${total} have no time yet. Only changed rows are saved.`;
+
+  if(!rows.length){
+    $("timesList").innerHTML = '<div class="empty-state">Every sheet in this view already has a time.</div>';
+  } else {
+    $("timesList").innerHTML = rows.map(r => {
+      const v = (r.key in timesDraft) ? timesDraft[r.key] : r.time;
+      return `<div class="times-row${(r.key in timesDraft) ? ' changed' : ''}" data-key="${escapeHtml(r.key)}">
+        <div class="times-who">
+          <div class="times-name">${escapeHtml(r.name)}${r.kind === "batch" ? ' <span class="times-kind">batch</span>' : ''}</div>
+          <div class="times-sub">${escapeHtml(r.sub)}</div>
+        </div>
+        <input type="time" class="times-input" step="300" value="${escapeHtml(v)}" />
+      </div>`;
+    }).join("");
+  }
+  const n = Object.keys(timesDraft).length;
+  $("timesChanged").textContent = n + " changed";
+  $("timesSave").disabled = n === 0;
+}
+
+$("timesBtn").addEventListener("click", async () => {
+  timesDraft = {};
+  if(!batches.length) await loadBatches();
+  renderTimes();
+  openModal("timesModal");
+});
+["timesMissingOnly","timesActiveOnly"].forEach(id => $(id).addEventListener("change", renderTimes));
+
+$("timesList").addEventListener("input", (e) => {
+  if(!e.target.classList.contains("times-input")) return;
+  const row = e.target.closest(".times-row");
+  timesDraft[row.dataset.key] = e.target.value;
+  row.classList.add("changed");
+  const n = Object.keys(timesDraft).length;
+  $("timesChanged").textContent = n + " changed";
+  $("timesSave").disabled = n === 0;
+});
+
+$("timesCancel").addEventListener("click", () => {
+  if(Object.keys(timesDraft).length && !confirm("Discard the times you have entered?")) return;
+  timesDraft = {};
+  closeModal("timesModal");
+});
+
+$("timesSave").addEventListener("click", async () => {
+  const keys = Object.keys(timesDraft);
+  if(!keys.length) return;
+  $("timesSave").disabled = true;
+  $("timesSave").textContent = "Saving…";
+
+  const classEntries = keys.filter(k => k.startsWith("c:"))
+                           .map(k => ({ classId: k.slice(2), classTime: timesDraft[k] }));
+  const batchKeys    = keys.filter(k => k.startsWith("b:"));
+
+  let saved = 0, refused = 0;
+  try{
+    if(classEntries.length){
+      const out = await setClassTimesApi(classEntries);
+      if(out.result !== "success") throw new Error(out.error || "Could not save");
+      saved += out.saved; refused += (out.refused || []).length;
+    }
+    // Batches are few; one call each is fine.
+    for(const k of batchKeys){
+      const out = await setBatchTimeApi(k.slice(2), timesDraft[k]);
+      if(out.result === "success") saved++; else refused++;
+    }
+  }catch(err){
+    toast(err.message, true);
+  }
+
+  $("timesSave").textContent = "Save changes";
+  timesDraft = {};
+  await loadClasses();
+  if(batchKeys.length) await loadBatches();
+  renderTimes();
+  toast(refused ? `${saved} saved, ${refused} refused` : `${saved} time${saved === 1 ? '' : 's'} saved`, refused > 0);
+});
+
+/* ---------------- Needs attention: collapse ----------------
+   Remembered, because an admin who folds it away means it. */
+const ALERTS_KEY = "mq_alerts_collapsed";
+function applyAlertsCollapsed(on){
+  const box = $("alerts");
+  box.classList.toggle("collapsed", on);
+  $("alertsToggle").setAttribute("aria-expanded", on ? "false" : "true");
+  $("alertsToggle").title = on ? "Expand" : "Collapse";
+  try{ localStorage.setItem(ALERTS_KEY, on ? "1" : "0"); }catch(e){}
+}
+$("alertsToggle").addEventListener("click", () => {
+  applyAlertsCollapsed(!$("alerts").classList.contains("collapsed"));
+});
+try{ if(localStorage.getItem(ALERTS_KEY) === "1") applyAlertsCollapsed(true); }catch(e){}
+
 /* ---------------- Lock ---------------- */
 function isUnlocked(){
   try{
@@ -820,6 +1955,7 @@ function isUnlocked(){
   }catch(e){ return false; }
 }
 function unlock(){
+  try{ setWorkspace(sessionStorage.getItem(WS_KEY) || "individual"); }catch(e){ setWorkspace("individual"); }
   try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
   $("lockScreen").style.display = "none";
   $("adminView").classList.add("show");
@@ -852,13 +1988,13 @@ if(isUnlocked()){
 
 /* ---------------- Load ---------------- */
 async function loadClasses(){
+  if(!courses.length) loadCourses();   // fire and forget — the form needs it, the list does not
   $("listContent").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>';
   try{
-    if(SCRIPT_URL.startsWith("PASTE_")){
+    if(!mqConfigured()){
       throw new Error("SCRIPT_URL is not set in this file yet.");
     }
-    const res = await fetch(`${SCRIPT_URL}?action=listClasses&password=${encodeURIComponent(ADMIN_API_PASSWORD)}`);
-    const data = await res.json();
+    const data = await fetchClasses();
     if(data.result !== "success") throw new Error(data.error || "Failed to load");
 
     classes = data.classes || [];
@@ -925,7 +2061,7 @@ function renderAlerts(){
   });
   $("alertRows").querySelectorAll('[data-cal]').forEach(b => {
     b.addEventListener('click', () => {
-      window.location.href = "/portal/classes/calendars.html?id=" + encodeURIComponent(b.dataset.cal);
+      window.location.href = "calendars.html?id=" + encodeURIComponent(b.dataset.cal);
     });
   });
 
@@ -965,6 +2101,7 @@ function digits(v){
 
 /* ---------------- Stats ---------------- */
 function updateStats(){
+  $("wsCountIndividual").textContent = classes.length;
   $("statTotal").textContent = classes.length;
   $("statActive").textContent = classes.filter(c => c["Status"] === "Active").length;
   $("statInactive").textContent = classes.filter(c => c["Status"] !== "Active").length;
@@ -1049,6 +2186,17 @@ function applyView(){
 }
 
 /* ---------------- List ---------------- */
+
+/* A Hifz student whose sheet has no Hifz report link. Their class sheet
+   shows no Hifz tab until one is pasted in, which is easy to miss — so
+   the row says so. Active students only: a paused or finished student
+   needing a link is not something to chase. */
+function needsHifzLink(c){
+  const active = String(c["Status"] || "Active") === "Active";
+  const isHifz = /hifz/i.test(String(c["Course"] || ""));
+  return active && isHifz && !String(c["Hifz Link"] || "").trim();
+}
+
 function renderList(items){
   if(!classes.length){
     $("listContent").innerHTML = `<div class="empty-state">
@@ -1064,17 +2212,18 @@ function renderList(items){
   const rows = items.map(c => {
     const isActive = (c["Status"] || "Active") === "Active";
     return `<tr>
-      <td data-label="Student">${escapeHtml(c["Student Name"] || "—")}</td>
+      <td data-label="Student">${escapeHtml(c["Student Name"] || "—")}${needsHifzLink(c) ? '<span class="row-note" title="Paste their link from the Hifz Command Center in Edit">No Hifz link</span>' : ''}</td>
       <td class="sid" data-label="Student ID">${escapeHtml(c["Student ID"] || "—")}</td>
       <td data-label="Course">${escapeHtml(c["Course"] || "—")}</td>
       <td class="date" data-label="Joined">${fmtDate(c["Join Date"])}</td>
       <td data-label="Status"><span class="pill ${isActive ? 'active':'inactive'}">${isActive ? 'Active':'Inactive'}</span></td>
       <td class="actions">
-        <button data-act="cal"   data-id="${escapeHtml(c["Class ID"])}">Calendars</button>
-        <button data-act="open"  data-id="${escapeHtml(c["Class ID"])}">Open</button>
-        <button data-act="share" data-id="${escapeHtml(c["Class ID"])}">Share</button>
-        <button data-act="edit"  data-id="${escapeHtml(c["Class ID"])}">Edit</button>
-        <button data-act="del"   data-id="${escapeHtml(c["Class ID"])}" class="danger">Delete</button>
+        <button data-act="time"  data-id="${escapeHtml(c["Class ID"])}" class="ib ib-time ${c["Class Time"] ? 'has-time' : 'no-time'}" data-tip="${c["Class Time"] ? 'Change time' : 'Set time'}" aria-label="${c["Class Time"] ? 'Class time ' + escapeHtml(formatTime(c["Class Time"])) : 'Set class time'}">${ic('time')}${c["Class Time"] ? '<span class="tval">' + escapeHtml(formatTime(c["Class Time"])) + '</span>' : ''}</button>
+        <button data-act="cal"   data-id="${escapeHtml(c["Class ID"])}" class="ib ib-cal" data-tip="Calendars" aria-label="Calendars">${ic('cal')}</button>
+        <button data-act="open"  data-id="${escapeHtml(c["Class ID"])}" class="ib ib-open" data-tip="Open sheet" aria-label="Open sheet">${ic('open')}</button>
+        <button data-act="share" data-id="${escapeHtml(c["Class ID"])}" class="ib ib-share" data-tip="Share link" aria-label="Share link">${ic('share')}</button>
+        <button data-act="edit"  data-id="${escapeHtml(c["Class ID"])}" class="ib ib-edit" data-tip="Edit" aria-label="Edit">${ic('edit')}</button>
+        <button data-act="del"   data-id="${escapeHtml(c["Class ID"])}" class="ib ib-del" data-tip="Delete" aria-label="Delete">${ic('del')}</button>
       </td>
     </tr>`;
   }).join('');
@@ -1093,7 +2242,8 @@ function renderList(items){
       const c = classes.find(x => x["Class ID"] === btn.dataset.id);
       if(!c) return;
       const act = btn.dataset.act;
-      if(act === "cal")   window.location.href = "/portal/classes/calendars.html?id=" + encodeURIComponent(c["Class ID"]);
+      if(act === "time")  return promptClassTime(c["Class ID"], "class");
+  if(act === "cal")   window.location.href = "calendars.html?id=" + encodeURIComponent(c["Class ID"]);
       if(act === "open")  window.open(shareUrl(c), "_blank");
       if(act === "share") openShare(c);
       if(act === "edit")  openForm(c);
@@ -1122,253 +2272,6 @@ $("newClassBtn").onclick = () => openForm(null);
    Add a course here and it appears in the picker automatically.
    Keep this list in sync with the copy inside the class sheet page.
    ================================================================= */
-const SM_CATALOG = {
-  "alif-ba-learning": {
-    title: "Alif-Ba for Little Ones",
-    path : "/portal/study-material/foundation-of-islamic-studies/alif-ba-learning.html",
-    lessons: [
-      "Letters \u0627 \u0628 \u062a \u062b \u062c \u062d",
-      "Letters \u062e \u062f \u0630 \u0631 \u0632 \u0633",
-      "Letters \u0634 \u0635 \u0636 \u0637 \u0638 \u0639",
-      "Letters \u063a \u0641 \u0642 \u0643 \u0644 \u0645",
-      "Letters \u0646 \u0647 \u0648 \u064a"
-    ]
-  },
-  "tharbiya-level-2": {
-    title: "Basic Arabic for Kids (Foundation)",
-    
-    path : "/portal/study-material/foundation-of-islamic-studies/basic-arabic.html",
-    lessons: [
-      "Letters \u0627 \u0628 \u062a",
-      "Letters \u062b \u062c \u062d",
-      "Letters \u062e \u062f \u0630",
-      "Letters \u0631 \u0632 \u0633",
-      "Letters \u0634 \u0635 \u0636",
-      "Letters \u0637 \u0638 \u0639",
-      "Letters \u063a \u0641 \u0642",
-      "Letters \u0643 \u0644 \u0645",
-      "Letters \u0646 \u0647 \u0648 \u064a"
-    ]
-  },
-  "foundation-of-islamic-studies": {
-    title: "Islamic Foundations (Tharbiya L2)",
-    path : "/portal/study-material/tharbiya-level-2/islamic-foundations.html",
-    lessons: [
-      "The Six Articles of Faith",
-      "The Five Pillars of Islam",
-      "Getting to Know Allah",
-      "Wudu \u2014 Getting Clean for Prayer",
-      "Sawm \u2014 Fasting in Ramadan",
-      "Salah & the Friday Prayer",
-      "Makkah & Madinah",
-      "The Holy Qur'an",
-      "The Prophets of Allah (25)",
-      "The Angels \u2014 Malaikah (10)"
-    ]
-  },
-  "noorul-hayah": {
-    title: "Noorul Hayah \u2014 Akhlaq (Tharbiya L2)",
-    path : "/portal/study-material/tharbiya-level-2/noorul-hayah.html",
-    lessons: [
-      "Speaking the Truth",
-      "Trustworthiness",
-      "Honouring Parents",
-      "Respecting Teachers & Elders",
-      "Mercy & Gentleness",
-      "Cooperation & Helping Others",
-      "Cleanliness",
-      "Patience",
-      "Manners of Speech",
-      "Conduct with Friends"
-    ]
-  },
-  "first-ayat": {
-    title: "My First Ayat",
-    path : "/portal/study-material/foundation-of-islamic-studies/first-ayat.html",
-    lessons: [
-      "Letters Hold Hands",
-      "One Letter, Three Faces",
-      "From Letters to Words",
-      "Al-Fatihah",
-      "Three Short Surahs"
-    ]
-  },
-  "qasas-ul-anbiya": {
-    title: "Qasas ul-Anbiya",
-    path : "/portal/study-material/tharbiya-level-2/qasas-ul-anbiya.html",
-    lessons: [
-      "Adam and the Names",
-      "Nuh and the Ark",
-      "Ibrahim and the Fire",
-      "Yusuf and His Brothers",
-      "Musa and Fir'awn",
-      "Dawud and the Giant",
-      "Sulayman and the Ant",
-      "Yunus in the Deep",
-      "Maryam and Isa",
-      "Muhammad ﷺ — Mercy to the Worlds"
-    ]
-  },
-  "dua-adhkar": {
-    title: "Dua wa Adhkar",
-    path : "/portal/study-material/tharbiya-level-2/dua-adhkar.html",
-    lessons: [
-      "Waking Up & Going to Sleep",
-      "Eating & Drinking",
-      "Home, Bathroom & Clothes",
-      "Travel & the Road",
-      "Morning Adhkar",
-      "Evening Adhkar",
-      "After Every Salah",
-      "When You Are Afraid, Sad or Sick",
-      "For Parents, Teachers & Friends",
-      "Rabbana — Duas from the Qur'an"
-    ]
-  },
-  "salah-complete": {
-    title: "Salah Complete",
-    path : "/portal/study-material/thazkiya-level-3/salah-complete.html",
-    lessons: [
-      "Why Salah",
-      "The Five Prayers",
-      "Conditions Before You Stand",
-      "Adhan and Iqamah",
-      "Niyyah for Every Prayer",
-      "Takbir to Ruku",
-      "Sujud to Salam",
-      "What We Recite",
-      "After the Salam",
-      "Sujud as-Sahw",
-      "What Breaks the Prayer",
-      "Missed Prayers and Qada'",
-      "Travelling",
-      "Praying Behind an Imam",
-      "Jumuah",
-      "Sunnah and Nafl",
-      "Prayers for Special Times",
-      "Khushu",
-      "Minor Ritual Impurity",
-      "Major Ritual Impurity",
-      "Janabah — Causes and Rulings",
-      "Hayd and Nifas",
-      "When There Is No Water"
-    ]
-  },
-  "akhirah": {
-    title: "The Last Journey",
-    path : "/portal/study-material/thazkiya-level-3/akhirah.html",
-    lessons: [
-      "The Moment Itself",
-      "The Barzakh",
-      "The Two Questioners",
-      "A Garden or a Pit",
-      "The Horn",
-      "Standing Again",
-      "The Gathering",
-      "The Long Wait",
-      "The Great Intercession",
-      "The Hawd",
-      "The Books Given Out",
-      "The Reckoning",
-      "The Scales",
-      "The Bridge",
-      "The Fire",
-      "The Garden, and What Is Better"
-    ]
-  },
-  "arabic-language": {
-    title: "Arabic for Beginners",
-    path : "/portal/study-material/thazkiya-level-3/arabic-language.html",
-    lessons: [
-      "Greetings and Names",
-      "This and That",
-      "My Family",
-      "In the House",
-      "Colours",
-      "Numbers",
-      "Asking Questions",
-      "What I Do Every Day",
-      "School and Masjid",
-      "Talking Together"
-    ]
-  },
-  "seerah": {
-    title: "As-Sirah an-Nabawiyyah",
-    path : "/portal/study-material/thazkiya-level-3/seerah.html",
-    lessons: [
-      "Before the Light",
-      "The Orphan of Makkah",
-      "Al-Amin",
-      "Read",
-      "The First Believers",
-      "The Years of Pain",
-      "The Year of Sorrow",
-      "The Night Journey",
-      "The Hijrah",
-      "Building Madinah",
-      "Badr",
-      "Uhud and the Trench",
-      "The Treaty and the Opening",
-      "The Farewell",
-      "Until We Meet Him"
-    ]
-  },
-  "makarim-al-akhlaq": {
-    title: "Makarim al-Akhlaq",
-    path : "/portal/study-material/thazkiya-level-3/makarim-al-akhlaq.html",
-    lessons: [
-      "For Allah Alone",
-      "Modesty",
-      "Humility",
-      "Keeping the Family Tie",
-      "Charity Begins at Home",
-      "And Charity Beyond It",
-      "Thinking Well of People",
-      "Swallowing Anger",
-      "Pardoning",
-      "Keeping Your Word",
-      "Gratitude",
-      "Justice, Even Against Yourself"
-    ]
-  },
-  "halal-haram": {
-    title: "Halal and Haram",
-    path : "/portal/study-material/thazkiya-level-3/halal-haram.html",
-    lessons: [
-      "The Default Is Permission",
-      "The Five Rulings",
-      "The Doubtful Middle",
-      "What Makes Meat Halal",
-      "What Is Forbidden to Eat",
-      "Labels, Gelatine and Eating Out",
-      "Intoxicants",
-      "What Is Impure",
-      "Dogs — Najis, But Not Untouchable",
-      "Purifying and Cleaning",
-      "Halal Earning",
-      "Clothing and Adornment",
-      "Screens",
-      "Boundaries",
-      "When You Are Not Sure"
-    ]
-  },
-};
-
-/* Stored in the sheet cell as an ARRAY, so a student can hold several
-   courses at once:
-     [{"course":"...","lessons":[1,4]},{"course":"...","lessons":[]}]
-   An empty lessons array means the whole course.
-   Older single-course values ({"course":...}) are still read correctly. */
-function smParse(raw){
-  if(!raw) return [];
-  try{
-    const o = (typeof raw === "string") ? JSON.parse(raw) : raw;
-    const arr = Array.isArray(o) ? o : (o && o.course ? [o] : []);
-    return arr.filter(x => x && x.course && SM_CATALOG[x.course])
-              .map(x => ({ course: x.course,
-                           lessons: Array.isArray(x.lessons) ? x.lessons.map(Number).filter(n => n > 0) : [] }));
-  }catch(e){ return []; }
-}
 function smStringify(list){
   const clean = (list || []).filter(x => x && x.course)
     .map(x => ({ course: x.course, lessons: (x.lessons || []).slice().sort((a,b) => a-b) }));
@@ -1454,7 +2357,10 @@ function openForm(c){
 
   $("fName").value      = c ? (c["Student Name"] || "") : "";
   $("fStudentId").value = c ? (c["Student ID"] || "") : "";
-  $("fCourse").value    = c ? (c["Course"] || "") : "";
+  $("fMqId").value = c ? (c["mqId"] || "") : "";
+  $("fClassTime").value = c ? (c["Class Time"] || "") : "";
+  fillCourseSelects(c ? (c["Course"] || "") : "");
+  buildSubjects(c ? smSubjects(c) : []);
   $("fJoinDate").value  = c ? toDateInput(c["Join Date"]) : "";
   $("fWhatsapp").value  = c ? (c["WhatsApp Group Link"] || "") : "";
   $("fPhone").value     = c ? (c["Phone"] || "") : "";
@@ -1470,6 +2376,8 @@ function openForm(c){
 
 $("formCancelBtn").onclick = () => closeModal("formModal");
 
+/* The picker is its own modal now, stacked above the class-sheet form.
+   Done only closes it — nothing is saved until the form itself is saved. */
 $("smOpenBtn").onclick = () => openModal("smModal");
 $("smDoneBtn").onclick = () => { updateSmSummary(); closeModal("smModal"); };
 
@@ -1489,6 +2397,9 @@ $("formSaveBtn").onclick = async () => {
       studentName: $("fName").value.trim(),
       studentId:   $("fStudentId").value.trim(),
       course:      $("fCourse").value,
+      mqId:        $("fMqId").value.trim(),
+      classTime:   $("fClassTime").value.trim(),
+      subjects:    collectSubjects(),
       joinDate:    $("fJoinDate").value,
       whatsapp:    $("fWhatsapp").value.trim(),
       phone:       $("fPhone").value.trim(),
@@ -1496,12 +2407,7 @@ $("formSaveBtn").onclick = async () => {
       studyMaterial: smStringify(smCollect()),
       hifzLink:      $("fHifzLink").value.trim()
     };
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
+    const data = await mqPost(payload);
     if(data.result !== "success") throw new Error(data.error || "Save failed");
 
     closeModal("formModal");
@@ -1546,6 +2452,7 @@ document.querySelectorAll("#formModal input, #formModal select").forEach(el => {
 
 /* ---------------- Share ---------------- */
 function openShare(c){
+  shareBatch  = null;
   shareTarget = c;
   $("shareSubtitle").textContent = `${c["Student Name"]} · ${c["Student ID"]}`;
   $("shareLinkInput").value = shareUrl(c);
@@ -1566,24 +2473,37 @@ $("copyLinkBtn").onclick = async () => {
 };
 
 $("waShareBtn").onclick = () => {
-  if(!shareTarget) return;
-  const msg = `Assalamu Alaikum 👋\n\n*${shareTarget["Student Name"]}* — ManzilulQuran class sheet:\n${shareUrl(shareTarget)}\n\nAll class details are in this link, in shā’ Allāh.`;
+  let msg;
+  if(shareBatch){
+    msg = `Assalamu Alaikum 👋\n\n*${shareBatch.name}* — ManzilulQuran batch class:\n${batchShareUrl(shareBatch)}\n\nSign in with the email and date of birth you gave the academy, in shā’ Allāh.`;
+  } else if(shareTarget){
+    msg = `Assalamu Alaikum 👋\n\n*${shareTarget["Student Name"]}* — ManzilulQuran class sheet:\n${shareUrl(shareTarget)}\n\nAll class details are in this link, in shā’ Allāh.`;
+  } else { return; }
   window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
 };
 
 $("resetLinkBtn").onclick = () => {
+  if(shareBatch){
+    const b = shareBatch;
+    askConfirm("Reset this batch link?",
+      `The current link for ${b.name} stops working immediately, and every student signed in on it is signed out. They will need the new link and their email and date of birth.`,
+      async () => {
+        const out = await postBatch({ action: "resetBatchToken", batchId: b.batchId });
+        if(out.result !== "success") return toast(out.error || "Could not reset the link", true);
+        b.token = out.token;
+        $("shareLinkInput").value = batchShareUrl(b);
+        await loadBatches();
+        toast("New batch link created");
+      });
+    return;
+  }
   if(!shareTarget) return;
   askConfirm(
     "Reset this link?",
     `The current link for ${shareTarget["Student Name"]} will stop working immediately. Anyone still using it will lose access.`,
     async () => {
       try{
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action:"resetToken", password: ADMIN_API_PASSWORD, classId: shareTarget["Class ID"] })
-        });
-        const data = await res.json();
+        const data = await resetClassToken(shareTarget["Class ID"]);
         if(data.result !== "success") throw new Error(data.error || "Reset failed");
 
         shareTarget["Share Token"] = data.token;
@@ -1604,12 +2524,7 @@ function askDelete(c){
     `${c["Student Name"]} (${c["Student ID"]}) will be permanently removed, and their share link will stop working. This cannot be undone.`,
     async () => {
       try{
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action:"deleteClass", password: ADMIN_API_PASSWORD, classId: c["Class ID"] })
-        });
-        const data = await res.json();
+        const data = await deleteClassApi(c["Class ID"]);
         if(data.result !== "success") throw new Error(data.error || "Delete failed");
         toast("Class sheet deleted");
         loadClasses();
@@ -1649,7 +2564,7 @@ document.querySelectorAll(".modal-backdrop").forEach(m => {
 });
 document.addEventListener("keydown", e => {
   if(e.key === "Escape"){
-    const open = [...document.querySelectorAll(".modal-backdrop.show")].pop();
+    const open = document.querySelector(".modal-backdrop.show");
     if(open) closeModal(open.id);
   }
 });
@@ -1666,16 +2581,6 @@ function toast(msg, isErr){
 }
 
 /* ---------------- Utils ---------------- */
-function escapeHtml(str){
-  if(str == null) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-function fmtDate(v){
-  if(!v) return '—';
-  const d = (v instanceof Date) ? v : new Date(v);
-  if(isNaN(d.getTime())) return String(v);
-  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
-}
 function toDateInput(v){
   if(!v) return '';
   const d = new Date(v);
