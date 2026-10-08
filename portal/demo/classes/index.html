@@ -2188,6 +2188,17 @@ function applyView(){
 }
 
 /* ---------------- List ---------------- */
+
+/* A Hifz student whose sheet has no Hifz report link. Their class sheet
+   shows no Hifz tab until one is pasted in, which is easy to miss — so
+   the row says so. Active students only: a paused or finished student
+   needing a link is not something to chase. */
+function needsHifzLink(c){
+  const active = String(c["Status"] || "Active") === "Active";
+  const isHifz = /hifz/i.test(String(c["Course"] || ""));
+  return active && isHifz && !String(c["Hifz Link"] || "").trim();
+}
+
 function renderList(items){
   if(!classes.length){
     $("listContent").innerHTML = `<div class="empty-state">
@@ -2203,7 +2214,7 @@ function renderList(items){
   const rows = items.map(c => {
     const isActive = (c["Status"] || "Active") === "Active";
     return `<tr>
-      <td data-label="Student">${escapeHtml(c["Student Name"] || "—")}</td>
+      <td data-label="Student">${escapeHtml(c["Student Name"] || "—")}${needsHifzLink(c) ? '<span class="row-note" title="Paste their link from the Hifz Command Center in Edit">No Hifz link</span>' : ''}</td>
       <td class="sid" data-label="Student ID">${escapeHtml(c["Student ID"] || "—")}</td>
       <td data-label="Course">${escapeHtml(c["Course"] || "—")}</td>
       <td class="date" data-label="Joined">${fmtDate(c["Join Date"])}</td>
