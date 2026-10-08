@@ -12,216 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<style>
-  :root{
-    --void:#04060f;
-    --night-deep:#080d1f;
-    --night:#0e1630;
-    --slate:#16224a;
-    --azure:#5b9dff;
-    --azure-light:#93c5fd;
-    --azure-glow:rgba(91,157,255,0.35);
-    --iris:#8b7fd4;
-    --frost:#e9eefc;
-    --frost-dim:rgba(233,238,252,0.62);
-    --frost-faint:rgba(233,238,252,0.32);
-    --silver:#a9b8d8;
-    --rose:#ff9aa6;
-    --mint:#5eead4;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{
-    font-family:'Manrope',sans-serif;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% -10%, var(--slate) 0%, transparent 55%),
-      linear-gradient(180deg, var(--night) 0%, var(--night-deep) 45%, var(--void) 100%);
-    background-attachment:fixed;
-    color:var(--frost);
-    min-height:100vh;
-    display:flex;align-items:center;justify-content:center;
-    padding:30px 20px;
-    overflow-x:hidden;position:relative;
-  }
-
-  .aurora{
-    position:fixed;inset:-25%;pointer-events:none;z-index:0;
-    background:
-      radial-gradient(ellipse 45% 38% at 22% 28%, rgba(91,157,255,0.18), transparent 62%),
-      radial-gradient(ellipse 42% 34% at 78% 18%, rgba(139,127,212,0.14), transparent 62%);
-    filter:blur(46px);
-    animation:auroraDrift 26s ease-in-out infinite alternate;
-  }
-  @keyframes auroraDrift{
-    0%{transform:translate(0,0) scale(1)}
-    100%{transform:translate(4%,-3%) scale(1.12)}
-  }
-  .sky{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-  .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 4s ease-in-out infinite}
-  @keyframes twinkle{
-    0%,100%{opacity:.12;transform:scale(.7)}
-    50%{opacity:.85;transform:scale(1)}
-  }
-
-  .stage{position:relative;z-index:1;width:100%;max-width:460px;text-align:center}
-
-  .state{display:none}
-  .state.show{display:block;animation:riseIn .55s cubic-bezier(.2,.9,.3,1.1) both}
-  @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-
-  /* ---------- The logo, with the countdown ring wrapped around it ---------- */
-  .logo-wrap{position:relative;width:150px;height:150px;margin:0 auto 30px}
-  .halo{
-    position:absolute;inset:14px;border-radius:50%;
-    border:1px solid var(--azure);
-    animation:halo 2.4s ease-out infinite;
-  }
-  .halo:nth-child(2){animation-delay:.8s}
-  .halo:nth-child(3){animation-delay:1.6s}
-  @keyframes halo{
-    0%{transform:scale(1);opacity:.55}
-    100%{transform:scale(1.5);opacity:0}
-  }
-  .ring{position:absolute;inset:0;transform:rotate(-90deg)}
-  .ring circle{fill:none;stroke-width:2.5;stroke-linecap:round}
-  .ring .track{stroke:rgba(91,157,255,0.15)}
-  .ring .prog{
-    stroke:url(#ringGrad);
-    stroke-dasharray:440;
-    stroke-dashoffset:440;
-    filter:drop-shadow(0 0 6px var(--azure-glow));
-    transition:stroke-dashoffset .1s linear;
-  }
-  .logo-circle{
-    position:absolute;inset:22px;border-radius:50%;
-    overflow:hidden;border:1.5px solid rgba(147,197,253,0.6);background:#fff;
-    box-shadow:0 0 44px -8px var(--azure-glow);
-    animation:logoIn .8s cubic-bezier(.2,.9,.3,1.3) both, breathe 3s ease-in-out infinite 1s;
-  }
-  @keyframes logoIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
-  @keyframes breathe{
-    0%,100%{box-shadow:0 0 44px -8px var(--azure-glow)}
-    50%{box-shadow:0 0 62px -6px rgba(91,157,255,0.55)}
-  }
-  .logo-circle img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
-
-  .count{
-    position:absolute;inset:0;display:grid;place-items:center;
-    pointer-events:none;
-  }
-  .count span{
-    font-family:'Manrope',sans-serif;
-    font-size:15px;font-weight:800;
-    color:var(--void);
-    background:var(--azure-light);
-    width:30px;height:30px;border-radius:50%;
-    display:grid;place-items:center;
-    transform:translate(52px,-52px);
-    box-shadow:0 4px 16px -3px var(--azure-glow);
-    animation:pop .45s cubic-bezier(.2,.9,.3,1.6);
-  }
-  @keyframes pop{
-    0%{transform:translate(52px,-52px) scale(.4);opacity:0}
-    60%{transform:translate(52px,-52px) scale(1.25)}
-    100%{transform:translate(52px,-52px) scale(1);opacity:1}
-  }
-
-  /* ---------- Brand with the flare sweep ---------- */
-  .brand{
-    font-family:'Cormorant Garamond',serif;
-    font-size:26px;font-weight:600;letter-spacing:.4px;line-height:1.2;
-    display:inline-block;
-    background-image:linear-gradient(100deg,
-      var(--silver) 0%, var(--silver) 38%, #ffffff 46%,
-      var(--azure-light) 50%, #ffffff 54%, var(--silver) 62%, var(--silver) 100%);
-    background-size:280% 100%;
-    background-position:180% 0;
-    -webkit-background-clip:text;background-clip:text;
-    -webkit-text-fill-color:transparent;color:transparent;
-    animation:flareSweep 3.2s ease-in-out infinite;
-  }
-  @keyframes flareSweep{
-    0%{background-position:180% 0}
-    55%,100%{background-position:-80% 0}
-  }
-  .brand-sub{
-    font-size:9.5px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
-    color:var(--azure-light);opacity:.7;margin-top:5px;
-  }
-
-  .rule{display:flex;align-items:center;justify-content:center;gap:12px;margin:26px auto 22px;max-width:250px}
-  .rule i{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(91,157,255,0.4),transparent)}
-  .rule span{
-    font-size:8.5px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
-    color:var(--frost-faint);white-space:nowrap;
-  }
-
-  h1{
-    font-size:30px;font-weight:800;letter-spacing:-.8px;
-    color:var(--frost);line-height:1.15;
-  }
-  h1 .accent{color:var(--azure-light);font-weight:600}
-  .meta{font-size:13px;color:var(--frost-dim);margin-top:10px;font-weight:500}
-  .status{
-    font-size:12.5px;color:var(--azure-light);margin-top:26px;
-    font-weight:700;letter-spacing:1.4px;text-transform:uppercase;
-  }
-
-  .btn{
-    display:inline-flex;align-items:center;gap:8px;
-    margin-top:20px;padding:14px 30px;
-    font-family:'Manrope',sans-serif;
-    font-size:12.5px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;
-    color:var(--void);
-    background:linear-gradient(135deg,var(--azure-light),var(--azure));
-    border:none;border-radius:100px;cursor:pointer;text-decoration:none;
-    box-shadow:0 10px 30px -10px var(--azure-glow);
-    transition:transform .16s, box-shadow .2s;
-  }
-  .btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px -10px var(--azure-glow)}
-  .btn svg{width:14px;height:14px}
-  .btn.ghost{
-    background:transparent;color:var(--azure-light);
-    border:1.5px solid var(--azure);box-shadow:none;
-  }
-  .btn.ghost:hover{background:var(--azure);color:var(--void)}
-
-  .fallback{
-    font-size:11.5px;color:var(--frost-faint);margin-top:16px;line-height:1.6;
-  }
-
-  /* ---------- Error ---------- */
-  .err-icon{
-    width:74px;height:74px;margin:0 auto 22px;border-radius:50%;
-    background:rgba(255,154,166,0.06);
-    border:1.5px solid rgba(255,154,166,0.32);
-    display:grid;place-items:center;
-  }
-  .err-icon svg{width:32px;height:32px;stroke:var(--rose);fill:none;stroke-width:2;stroke-linecap:round}
-  .err-title{font-size:23px;font-weight:800;letter-spacing:-.5px;color:var(--frost);margin-bottom:12px}
-  .err-text{font-size:13.5px;color:var(--frost-dim);line-height:1.65;max-width:330px;margin:0 auto}
-
-  .foot{
-    position:fixed;bottom:18px;left:0;right:0;text-align:center;
-    font-size:11px;color:var(--frost-faint);z-index:1;
-  }
-  .foot a{color:var(--azure-light);text-decoration:none;opacity:.8}
-
-  @media (max-width:520px){
-    .logo-wrap{width:130px;height:130px}
-    .count span{transform:translate(44px,-44px)}
-    @keyframes pop{
-      0%{transform:translate(44px,-44px) scale(.4);opacity:0}
-      60%{transform:translate(44px,-44px) scale(1.25)}
-      100%{transform:translate(44px,-44px) scale(1);opacity:1}
-    }
-    .brand{font-size:22px}
-    h1{font-size:25px}
-  }
-  @media (prefers-reduced-motion:reduce){
-    *{animation-duration:0.01ms !important;animation-iteration-count:1 !important}
-    .brand{-webkit-text-fill-color:var(--frost);color:var(--frost)}
-  }
-</style>
+<link rel="stylesheet" href="/assets/classes/join.v2.css?b=1" />
 </head>
 <body>
 
@@ -279,11 +70,17 @@
 
       <div class="status" id="goStatus">Opening your class sheet…</div>
 
+      <a class="btn btn-meet" id="joinNowBtn" target="_blank" rel="noopener" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        Join Class Now
+      </a>
+
       <a class="btn" id="goNowBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Open Class Sheet
       </a>
-      <div class="fallback">If it doesn’t open by itself, tap the button above.</div>
+      <div class="fallback" id="fallbackNote">If it doesn’t open by itself, tap the button above.</div>
+      <div class="renew-note" id="renewNote" hidden></div>
     </div>
 
     <!-- ERROR -->
@@ -302,7 +99,15 @@
     <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a>
   </footer>
 
+<!-- LIVE BUILD — the live Classes spreadsheet. -->
 <script>
+window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
+</script>
+
+<script src="/assets/classes/engine.v1.js"></script>
+<script src="/assets/classes/api.v2.js"></script>
+<script>
+spawnStars(40);
 /* =================================================================
    ░░  JOIN  ░░
    Opened from a WhatsApp invite: /join/?t=TOKEN&dt=YYYY-MM-DD
@@ -319,26 +124,29 @@
    As with /class/, there is no admin password in this file.
    ================================================================= */
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
 const COUNTDOWN = 3;
 
-const $ = (id) => document.getElementById(id);
+/* Below this many teaching days left, the invite stops offering a direct
+   jump into the meeting and sends the student to their sheet instead,
+   where the "running low" notice is. The aim is that a student close to
+   the end of a plan sees that before the next class, not after. */
+const MIN_CLASSES_FOR_DIRECT_JOIN = 4;
 
-/* ---------------- Starfield ---------------- */
-(function stars(n){
-  const sky = $('sky');
-  for(let i=0;i<n;i++){
-    const s = document.createElement('div');
-    s.className = 'star';
-    const size = Math.random() < 0.85 ? (1 + Math.random()*1.4) : (2 + Math.random()*1.2);
-    s.style.width = size+'px'; s.style.height = size+'px';
-    s.style.left = (Math.random()*100)+'%';
-    s.style.top  = (Math.random()*100)+'%';
-    s.style.animationDelay = (Math.random()*4)+'s';
-    s.style.animationDuration = (3 + Math.random()*3.5)+'s';
-    sky.appendChild(s);
-  }
-})(40);
+/* Teaching days still to come, today included, across every calendar that
+   has not finished. A renewal the academy has already queued as Upcoming
+   counts — a student who has paid must not be nagged. */
+function classesRemaining(calendars){
+  const t = today0().getTime();
+  let n = 0;
+  (calendars || []).forEach(function(cal){
+    const st = calStatus(cal);
+    if(st !== 'Active' && st !== 'Upcoming') return;
+    buildDays(cal).forEach(function(d){
+      if(!d.isOff && d.date.getTime() >= t) n++;
+    });
+  });
+  return n;
+}
 
 function showState(id){
   document.querySelectorAll('.state').forEach(s => s.classList.remove('show'));
@@ -349,47 +157,6 @@ function fail(title, text){
   $('errText').textContent = text;
   showState('stateError');
 }
-
-/* ---------------- Calendar engine (same rules as /class/) ---------------- */
-const DAYS_FULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-
-function parseDate(s){
-  const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if(!m) return null;
-  return new Date(+m[1], +m[2]-1, +m[3]);
-}
-function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
-function today0(){ const t = new Date(); t.setHours(0,0,0,0); return t; }
-function endDate(cal){
-  const s = parseDate(cal.startDate);
-  return s ? addDays(s, (cal.days||1)-1) : null;
-}
-function calStatus(cal){
-  if(!cal.active) return 'Inactive';
-  const s = parseDate(cal.startDate), e = endDate(cal);
-  if(!s || !e) return 'Inactive';
-  const t = today0();
-  if(t < s) return 'Upcoming';
-  if(t > e) return 'Completed';
-  return 'Active';
-}
-function buildDays(cal){
-  const start = parseDate(cal.startDate);
-  if(!start) return [];
-  const off = new Set((cal.weeklyOff||[]).map(n => DAYS_FULL.indexOf(n)).filter(i => i>=0));
-  const links = cal.links || [];
-  const out = [];
-  let linkIdx = 0;
-  for(let i=0;i<cal.days;i++){
-    const date = addDays(start, i);
-    const isOff = off.has(date.getDay());
-    let link = null;
-    if(!isOff && links.length){ link = links[linkIdx % links.length]; linkIdx++; }
-    out.push({ n:i+1, date, isOff, link });
-  }
-  return out;
-}
-function sameDay(a, b){ return a.getTime() === b.getTime(); }
 
 /* ---------------- Resolve which link this invite means ---------------- */
 function resolve(calendars, want){
@@ -402,6 +169,14 @@ function resolve(calendars, want){
     if(day) return { cal, day, status: calStatus(cal) };
   }
   return null;
+}
+
+function fillWho(data){
+  const name = data.studentName || 'Student';
+  const parts = name.trim().split(/\s+/);
+  $('who').innerHTML = parts.length > 1
+    ? esc(parts.slice(0,-1).join(' ')) + ' <span class="accent">' + esc(parts[parts.length-1]) + '</span>'
+    : esc(name);
 }
 
 /* ---------------- Go ---------------- */
@@ -422,8 +197,7 @@ function resolve(calendars, want){
 
   let data;
   try{
-    const res = await fetch(`${SCRIPT_URL}?action=getClass&token=${encodeURIComponent(token)}`);
-    const out = await res.json();
+    const out = await fetchClass(token);
     if(out.result !== 'success'){
       fail('Link not valid', 'This link is no longer valid, or it was reset by the academy. Please ask for a new one.');
       return;
@@ -437,6 +211,23 @@ function resolve(calendars, want){
 
   const found = resolve(data.calendars || [], want);
   const pretty = want.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  /* An invite for a day that has already gone by still opens — it lands
+     on the class sheet with that day in focus, and never offers Join.
+     Holiday, no-link and finished-plan days in the past all go the same
+     way; only a plan the academy switched off is still refused. */
+  if(want.getTime() < today0().getTime() && !(found && found.status === 'Inactive')){
+    fillWho(data);
+    $('when').textContent = found
+      ? `${found.cal.name} · Day ${found.day.n} · ${pretty}`
+      : pretty;
+    const pastUrl = `${mqUrl('/class/')}?t=${encodeURIComponent(token)}&d=${encodeURIComponent(dt)}`;
+    $('goNowBtn').href = pastUrl;
+    $('goStatus').textContent = 'This class day has passed · opening your class sheet…';
+    showState('stateGo');
+    countdownThenGo(pastUrl);
+    return;
+  }
 
   if(!found){
     fail('No class that day', `There is no class scheduled for ${pretty}.`);
@@ -458,22 +249,44 @@ function resolve(calendars, want){
     fail('No link for this class', 'The academy hasn’t added a class link for that day yet.');
     return;
   }
-
   // Fill the page in
-  const name = data.studentName || 'Student';
-  const parts = name.trim().split(/\s+/);
-  $('who').innerHTML = parts.length > 1
-    ? esc(parts.slice(0,-1).join(' ')) + ' <span class="accent">' + esc(parts[parts.length-1]) + '</span>'
-    : esc(name);
+  fillWho(data);
   $('when').textContent = `${found.cal.name} · Day ${found.day.n} · ${pretty}`;
 
   // Land on the class sheet, on the calendar tab, with this day spotlighted.
-  const sheetUrl = `/class/?t=${encodeURIComponent(token)}&d=${encodeURIComponent(dt)}`;
+  const sheetUrl = `${mqUrl('/class/')}?t=${encodeURIComponent(token)}&d=${encodeURIComponent(dt)}`;
   $('goNowBtn').href = sheetUrl;
+
+  /* Direct join is offered only when both are true:
+       - the invite is for TODAY (a link for next Tuesday is not a meeting
+         you can walk into now)
+       - the student has enough classes left that renewal is not overdue */
+  const isToday = want.getTime() === today0().getTime();
+  const left    = classesRemaining(data.calendars || []);
+  const offerJoin = isToday && left >= MIN_CLASSES_FOR_DIRECT_JOIN;
+
+  if(offerJoin){
+    $('joinNowBtn').href = found.day.link;
+    $('joinNowBtn').hidden = false;
+    $('goStatus').textContent = 'Tap to join, or wait for your class sheet…';
+  } else if(isToday && left < MIN_CLASSES_FOR_DIRECT_JOIN){
+    $('renewNote').innerHTML =
+      'Only <b>' + left + (left === 1 ? ' class' : ' classes') + ' left</b> on your plan. ' +
+      'Opening your class sheet — please contact the academy to continue.';
+    $('renewNote').hidden = false;
+  }
 
   showState('stateGo');
   countdownThenGo(sheetUrl);
 })();
+
+/* The countdown can be stopped. Three seconds is barely enough time to
+   reach a button, so tapping Join cancels it outright, and touching the
+   card pauses it while the student reads. */
+let countdownStopped = false;
+let countdownPaused  = false;
+
+function stopCountdown(){ countdownStopped = true; }
 
 function countdownThenGo(link){
   const ring = $('ringProg');
@@ -486,8 +299,14 @@ function countdownThenGo(link){
   let shown = COUNTDOWN;
   $('countNum').textContent = shown;
 
+  let elapsedBefore = 0;
+  let resumedAt = started;
+
   function tick(now){
-    const elapsed = Math.min(now - started, total);
+    if(countdownStopped) return;
+    if(countdownPaused){ resumedAt = now; requestAnimationFrame(tick); return; }
+
+    const elapsed = Math.min(elapsedBefore + (now - resumedAt), total);
     const pct = elapsed / total;
     ring.style.strokeDashoffset = CIRC * (1 - pct);
 
@@ -502,6 +321,8 @@ function countdownThenGo(link){
     }
 
     if(elapsed < total){
+      elapsedBefore = elapsed;
+      resumedAt = now;
       requestAnimationFrame(tick);
     } else {
       $('goStatus').textContent = 'Opening now';
@@ -510,12 +331,25 @@ function countdownThenGo(link){
     }
   }
   requestAnimationFrame(tick);
-}
 
-function esc(s){
-  return String(s == null ? '' : s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  // Tapping Join leaves for the meeting — never yank the page away after.
+  const jb = $('joinNowBtn');
+  if(jb) jb.addEventListener('click', function(){
+    stopCountdown();
+    $('goStatus').textContent = 'Opening your class…';
+    $('fallbackNote').textContent = 'Your class sheet is one tap away, below.';
+  });
+
+  // Hold to read. Works for touch and mouse alike.
+  const card = document.querySelector('#stateGo');
+  if(card){
+    ['touchstart','mousedown'].forEach(function(ev){
+      card.addEventListener(ev, function(){ countdownPaused = true; }, {passive:true});
+    });
+    ['touchend','touchcancel','mouseup','mouseleave'].forEach(function(ev){
+      card.addEventListener(ev, function(){ countdownPaused = false; }, {passive:true});
+    });
+  }
 }
 </script>
 </body>
