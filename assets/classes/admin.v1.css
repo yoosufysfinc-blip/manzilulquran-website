@@ -1221,3 +1221,44 @@
     .ib, .ib::after{ transition:none; }
     .actions .ib, .b-btns .ib, .live-btns .ib{ animation:none; }
   }
+
+
+  /* ---------- Ported from live portal/classes/index.html, commit c3fe10a
+       (2026-09-23). A styling change made on the live page after the demo
+       had copied its study-material picker. Carried over verbatim so the
+       promotion does not quietly undo it. It comes last on purpose: it
+       must win over the generic .modal glass rule above. ---------- */
+  /* ---------- study material popup — liquid glass, saturated, playful ---------- */
+  .sm-modal-backdrop{
+    z-index:200;
+    background:rgba(6,20,26,0.45);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  }
+  .sm-modal{
+    max-width:600px;border-radius:28px;
+    background:
+      linear-gradient(135deg, rgba(45,212,164,0.38) 0%, rgba(56,178,235,0.30) 45%, rgba(201,169,110,0.38) 100%);
+    backdrop-filter:blur(30px) saturate(220%);-webkit-backdrop-filter:blur(30px) saturate(220%);
+    border:1px solid rgba(255,255,255,0.4);
+    box-shadow:0 24px 70px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+  .sm-modal .modal-head{border-bottom-color:rgba(255,255,255,0.25)}
+  .sm-modal .modal-foot{background:rgba(255,255,255,0.08);border-top-color:rgba(255,255,255,0.25)}
+  .sm-modal .sm-course{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.3)}
+  .sm-modal .sm-course.on{background:rgba(45,212,164,0.22);border-color:var(--gold-light)}
+  .sm-modal .sm-chk{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.28)}
+  .sm-modal .sm-chk.on{background:linear-gradient(135deg, rgba(45,212,164,0.55), rgba(201,169,110,0.55));border-color:var(--gold-light);color:var(--cream)}
+  .sm-modal .sm-tools button:hover{background:var(--gold-light)}
+
+  /* ---------- Row note: a small, quiet flag under a student's name ----------
+     White and minimal on purpose: it should be noticed while scanning the
+     list, not compete with the status pill or the action buttons. */
+  .row-note{
+    display:block;margin-top:4px;
+    font-size:10.5px;font-weight:600;letter-spacing:.4px;
+    color:rgba(255,255,255,.82);
+  }
+  .row-note::before{
+    content:"";display:inline-block;width:5px;height:5px;border-radius:50%;
+    margin-right:6px;vertical-align:1px;background:rgba(255,255,255,.8);
+  }
