@@ -483,6 +483,60 @@ option{background:#0a1f16; color:var(--ink)}
 .modal .row label{width:110px; color:var(--mut); font-size:13px; flex:0 0 auto}
 .modal .row select,.modal .row input{flex:1}
 .modal .actions{display:flex; justify-content:flex-end; gap:10px; margin-top:20px}
+/* tall modals scroll inside themselves; Save/Cancel stay pinned at the bottom */
+.modal{--mpad:26px; max-height:calc(100vh - 40px); max-height:calc(100dvh - 40px); overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
+.modal .actions{position:sticky; bottom:calc(-1 * var(--mpad)); z-index:2; background:#0a2018; margin-left:calc(-1 * var(--mpad)); margin-right:calc(-1 * var(--mpad));
+  padding:12px var(--mpad) calc(14px + env(safe-area-inset-bottom,0px)); border-top:1px solid var(--line); margin-bottom:calc(-1 * var(--mpad))}
+@media(max-width:480px){
+  .modal-bg{padding:8px; align-items:flex-end}
+  .modal{--mpad:18px; padding:18px; max-height:calc(100vh - 16px); max-height:calc(100dvh - 16px); border-radius:18px 18px 14px 14px}
+  .modal .row label{width:84px}
+}
+/* portion list: capped height, scrolls on its own */
+.pm-count{font-size:12px; color:var(--mut); margin:-8px 0 8px; display:flex; justify-content:space-between; gap:8px}
+.pm-count b{color:var(--gold2)}
+.pm-list.many{max-height:min(32vh,240px); overflow-y:auto; overscroll-behavior:contain; padding:4px; border:1px solid var(--line); border-radius:12px}
+
+/* ===== surah picker (replaces the 114-option dropdown) ===== */
+.sp-btn{flex:1; min-width:0; min-height:44px; display:flex; align-items:center; gap:8px; padding:0 12px; border-radius:10px; cursor:pointer;
+  background:var(--bg2); border:1px solid var(--line2); color:var(--ink); font:500 14px var(--ui); text-align:left}
+.sp-btn:hover{border-color:var(--gold)}
+.sp-btn .n{font-weight:700; color:var(--gold2); font-variant-numeric:tabular-nums}
+.sp-btn .t{flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.sp-btn .a{font-family:var(--ar); color:var(--gold2); font-size:16px}
+.sp-btn .ph{color:var(--dim)}
+.sp-btn::after{content:"▾"; color:var(--gold2); font-size:12px}
+.sp-btn:focus-visible{outline:2px solid var(--gold2); outline-offset:2px}
+.sp-bg{position:fixed; inset:0; z-index:130; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(2,10,7,.6); backdrop-filter:blur(4px)}
+.sp-bg.on{display:flex}
+.sp{width:min(520px,100%); max-height:min(640px,calc(100dvh - 40px)); display:flex; flex-direction:column; background:#0a2018;
+  border:1px solid var(--line2); border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.6); overflow:hidden}
+.sp-head{display:flex; align-items:center; gap:8px; padding:14px 14px 10px 18px}
+.sp-head b{flex:1; font-family:var(--disp); font-weight:400; font-size:18px; color:var(--gold2)}
+.sp-head button{min-height:40px; min-width:40px; padding:0 12px; border-radius:10px; border:1px solid var(--line2); background:transparent; color:var(--mut); font:600 13px var(--ui); cursor:pointer}
+.sp-search{display:flex; align-items:center; gap:8px; margin:0 14px; min-height:44px; padding:0 12px; border-radius:12px; background:var(--bg2); border:1px solid var(--line2)}
+.sp-search:focus-within{border-color:var(--gold)}
+.sp-search svg{width:17px; height:17px; flex:0 0 auto; fill:none; stroke:var(--gold2); stroke-width:2; stroke-linecap:round}
+.sp-search input{flex:1; min-width:0; background:transparent; border:0; outline:0; color:var(--ink); font:500 16px var(--ui)}
+.sp-juz{display:flex; gap:6px; overflow-x:auto; padding:10px 14px; scrollbar-width:none; flex:0 0 auto}
+.sp-juz::-webkit-scrollbar{display:none}
+.sp-juz button{flex:0 0 auto; min-height:36px; padding:0 12px; border-radius:99px; border:1px solid var(--line2); background:transparent; color:var(--mut); font:600 12.5px var(--ui); cursor:pointer; white-space:nowrap}
+.sp-juz button.on{background:linear-gradient(135deg,var(--gold2),var(--gold)); color:#06150f; border-color:transparent}
+.sp-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; padding:2px 14px 14px; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
+.sp-tile{display:grid; grid-template-columns:34px 1fr; grid-template-rows:auto auto; column-gap:8px; align-items:center; text-align:left; min-height:52px; padding:6px 10px 6px 6px;
+  border-radius:12px; border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--ink); cursor:pointer}
+.sp-tile:hover{border-color:var(--line2); background:rgba(201,169,110,.07)}
+.sp-tile.on{border-color:var(--gold); background:rgba(201,169,110,.16)}
+.sp-tile .n{grid-row:1/3; width:34px; height:34px; border-radius:10px; display:grid; place-items:center; background:rgba(201,169,110,.14); color:var(--gold2); font:700 13px var(--ui)}
+.sp-tile .t{font:600 13px var(--ui); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.sp-tile .a{font-family:var(--ar); font-size:15px; color:var(--gold2); line-height:1.2; display:flex; justify-content:space-between; gap:6px}
+.sp-tile .a small{font:500 10.5px var(--ui); color:var(--dim)}
+.sp-empty{grid-column:1/-1; text-align:center; color:var(--dim); padding:24px 0; font-size:13px}
+@media(min-width:640px){.sp-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:480px){
+  .sp-bg{padding:0; align-items:flex-end}
+  .sp{width:100%; max-height:88vh; max-height:88dvh; border-radius:20px 20px 0 0; padding-bottom:env(safe-area-inset-bottom,0px)}
+}
 /* chart tooltip */
 .tip{position:fixed; pointer-events:none; background:#0a2018; border:1px solid var(--line2); border-radius:10px; padding:8px 12px; font-size:12.5px; z-index:150; opacity:0; transition:opacity .15s; box-shadow:0 8px 24px rgba(0,0,0,.5)}
 .tip b{color:var(--gold2)}
@@ -1030,9 +1084,20 @@ footer b{color:var(--gold)}
   </div>
 </div>
 
+<div class="sp-bg" id="surahPick" role="dialog" aria-modal="true" aria-label="Choose surah">
+  <div class="sp">
+    <div class="sp-head"><b id="spTitle">Choose surah</b><button type="button" id="spNone">Clear</button><button type="button" id="spClose" aria-label="Close">✕</button></div>
+    <label class="sp-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="spQ" type="search" inputmode="search" autocomplete="off" placeholder="Number or name — e.g. 112, Ikhlas" aria-label="Search surah"></label>
+    <div class="sp-juz" id="spJuz" role="group" aria-label="Filter by juz"></div>
+    <div class="sp-grid" id="spGrid"></div>
+  </div>
+</div>
+
 <div class="modal-bg" id="portionModal">
   <div class="modal">
     <h3 id="pmTitle">Select portions</h3>
+    <div class="pm-count" id="pmCount"></div>
     <div class="pm-list" id="pmList"></div>
     <div class="row"><label>Surah</label><select id="pmSurah"></select></div>
     <div class="row"><label>From ayah</label>
@@ -1179,7 +1244,75 @@ function primaryJuz(si){const l=juzList(si);return l.length?l[0]:null;}
 
 function fillSurahSelect(sel,withNone){
   sel.innerHTML=(withNone?'<option value="">— Surah —</option>':"")+SURAHS.map((s,i)=>`<option value="${i}">${i+1}. ${s[0]} · ${s[1]}</option>`).join("");
+  attachSurahPicker(sel,withNone);
 }
+/* Surah picker: the native <select> stays as the value holder (all existing code keeps
+   reading/writing sel.value); a button + searchable, juz-filtered tile sheet replaces the
+   114-option scroll. Setting sel.value in code also refreshes the button label. */
+const SP={sel:null,juz:"all",q:""};
+try{SP.last=localStorage.getItem("mq_sp_juz")||"30";}catch(e){SP.last="30";}
+function spLabel(sel){
+  const b=sel._spBtn;if(!b)return;const v=sel.value;
+  if(v===""||v==null||!SURAHS[+v]){b.innerHTML='<span class="ph t">— Surah —</span>';return;}
+  const s=SURAHS[+v];b.innerHTML=`<span class="n">${+v+1}</span><span class="t">${esc(s[0])}</span><span class="a">${s[1]}</span>`;
+}
+function attachSurahPicker(sel,withNone){
+  sel._spNone=!!withNone;
+  if(!sel._spBtn){
+    const b=document.createElement("button");b.type="button";b.className="sp-btn";
+    b.setAttribute("aria-haspopup","dialog");
+    sel.style.display="none";sel.insertAdjacentElement("afterend",b);sel._spBtn=b;
+    b.onclick=()=>openSurahPick(sel);
+    sel.addEventListener("change",()=>spLabel(sel));
+    const d=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value");
+    Object.defineProperty(sel,"value",{configurable:true,get(){return d.get.call(this);},set(v){d.set.call(this,v);spLabel(this);}});
+  }
+  spLabel(sel);
+}
+const spNorm=t=>String(t).toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]/g,"");
+function openSurahPick(sel){
+  SP.sel=sel;SP.q="";$("#spQ").value="";
+  const v=sel.value;
+  SP.juz=(v!==""&&SURAHS[+v])?String(primaryJuz(+v)):SP.last;
+  const lbl=sel.closest(".row")&&sel.closest(".row").querySelector("label");
+  $("#spTitle").textContent=lbl&&lbl.textContent.trim()&&!/ayah/i.test(lbl.textContent)?lbl.textContent.trim():"Choose surah";
+  $("#spNone").style.display=sel._spNone?"":"none";
+  const juz=[["all","All"]];for(let j=30;j>=1;j--)juz.push([String(j),"Juz "+j]);
+  $("#spJuz").innerHTML=juz.map(([k,l])=>`<button type="button" data-j="${k}">${l}</button>`).join("");
+  $$("#spJuz button").forEach(b=>b.onclick=()=>{SP.juz=b.dataset.j;SP.q="";$("#spQ").value="";
+    if(SP.juz!=="all"){SP.last=SP.juz;try{localStorage.setItem("mq_sp_juz",SP.juz);}catch(e){}}drawSurahPick(true);});
+  $("#surahPick").classList.add("on");
+  drawSurahPick(true);
+  const on=$("#spGrid .sp-tile.on");if(on)on.scrollIntoView({block:"center"});
+}
+function drawSurahPick(resetScroll){
+  const q=SP.q.trim(),cur=SP.sel?SP.sel.value:"";
+  let idx=SURAHS.map((s,i)=>i);
+  if(q){
+    if(/^\d+$/.test(q)){const n=+q;idx=idx.filter(i=>String(i+1).startsWith(q)).sort((a,b)=>(a+1===n?-1:b+1===n?1:a-b));}
+    else{const nq=spNorm(q);idx=idx.filter(i=>spNorm(SURAHS[i][0]).includes(nq)||SURAHS[i][1].includes(q));}
+  }else if(SP.juz!=="all"){const j=+SP.juz;idx=idx.filter(i=>juzList(i).includes(j));}
+  $$("#spJuz button").forEach(b=>b.classList.toggle("on",!q&&b.dataset.j===SP.juz));
+  const onBtn=$("#spJuz button.on");if(onBtn&&resetScroll)onBtn.scrollIntoView({inline:"center",block:"nearest"});
+  $("#spGrid").innerHTML=idx.map(i=>{const s=SURAHS[i];
+    return `<button type="button" class="sp-tile${String(i)===String(cur)?" on":""}" data-i="${i}"><span class="n">${i+1}</span><span class="t">${esc(s[0])}</span><span class="a">${s[1]}<small>${s[2]} āyāt</small></span></button>`;}).join("")
+    ||`<div class="sp-empty">No surah matches “${esc(q)}”</div>`;
+  if(resetScroll)$("#spGrid").scrollTop=0;
+  $$("#spGrid .sp-tile").forEach(t=>t.onclick=()=>pickSurah(t.dataset.i));
+}
+function pickSurah(v){
+  const sel=SP.sel;if(!sel)return;
+  sel.value=v;sel.dispatchEvent(new Event("change"));
+  if(v!==""){SP.last=String(primaryJuz(+v));try{localStorage.setItem("mq_sp_juz",SP.last);}catch(e){}}
+  closeSurahPick();
+}
+function closeSurahPick(){$("#surahPick").classList.remove("on");if(SP.sel&&SP.sel._spBtn)SP.sel._spBtn.focus({preventScroll:true});SP.sel=null;}
+$("#spQ").addEventListener("input",e=>{SP.q=e.target.value;drawSurahPick(true);});
+$("#spQ").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const t=$("#spGrid .sp-tile");if(t)pickSurah(t.dataset.i);}});
+$("#spClose").onclick=closeSurahPick;
+$("#spNone").onclick=()=>pickSurah("");
+$("#surahPick").addEventListener("click",e=>{if(e.target.id==="surahPick")closeSurahPick();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#surahPick").classList.contains("on")){e.stopImmediatePropagation();closeSurahPick();}},true);
 function fillAyahSelect(sel,count,val){
   let h="";for(let i=1;i<=count;i++)h+=`<option value="${i}"${i===val?" selected":""}>${i}</option>`;
   sel.innerHTML=h;
@@ -1722,6 +1855,9 @@ function renderPmList(){
     `<span class="pchip"><span class="arname">${SURAHS[p.s][1]}</span>${esc(portionText(p))}<button data-i="${i}" title="Remove">✕</button></span>`).join("")
     :'<span style="color:var(--dim);font-size:12.5px">No portions yet — pick a surah below and press ＋ Add.</span>';
   $("#pmList").querySelectorAll("button").forEach(b=>b.onclick=()=>{pmDraft.splice(+b.dataset.i,1);renderPmList();});
+  const many=pmDraft.length>6;
+  $("#pmList").classList.toggle("many",many);
+  $("#pmCount").innerHTML=pmDraft.length?`<span><b>${pmDraft.length}</b> portion${pmDraft.length===1?"":"s"} added</span>${many?"<span>scroll the list ↕</span>":""}`:"";
 }
 function openPortionModal(k,day,field){
   portionCtx={k,day,field};
@@ -1742,7 +1878,7 @@ $("#pmAdd").onclick=()=>{
   const sv=$("#pmSurah").value;
   if(sv===""){toast("Choose a surah first");return;}
   pmDraft.push({s:+sv,a1:+$("#pmA1").value,a2:+$("#pmA2").value});
-  renderPmList();
+  renderPmList();$("#pmList").scrollTop=$("#pmList").scrollHeight;
   $("#pmSurah").value="";$("#pmSurah").dispatchEvent(new Event("change"));
 };
 $("#pmRangeAdd").onclick=()=>{
@@ -1753,7 +1889,7 @@ $("#pmRangeAdd").onclick=()=>{
     if(pmDraft.some(p=>p.s===i && p.a1===1 && p.a2===SURAHS[i][2]))continue; // skip dup full-surah
     pmDraft.push({s:i,a1:1,a2:SURAHS[i][2]}); added++;
   }
-  renderPmList();
+  renderPmList();$("#pmList").scrollTop=$("#pmList").scrollHeight;
   toast(added? ("Added "+added+" surah"+(added>1?"s":"")+" in full") : "Those surahs are already added");
 };
 $("#pmSave").onclick=()=>{
