@@ -4,2589 +4,951 @@
 <meta charset="UTF-8" />
 <meta name="robots" content="noindex, nofollow" />
 <meta name="googlebot" content="noindex, nofollow" />
+<meta name="referrer" content="no-referrer" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Classes · ManzilulQuran Admin</title>
+<title>Class Sheet · ManzilulQuran E-learning Academy</title>
 <link rel="icon" href="/logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="/assets/classes/admin.v1.css" />
+<link rel="stylesheet" href="/assets/classes/sheet.v2.css?b=1" />
 </head>
 <body>
 
-  <!-- LOCK -->
-  <div class="lock-screen" id="lockScreen">
-    <div class="lock-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
-    <div class="lock-title">Classes</div>
-    <div class="lock-sub">Enter the portal password to continue.</div>
-    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="off" autofocus />
-    <button class="lock-btn" id="lockBtn">Unlock</button>
-    <div class="lock-error" id="lockError">&nbsp;</div>
-    <div class="lock-hint">Admin access only.<br><a href="/portal/">← Back to portal</a></div>
-  </div>
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="sky" id="sky" aria-hidden="true"></div>
 
-  <!-- ADMIN -->
-  <div class="admin" id="adminView">
-    <div class="admin-head">
-      <div class="admin-head-left">
-        <div class="admin-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
-        <div>
-          <div class="admin-title">Class <span class="accent">Sheets</span></div>
-          <div class="admin-sub">Student Workspaces</div>
-        </div>
+  <div class="stage">
+
+    <!-- LOADING -->
+    <div class="state show" id="stateLoading">
+      <div class="loading">
+        <div class="loading-orb"><span></span><span></span></div>
+        <div>Opening class sheet…</div>
       </div>
-      <div class="admin-actions">
-        <button class="btn-gold" id="newClassBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Class Sheet
+    </div>
+
+    <!-- ERROR -->
+    <div class="state" id="stateError">
+      <div class="err-card">
+        <div class="err-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </div>
+        <h2 id="errTitle">Link not valid</h2>
+        <p id="errText">This class sheet link is not valid, or it may have been reset by the academy. Please ask for a new link.</p>
+        <a class="cta" href="https://wa.me/917025070415" target="_blank" rel="noopener">Contact Academy</a>
+      </div>
+    </div>
+
+    <!-- CLASS SHEET -->
+    <div class="state" id="stateSheet">
+      <div class="card">
+
+        <div class="head">
+          <div class="logo-wrap">
+            <div class="halo"></div>
+            <div class="halo"></div>
+            <div class="halo"></div>
+            <div class="logo-circle">
+              <img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" />
+            </div>
+          </div>
+
+          <!-- Academy name — flare sweeps across this -->
+          <div class="brand">ManzilulQuran</div>
+          <div class="brand-sub">E-Learning Academy</div>
+
+          <div class="rule"><i></i><span>Class Sheet</span><i></i></div>
+
+          <h1 id="studentName">Student</h1>
+          <div class="head-sub" id="headSub">—</div>
+        </div>
+
+        <button class="ntc-bell" id="ntcBell" type="button" hidden aria-label="Notices">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/>
+          </svg>
+          <span class="ntc-count" id="ntcCount" hidden>0</span>
         </button>
-        <button class="btn-gold" id="newBatchBtn" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Batch
-        </button>
-        <button class="btn-ghost" id="liveBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M6.5 6.5a7.8 7.8 0 000 11M17.5 6.5a7.8 7.8 0 010 11"/></svg>
-          Live
-        </button>
-        <button class="btn-ghost" id="timesBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
-          Times
-        </button>
-        <button class="btn-ghost" id="noticesBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
-          Notices
-        </button>
-        <button class="btn-ghost" id="coursesBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-          Courses
-        </button>
-        <button class="btn-ghost" id="refreshBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
-          Refresh
-        </button>
-        <button class="btn-ghost" id="lockAgainBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          Lock
-        </button>
-      </div>
-    </div>
 
-    <!-- =========================================================
-         WORKSPACES. Individual is the system that has always been
-         here. Batch is new and starts empty. Switching is a local
-         toggle only — it fetches nothing and writes nothing.
-         ========================================================= -->
-    <div class="ws-tabs" role="tablist">
-      <button class="ws-tab active" data-ws="individual" role="tab" aria-selected="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-        </svg>
-        Individual
-        <span class="ws-count" id="wsCountIndividual">—</span>
-      </button>
-      <button class="ws-tab" data-ws="batch" role="tab" aria-selected="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
-          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-        </svg>
-        Batch
-        <span class="ws-count" id="wsCountBatch">—</span>
-      </button>
-    </div>
+        <div class="teacher-mark" id="teacherMark" hidden>Teacher view &middot; this link is for staff</div>
 
-    <div class="ws" id="wsIndividual">
+        <div class="ntc-ticker" id="ntcTicker" hidden></div>
 
-    <div class="alerts" id="alerts">
-      <div class="alerts-head">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-        <h4>Needs attention</h4>
-        <button class="alerts-toggle" id="alertsToggle" aria-expanded="true" title="Collapse">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-        </button>
-        <span class="count" id="alertCount">0</span>
-      </div>
-      <div id="alertRows"></div>
-    </div>
-
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Total class sheets</div><div class="stat-value" id="statTotal">—</div></div>
-      <div class="stat"><div class="stat-label">Active</div><div class="stat-value" id="statActive">—</div></div>
-      <div class="stat"><div class="stat-label">Inactive</div><div class="stat-value" id="statInactive">—</div></div>
-    </div>
-
-    <div class="list-wrap">
-      <div class="list-search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInput" placeholder="Search by student name, student ID, or course..." />
-        <span id="resultCount"></span>
-      </div>
-
-      <div class="filters">
-        <select id="filterCourse"><option value="">All courses</option></select>
-        <select id="filterStatus">
-          <option value="">All status</option>
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-        </select>
-        <select id="filterMonth"><option value="">All join months</option></select>
-        <select id="filterYear"><option value="">All join years</option></select>
-        <select id="sortBy">
-          <option value="createdDesc">Recently created</option>
-          <option value="updatedDesc">Recently updated</option>
-          <option value="nameAsc">Student name (A–Z)</option>
-          <option value="joinDesc">Join date (newest)</option>
-          <option value="joinAsc">Join date (oldest)</option>
-          <option value="courseAsc">Course</option>
-          <option value="statusAsc">Status</option>
-        </select>
-      </div>
-
-      <div id="listContent">
-        <div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>
-      </div>
-    </div>
-    </div><!-- /wsIndividual -->
-
-    <!-- BATCH WORKSPACE — shell only. Nothing here talks to the server yet. -->
-    <div class="ws" id="wsBatch" hidden>
-      <div class="stats" id="bStats">
-        <div class="stat"><div class="stat-label">Batches</div><div class="stat-value" id="bStatTotal">—</div></div>
-        <div class="stat"><div class="stat-label">Students</div><div class="stat-value" id="bStatStudents">—</div></div>
-        <div class="stat"><div class="stat-label">Paid this month</div><div class="stat-value" id="bStatPaid">—</div></div>
-      </div>
-      <div id="bList"><div class="loading"><div class="loading-spin"></div><div>Loading batches…</div></div></div>
-    </div>
-  </div>
-    </div>
-  </div>
-
-  <!-- BATCH: create / edit -->
-  <div class="modal-backdrop" id="batchModal">
-    <div class="modal">
-      <div class="modal-head">
-        <h3 id="bFormTitle">New <span class="accent">Batch</span></h3>
-        <p>One share link for the whole batch. Who may open it is decided by the monthly tick, not the link.</p>
-      </div>
-      <div class="modal-body">
-        <div class="field">
-          <label>Batch name</label>
-          <input type="text" id="bName" placeholder="e.g. Madrasa Evening" autocomplete="off" />
-          <span class="err-msg">A batch needs a name.</span>
+        <div class="status-banner" id="statusBanner">
+          This class sheet is currently inactive. Please contact the academy.
         </div>
-        <div class="field">
-          <label>Course</label>
-          <select id="bCourse"><option value="">Select course</option></select>
-        </div>
-        <div class="field" id="bSubjectsField" hidden>
-          <label>Subjects <span class="opt">optional</span></label>
-          <div class="subj-wrap" id="bSubjects"></div>
-          <div class="subj-none" id="bSubjectsNone" hidden>This course has no subjects yet.</div>
-        </div>
-        <div class="field">
-          <label>WhatsApp group <span class="opt">optional</span></label>
-          <input type="url" id="bWhatsapp" placeholder="https://chat.whatsapp.com/…" autocomplete="off" />
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Class time · IST</label>
-            <input type="time" id="bTime" step="300" />
-          </div>
-          <div class="field">
-            <label>Grace days</label>
-            <input type="number" id="bGrace" min="0" max="28" value="5" />
-          </div>
-          <div class="field">
-            <label>Status</label>
-            <select id="bStatus"><option value="Active">Active</option><option value="Paused">Paused</option></select>
-          </div>
-        </div>
-        <div class="b-hint">Grace days let last month&rsquo;s paid students still get in for the first few days of a new month, so a late fee doesn&rsquo;t lock a child out on the 1st. Set 0 to switch it off.</div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-outline" id="bCancelBtn">Cancel</button>
-        <button class="btn-solid" id="bSaveBtn">Create batch</button>
-      </div>
-    </div>
-  </div>
+        <div class="sync-note" id="syncNote"></div>
 
-  <!-- BATCH: roster + monthly access -->
-  <div class="modal-backdrop" id="rosterModal">
-    <div class="modal modal-wide">
-      <div class="modal-head">
-        <h3 id="rTitle">Roster</h3>
-        <p>Who is on this batch, and who has paid this month.</p>
-      </div>
-      <div class="modal-body">
-        <div class="t-link">
-          <div class="t-link-head">
-            <span class="t-link-title">Teacher link</span>
-            <span class="t-link-note">Opens without signing in. No fee check, no device limit.</span>
-          </div>
-          <input type="text" id="tLinkInput" readonly />
-          <div class="t-link-btns">
-            <button class="btn-outline sm" id="tCopyBtn">Copy</button>
-            <button class="btn-outline sm" id="tWaBtn">WhatsApp</button>
-            <button class="btn-ghost sm danger" id="tResetBtn">Reset</button>
-          </div>
+        <div class="tabs">
+          <button class="tab active" data-tab="overview">Overview</button>
+          <button class="tab" data-tab="calendar">Calendar Sheets</button>
+          <button class="tab" data-tab="material" id="tabMaterial" hidden>Study Material</button>
+          <button class="tab" data-tab="notices" id="tabNotices" hidden>Notices <span class="tab-dot" id="tabNoticesDot" hidden></span></button>
+          <button class="tab" data-tab="board" id="tabBoard">Whiteboard</button>
+          <button class="tab tab-hifz" data-tab="hifz" id="tabHifz" hidden>🕮 Hifz Report</button>
         </div>
 
-        <div class="r-session">
-          <div class="r-session-head">
-            <span class="r-session-title">Batch session <b id="rSesNo">—</b></span>
-            <span class="r-session-sub" id="rSesLine">One window for the whole batch. Everyone on the roster sits inside it.</span>
-          </div>
-          <div class="r-session-grid">
-            <div class="r-fld">
-              <label>Start</label>
-              <input type="date" id="rSesStart" />
+        <!-- Overview -->
+        <div class="tab-panel show" id="panel-overview">
+          <div class="info-grid">
+            <div class="info-item full">
+              <div class="info-label">Student Name</div>
+              <div class="info-value big" id="ovName">—</div>
             </div>
-            <div class="r-fld r-fld-days">
-              <label>Days</label>
-              <input type="number" id="rSesDays" min="1" max="400" placeholder="30" />
+            <div class="info-item">
+              <div class="info-label">Student ID</div>
+              <div class="info-value" id="ovId">—</div>
             </div>
-            <div class="r-fld">
-              <label>Ends</label>
-              <div class="r-end" id="rSesEnd">—</div>
+            <div class="info-item">
+              <div class="info-label">Course</div>
+              <div class="info-value" id="ovCourse">—</div>
+              <div class="subj-row" id="ovSubjects" hidden></div>
             </div>
-          </div>
-          <div class="r-session-btns">
-            <button class="btn-outline sm" id="rSesSave">Save dates</button>
-            <button class="btn-gold sm" id="rSesNext">Start next session</button>
-          </div>
-          <div class="r-session-warn">Starting the next session unticks everyone. Last session's record is kept.</div>
-        </div>
-
-        <div class="r-ticksbar">
-          <span id="rPaidCount">—</span>
-          <button class="btn-solid sm" id="rSaveAccess">Save ticks</button>
-        </div>
-        <div id="rList"><div class="loading"><div class="loading-spin"></div><div>Loading roster…</div></div></div>
-
-        <div class="r-add">
-          <div class="r-add-title">Add a student</div>
-          <div class="r-add-grid">
-            <input type="text" id="rName" placeholder="Full name" autocomplete="off" />
-            <input type="text" id="rSid" placeholder="Student ID" autocomplete="off" />
-            <input type="email" id="rEmail" placeholder="Email for sign-in" autocomplete="off" />
-            <input type="date" id="rDob" />
-            <input type="text" id="rMqId" placeholder="MQ ID (optional)" autocomplete="off" />
-          </div>
-          <div class="r-add-actions">
-            <span class="r-add-note">The student signs in with this email and date of birth.</span>
-            <button class="btn-solid sm" id="rAddBtn">Add</button>
-          </div>
-        </div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-outline" id="rCloseBtn">Done</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ONE CLASS TIME -->
-  <div class="modal-backdrop" id="timeModal">
-    <div class="modal">
-      <div class="modal-head">
-        <h3>Class <span class="accent">Time</span></h3>
-        <p id="timeFor">—</p>
-      </div>
-      <div class="modal-body">
-        <div class="field">
-          <label>Start time · IST</label>
-          <input type="time" id="tmInput" step="300" />
-        </div>
-        <div class="b-hint">Always the academy's time (IST), whatever country the student is in. The class counts as live for 60 minutes from this time.</div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-outline" id="tmClear">Clear</button>
-        <button class="btn-outline" id="tmCancel">Cancel</button>
-        <button class="btn-solid" id="tmSave">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ALL CLASS TIMES — for filling in the sheets that already exist -->
-  <div class="modal-backdrop" id="timesModal">
-    <div class="modal modal-wide">
-      <div class="modal-head">
-        <h3>Class <span class="accent">Times</span></h3>
-        <p id="timesSub">Set times for sheets that already exist. Only changed rows are saved.</p>
-      </div>
-      <div class="modal-body">
-        <div class="times-bar">
-          <label class="times-toggle"><input type="checkbox" id="timesMissingOnly" checked /> <span>Only those with no time</span></label>
-          <label class="times-toggle"><input type="checkbox" id="timesActiveOnly" checked /> <span>Active only</span></label>
-          <span class="times-count" id="timesChanged">0 changed</span>
-        </div>
-        <div id="timesList"></div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-outline" id="timesCancel">Close</button>
-        <button class="btn-solid" id="timesSave" disabled>Save changes</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- LIVE — today's classes, in time order -->
-  <div class="modal-backdrop" id="liveModal">
-    <div class="modal modal-wide">
-      <div class="modal-head">
-        <h3>Live <span class="accent">Today</span></h3>
-        <p id="liveSub">Classes running today, in time order. Holidays and finished plans are left out.</p>
-      </div>
-      <div class="modal-body">
-        <div id="liveList"><div class="loading"><div class="loading-spin"></div><div>Working out today's classes…</div></div></div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-outline" id="liveRefresh">Refresh</button>
-        <button class="btn-solid" id="liveCloseBtn">Done</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- NOTICE BOARD -->
-  <div class="modal-backdrop" id="noticesModal">
-    <div class="modal modal-wide">
-      <div class="modal-head">
-        <h3>Notice <span class="accent">Board</span></h3>
-        <p>Announcements to one student, a course, or everyone.</p>
-      </div>
-      <div class="modal-body">
-
-        <div class="ntc-admin-grid">
-          <!-- composer -->
-          <div class="ntc-compose">
-            <div class="field">
-              <label>Title</label>
-              <input type="text" id="nTitle" maxlength="80" placeholder="e.g. Eid holiday" autocomplete="off" />
-              <span class="err-msg">A notice needs a title.</span>
+            <div class="info-item">
+              <div class="info-label" id="ovJoinLabel">Join Date</div>
+              <div class="info-value" id="ovJoin">—</div>
             </div>
-
-            <div class="field">
-              <label>Message</label>
-              <textarea id="nMessage" rows="3" maxlength="500" placeholder="What should the students know?"></textarea>
-              <span class="err-msg">A notice needs a message.</span>
+            <div class="info-item">
+              <div class="info-label">Status</div>
+              <div class="info-value" id="ovStatus">—</div>
             </div>
-
-            <div class="field">
-              <label>Type</label>
-              <div class="ntc-types" id="nTypes">
-                <button type="button" class="ntc-type on" data-type="info">Info</button>
-                <button type="button" class="ntc-type" data-type="urgent">Important</button>
-                <button type="button" class="ntc-type" data-type="holiday">Holiday</button>
-                <button type="button" class="ntc-type" data-type="celebration">Good news</button>
-              </div>
-            </div>
-
-            <div class="field">
-              <label>Who sees it</label>
-              <select id="nAudience">
-                <option value="all">Everyone</option>
-                <option value="course">Selected courses</option>
-                <option value="students">Selected students</option>
-              </select>
-            </div>
-
-            <div class="field" id="nTargetField" hidden>
-              <label id="nTargetLabel">Courses</label>
-              <input type="text" id="nTargetSearch" placeholder="Search…" autocomplete="off" />
-              <div class="ntc-targets" id="nTargets"></div>
-              <span class="err-msg">Pick at least one.</span>
-            </div>
-
-            <div class="field-row">
-              <div class="field">
-                <label>From <span class="opt">optional</span></label>
-                <input type="date" id="nStart" />
-              </div>
-              <div class="field">
-                <label>Until <span class="opt">optional</span></label>
-                <input type="date" id="nEnd" />
-              </div>
-            </div>
-
-            <label class="ntc-pin">
-              <input type="checkbox" id="nPinned" />
-              <span>Pin it — also runs in the ticker under the header</span>
-            </label>
-
-            <div class="ntc-compose-actions">
-              <button class="btn-outline" id="nCancelBtn" hidden>Cancel edit</button>
-              <button class="btn-solid" id="nSaveBtn">Post notice</button>
+            <div class="info-item full">
+              <div class="info-label">Calendar Status</div>
+              <div class="info-value" id="ovCalendar" style="font-size:14px;font-weight:500;color:var(--frost-dim)">No calendar sheets yet</div>
             </div>
           </div>
 
-          <!-- live preview -->
-          <div class="ntc-preview">
-            <div class="ntc-preview-label">How it will look</div>
-            <div class="ntc-phone">
-              <div class="ntc-phone-in" id="nPreview"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="ntc-board-label">Posted notices</div>
-        <div id="nList"><div class="loading"><div class="loading-spin"></div><div>Loading notices…</div></div></div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-outline" id="nCloseBtn">Done</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- COURSES & SUBJECTS -->
-  <div class="modal-backdrop" id="coursesModal">
-    <div class="modal">
-      <div class="modal-head">
-        <h3>Courses &amp; <span class="accent">Subjects</span></h3>
-        <p>The course list the form offers, and the subjects under each one.</p>
-      </div>
-      <div class="modal-body">
-        <div id="crsList"><div class="loading"><div class="loading-spin"></div><div>Loading courses…</div></div></div>
-
-        <div class="crs-add">
-          <input type="text" id="crsNewName" placeholder="New course name" autocomplete="off" />
-          <button class="btn-solid" id="crsAddBtn">Add course</button>
-        </div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-outline" id="crsCloseBtn">Done</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CREATE / EDIT MODAL -->
-  <div class="modal-backdrop" id="formModal">
-    <div class="modal">
-      <div class="modal-head">
-        <h3 id="formTitle">New <span class="accent">Class Sheet</span></h3>
-        <p id="formSubtitle">Creates a secure workspace and share link for this student.</p>
-      </div>
-      <div class="modal-body">
-        <div class="fgrid">
-          <div class="field full">
-            <label>Student Name <span class="req">*</span></label>
-            <input type="text" id="fName" placeholder="e.g. Aisha Rahman" />
-            <span class="err-msg">Please enter the student's name.</span>
-          </div>
-          <div class="field">
-            <label>Student ID <span class="req">*</span></label>
-            <input type="text" id="fStudentId" placeholder="e.g. MQ-2026-014" />
-            <span class="err-msg">Please enter a student ID.</span>
-          </div>
-          <div class="field">
-            <label>Join Date <span class="req">*</span></label>
-            <input type="date" id="fJoinDate" />
-            <span class="err-msg">Please pick a join date.</span>
-          </div>
-          <div class="field">
-            <label>Course <span class="req">*</span></label>
-            <select id="fCourse">
-              <option value="" disabled selected>Select course</option>
-            </select>
-            <span class="err-msg">Please select a course.</span>
-          </div>
-
-          <div class="field" id="fSubjectsField" hidden>
-            <label>Subjects <span class="opt">optional</span></label>
-            <div class="subj-wrap" id="fSubjects"></div>
-            <div class="subj-none" id="fSubjectsNone" hidden>This course has no subjects yet. Add them in Courses &amp; Subjects.</div>
-          </div>
-          <div class="field">
-            <label>Status</label>
-            <select id="fStatus">
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-          <div class="field full">
-            <label>WhatsApp Group Link</label>
-            <input type="url" id="fWhatsapp" placeholder="https://chat.whatsapp.com/..." />
-            <span class="err-msg">Please enter a valid link (or leave empty).</span>
-          </div>
-          <div class="field full">
-            <label>Study Material <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— tick any courses this student may open</span></label>
-            <div class="sm-summary">
-              <span id="fSmSummaryText">No study material selected</span>
-              <button type="button" class="btn-outline sm-summary-btn" id="smOpenBtn">Add Study Material</button>
-            </div>
-          </div>
-          <div class="field full">
-            <label>Hifz Report Link <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— paste from the Hifz Command Center (share ▸). Shows a button on the class sheet.</span></label>
-            <input type="url" id="fHifzLink" placeholder="https://manzilulquran.in/portal/study-report/?s=...&t=..." />
-          </div>
-          <div class="field">
-            <label>Class Time <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— IST, e.g. 19:00</span></label>
-            <input type="text" id="fClassTime" placeholder="19:00" autocomplete="off" />
-          </div>
-          <div class="field full">
-            <label>MQ ID <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— links this sheet to the same student in Academic Service</span></label>
-            <input type="text" id="fMqId" placeholder="MQ4156" autocomplete="off" />
-          </div>
-          <div class="field full">
-            <label>Contact Number <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— admin only, never shown on the share link</span></label>
-            <input type="tel" id="fPhone" placeholder="+91 98765 43210" />
-            <span class="err-msg">Please enter a valid number (or leave empty).</span>
-          </div>
-        </div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-outline" id="formCancelBtn">Cancel</button>
-        <button class="btn-solid" id="formSaveBtn">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- STUDY MATERIAL MODAL — glass popup, stacks above the class-sheet modal -->
-  <div class="modal-backdrop sm-modal-backdrop" id="smModal">
-    <div class="modal sm-modal">
-      <div class="modal-head">
-        <h3>Study <span class="accent">Material</span></h3>
-        <p>Tick any courses this student may open. Leave lessons unticked to give the whole course.</p>
-      </div>
-      <div class="modal-body">
-        <div class="sm-wrap" id="fSmList"></div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-solid" id="smDoneBtn">Done</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SHARE MODAL -->
-  <div class="modal-backdrop" id="shareModal">
-    <div class="modal">
-      <div class="modal-head">
-        <h3>Share <span class="accent">Class Sheet</span></h3>
-        <p id="shareSubtitle">Anyone with this link can open this class sheet.</p>
-      </div>
-      <div class="modal-body">
-        <div class="share-link-box">
-          <input type="text" id="shareLinkInput" readonly />
-        </div>
-        <div class="share-actions">
-          <button class="btn-solid" id="copyLinkBtn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            Copy Link
-          </button>
-          <button class="btn-wa" id="waShareBtn">
+          <a class="btn-wa disabled" id="waBtn" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/></svg>
-            WhatsApp
-          </button>
+            <span id="waLabel">WhatsApp Group</span>
+          </a>
+
+          <a class="complaint-link" href="https://manzilulquran.in/portal/forms/complaint-form.html" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Have a concern? Register a complaint</span>
+          </a>
         </div>
-        <div class="warn-box">
-          <b>Reset Link</b> creates a brand-new link and permanently kills the old one.
-          Use this if a link was shared with the wrong person.
+
+        <!-- Calendar Sheets -->
+        <div class="tab-panel" id="panel-calendar">
+          <div id="calArea">
+            <div class="empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <h4>No calendar sheets yet</h4>
+              <p>Your class schedule and join links will appear here once the academy publishes them, in shā’ Allāh.</p>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-outline" id="shareCloseBtn">Close</button>
-        <button class="btn-solid danger" id="resetLinkBtn">Reset Link</button>
+
+        <!-- Study Material -->
+        <div class="tab-panel" id="panel-material">
+          <div id="smArea">
+            <div class="empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+              <h4>No study material yet</h4>
+              <p>Your lesson material will appear here once the academy assigns it, in sh\u0101\u2019 All\u0101h.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hifz Report -->
+        <div class="tab-panel" id="panel-notices">
+          <div class="ntc-list" id="ntcList"></div>
+        </div>
+
+        <div class="tab-panel" id="panel-board"></div>
+
+        <div class="tab-panel" id="panel-hifz">
+          <div class="hifz-hero">
+            <div class="hifz-crest"><img src="/logo.png" alt="ManzilulQuran" onerror="this.replaceWith(document.createTextNode('🕮'))"></div>
+            <h3 class="hifz-title">Daily Hifz Report</h3>
+            <p class="hifz-sub">Your live memorisation record — daily lessons, revision, portions memorised and juz progress, updated by the academy.</p>
+            <a class="hifz-open" id="hifzBtn" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              Open my Hifz Report
+            </a>
+            <p class="hifz-note">Opens in a new tab · your personal report</p>
+          </div>
+        </div>
+
       </div>
     </div>
+
   </div>
 
-  <!-- CONFIRM MODAL -->
-  <div class="modal-backdrop" id="confirmModal">
-    <div class="modal" style="max-width:440px">
-      <div class="modal-head">
-        <h3 id="confirmTitle">Are you <span class="accent">sure?</span></h3>
-        <p id="confirmText">This cannot be undone.</p>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-outline" id="confirmCancelBtn">Cancel</button>
-        <button class="btn-solid danger" id="confirmOkBtn">Confirm</button>
-      </div>
-    </div>
+  <footer class="foot">
+    ManzilulQuran E-learning Academy ·
+    <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a>
+  </footer>
+
+<div class="state" id="stateLogin">
+  <div class="login-card">
+    <div class="login-logo"><img src="/logo.png" alt="" onerror="this.style.display='none'" /></div>
+    <div class="brand">ManzilulQuran</div>
+    <div class="brand-sub">E-Learning Academy</div>
+
+    <div class="rule"><i></i><span id="loginBatch">Batch Class</span><i></i></div>
+
+    <p class="login-lead">Sign in to open your batch class sheet.</p>
+
+    <label class="login-lbl" for="liEmail">Email</label>
+    <input type="email" id="liEmail" autocomplete="email" placeholder="the email given to the academy" />
+
+    <label class="login-lbl" for="liDob">Date of birth</label>
+    <input type="date" id="liDob" autocomplete="bday" />
+
+    <button class="login-btn" id="liBtn">Sign in</button>
+    <div class="login-err" id="liErr" hidden></div>
+    <div class="login-foot">Your details are checked by the academy&rsquo;s system. They are never shown on this page.</div>
   </div>
+</div>
 
-  <div class="toast" id="toast"></div>
+<div class="ntc-modal" id="ntcModal" hidden></div>
 
-<!-- LIVE BUILD — the live Classes spreadsheet. -->
+<!-- =================================================================
+     DEMO BUILD — points at the DEMO spreadsheet, never the live one.
+     The live page keeps its own copy of this line with the live URL.
+     ================================================================= -->
 <script>
-window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
+window.MQ_BASE       = "/portal/demo";   // live build omits this line
+window.MQ_PERF       = true;   // TEMPORARY — timing only
+window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
+// Stage 2: class sheets are read from Supabase first (api.v3.js).
+// PUBLIC key only — it can call get_class / list_courses and nothing else.
+window.MQ_SUPABASE_URL    = "https://uuwboujrotmmpofjynhz.supabase.co";
+window.MQ_SUPABASE_KEY    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2JvdWpyb3RtbXBvZmp5bmh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Mjk4OTQsImV4cCI6MjEwMjAwNTg5NH0.z0_G7oKlmGILPr8zzOOQEgtUDrT8rNQLjrV9GQQdA9U";
+window.MQ_SUPABASE_PREFIX = "clsdemo_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v2.js"></script>
+<script src="/assets/classes/api.v3.js"></script>
 <script src="/assets/classes/catalog.v1.js"></script>
+<script src="/assets/classes/notices.v1.js"></script>
+<script src="/assets/classes/pen.v2.js"></script>
 <script>
 /* =================================================================
-   ░░  CLASSES ADMIN  ░░
+   ░░  CLASS SHEET (shared view) — page logic  ░░
+   Loads exactly ONE class sheet, using only the token in the URL.
+   There is deliberately NO admin password anywhere in this file.
+
+   The calendar engine, the API client and the study-material catalog
+   now live in /assets/classes/. What remains here is what only this
+   page does: its markup, its states, its tabs and its rendering.
    ================================================================= */
 
-// CONFIG — paste the Classes Apps Script Web App URL here
-const SCRIPT_URL = window.MQ_SCRIPT_URL;
-const PORTAL_PASSWORD = "mqwing7safwa";     // Classes only — separate from the main portal
-const ADMIN_API_PASSWORD = "manzil2026admin";
-/* Handed to the API layer, which reads it at call time. Student pages
-   never set it, so an admin action from one sends no password. */
-window.MQ_ADMIN_PASSWORD = ADMIN_API_PASSWORD; // must match ADMIN_PASSWORD in apps-script-classes.gs
-const SHARE_BASE = window.location.origin + mqUrl("/class/");
+spawnStars(46);
+/* =================================================================
+   ░░  CLASS SHEET (shared view)  ░░
+   Loads exactly ONE class sheet, using only the token in the URL.
+   There is deliberately NO admin password anywhere in this file.
+   ================================================================= */
 
-const SESSION_KEY = "mq_classes_unlocked_at";  // own key, so a portal unlock does NOT open Classes
-const SESSION_MAX_MS = 24 * 60 * 60 * 1000;
-
-let classes = [];
-let editingId = null;      // null = creating, otherwise Class ID
-let shareTarget = null;    // class object currently in the share modal
-let confirmAction = null;  // function to run on confirm
-
-const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const LOW_CLASS_THRESHOLD = 6;
-
-/* ---------------- Who needs attention? ----------------
-   Two things worth chasing:
-     ending — a plan is running but nearly out of classes
-     none   — the student is active but has no plan at all
-------------------------------------------------------- */
-function classAlert(c){
-  if((c["Status"] || "Active") !== "Active") return null;   // don't nag about paused students
-
-  const cals = c.calendars || [];
-  const running = cals.find(x => calStatus(x) === 'Active');
-
-  if(running){
-    const t = today0().getTime();
-    const left = buildDays(running).filter(d => !d.isOff && d.date.getTime() >= t).length;
-    if(left < LOW_CLASS_THRESHOLD){
-      return { kind:'ending', left, cal:running };
-    }
-    return null;
-  }
-
-  // Nothing running — is anything queued up?
-  if(cals.some(x => calStatus(x) === 'Upcoming')) return null;
-
-  return { kind:'none', left:0, cal:null };
+/* ---------------- State switching ---------------- */
+function showState(id){
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('show'));
+  $(id).classList.add('show');
+}
+function showError(title, text){
+  if(title) $('errTitle').textContent = title;
+  if(text)  $('errText').textContent = text;
+  showState('stateError');
 }
 
-
-/* ---------------- Workspaces ----------------
-   A local toggle between the Individual system and the Batch shell.
-   It fetches nothing and writes nothing: switching tabs only shows
-   and hides sections that are already in the page. The choice is
-   kept for the tab session so a refresh lands where you left off. */
-const WS_KEY = "mq_classes_ws";
-
-function setWorkspace(name){
-  const batch = (name === "batch");
-
-  $("wsIndividual").hidden = batch;
-  $("wsBatch").hidden      = !batch;
-
-  document.querySelectorAll(".ws-tab").forEach(function(t){
-    const on = (t.dataset.ws === name);
-    t.classList.toggle("active", on);
-    t.setAttribute("aria-selected", on ? "true" : "false");
-  });
-
-  // The header action belongs to whichever workspace is open.
-  $("newClassBtn").hidden = batch;
-  $("newBatchBtn").hidden = !batch;
-
-  try{ sessionStorage.setItem(WS_KEY, name); }catch(e){}
-
-  // The batch list is fetched the first time that workspace is opened,
-  // not on unlock — most sessions never leave the Individual tab.
-  if(batch && !batches.length) loadBatches();
+/* ---------------- Tabs ---------------- */
+function activateTab(name){
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('show'));
+  const panel = $('panel-' + name);
+  if(panel) panel.classList.add('show');
 }
-
-document.querySelectorAll(".ws-tab").forEach(function(t){
-  t.addEventListener("click", function(){ setWorkspace(t.dataset.ws); });
-});
-
-
-/* ---------------- Courses & Subjects ----------------
-   The course list used to be seven <option> tags frozen into this file.
-   It is now a sheet, so the academy can add a course without an upload.
-   Subjects hang off the course; a student gets a subset of them.
-
-   Renaming is handled entirely on the server: it rewrites every class row
-   holding the old name in the same call, so nothing is left orphaned. */
-let courses = [];
-
-async function loadCourses(){
-  try{
-    const out = await fetchCourses();
-    courses = (out.result === "success") ? (out.courses || []) : [];
-  }catch(e){
-    console.error(e);
-    courses = [];
-  }
-  fillCourseSelects();
-}
-
-/* The form offers active courses only, but an existing student may sit on
-   a course that was since switched off. That option is added back just for
-   them, so opening their record never silently changes their course. */
-function fillCourseSelects(keepValue){
-  const sel = $("fCourse");
-  const want = keepValue !== undefined ? keepValue : sel.value;
-
-  let opts = '<option value="" disabled' + (want ? '' : ' selected') + '>Select course</option>';
-  courses.filter(c => c.active).forEach(c => {
-    opts += `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`;
-  });
-  if(want && !courses.some(c => c.active && c.name === want)){
-    opts += `<option value="${escapeHtml(want)}">${escapeHtml(want)} (inactive)</option>`;
-  }
-  sel.innerHTML = opts;
-  if(want) sel.value = want;
-}
-
-/* listClasses returns the raw cell, getClassAdmin returns a parsed array.
-   Accept both rather than making the caller care. */
-function smSubjects(c){
-  const v = c && c["Subjects"];
-  if(Array.isArray(v)) return v;
-  if(!v) return [];
-  try{ const a = JSON.parse(v); return Array.isArray(a) ? a : []; }catch(e){ return []; }
-}
-
-function courseByName(name){
-  return courses.find(c => c.name === name) || null;
-}
-
-/* Subject chips for whichever course is selected. Ticks are preserved
-   when they still exist on the new course, dropped when they do not. */
-function buildSubjects(selected){
-  const course = courseByName($("fCourse").value);
-  const field  = $("fSubjectsField");
-  const wrap   = $("fSubjects");
-  const none   = $("fSubjectsNone");
-
-  if(!course){ field.hidden = true; wrap.innerHTML = ""; return; }
-
-  field.hidden = false;
-  const list = course.subjects || [];
-  const on = new Set(selected || []);
-
-  if(!list.length){
-    wrap.innerHTML = "";
-    none.hidden = false;
-    return;
-  }
-  none.hidden = true;
-  wrap.innerHTML = list.map(sub => `
-    <label class="subj-chip${on.has(sub) ? ' on' : ''}">
-      <input type="checkbox" value="${escapeHtml(sub)}"${on.has(sub) ? ' checked' : ''}>
-      <span>${escapeHtml(sub)}</span>
-    </label>`).join("");
-
-  wrap.querySelectorAll(".subj-chip input").forEach(cb => {
-    cb.addEventListener("change", () => cb.closest(".subj-chip").classList.toggle("on", cb.checked));
-  });
-}
-
-function collectSubjects(){
-  return [...$("fSubjects").querySelectorAll("input:checked")].map(cb => cb.value);
-}
-
-/* ---------------- Courses manager ---------------- */
-function renderCourses(){
-  if(!courses.length){
-    $("crsList").innerHTML = '<div class="empty-state">No courses yet. Add the first one below.</div>';
-    return;
-  }
-  $("crsList").innerHTML = courses.map(c => {
-    const used = classes.filter(x => (x["Course"] || "") === c.name).length;
-    return `<div class="crs-row${c.active ? '' : ' off'}" data-id="${c.courseId}">
-      <div class="crs-top">
-        <input type="text" class="crs-name" value="${escapeHtml(c.name)}" />
-        <span class="crs-used">${used} student${used === 1 ? '' : 's'}</span>
-        <button class="crs-toggle" data-act="toggle" title="${c.active ? 'Switch off' : 'Switch on'}">${c.active ? 'On' : 'Off'}</button>
-      </div>
-      <div class="crs-subs">
-        ${(c.subjects || []).map(sb => `<span class="crs-sub">${escapeHtml(sb)}<b data-act="delsub" data-sub="${escapeHtml(sb)}">&times;</b></span>`).join("")}
-        <input type="text" class="crs-subadd" placeholder="+ subject" />
-      </div>
-      <div class="crs-actions">
-        <button class="btn-outline crs-save" data-act="save">Save</button>
-      </div>
-    </div>`;
-  }).join("");
-}
-
-async function saveCourse(courseId, name, subjects, active){
-  return await saveCourseApi({
-    courseId: courseId || "",
-    name: name,
-    subjects: subjects,
-    active: active
-  });
-}
-
-$("coursesBtn").addEventListener("click", async () => {
-  openModal("coursesModal");
-  await loadCourses();
-  renderCourses();
-});
-$("crsCloseBtn").addEventListener("click", () => closeModal("coursesModal"));
-
-$("crsAddBtn").addEventListener("click", async () => {
-  const name = ($("crsNewName").value || "").trim();
-  if(!name) return toast("Type a course name first", true);
-
-  const out = await saveCourse("", name, [], true);
-  if(out.result !== "success") return toast(out.error || "Could not add the course", true);
-
-  $("crsNewName").value = "";
-  await loadCourses();
-  renderCourses();
-  toast("Course added");
-});
-
-/* One delegated handler for the whole list — rows are rebuilt often. */
-$("crsList").addEventListener("click", async (e) => {
-  const row = e.target.closest(".crs-row");
-  if(!row) return;
-  const id = row.dataset.id;
-  const course = courses.find(c => c.courseId === id);
-  if(!course) return;
-
-  const act = e.target.dataset.act;
-  const subs = [...row.querySelectorAll(".crs-sub")].map(x => x.childNodes[0].nodeValue.trim());
-
-  if(act === "delsub"){
-    e.target.closest(".crs-sub").remove();
-    return;                      // removed on screen; Save writes it
-  }
-  if(act === "toggle"){
-    const used = classes.filter(x => (x["Course"] || "") === course.name).length;
-    if(course.active && used){
-      askConfirm("Switch off this course?",
-        `${used} student${used === 1 ? ' is' : 's are'} on ${course.name}. They keep it — it just stops being offered for new sheets.`,
-        async () => {
-          const out = await saveCourse(id, course.name, course.subjects, false);
-          if(out.result !== "success") return toast(out.error || "Could not switch it off", true);
-          await loadCourses(); renderCourses(); toast("Course switched off");
-        });
-      return;
-    }
-    const out = await saveCourse(id, course.name, course.subjects, !course.active);
-    if(out.result !== "success") return toast(out.error || "Could not change it", true);
-    await loadCourses(); renderCourses();
-    return;
-  }
-  if(act === "save"){
-    const name = (row.querySelector(".crs-name").value || "").trim();
-    if(!name) return toast("A course needs a name", true);
-
-    const pending = (row.querySelector(".crs-subadd").value || "").trim();
-    const all = pending ? subs.concat([pending]) : subs;
-
-    const renaming = (name !== course.name);
-    const used = classes.filter(x => (x["Course"] || "") === course.name).length;
-
-    const go = async () => {
-      const out = await saveCourse(id, name, all, course.active);
-      if(out.result !== "success") return toast(out.error || "Could not save", true);
-      await loadCourses(); renderCourses();
-      if(out.renamed) await loadClasses();
-      toast(out.renamed ? `Saved — ${out.renamed} class sheet${out.renamed === 1 ? '' : 's'} updated` : "Saved");
-    };
-
-    if(renaming && used){
-      askConfirm("Rename this course?",
-        `${used} class sheet${used === 1 ? '' : 's'} will be updated from "${course.name}" to "${name}".`, go);
-      return;
-    }
-    await go();
-  }
-});
-
-/* Enter adds a subject without leaving the keyboard. */
-$("crsList").addEventListener("keydown", (e) => {
-  if(e.key !== "Enter" || !e.target.classList.contains("crs-subadd")) return;
-  e.preventDefault();
-  const val = (e.target.value || "").trim();
-  if(!val) return;
-  const chip = document.createElement("span");
-  chip.className = "crs-sub";
-  chip.innerHTML = `${escapeHtml(val)}<b data-act="delsub" data-sub="${escapeHtml(val)}">&times;</b>`;
-  e.target.parentNode.insertBefore(chip, e.target);
-  e.target.value = "";
-});
-
-$("fCourse").addEventListener("change", () => buildSubjects([]));
-
-
-/* ---------------- Notice board ----------------
-   Audience is decided HERE only for the admin's convenience. The server
-   filters again on every read, so a student can never receive a notice
-   addressed to someone else even if this page is tampered with. */
-let notices = [];
-let editingNotice = null;
-let nType = "info";
-
-async function loadNotices(){
-  try{
-    const out = await fetchNotices();
-    notices = (out.result === "success") ? (out.notices || []) : [];
-  }catch(e){ console.error(e); notices = []; }
-  renderNoticeList();
-}
-
-function noticeStatusClass(st){
-  return st === "Live" ? "live" : st === "Scheduled" ? "sched" : st === "Expired" ? "exp" : "off";
-}
-
-function audienceText(n){
-  if(n.audience === "all") return "Everyone";
-  if(!n.targets.length) return "Nobody";
-  if(n.audience === "course") return n.targets.join(", ");
-  // students: show names where we have them, IDs where we don't
-  return n.targets.map(id => {
-    const c = classes.find(x => String(x["Student ID"]) === String(id));
-    return c ? c["Student Name"] : id;
-  }).join(", ");
-}
-
-function renderNoticeList(){
-  if(!notices.length){
-    $("nList").innerHTML = '<div class="empty-state">No notices posted yet.</div>';
-    return;
-  }
-  $("nList").innerHTML = notices.map(n => `
-    <div class="ntc-item" data-id="${n.noticeId}">
-      <div class="ntc-item-main">
-        <div class="ntc-item-top">
-          <span class="ntc-badge ntc-b-${escapeHtml(n.type)}">${escapeHtml(n.type)}</span>
-          <span class="ntc-status ${noticeStatusClass(n.status)}">${escapeHtml(n.status)}</span>
-          ${n.pinned ? '<span class="ntc-pinned">Pinned</span>' : ''}
-        </div>
-        <div class="ntc-item-title">${escapeHtml(n.title)}</div>
-        <div class="ntc-item-meta">${escapeHtml(audienceText(n))}${
-          n.start || n.end
-            ? ' · ' + (n.start ? fmtDate(n.start) : 'now') + ' to ' + (n.end ? fmtDate(n.end) : 'no end')
-            : ''}</div>
-      </div>
-      <div class="ntc-item-btns">
-        <button class="btn-ghost sm" data-act="edit">Edit</button>
-        <button class="btn-ghost sm" data-act="toggle">${n.active ? 'Switch off' : 'Switch on'}</button>
-        <button class="btn-ghost sm danger" data-act="del">Delete</button>
-      </div>
-    </div>`).join("");
-}
-
-/* ---------------- Composer ---------------- */
-function nResetForm(){
-  editingNotice = null;
-  nType = "info";
-  $("nTitle").value = "";
-  $("nMessage").value = "";
-  $("nAudience").value = "all";
-  $("nStart").value = "";
-  $("nEnd").value = "";
-  $("nPinned").checked = false;
-  $("nTargetSearch").value = "";
-  document.querySelectorAll(".ntc-type").forEach(b => b.classList.toggle("on", b.dataset.type === "info"));
-  $("nSaveBtn").textContent = "Post notice";
-  $("nCancelBtn").hidden = true;
-  nSyncAudience([]);
-  nPreview();
-  document.querySelectorAll("#noticesModal .field").forEach(f => f.classList.remove("invalid"));
-}
-
-function nFillForm(n){
-  editingNotice = n.noticeId;
-  nType = n.type;
-  $("nTitle").value = n.title;
-  $("nMessage").value = n.message;
-  $("nAudience").value = n.audience;
-  $("nStart").value = n.start || "";
-  $("nEnd").value = n.end || "";
-  $("nPinned").checked = n.pinned;
-  document.querySelectorAll(".ntc-type").forEach(b => b.classList.toggle("on", b.dataset.type === n.type));
-  $("nSaveBtn").textContent = "Save changes";
-  $("nCancelBtn").hidden = false;
-  nSyncAudience(n.targets);
-  nPreview();
-}
-
-/* The target list is courses or students depending on the audience. */
-function nSyncAudience(selected){
-  const aud = $("nAudience").value;
-  const field = $("nTargetField");
-  if(aud === "all"){ field.hidden = true; $("nTargets").innerHTML = ""; return; }
-
-  field.hidden = false;
-  $("nTargetLabel").textContent = aud === "course" ? "Courses" : "Students";
-  $("nTargetSearch").placeholder = aud === "course" ? "Search courses…" : "Search students…";
-  nRenderTargets(selected || nCollectTargets());
-}
-
-function nRenderTargets(selected){
-  const aud = $("nAudience").value;
-  const q = ($("nTargetSearch").value || "").trim().toLowerCase();
-  const on = new Set((selected || []).map(String));
-
-  let items = [];
-  if(aud === "course"){
-    items = courses.filter(c => c.active || on.has(c.name))
-                   .map(c => ({ value: c.name, label: c.name, sub: "" }));
-  } else {
-    items = classes.map(c => ({
-      value: String(c["Student ID"]),
-      label: c["Student Name"] || c["Student ID"],
-      sub: c["Course"] || ""
-    }));
-  }
-  // A ticked item stays visible while filtering — otherwise a search can
-  // silently hide a selection the admin already made.
-  if(q) items = items.filter(i => on.has(i.value) ||
-                 i.label.toLowerCase().includes(q) || i.value.toLowerCase().includes(q));
-
-  $("nTargets").innerHTML = items.length
-    ? items.map(i => `
-        <label class="ntc-target${on.has(i.value) ? ' on' : ''}">
-          <input type="checkbox" value="${escapeHtml(i.value)}"${on.has(i.value) ? " checked" : ""}>
-          <span class="ntc-target-l">${escapeHtml(i.label)}</span>
-          ${i.sub ? `<span class="ntc-target-s">${escapeHtml(i.sub)}</span>` : ""}
-        </label>`).join("")
-    : '<div class="ntc-target-none">Nothing matches that search.</div>';
-
-  $("nTargets").querySelectorAll("input").forEach(cb => {
-    cb.addEventListener("change", () => {
-      cb.closest(".ntc-target").classList.toggle("on", cb.checked);
-      nPreview();
-    });
-  });
-}
-
-function nCollectTargets(){
-  return [...$("nTargets").querySelectorAll("input:checked")].map(cb => cb.value);
-}
-
-/* How many students this notice actually reaches. Worth showing before
-   posting, because "everyone" and "one course" look identical until sent. */
-function nReach(){
-  const aud = $("nAudience").value;
-  if(aud === "all") return classes.length;
-  const t = new Set(nCollectTargets().map(x => x.toLowerCase()));
-  if(aud === "course") return classes.filter(c => t.has(String(c["Course"] || "").toLowerCase())).length;
-  return classes.filter(c => t.has(String(c["Student ID"] || "").toLowerCase())).length;
-}
-
-const N_LABEL = { info:"Notice", urgent:"Important", holiday:"Holiday", celebration:"Good news" };
-
-function nPreview(){
-  const title = $("nTitle").value.trim() || "Your title here";
-  const msg   = $("nMessage").value.trim() || "Your message will appear here.";
-  const reach = nReach();
-
-  $("nPreview").innerHTML = `
-    <div class="ntc-prev-card ntc-p-${nType}">
-      <div class="ntc-prev-kind">${escapeHtml(N_LABEL[nType] || "Notice")}</div>
-      <div class="ntc-prev-title">${escapeHtml(title)}</div>
-      <div class="ntc-prev-msg">${escapeHtml(msg).replace(/\n/g, "<br>")}</div>
-      <div class="ntc-prev-btn">Got it</div>
-    </div>
-    <div class="ntc-prev-reach">${reach} student${reach === 1 ? "" : "s"} will see this</div>`;
-}
-
-/* ---------------- Wiring ---------------- */
-$("noticesBtn").addEventListener("click", async () => {
-  openModal("noticesModal");
-  if(!courses.length) await loadCourses();
-  nResetForm();
-  await loadNotices();
-});
-$("nCloseBtn").addEventListener("click", () => closeModal("noticesModal"));
-$("nCancelBtn").addEventListener("click", nResetForm);
-
-document.querySelectorAll(".ntc-type").forEach(b => {
-  b.addEventListener("click", () => {
-    nType = b.dataset.type;
-    document.querySelectorAll(".ntc-type").forEach(x => x.classList.toggle("on", x === b));
-    nPreview();
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    activateTab(tab.dataset.tab);
+    // Marking read follows a deliberate tap, not activateTab itself. The
+    // announcement redirects here automatically, and a redirect the student
+    // did not ask for must not silently clear notices they have not read.
+    if(tab.dataset.tab === 'notices') noticesWereRead();
   });
 });
 
-$("nAudience").addEventListener("change", () => { nSyncAudience([]); nPreview(); });
-$("nTargetSearch").addEventListener("input", () => nRenderTargets(nCollectTargets()));
-["nTitle","nMessage"].forEach(id => $(id).addEventListener("input", nPreview));
-
-$("nSaveBtn").addEventListener("click", async () => {
-  const title = $("nTitle").value.trim();
-  const msg   = $("nMessage").value.trim();
-  const aud   = $("nAudience").value;
-  const targets = aud === "all" ? [] : nCollectTargets();
-
-  $("nTitle").closest(".field").classList.toggle("invalid", !title);
-  $("nMessage").closest(".field").classList.toggle("invalid", !msg);
-  $("nTargetField").classList.toggle("invalid", aud !== "all" && !targets.length);
-  if(!title || !msg || (aud !== "all" && !targets.length)) return;
-
-  const start = $("nStart").value, end = $("nEnd").value;
-  if(start && end && end < start) return toast("The end date is before the start date", true);
-
-  const body = {
-    action: "saveNotice",
-    password: ADMIN_API_PASSWORD,
-    noticeId: editingNotice || "",
-    title: title, message: msg, type: nType,
-    audience: aud, targets: targets,
-    start: start, end: end,
-    pinned: $("nPinned").checked
-  };
-
-  const out = await mqPost(body);
-  if(out.result !== "success") return toast(out.error || "Could not save the notice", true);
-
-  const was = editingNotice;
-  nResetForm();
-  await loadNotices();
-  toast(was ? "Notice updated" : `Notice posted to ${nReachOf(body)} student${nReachOf(body) === 1 ? "" : "s"}`);
-});
-
-// Reach for a payload we just sent (the form has been reset by now).
-function nReachOf(body){
-  if(body.audience === "all") return classes.length;
-  const t = new Set(body.targets.map(x => String(x).toLowerCase()));
-  if(body.audience === "course") return classes.filter(c => t.has(String(c["Course"] || "").toLowerCase())).length;
-  return classes.filter(c => t.has(String(c["Student ID"] || "").toLowerCase())).length;
+/* Opening the Notices tab is the student genuinely reading them, so the
+   bell clears. Anything that arrives later lights it up again. */
+function noticesWereRead(){
+  if(typeof noticeData === 'undefined' || !noticeData.length) return;
+  ntcMarkAllSeen(noticeData);
+  ntcRenderBell(noticeData);
+  ntcRenderList(noticeData);
+  updateNoticeDot();
 }
 
-$("nList").addEventListener("click", async (e) => {
-  const row = e.target.closest(".ntc-item");
-  if(!row) return;
-  const n = notices.find(x => x.noticeId === row.dataset.id);
+/* =================================================================
+   ░░  LOAD — stale-while-revalidate  ░░
+
+   Apps Script needs ~3s from cold, and there is no way around that on
+   the first ever open. But there is no reason to pay it twice.
+
+   So: paint the saved copy instantly, then re-check in the background
+   and repaint only if something actually changed. Repeat opens feel
+   instant because they are — the network is no longer in the way.
+   ================================================================= */
+/* ---------------- Page state ----------------
+   Declared above load(). `let` sits in the temporal dead zone until its
+   own line runs, so anything load() touches has to be declared before
+   it, not further down the file. */
+let shareToken = '';
+let studentNameCache = '';
+let calendars = [];
+let activeCalIdx = 0;
+let focusDate = '';        // ?d=YYYY-MM-DD — the day an invite pointed at
+
+function setSyncing(on){
+  const card = document.querySelector('#stateSheet .card');
+  if(card) card.classList.toggle('syncing', !!on);
+}
+function setSyncNote(msg){
+  const n = $('syncNote');
   if(!n) return;
-  const act = e.target.dataset.act;
-
-  if(act === "edit"){
-    nFillForm(n);
-    $("nTitle").scrollIntoView({ behavior: "smooth", block: "center" });
-    return;
-  }
-  if(act === "toggle"){
-    const out = await postNotice({ action: "toggleNotice", noticeId: n.noticeId, active: !n.active });
-    if(out.result !== "success") return toast(out.error || "Could not change it", true);
-    await loadNotices();
-    return;
-  }
-  if(act === "del"){
-    askConfirm("Delete this notice?",
-      `"${n.title}" will be removed for everyone. This cannot be undone.`,
-      async () => {
-        const out = await postNotice({ action: "deleteNotice", noticeId: n.noticeId });
-        if(out.result !== "success") return toast(out.error || "Could not delete it", true);
-        if(editingNotice === n.noticeId) nResetForm();
-        await loadNotices();
-        toast("Notice deleted");
-      });
-  }
-});
-
-async function postNotice(body){
-  return await mqPostAdmin(body);
+  if(msg){ n.textContent = msg; n.classList.add('show'); }
+  else   { n.classList.remove('show'); }
 }
 
-
-/* =================================================================
-   BATCH WORKSPACE
-   -----------------------------------------------------------------
-   One share link per batch. The link alone opens nothing: the student
-   signs in with their email and date of birth, and the server checks
-   the monthly tick on every read. Nothing on this page can grant
-   access — it only records who has paid.
-   ================================================================= */
-let batches = [];
-let editingBatch = null;
-let rosterBatch = null;     // the batch whose roster is open
-let rosterData = null;      // its last loaded payload
-let shareBatch = null;      // set when the share modal is showing a batch
-
-// Batch links carry ?b= so the class sheet knows to ask for a sign-in.
-function batchShareUrl(b){
-  return window.location.origin + mqUrl("/class/") + "?b=" + encodeURIComponent(b.token);
-}
-
-async function loadBatches(){
-  try{
-    const out = await fetchBatches();
-    batches = (out.result === "success") ? (out.batches || []) : [];
-  }catch(e){ console.error(e); batches = []; }
-  renderBatches();
-}
-
-function renderBatches(){
-  $("wsCountBatch").textContent  = batches.length;
-  $("bStatTotal").textContent    = batches.length;
-  $("bStatStudents").textContent = batches.reduce((n, b) => n + b.students, 0);
-  $("bStatPaid").textContent     = batches.reduce((n, b) => n + b.allowed, 0);
-
-  if(!batches.length){
-    $("bList").innerHTML = '<div class="empty-state">No batches yet. Create the first one with the New Batch button.</div>';
-    return;
-  }
-
-  $("bList").innerHTML = batches.map(b => {
-    const unpaid = b.students - b.allowed;
-    return `<div class="b-card${b.status === 'Active' ? '' : ' paused'}" data-id="${b.batchId}">
-      <div class="b-top">
-        <div class="b-id">${escapeHtml(b.batchId)}</div>
-        <div class="b-name">${escapeHtml(b.name)}</div>
-        <div class="b-course">${escapeHtml(b.course || '—')}${b.status === 'Active' ? '' : ' · Paused'}</div>
-      </div>
-      <div class="b-nums">
-        <div class="b-num"><b>${b.students}</b><span>on roster</span></div>
-        <div class="b-num${b.allowed ? ' good' : ''}"><b>${b.allowed}</b><span>paid</span></div>
-        <div class="b-num${unpaid > 0 ? ' warn' : ''}"><b>${unpaid}</b><span>unpaid</span></div>
-        <div class="b-num"><b>${b.calendars}</b><span>calendars</span></div>
-        <div class="b-num"><b>${b.online}</b><span>signed in</span></div>
-      </div>
-      <div class="b-btns">
-        <button class="ib ib-roster" data-act="roster" data-tip="Roster &amp; fees" aria-label="Roster &amp; fees">${ic('roster')}</button>
-        <button class="ib ib-time ${b.classTime ? 'has-time' : 'no-time'}" data-act="btime" data-tip="${b.classTime ? 'Change time' : 'Set time'}" aria-label="${b.classTime ? 'Class time ' + escapeHtml(formatTime(b.classTime)) : 'Set class time'}">${ic('time')}${b.classTime ? '<span class="tval">' + escapeHtml(formatTime(b.classTime)) + '</span>' : ''}</button>
-        <button class="ib ib-cal" data-act="cal" data-tip="Calendars" aria-label="Calendars">${ic('cal')}</button>
-        <button class="ib ib-share" data-act="share" data-tip="Share link" aria-label="Share link">${ic('share')}</button>
-        <button class="ib ib-edit" data-act="edit" data-tip="Edit" aria-label="Edit">${ic('edit')}</button>
-        <button class="ib ib-del" data-act="del" data-tip="Delete" aria-label="Delete">${ic('del')}</button>
-      </div>
-    </div>`;
-  }).join("");
-}
-
-async function postBatch(body){
-  return await mqPostAdmin(body);
-}
-
-/* ---------------- Batch form ---------------- */
-function bFillCourses(keep){
-  let opts = '<option value="">Select course</option>';
-  courses.filter(c => c.active).forEach(c => {
-    opts += `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`;
-  });
-  if(keep && !courses.some(c => c.active && c.name === keep)){
-    opts += `<option value="${escapeHtml(keep)}">${escapeHtml(keep)} (inactive)</option>`;
-  }
-  $("bCourse").innerHTML = opts;
-  if(keep) $("bCourse").value = keep;
-}
-
-function bBuildSubjects(selected){
-  const course = courseByName($("bCourse").value);
-  const field = $("bSubjectsField"), wrap = $("bSubjects"), none = $("bSubjectsNone");
-  if(!course){ field.hidden = true; wrap.innerHTML = ""; return; }
-
-  field.hidden = false;
-  const list = course.subjects || [];
-  const on = new Set(selected || []);
-  if(!list.length){ wrap.innerHTML = ""; none.hidden = false; return; }
-  none.hidden = true;
-  wrap.innerHTML = list.map(sub => `
-    <label class="subj-chip${on.has(sub) ? ' on' : ''}">
-      <input type="checkbox" value="${escapeHtml(sub)}"${on.has(sub) ? ' checked' : ''}><span>${escapeHtml(sub)}</span>
-    </label>`).join("");
-  wrap.querySelectorAll("input").forEach(cb =>
-    cb.addEventListener("change", () => cb.closest(".subj-chip").classList.toggle("on", cb.checked)));
-}
-
-function openBatchForm(b){
-  editingBatch = b ? b.batchId : null;
-  $("bFormTitle").innerHTML = b ? 'Edit <span class="accent">Batch</span>' : 'New <span class="accent">Batch</span>';
-  $("bSaveBtn").textContent = b ? "Save changes" : "Create batch";
-  $("bName").value = b ? b.name : "";
-  bFillCourses(b ? b.course : "");
-  bBuildSubjects(b ? (b.subjects || []) : []);
-  $("bWhatsapp").value = b ? (b.whatsapp || "") : "";
-  $("bGrace").value = b ? b.graceDays : 5;
-  $("bTime").value = b ? (b.classTime || "") : "";
-  $("bStatus").value = b ? b.status : "Active";
-  document.querySelectorAll("#batchModal .field").forEach(f => f.classList.remove("invalid"));
-  openModal("batchModal");
-}
-
-$("newBatchBtn").addEventListener("click", async () => {
-  if(!courses.length) await loadCourses();
-  openBatchForm(null);
-});
-$("bCancelBtn").addEventListener("click", () => closeModal("batchModal"));
-$("bCourse").addEventListener("change", () => bBuildSubjects([]));
-
-$("bSaveBtn").addEventListener("click", async () => {
-  const name = $("bName").value.trim();
-  $("bName").closest(".field").classList.toggle("invalid", !name);
-  if(!name) return;
-
-  const out = await postBatch({
-    action: "saveBatch",
-    batchId: editingBatch || "",
-    name: name,
-    course: $("bCourse").value,
-    subjects: [...$("bSubjects").querySelectorAll("input:checked")].map(c => c.value),
-    whatsapp: $("bWhatsapp").value.trim(),
-    graceDays: $("bGrace").value,
-    classTime: $("bTime").value,
-    status: $("bStatus").value
-  });
-  if(out.result !== "success") return toast(out.error || "Could not save the batch", true);
-
-  closeModal("batchModal");
-  await loadBatches();
-  toast(editingBatch ? "Batch updated" : "Batch created");
-});
-
-/* ---------------- Batch card actions ---------------- */
-$("bList").addEventListener("click", async (e) => {
-  const card = e.target.closest(".b-card");
-  if(!card) return;
-  const b = batches.find(x => x.batchId === card.dataset.id);
-  if(!b) return;
-  const act = e.target.dataset.act;
-
-  if(act === "roster") return openRoster(b.batchId);
-  if(act === "btime")  return openTimeModal(b.batchId, "batch");
-  if(act === "cal")    { window.location.href = "calendars.html?id=" + encodeURIComponent(b.batchId); return; }
-
-  if(act === "share"){
-    /* The share modal is shared with the Individual workspace, and its
-       WhatsApp and Reset buttons read shareTarget. Setting shareBatch
-       instead of leaving shareTarget stale is what makes those buttons
-       act on THIS batch rather than on whichever student was shared last. */
-    shareTarget = null;
-    shareBatch  = b;
-    $("shareSubtitle").textContent = b.name + " · anyone with this link must still sign in";
-    $("shareLinkInput").value = batchShareUrl(b);
-    openModal("shareModal");
-    return;
-  }
-  if(act === "edit"){
-    if(!courses.length) await loadCourses();
-    const out = await fetchBatchAdmin(b.batchId, "");
-    if(out.result !== "success") return toast(out.error || "Could not open the batch", true);
-    openBatchForm(out.batch);
-    return;
-  }
-  if(act === "del"){
-    askConfirm("Delete this batch?",
-      `${escapeHtml(b.name)} has ${b.students} student${b.students === 1 ? '' : 's'}. The roster, the fee ticks, the calendars and the share link all go with it. This cannot be undone.`,
-      async () => {
-        const out = await postBatch({ action: "deleteBatch", batchId: b.batchId });
-        if(out.result !== "success") return toast(out.error || "Could not delete it", true);
-        await loadBatches();
-        toast("Batch deleted");
-      });
-  }
-});
-
-/* ---------------- Roster & monthly access ---------------- */
-function thisMonth(){
-  const d = new Date();
-  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
-}
-
-async function openRoster(batchId){
-  rosterBatch = batchId;
-  openModal("rosterModal");
-  await loadRoster();
-}
-
-async function loadRoster(){
-  /* The billing month is only a filing label now — access is decided by
-     the batch session, not by the month. */
-  const month = thisMonth();
-  try{
-    rosterData = await fetchBatchAdmin(rosterBatch, month);
-  }catch(e){ console.error(e); rosterData = null; }
-
-  if(!rosterData || rosterData.result !== "success"){
-    $("rList").innerHTML = '<div class="empty-state">Could not load the roster.</div>';
-    return;
-  }
-  $("rTitle").textContent = rosterData.batch.name + " · Roster & fees";
-  renderTeacherLink();
-  renderSession();
-  renderRoster();
-}
-
-function renderRoster(){
-  const r = rosterData.roster || [];
-  if(!r.length){
-    $("rList").innerHTML = '<div class="empty-state">Nobody on this batch yet. Add the first student below.</div>';
-    return;
-  }
-
-  /* One date per student, not one tick per month. A class that starts on
-     the 15th runs to the 15th, and each child keeps their own cycle. */
-  $("rList").innerHTML = r.map(st => `
-    <div class="r-row${st.active ? '' : ' off'}" data-sid="${escapeHtml(st.studentId)}">
-      <label class="r-tick">
-        <input type="checkbox" class="r-allow"${st.allowed ? " checked" : ""}>
-        <span>Paid</span>
-      </label>
-      <div class="r-who">
-        <div class="r-name">${escapeHtml(st.studentName)}</div>
-        <div class="r-meta">${escapeHtml(st.studentId)}${st.mqId ? ' · ' + escapeHtml(st.mqId) : ''} · ${escapeHtml(st.email)} · ${escapeHtml(st.dob)}</div>
-      </div>
-      <div class="r-flags">
-        <span class="r-flag${st.devices >= 2 ? ' full' : ''}">${st.devices}/2 devices</span>
-      </div>
-      <div class="r-btns">
-        <button class="btn-ghost sm" data-act="devices">Reset devices</button>
-        <button class="btn-ghost sm danger" data-act="remove">Remove</button>
-      </div>
-    </div>`).join("");
-
-  updatePaidCount();
-}
-
-function updatePaidCount(){
-  const boxes = [...$("rList").querySelectorAll(".r-allow")];
-  const n = boxes.filter(b => b.checked).length;
-  $("rPaidCount").textContent = `${n} of ${boxes.length} paid for this session`;
-}
-
-/* Dates are handled as plain yyyy-mm-dd strings throughout — never as Date
-   objects, which is what turned the month column into a date and broke
-   every tick. */
-
-function refreshRowEnd(row){
-  const start = row.querySelector(".r-start").value;
-  const days  = row.querySelector(".r-days").value;
-  const end   = sessionEnd(start, days);
-  row.querySelector("[data-end]").textContent = end ? fmtDate(end) : "—";
-  return end;
-}
-
-
-
-
-
-$("rCloseBtn").addEventListener("click", async () => {
-  closeModal("rosterModal");
-  await loadBatches();      // the card counts will have moved
-});
-
-/* Adds 30 days to everyone at once. From their existing date if it has
-   not passed, otherwise from today — so a lapsed student does not get
-   credited for the weeks they were locked out. On screen only; nothing is
-   written until Save dates. */
-
-
-$("rSaveAccess").addEventListener("click", async () => {
-  if(!rosterData) return;
-  const entries = [...$("rList").querySelectorAll(".r-row")].map(row => ({
-    studentId: row.dataset.sid,
-    allowed: row.querySelector(".r-allow").checked
-  }));
-  const out = await postBatch({
-    action: "setAccess",
-    batchId: rosterBatch,
-    entries: entries
-  });
-  if(out.result !== "success") return toast(out.error || "Could not save", true);
-  await loadRoster();
-  const paid = entries.filter(e => e.allowed).length;
-  toast(`Saved — ${paid} of ${entries.length} can open the batch`);
-});
-
-$("rList").addEventListener("click", async (e) => {
-  const row = e.target.closest(".r-row");
-  if(!row) return;
-  const sid = row.dataset.sid;
-  const act = e.target.dataset.act;
-
-  if(act === "devices"){
-    const out = await postBatch({ action: "resetDevices", batchId: rosterBatch, studentId: sid });
-    if(out.result !== "success") return toast(out.error || "Could not reset", true);
-    await loadRoster();
-    toast("Devices reset — they can sign in again");
-    return;
-  }
-  if(act === "remove"){
-    const st = rosterData.roster.find(x => x.studentId === sid);
-    askConfirm("Remove this student?",
-      `${escapeHtml(st ? st.studentName : sid)} will be taken off the batch and signed out. Their fee history for past months stays.`,
-      async () => {
-        const out = await postBatch({ action: "removeRosterStudent", batchId: rosterBatch, studentId: sid });
-        if(out.result !== "success") return toast(out.error || "Could not remove", true);
-        await loadRoster();
-        toast("Student removed");
-      });
-  }
-});
-
-$("rAddBtn").addEventListener("click", async () => {
-  const name = $("rName").value.trim();
-  const sid   = $("rSid").value.trim();
-  const email = $("rEmail").value.trim();
-  const dob   = $("rDob").value;
-  if(!name || !sid || !email || !dob) return toast("Name, ID, email and date of birth are all needed", true);
-
-  const out = await postBatch({
-    action: "saveRosterStudent",
-    batchId: rosterBatch,
-    studentId: sid, studentName: name, email: email, dob: dob,
-    mqId: ($("rMqId").value || "").trim()
-  });
-  if(out.result !== "success") return toast(out.error || "Could not add the student", true);
-
-  ["rName","rSid","rEmail","rDob","rMqId"].forEach(id => $(id).value = "");
-  await loadRoster();
-  toast("Student added — they still need a paid tick for this month");
-});
-
-
-/* ---------------- Teacher link ----------------
-   A second token per batch. Resetting it kills only the teacher's link —
-   students stay signed in, which matters when a teacher is replaced
-   mid-month and thirty children are mid-course. */
-function teacherLinkUrl(){
-  if(!rosterData || !rosterData.batch || !rosterData.batch.teacherToken) return "";
-  return window.location.origin + mqUrl("/class/") + "?tb=" + encodeURIComponent(rosterData.batch.teacherToken);
-}
-
-function renderTeacherLink(){
-  $("tLinkInput").value = teacherLinkUrl();
-}
-
-$("tCopyBtn").addEventListener("click", () => {
-  const v = teacherLinkUrl();
-  if(!v) return;
-  navigator.clipboard.writeText(v).then(() => toast("Teacher link copied"),
-                                        () => toast("Could not copy — select it by hand", true));
-});
-
-$("tWaBtn").addEventListener("click", () => {
-  const v = teacherLinkUrl();
-  if(!v || !rosterData) return;
-  const msg = `Assalamu Alaikum 👋\n\n*${rosterData.batch.name}* — teacher link:\n${v}\n\nThis opens the batch timetable directly, no sign-in needed.`;
-  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
-});
-
-$("tResetBtn").addEventListener("click", () => {
-  if(!rosterData) return;
-  askConfirm("Reset the teacher link?",
-    "The current teacher link stops working immediately. Students are not affected — nobody is signed out and the student link does not change.",
-    async () => {
-      const out = await postBatch({ action: "resetTeacherToken", batchId: rosterBatch });
-      if(out.result !== "success") return toast(out.error || "Could not reset the link", true);
-      rosterData.batch.teacherToken = out.token;
-      renderTeacherLink();
-      toast("New teacher link created");
-    });
-});
-
-
-/* ---------------- Batch session ----------------
-   ONE window for the whole batch. Students sit inside it whether they
-   joined on day 1 or day 20, and each pays for the same window. Starting
-   the next session issues a new number on the server, which is what
-   unticks everyone — last session's record is kept, not wiped. */
-function renderSession(){
-  const ses = rosterData && rosterData.session;
-  if(ses){
-    $("rSesNo").textContent   = "#" + ses.no;
-    $("rSesStart").value      = ses.start;
-    $("rSesDays").value       = ses.days;
-    $("rSesEnd").textContent  = fmtDate(ses.end);
-    const left = Math.round((new Date(ses.end + "T00:00:00Z") - new Date(todayISO() + "T00:00:00Z")) / 86400000);
-    $("rSesLine").textContent = left >= 0
-      ? `${ses.days} days from ${fmtDate(ses.start)} · ${left} day${left === 1 ? '' : 's'} left`
-      : `Ended ${Math.abs(left)} day${Math.abs(left) === 1 ? '' : 's'} ago — start the next session`;
-  } else {
-    $("rSesNo").textContent   = "—";
-    $("rSesStart").value      = "";
-    $("rSesDays").value       = "";
-    $("rSesEnd").textContent  = "—";
-    $("rSesLine").textContent = "No session yet. Set a start date and length, then Save dates.";
-  }
-  refreshSesEnd();
-}
-
-function refreshSesEnd(){
-  const end = sessionEnd($("rSesStart").value, $("rSesDays").value);
-  $("rSesEnd").textContent = end ? fmtDate(end) : "—";
-}
-["rSesStart","rSesDays"].forEach(id => $(id).addEventListener("input", refreshSesEnd));
-
-async function saveSession(advance){
-  const start = $("rSesStart").value, days = $("rSesDays").value;
-  if(!start || !days) return toast("A session needs a start date and a length", true);
-
-  const out = await postBatch({
-    action: "setBatchSession",
-    batchId: rosterBatch,
-    sessionStart: start,
-    sessionDays: days,
-    advance: advance === true
-  });
-  if(out.result !== "success") return toast(out.error || "Could not save the session", true);
-
-  await loadRoster();
-  toast(out.reset ? "New session started — everyone is unticked" : "Session dates saved");
-}
-
-$("rSesSave").addEventListener("click", () => saveSession(false));
-$("rSesNext").addEventListener("click", () => {
-  const cur = rosterData && rosterData.session;
-  // The next session begins the day after this one ends, so sessions run
-  // back to back with no gap and no overlap.
-  const nextStart = cur ? (function(){
-    const d = new Date(cur.end + "T00:00:00Z");
-    d.setUTCDate(d.getUTCDate() + 1);
-    return d.toISOString().slice(0, 10);
-  })() : todayISO();
-  const days = (cur && cur.days) || 30;
-
-  askConfirm("Start the next session?",
-    `The new session runs ${days} days from ${fmtDate(nextStart)}. Every student becomes unticked and must be marked paid again. This session's record is kept.`,
-    async () => {
-      $("rSesStart").value = nextStart;
-      $("rSesDays").value = days;
-      refreshSesEnd();
-      await saveSession(true);
-    });
-});
-
-$("rList").addEventListener("change", (e) => {
-  if(e.target.classList.contains("r-allow")) updatePaidCount();
-});
-
-
-
-/* ---------------- Action icons ----------------
-   One small set, drawn once and reused, so every Calendars button in the
-   system carries the same calendar. Stroke icons at 1.8 weight to match
-   the text beside them rather than overpower it. */
-const IC = {
-  time:   '<path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/>',
-  cal:    '<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
-  open:   '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v4a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h4"/>',
-  share:  '<circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3"/>',
-  edit:   '<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/>',
-  del:    '<path d="M4 7h16M9 7V4.8A.8.8 0 019.8 4h4.4a.8.8 0 01.8.8V7M6.5 7l1 12.2a1.8 1.8 0 001.8 1.8h5.4a1.8 1.8 0 001.8-1.8L17.5 7"/>',
-  roster: '<circle cx="9" cy="8" r="3.4"/><path d="M3.5 19a5.5 5.5 0 0111 0"/><path d="M16 5.2a3.2 3.2 0 010 5.6M18 19a5 5 0 00-2.4-4.3"/>',
-  join:   '<path d="M15.5 10.5l5-3v9l-5-3"/><rect x="3" y="6.5" width="12.5" height="11" rx="2.2"/>'
-};
-function ic(name){
-  return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
-         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (IC[name] || '') + '</svg>';
-}
-
-/* ---------------- Live today ----------------
-   Everything about who is in class now comes from engine.v1.js, which
-   decides on the ACADEMY's clock (IST), not the viewer's. An admin
-   opening this from another country sees the academy's day. */
-let liveTimer = null;
-
-function renderLive(){
-  const entries = [];
-
-  classes.forEach(c => {
-    entries.push({
-      id: c["Class ID"],
-      name: c["Student Name"] || "—",
-      sub: [c["Student ID"], c["Course"]].filter(Boolean).join(" · "),
-      kind: "class",
-      classTime: c["Class Time"] || "",
-      calendars: c.calendars || []
-    });
-  });
-
-  batches.forEach(b => {
-    entries.push({
-      id: b.batchId,
-      name: b.name,
-      sub: [b.batchId, b.course, b.students + " students"].filter(Boolean).join(" · "),
-      kind: "batch",
-      classTime: b.classTime || "",
-      calendars: b.calendars || []
-    });
-  });
-
-  const rows = buildLiveList(entries);
-  const live = rows.filter(r => r.state === "live").length;
-  const noTime = rows.filter(r => !r.classTime).length;
-
-  $("liveSub").textContent =
-    rows.length
-      ? `${rows.length} class${rows.length === 1 ? "" : "es"} today · ${live} running now` +
-        (noTime ? ` · ${noTime} with no time set` : "")
-      : "No classes today. Holidays and finished plans are left out.";
-
-  if(!rows.length){
-    $("liveList").innerHTML = '<div class="empty-state">Nothing scheduled for today.</div>';
-    return;
-  }
-
-  $("liveList").innerHTML = rows.map(r => {
-    let badge = "", note = "";
-    if(r.state === "live"){
-      badge = '<span class="live-badge">Live now</span>';
-      note = `${r.minutes} min left`;
-    } else if(r.state === "soon"){
-      const h = Math.floor(r.minutes / 60), m = r.minutes % 60;
-      note = "in " + (h ? h + "h " : "") + m + "m";
-    } else if(r.state === "done"){
-      note = "finished";
-    } else {
-      badge = '<span class="live-badge none">No time set</span>';
-    }
-
-    return `<div class="live-row ${escapeHtml(r.state)}" data-id="${escapeHtml(r.id)}" data-kind="${escapeHtml(r.kind)}">
-      <div class="live-time">${r.timeLabel ? escapeHtml(r.timeLabel) : "—"}</div>
-      <div class="live-who">
-        <div class="live-name">${escapeHtml(r.name)} ${badge}</div>
-        <div class="live-sub">${escapeHtml(r.sub)} · Day ${r.dayNo} of ${escapeHtml(r.calName)}</div>
-      </div>
-      <div class="live-note">${escapeHtml(note)}</div>
-      <div class="live-btns">
-        ${r.link
-          ? `<a class="ib ib-join" href="${escapeHtml(r.link)}" target="_blank" rel="noopener" data-tip="Join class" aria-label="Join class">${ic('join')}</a>`
-          : `<span class="btn-ghost sm dim">No link</span>`}
-        <button class="ib ib-time" data-act="livetime" data-tip="Change time" aria-label="Change time">${ic('time')}</button>
-      </div>
-    </div>`;
-  }).join("");
-}
-
-async function openLive(){
-  openModal("liveModal");
-  // The live list needs both sides, and the batch list is only fetched
-  // when that workspace is first opened.
-  if(!batches.length) await loadBatches();
-  renderLive();
-  // Re-draw every 30s so "live now" and the countdown stay true while the
-  // panel sits open — a stale live list is worse than none.
-  clearInterval(liveTimer);
-  liveTimer = setInterval(renderLive, 30000);
-}
-
-$("liveBtn").addEventListener("click", openLive);
-$("liveRefresh").addEventListener("click", async () => { await loadClasses(); await loadBatches(); renderLive(); });
-$("liveCloseBtn").addEventListener("click", () => { clearInterval(liveTimer); closeModal("liveModal"); });
-
-$("liveList").addEventListener("click", (e) => {
-  if(e.target.dataset.act !== "livetime") return;
-  const row = e.target.closest(".live-row");
-  if(row) promptClassTime(row.dataset.id, row.dataset.kind);
-});
-
-/* ---------------- One class time ----------------
-   A proper time field rather than a browser prompt: on a phone
-   <input type="time"> opens the native wheel, which is faster than typing
-   "7:00 pm" and cannot produce an unreadable value. */
-let timeTarget = null;     // { id, kind }
-
-function currentTime(id, kind){
-  return kind === "batch"
-    ? ((batches.find(b => b.batchId === id) || {}).classTime || "")
-    : ((classes.find(c => c["Class ID"] === id) || {})["Class Time"] || "");
-}
-function targetName(id, kind){
-  return kind === "batch"
-    ? ((batches.find(b => b.batchId === id) || {}).name || id)
-    : ((classes.find(c => c["Class ID"] === id) || {})["Student Name"] || id);
-}
-
-function openTimeModal(id, kind){
-  timeTarget = { id: id, kind: kind };
-  $("timeFor").textContent = targetName(id, kind) + (kind === "batch" ? " · batch" : "");
-  $("tmInput").value = currentTime(id, kind);
-  openModal("timeModal");
-  setTimeout(() => $("tmInput").focus(), 60);
-}
-
-async function saveOneTime(value){
-  if(!timeTarget) return;
-  const out = timeTarget.kind === "batch"
-    ? await setBatchTimeApi(timeTarget.id, value)
-    : await setClassTimeApi(timeTarget.id, value);
-  if(out.result !== "success") return toast(out.error || "Could not save the time", true);
-
-  closeModal("timeModal");
-  if(timeTarget.kind === "batch"){ await loadBatches(); } else { await loadClasses(); }
-  if($("liveModal").classList.contains("show")) renderLive();
-  toast(out.classTime ? `Time set to ${formatTime(out.classTime)}` : "Time cleared");
-}
-
-$("tmSave").addEventListener("click", () => saveOneTime($("tmInput").value));
-$("tmClear").addEventListener("click", () => saveOneTime(""));
-$("tmCancel").addEventListener("click", () => closeModal("timeModal"));
-$("tmInput").addEventListener("keydown", e => { if(e.key === "Enter") saveOneTime($("tmInput").value); });
-
-// kept for existing callers
-function promptClassTime(id, kind){ openTimeModal(id, kind); }
-
-/* ---------------- All class times ----------------
-   For the sheets that already exist with no time. One screen, one row
-   each, and ONE request for all the class sheets together — setting sixty
-   times one call at a time would take a minute of spinners. */
-let timesDraft = {};       // key -> new value, only rows the admin touched
-
-function timesRows(){
-  const missingOnly = $("timesMissingOnly").checked;
-  const activeOnly  = $("timesActiveOnly").checked;
-  const rows = [];
-
-  classes.forEach(c => {
-    const active = String(c["Status"] || "Active") === "Active";
-    if(activeOnly && !active) return;
-    const t = c["Class Time"] || "";
-    if(missingOnly && t) return;
-    rows.push({ key: "c:" + c["Class ID"], id: c["Class ID"], kind: "class",
-                name: c["Student Name"] || "—",
-                sub: [c["Student ID"], c["Course"]].filter(Boolean).join(" · "),
-                time: t });
-  });
-  batches.forEach(b => {
-    if(activeOnly && b.status !== "Active") return;
-    const t = b.classTime || "";
-    if(missingOnly && t) return;
-    rows.push({ key: "b:" + b.batchId, id: b.batchId, kind: "batch",
-                name: b.name, sub: [b.batchId, b.course, "batch"].filter(Boolean).join(" · "),
-                time: t });
-  });
-  return rows;
-}
-
-function renderTimes(){
-  const rows = timesRows();
-  const total = classes.length + batches.length;
-  const missing = classes.filter(c => !c["Class Time"]).length + batches.filter(b => !b.classTime).length;
-  $("timesSub").textContent = `${missing} of ${total} have no time yet. Only changed rows are saved.`;
-
-  if(!rows.length){
-    $("timesList").innerHTML = '<div class="empty-state">Every sheet in this view already has a time.</div>';
-  } else {
-    $("timesList").innerHTML = rows.map(r => {
-      const v = (r.key in timesDraft) ? timesDraft[r.key] : r.time;
-      return `<div class="times-row${(r.key in timesDraft) ? ' changed' : ''}" data-key="${escapeHtml(r.key)}">
-        <div class="times-who">
-          <div class="times-name">${escapeHtml(r.name)}${r.kind === "batch" ? ' <span class="times-kind">batch</span>' : ''}</div>
-          <div class="times-sub">${escapeHtml(r.sub)}</div>
-        </div>
-        <input type="time" class="times-input" step="300" value="${escapeHtml(v)}" />
-      </div>`;
-    }).join("");
-  }
-  const n = Object.keys(timesDraft).length;
-  $("timesChanged").textContent = n + " changed";
-  $("timesSave").disabled = n === 0;
-}
-
-$("timesBtn").addEventListener("click", async () => {
-  timesDraft = {};
-  if(!batches.length) await loadBatches();
-  renderTimes();
-  openModal("timesModal");
-});
-["timesMissingOnly","timesActiveOnly"].forEach(id => $(id).addEventListener("change", renderTimes));
-
-$("timesList").addEventListener("input", (e) => {
-  if(!e.target.classList.contains("times-input")) return;
-  const row = e.target.closest(".times-row");
-  timesDraft[row.dataset.key] = e.target.value;
-  row.classList.add("changed");
-  const n = Object.keys(timesDraft).length;
-  $("timesChanged").textContent = n + " changed";
-  $("timesSave").disabled = n === 0;
-});
-
-$("timesCancel").addEventListener("click", () => {
-  if(Object.keys(timesDraft).length && !confirm("Discard the times you have entered?")) return;
-  timesDraft = {};
-  closeModal("timesModal");
-});
-
-$("timesSave").addEventListener("click", async () => {
-  const keys = Object.keys(timesDraft);
-  if(!keys.length) return;
-  $("timesSave").disabled = true;
-  $("timesSave").textContent = "Saving…";
-
-  const classEntries = keys.filter(k => k.startsWith("c:"))
-                           .map(k => ({ classId: k.slice(2), classTime: timesDraft[k] }));
-  const batchKeys    = keys.filter(k => k.startsWith("b:"));
-
-  let saved = 0, refused = 0;
-  try{
-    if(classEntries.length){
-      const out = await setClassTimesApi(classEntries);
-      if(out.result !== "success") throw new Error(out.error || "Could not save");
-      saved += out.saved; refused += (out.refused || []).length;
-    }
-    // Batches are few; one call each is fine.
-    for(const k of batchKeys){
-      const out = await setBatchTimeApi(k.slice(2), timesDraft[k]);
-      if(out.result === "success") saved++; else refused++;
-    }
-  }catch(err){
-    toast(err.message, true);
-  }
-
-  $("timesSave").textContent = "Save changes";
-  timesDraft = {};
-  await loadClasses();
-  if(batchKeys.length) await loadBatches();
-  renderTimes();
-  toast(refused ? `${saved} saved, ${refused} refused` : `${saved} time${saved === 1 ? '' : 's'} saved`, refused > 0);
-});
-
-/* ---------------- Needs attention: collapse ----------------
-   Remembered, because an admin who folds it away means it. */
-const ALERTS_KEY = "mq_alerts_collapsed";
-function applyAlertsCollapsed(on){
-  const box = $("alerts");
-  box.classList.toggle("collapsed", on);
-  $("alertsToggle").setAttribute("aria-expanded", on ? "false" : "true");
-  $("alertsToggle").title = on ? "Expand" : "Collapse";
-  try{ localStorage.setItem(ALERTS_KEY, on ? "1" : "0"); }catch(e){}
-}
-$("alertsToggle").addEventListener("click", () => {
-  applyAlertsCollapsed(!$("alerts").classList.contains("collapsed"));
-});
-try{ if(localStorage.getItem(ALERTS_KEY) === "1") applyAlertsCollapsed(true); }catch(e){}
-
-/* ---------------- Lock ---------------- */
-function isUnlocked(){
-  try{
-    const at = parseInt(sessionStorage.getItem(SESSION_KEY) || "0", 10);
-    return at && (Date.now() - at) < SESSION_MAX_MS;
-  }catch(e){ return false; }
-}
-function unlock(){
-  try{ setWorkspace(sessionStorage.getItem(WS_KEY) || "individual"); }catch(e){ setWorkspace("individual"); }
-  try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
-  $("lockScreen").style.display = "none";
-  $("adminView").classList.add("show");
-  loadClasses();
-}
-function lock(){
-  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
-  $("adminView").classList.remove("show");
-  $("lockScreen").style.display = "";
-  $("lockInput").value = "";
-  setTimeout(()=>$("lockInput").focus(), 100);
-}
-function tryPassword(){
-  if(($("lockInput").value || "").trim() === PORTAL_PASSWORD){ unlock(); }
-  else{
-    $("lockInput").classList.add("wrong");
-    $("lockError").textContent = "Wrong password. Try again.";
-    setTimeout(()=>$("lockInput").classList.remove("wrong"), 400);
-    $("lockInput").select();
-  }
-}
-$("lockBtn").onclick = tryPassword;
-$("lockInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryPassword(); });
-$("lockAgainBtn").onclick = lock;
-if(isUnlocked()){
-  $("lockScreen").style.display = "none";
-  $("adminView").classList.add("show");
-  loadClasses();
-}
-
-/* ---------------- Load ---------------- */
-async function loadClasses(){
-  if(!courses.length) loadCourses();   // fire and forget — the form needs it, the list does not
-  $("listContent").innerHTML = '<div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>';
-  try{
+async function load(){
+  const params = new URLSearchParams(window.location.search);
+  const token = (params.get('t') || '').trim();
+  const bTok  = (params.get('b') || '').trim();
+
+  // A ?tb= link is the teacher's door into a batch: no sign-in, no fee
+  // check. It is a separate token so it can be reset without signing out
+  // a class full of children.
+  const tTok = (params.get('tb') || '').trim();
+  if(tTok){
     if(!mqConfigured()){
-      throw new Error("SCRIPT_URL is not set in this file yet.");
+      showError('Not configured yet', 'This class sheet system is not connected yet. Please contact the academy.');
+      return;
     }
-    const data = await fetchClasses();
-    if(data.result !== "success") throw new Error(data.error || "Failed to load");
+    focusDate = (params.get('d') || '').trim();
+    try{
+      const out = await fetchBatchAsTeacher(tTok);
+      if(out.result === 'success'){
+        renderBatch(out.data);
+        showState('stateSheet');
+      } else {
+        const f = batchFail(out.error, out);
+        showError(f.title, f.text);
+      }
+    }catch(err){
+      console.error(err);
+      showError('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
+    }
+    return;
+  }
 
-    classes = data.classes || [];
-    buildFilterOptions();
-    updateStats();
-    renderAlerts();
-    applyView();
+  // A ?b= link is a batch. Different door, same house.
+  if(bTok){
+    if(!mqConfigured()){
+      showError('Not configured yet', 'This class sheet system is not connected yet. Please contact the academy.');
+      return;
+    }
+    batchToken = bTok;
+    focusDate = (params.get('d') || '').trim();
+    await loadBatch();
+    return;
+  }
+
+  if(!token){
+    showError('No link provided', 'This page needs a class sheet link. Please use the link shared with you by the academy.');
+    return;
+  }
+  if(!mqConfigured()){
+    showError('Not configured yet', 'This class sheet system is not connected yet. Please contact the academy.');
+    return;
+  }
+
+  shareToken = token;
+  focusDate = (params.get('d') || '').trim();
+
+  // 1. Paint from cache immediately, if we have one.
+  const cached = readCache(token);
+  if(cached){
+    render(cached.data);
+    showState('stateSheet');
+    setSyncing(true);
+  }
+
+  // 2. Always re-check with the server.
+  try{
+    const out = await fetchClass(token);
+
+    if(out.result !== 'success'){
+      if(out.error === 'invalid_token'){
+        // Link was reset. Drop the stale copy and say so, even if we were
+        // already showing it — otherwise a dead link looks alive.
+        clearCache(token);
+        showError('Link not valid', 'This class sheet link is not valid, or it may have been reset by the academy. Please ask for a new link.');
+      } else if(!cached){
+        showError('Could not open', out.error || 'Something went wrong. Please try again in a moment.');
+      }
+      setSyncing(false);
+      return;
+    }
+
+    writeCache(token, out.data);
+
+    // Repaint only if something actually changed — avoids a pointless flash.
+    if(!cached || JSON.stringify(cached.data) !== JSON.stringify(out.data)){
+      render(out.data);
+    }
+    if(!cached) showState('stateSheet');
+    setSyncing(false);
+    setSyncNote('');
+
   }catch(err){
     console.error(err);
-    $("listContent").innerHTML = `<div class="empty-state">Failed to load class sheets.<br><br>
-      <small style="color:#ff9999">Error: ${escapeHtml(err.message)}</small><br><br>
-      Check that the Classes Apps Script is deployed and the URL + admin password match.</div>`;
+    if(!cached){
+      showError('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
+    } else {
+      // Offline but we have a copy — showing it beats showing an error.
+      setSyncing(false);
+      setSyncNote('Offline — showing your saved copy');
+    }
   }
 }
-$("refreshBtn").onclick = loadClasses;
 
-/* ---------------- Needs attention panel ---------------- */
-function renderAlerts(){
-  const rows = [];
-  classes.forEach(c => {
-    const a = classAlert(c);
-    if(a) rows.push({ c, a });
-  });
-
-  // Emptiest plans first, then students with no plan at all
-  rows.sort((x, y) => {
-    if(x.a.kind !== y.a.kind) return x.a.kind === 'none' ? 1 : -1;
-    return x.a.left - y.a.left;
-  });
-
-  if(!rows.length){ $("alerts").classList.remove("show"); return; }
-
-  $("alertCount").textContent = rows.length;
-  $("alertRows").innerHTML = rows.map(({c, a}) => {
-    const phone = digits(c["Phone"]);
-    const sub = a.kind === 'ending'
-      ? `<b>${escapeHtml(a.cal.name)}</b> · ${a.left === 0 ? 'no classes left' : a.left + (a.left === 1 ? ' class left' : ' classes left')} · ends ${fmtDate(endDate(a.cal))}`
-      : `No calendar plan running`;
-
-    return `<div class="alert-row">
-      <div class="alert-info">
-        <div class="alert-name">${escapeHtml(c["Student Name"])}
-          <span class="tag ${a.kind}">${a.kind === 'ending' ? 'Ending soon' : 'No plan'}</span>
-        </div>
-        <div class="alert-sub">${escapeHtml(c["Student ID"])} · ${escapeHtml(c["Course"] || '—')} — ${sub}</div>
-      </div>
-      <div class="alert-btns">
-        ${phone
-          ? `<button class="btn-wa-sm" data-wa="${escapeHtml(c["Class ID"])}">
-               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/></svg>
-               Message
-             </button>`
-          : `<span class="btn-wa-sm off" title="Add a contact number to this class sheet">No number</span>`}
-        <button data-cal="${escapeHtml(c["Class ID"])}" style="background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold-light);padding:8px 14px;border-radius:100px;cursor:pointer;font-size:10.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;font-family:'Manrope',sans-serif">Calendars</button>
-      </div>
-    </div>`;
-  }).join('');
-
-  $("alertRows").querySelectorAll('[data-wa]').forEach(b => {
-    b.addEventListener('click', () => {
-      const c = classes.find(x => x["Class ID"] === b.dataset.wa);
-      if(c) messageStudent(c);
-    });
-  });
-  $("alertRows").querySelectorAll('[data-cal]').forEach(b => {
-    b.addEventListener('click', () => {
-      window.location.href = "calendars.html?id=" + encodeURIComponent(b.dataset.cal);
-    });
-  });
-
-  $("alerts").classList.add("show");
+/* ---------------- Render ---------------- */
+/* =================================================================
+   STUDY MATERIAL
+   The catalog is a mirror of the one in portal/classes/index.html.
+   Whatever the admin ticked arrives as d.studyMaterial, a JSON string:
+     {"course":"foundation-of-islamic-studies","lessons":[1,4,7]}
+   An empty lessons array means the whole course.
+   ================================================================= */
+function renderHifzLink(url){
+  const btn = $('hifzBtn'), tab = $('tabHifz');
+  const u = (url || '').trim();
+  const ok = /^https?:\/\/[^\s]+study-report[^\s]*[?&]s=[^\s]+&t=[^\s]+/i.test(u);
+  if(ok){ btn.href = u; tab.hidden = false; }
+  else  { btn.removeAttribute('href'); tab.hidden = true; }
 }
 
-/* Opens a 1-to-1 WhatsApp chat with the student.
-   The number lives only in the admin sheet — it is never sent to the share
-   link, so nobody holding a class sheet link can see or reach it. */
-function messageStudent(c){
-  const phone = digits(c["Phone"]);
-  if(!phone){ toast("No contact number saved for this student", true); return; }
+function renderStudyMaterial(raw){
+  const tab = $('tabMaterial');
+  const list = smParse(raw);
+  if(!list.length){ tab.hidden = true; return; }
 
-  const a = classAlert(c);
-  let body;
-  if(a && a.kind === 'ending'){
-    body = a.left === 0
-      ? `Your *${a.cal.name}* has finished. Shall we set up the next plan, in shā’ Allāh?`
-      : `Your *${a.cal.name}* has only *${a.left}* ${a.left === 1 ? 'class' : 'classes'} left (ends ${fmtDate(endDate(a.cal))}). Shall we set up the next plan, in shā’ Allāh?`;
+  const many = list.length > 1;
+  const blocks = list.map((e,i) => smBlock(e, i+1, many)).filter(Boolean);
+  if(!blocks.length){ tab.hidden = true; return; }
+
+  tab.hidden = false;
+  $('smArea').innerHTML = blocks.join("") +
+    `<div class="sm-note">Tap a course to see its lessons. You can switch between English and \u0d2e\u0d32\u0d2f\u0d3e\u0d33\u0d02 inside the book.</div>`;
+
+  /* the card opens and closes its own lesson list */
+  $('smArea').querySelectorAll('.sm-block').forEach(function(block){
+    const card = block.querySelector('.sm-course');
+    card.addEventListener('click', function(){ block.classList.toggle('open'); });
+    /* the "Open the book" link must not collapse the card */
+    const open = block.querySelector('.sm-open');
+    if(open) open.addEventListener('click', function(e){ e.stopPropagation(); });
+  });
+
+}
+
+function render(d){
+  const isActive = (d.status || 'Active') === 'Active';
+
+  document.title = `${d.studentName} · Class Sheet · ManzilulQuran`;
+
+  $('studentName').innerHTML = accentLastWord(d.studentName || 'Student');
+  $('headSub').textContent = [d.course, d.studentId].filter(Boolean).join('  ·  ') || '—';
+
+  $('ovName').textContent   = d.studentName || '—';
+  $('ovId').textContent     = d.studentId || '—';
+  $('ovCourse').textContent = d.course || '—';
+  $('ovJoinLabel').textContent = 'Join Date';
+
+  /* Notices. The server has already decided which of these belong to this
+     student — everything here is presentation. */
+  renderNotices(Array.isArray(d.notices) ? d.notices : []);
+
+  /* Subjects under the course. Hidden entirely when the student has none,
+     so a sheet without them looks exactly as it does today. */
+  const subs = Array.isArray(d.subjects) ? d.subjects : [];
+  const sr = $('ovSubjects');
+  if(subs.length){
+    sr.innerHTML = subs.map(x => `<span class="subj-pill">${escapeHtml(x)}</span>`).join('');
+    sr.hidden = false;
   } else {
-    body = `We haven't set up your next class plan yet. Shall we arrange it, in shā’ Allāh?`;
+    sr.innerHTML = '';
+    sr.hidden = true;
+  }
+  $('ovJoin').textContent   = fmtDate(parseDate(d.joinDate) || d.joinDate);
+  $('ovStatus').innerHTML   = `<span class="pill ${isActive ? 'active' : 'inactive'}">${isActive ? 'Active' : 'Inactive'}</span>`;
+
+  if(!isActive) $('statusBanner').classList.add('show');
+
+  const wa = (d.whatsapp || '').trim();
+  const btn = $('waBtn');
+  if(wa && /^https?:\/\//i.test(wa)){
+    btn.href = wa;
+    btn.classList.remove('disabled');
+    $('waLabel').textContent = 'Open WhatsApp Group';
+  } else {
+    btn.removeAttribute('href');
+    btn.classList.add('disabled');
+    $('waLabel').textContent = 'No WhatsApp group linked';
   }
 
-  const msg = `Assalamu Alaikum 🌙\n\n*${c["Student Name"]}*\n${body}\n\n_ManzilulQuran E-learning Academy_`;
-  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+  calendars = d.calendars || [];
+  studentNameCache = d.studentName || 'Student';
+  renderCalendarStatus();
+  renderCalendars();
+  renderStudyMaterial(d.studyMaterial);
+  renderHifzLink(d.hifzLink);
 }
 
-/* Strip to digits. A bare 10-digit number is assumed Indian and gets 91,
-   which covers how numbers are usually typed here. Anything already
-   carrying a country code is left alone. */
-function digits(v){
-  let d = String(v || "").replace(/\D/g, "");
-  if(!d) return "";
-  if(d.length === 10) d = "91" + d;
-  return d;
-}
-
-/* ---------------- Stats ---------------- */
-function updateStats(){
-  $("wsCountIndividual").textContent = classes.length;
-  $("statTotal").textContent = classes.length;
-  $("statActive").textContent = classes.filter(c => c["Status"] === "Active").length;
-  $("statInactive").textContent = classes.filter(c => c["Status"] !== "Active").length;
-}
-
-/* ---------------- Filters ---------------- */
-function buildFilterOptions(){
-  // Courses present in the data
-  const courses = [...new Set(classes.map(c => c["Course"]).filter(Boolean))].sort();
-  const cSel = $("filterCourse");
-  const cVal = cSel.value;
-  cSel.innerHTML = '<option value="">All courses</option>' +
-    courses.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-  cSel.value = cVal;
-
-  // Months
-  const mSel = $("filterMonth");
-  const mVal = mSel.value;
-  mSel.innerHTML = '<option value="">All join months</option>' +
-    MONTHS.map((m,i) => `<option value="${i}">${m}</option>`).join('');
-  mSel.value = mVal;
-
-  // Years present in the data
-  const years = [...new Set(classes.map(c => {
-    const d = new Date(c["Join Date"]);
-    return isNaN(d.getTime()) ? null : d.getFullYear();
-  }).filter(Boolean))].sort((a,b)=>b-a);
-  const ySel = $("filterYear");
-  const yVal = ySel.value;
-  ySel.innerHTML = '<option value="">All join years</option>' +
-    years.map(y => `<option value="${y}">${y}</option>`).join('');
-  ySel.value = yVal;
-}
-
-["filterCourse","filterStatus","filterMonth","filterYear","sortBy"].forEach(id => {
-  $(id).addEventListener("change", applyView);
-});
-$("searchInput").addEventListener("input", applyView);
-
-function applyView(){
-  const q      = $("searchInput").value.trim().toLowerCase();
-  const course = $("filterCourse").value;
-  const status = $("filterStatus").value;
-  const month  = $("filterMonth").value;
-  const year   = $("filterYear").value;
-  const sort   = $("sortBy").value;
-
-  let list = classes.filter(c => {
-    if(q){
-      const hay = [c["Student Name"], c["Student ID"], c["Course"]].join(" ").toLowerCase();
-      if(!hay.includes(q)) return false;
-    }
-    if(course && c["Course"] !== course) return false;
-    if(status && (c["Status"] || "Active") !== status) return false;
-    if(month !== "" || year !== ""){
-      const d = new Date(c["Join Date"]);
-      if(isNaN(d.getTime())) return false;
-      if(month !== "" && d.getMonth() !== parseInt(month,10)) return false;
-      if(year !== ""  && d.getFullYear() !== parseInt(year,10)) return false;
-    }
-    return true;
-  });
-
-  const t = (v) => { const d = new Date(v); return isNaN(d.getTime()) ? 0 : d.getTime(); };
-  const s = (v) => String(v || "").toLowerCase();
-
-  list.sort((a,b) => {
-    switch(sort){
-      case "updatedDesc": return t(b["Last Updated"]) - t(a["Last Updated"]);
-      case "nameAsc":     return s(a["Student Name"]).localeCompare(s(b["Student Name"]));
-      case "joinDesc":    return t(b["Join Date"]) - t(a["Join Date"]);
-      case "joinAsc":     return t(a["Join Date"]) - t(b["Join Date"]);
-      case "courseAsc":   return s(a["Course"]).localeCompare(s(b["Course"]));
-      case "statusAsc":   return s(a["Status"]).localeCompare(s(b["Status"]));
-      case "createdDesc":
-      default:            return t(b["Created Date"]) - t(a["Created Date"]);
-    }
-  });
-
-  renderList(list);
-  $("resultCount").textContent = `Showing ${list.length} of ${classes.length}`;
-}
-
-/* ---------------- List ---------------- */
-
-/* A Hifz student whose sheet has no Hifz report link. Their class sheet
-   shows no Hifz tab until one is pasted in, which is easy to miss — so
-   the row says so. Active students only: a paused or finished student
-   needing a link is not something to chase. */
-function needsHifzLink(c){
-  const active = String(c["Status"] || "Active") === "Active";
-  const isHifz = /hifz/i.test(String(c["Course"] || ""));
-  return active && isHifz && !String(c["Hifz Link"] || "").trim();
-}
-
-function renderList(items){
-  if(!classes.length){
-    $("listContent").innerHTML = `<div class="empty-state">
-      No class sheets yet.<br>Click <b style="color:var(--gold-light)">New Class Sheet</b> to create the first one.
-    </div>`;
-    return;
-  }
-  if(!items.length){
-    $("listContent").innerHTML = '<div class="empty-state">No class sheets match these filters.</div>';
-    return;
-  }
-
-  const rows = items.map(c => {
-    const isActive = (c["Status"] || "Active") === "Active";
-    return `<tr>
-      <td data-label="Student">${escapeHtml(c["Student Name"] || "—")}${needsHifzLink(c) ? '<span class="row-note" title="Paste their link from the Hifz Command Center in Edit">No Hifz link</span>' : ''}</td>
-      <td class="sid" data-label="Student ID">${escapeHtml(c["Student ID"] || "—")}</td>
-      <td data-label="Course">${escapeHtml(c["Course"] || "—")}</td>
-      <td class="date" data-label="Joined">${fmtDate(c["Join Date"])}</td>
-      <td data-label="Status"><span class="pill ${isActive ? 'active':'inactive'}">${isActive ? 'Active':'Inactive'}</span></td>
-      <td class="actions">
-        <button data-act="time"  data-id="${escapeHtml(c["Class ID"])}" class="ib ib-time ${c["Class Time"] ? 'has-time' : 'no-time'}" data-tip="${c["Class Time"] ? 'Change time' : 'Set time'}" aria-label="${c["Class Time"] ? 'Class time ' + escapeHtml(formatTime(c["Class Time"])) : 'Set class time'}">${ic('time')}${c["Class Time"] ? '<span class="tval">' + escapeHtml(formatTime(c["Class Time"])) + '</span>' : ''}</button>
-        <button data-act="cal"   data-id="${escapeHtml(c["Class ID"])}" class="ib ib-cal" data-tip="Calendars" aria-label="Calendars">${ic('cal')}</button>
-        <button data-act="open"  data-id="${escapeHtml(c["Class ID"])}" class="ib ib-open" data-tip="Open sheet" aria-label="Open sheet">${ic('open')}</button>
-        <button data-act="share" data-id="${escapeHtml(c["Class ID"])}" class="ib ib-share" data-tip="Share link" aria-label="Share link">${ic('share')}</button>
-        <button data-act="edit"  data-id="${escapeHtml(c["Class ID"])}" class="ib ib-edit" data-tip="Edit" aria-label="Edit">${ic('edit')}</button>
-        <button data-act="del"   data-id="${escapeHtml(c["Class ID"])}" class="ib ib-del" data-tip="Delete" aria-label="Delete">${ic('del')}</button>
-      </td>
-    </tr>`;
-  }).join('');
-
-  $("listContent").innerHTML = `<table class="list-table">
-    <thead><tr>
-      <th>Student</th><th>Student ID</th><th>Course</th><th>Joined</th><th>Status</th>
-      <th style="text-align:right">Actions</th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
-  </table>`;
-
-  $("listContent").querySelectorAll("button[data-act]").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();   // don't let the tap collapse the chip underneath
-      const c = classes.find(x => x["Class ID"] === btn.dataset.id);
-      if(!c) return;
-      const act = btn.dataset.act;
-      if(act === "time")  return promptClassTime(c["Class ID"], "class");
-  if(act === "cal")   window.location.href = "calendars.html?id=" + encodeURIComponent(c["Class ID"]);
-      if(act === "open")  window.open(shareUrl(c), "_blank");
-      if(act === "share") openShare(c);
-      if(act === "edit")  openForm(c);
-      if(act === "del")   askDelete(c);
-    });
-  });
-
-  // Tap a chip to reveal its actions. Only one open at a time — otherwise
-  // the list grows back into the wall of cards this replaced.
-  $("listContent").querySelectorAll("tr").forEach(tr => {
-    tr.addEventListener("click", () => {
-      const wasOpen = tr.classList.contains("open");
-      $("listContent").querySelectorAll("tr.open").forEach(o => o.classList.remove("open"));
-      if(!wasOpen) tr.classList.add("open");
-    });
-  });
-}
-
-function shareUrl(c){ return SHARE_BASE + "?t=" + encodeURIComponent(c["Share Token"]); }
-
-/* ---------------- Create / Edit ---------------- */
-$("newClassBtn").onclick = () => openForm(null);
 
 /* =================================================================
-   STUDY MATERIAL CATALOG
-   Add a course here and it appears in the picker automatically.
-   Keep this list in sync with the copy inside the class sheet page.
+   BATCH MODE
+   -----------------------------------------------------------------
+   Same page, different door. /class/?b=TOKEN is a batch link: the
+   token alone shows nothing but a sign-in form. The student proves
+   who they are with their email and date of birth, and the server
+   decides — on every read, not just at sign-in — whether this month
+   is paid for.
+
+   Nothing here decides access. If this file were rewritten by hand in
+   a browser console, the server would still refuse.
    ================================================================= */
-function smStringify(list){
-  const clean = (list || []).filter(x => x && x.course)
-    .map(x => ({ course: x.course, lessons: (x.lessons || []).slice().sort((a,b) => a-b) }));
-  return clean.length ? JSON.stringify(clean) : "";
+const BATCH_SESSION_KEY = 'mq_batch_session_';
+
+let batchToken = '';
+let batchMode  = false;   // this sheet is a batch (student or teacher view)
+let batchShare = '';      // the batch's STUDENT link token, for invites
+
+
+function batchSession(){
+  try{ return localStorage.getItem(BATCH_SESSION_KEY + batchToken) || ''; }catch(e){ return ''; }
+}
+function saveBatchSession(v){
+  try{ localStorage.setItem(BATCH_SESSION_KEY + batchToken, v); }catch(e){}
+}
+function dropBatchSession(){
+  try{ localStorage.removeItem(BATCH_SESSION_KEY + batchToken); }catch(e){}
 }
 
-/* Build one block per course, pre-ticked from `assigned` */
-function smBuild(assigned){
-  const byKey = {};
-  (assigned || []).forEach(x => byKey[x.course] = new Set(x.lessons));
-  const wrap = $("fSmList");
-  wrap.innerHTML = Object.keys(SM_CATALOG).map(key => {
-    const cat = SM_CATALOG[key], on = key in byKey, set = byKey[key] || new Set();
-    const chips = cat.lessons.map((t,i) => {
-      const n = i+1, tick = set.has(n);
-      return `<label class="sm-chk${tick?' on':''}" title="${escapeHtml(t)}">
-                <input type="checkbox" value="${n}"${tick?' checked':''}> ${n}
-              </label>`;
-    }).join("");
-    return `<div class="sm-course${on?' on':''}" data-key="${key}">
-      <label class="sm-head">
-        <input type="checkbox" class="sm-on"${on?' checked':''}>
-        <b>${escapeHtml(cat.title)}</b>
-        <span class="sm-count"></span>
-      </label>
-      <div class="sm-body">
-        <div class="sm-hint">Tick the lessons this student may open. Leave all unticked to give the whole course.</div>
-        <div class="sm-lessons">${chips}</div>
-        <div class="sm-tools">
-          <button type="button" class="sm-all">Select all</button>
-          <button type="button" class="sm-none">Clear</button>
-        </div>
-      </div>
-    </div>`;
-  }).join("");
+/* Every refusal the server can give, in the student's words. Deliberately
+   specific about what to DO, and never about which detail was wrong. */
+const BATCH_ERRORS = {
+  invalid_link:      ['Link not valid', 'This batch link is no longer valid. Please ask the academy for the current one.'],
+  batch_paused:      ['Batch paused', 'This batch is paused at the moment. Please contact the academy.'],
+  not_paid:          ['Not open yet', 'This month is not open for you yet. Once the academy records your payment, this link will work again.'],
+  too_many_devices:  ['Already signed in elsewhere', 'This account is signed in on two devices already. Ask the academy to reset it, then try again.'],
+  locked_out:        ['Too many attempts', 'Too many sign-in attempts. Please wait 30 minutes and try again.'],
+  no_match:          ['We could not match those details', 'Please check the email and date of birth given to the academy.'],
+  not_active:        ['Not on this batch', 'This account is not active on this batch. Please contact the academy.'],
+  missing_details:   ['Something is missing', 'Please fill in both the email and the date of birth.']
+};
 
-  wrap.querySelectorAll(".sm-course").forEach(box => {
-    const on = box.querySelector(".sm-on");
-    const chips = [...box.querySelectorAll(".sm-lessons input")];
-    const sync = () => {
-      box.classList.toggle("on", on.checked);
-      const n = chips.filter(c => c.checked).length;
-      box.querySelector(".sm-count").textContent =
-        !on.checked ? "" : (n === 0 ? "whole course" : n + " of " + chips.length);
-      chips.forEach(c => c.closest(".sm-chk").classList.toggle("on", c.checked));
-    };
-    on.onchange = () => { sync(); updateSmSummary(); };
-    chips.forEach(c => c.onchange = () => { sync(); updateSmSummary(); });
-    box.querySelector(".sm-all").onclick  = () => { chips.forEach(c => c.checked = true);  sync(); updateSmSummary(); };
-    box.querySelector(".sm-none").onclick = () => { chips.forEach(c => c.checked = false); sync(); updateSmSummary(); };
-    sync();
-  });
-  updateSmSummary();
+function batchFail(err, extra){
+  const m = BATCH_ERRORS[err] || ['Something went wrong', 'Please try again, or contact the academy.'];
+  let text = m[1];
+  if(err === 'no_match' && extra && extra.attemptsLeft !== undefined){
+    text += ` ${extra.attemptsLeft} attempt${extra.attemptsLeft === 1 ? '' : 's'} left.`;
+  }
+  return { title: m[0], text: text };
 }
 
-/* Short label for the summary row shown in the main form */
-function smSummaryLabel(){
-  const list = smCollect();
-  if(!list.length) return "No study material selected";
-  if(list.length === 1) return (SM_CATALOG[list[0].course] || {}).title || "1 course selected";
-  return list.length + " courses selected";
-}
-function updateSmSummary(){
-  $("fSmSummaryText").textContent = smSummaryLabel();
+function showLogin(batchName, message){
+  if(batchName) $('loginBatch').textContent = batchName;
+  const box = $('liErr');
+  if(message){ box.textContent = message; box.hidden = false; }
+  else { box.hidden = true; }
+  showState('stateLogin');
 }
 
-/* Read the picker back out */
-function smCollect(){
-  return [...document.querySelectorAll("#fSmList .sm-course")]
-    .filter(box => box.querySelector(".sm-on").checked)
-    .map(box => ({
-      course : box.dataset.key,
-      lessons: [...box.querySelectorAll(".sm-lessons input:checked")].map(c => Number(c.value))
-    }));
-}
-
-function openForm(c){
-  editingId = c ? c["Class ID"] : null;
-  $("formTitle").innerHTML = c ? 'Edit <span class="accent">Class Sheet</span>' : 'New <span class="accent">Class Sheet</span>';
-  $("formSubtitle").textContent = c
-    ? "Changes apply immediately. The share link stays the same."
-    : "Creates a secure workspace and share link for this student.";
-
-  $("fName").value      = c ? (c["Student Name"] || "") : "";
-  $("fStudentId").value = c ? (c["Student ID"] || "") : "";
-  $("fMqId").value = c ? (c["mqId"] || "") : "";
-  $("fClassTime").value = c ? (c["Class Time"] || "") : "";
-  fillCourseSelects(c ? (c["Course"] || "") : "");
-  buildSubjects(c ? smSubjects(c) : []);
-  $("fJoinDate").value  = c ? toDateInput(c["Join Date"]) : "";
-  $("fWhatsapp").value  = c ? (c["WhatsApp Group Link"] || "") : "";
-  $("fPhone").value     = c ? (c["Phone"] || "") : "";
-  $("fStatus").value    = c ? (c["Status"] || "Active") : "Active";
-
-  smBuild(smParse(c ? c["Study Material"] : ""));
-  $("fHifzLink").value = c ? (c["Hifz Link"] || "") : "";
-
-  document.querySelectorAll("#formModal .field").forEach(f => f.classList.remove("invalid"));
-  openModal("formModal");
-  setTimeout(()=>$("fName").focus(), 200);
-}
-
-$("formCancelBtn").onclick = () => closeModal("formModal");
-
-/* The picker is its own modal now, stacked above the class-sheet form.
-   Done only closes it — nothing is saved until the form itself is saved. */
-$("smOpenBtn").onclick = () => openModal("smModal");
-$("smDoneBtn").onclick = () => { updateSmSummary(); closeModal("smModal"); };
-
-$("formSaveBtn").onclick = async () => {
-  if(!validateForm()) return;
-
-  const btn = $("formSaveBtn");
-  btn.disabled = true;
-  const oldLabel = btn.textContent;
-  btn.textContent = "Saving…";
-
+async function loadBatch(){
+  const session = batchSession();
   try{
-    const payload = {
-      action:      editingId ? "updateClass" : "createClass",
-      password:    ADMIN_API_PASSWORD,
-      classId:     editingId,
-      studentName: $("fName").value.trim(),
-      studentId:   $("fStudentId").value.trim(),
-      course:      $("fCourse").value,
-      mqId:        $("fMqId").value.trim(),
-      classTime:   $("fClassTime").value.trim(),
-      subjects:    collectSubjects(),
-      joinDate:    $("fJoinDate").value,
-      whatsapp:    $("fWhatsapp").value.trim(),
-      phone:       $("fPhone").value.trim(),
-      status:      $("fStatus").value,
-      studyMaterial: smStringify(smCollect()),
-      hifzLink:      $("fHifzLink").value.trim()
-    };
-    const data = await mqPost(payload);
-    if(data.result !== "success") throw new Error(data.error || "Save failed");
+    const out = await fetchBatch(batchToken, session);
 
-    closeModal("formModal");
-    toast(editingId ? "Class sheet updated" : "Class sheet created");
-    await loadClasses();
-
-    // Straight after creating, show the share link — that's the whole point
-    if(!editingId && data.token){
-      const created = classes.find(x => x["Share Token"] === data.token);
-      if(created) openShare(created);
+    if(out.result === 'success'){
+      renderBatch(out.data);
+      showState('stateSheet');
+      return;
+    }
+    if(out.result === 'needs_login'){
+      dropBatchSession();
+      showLogin(out.batchName,
+        out.reason === 'month_ended'
+          ? 'A new month has started. Please sign in again.'
+          : '');
+      return;
+    }
+    // not_paid, batch_paused, invalid_link
+    const f = batchFail(out.error, out);
+    if(out.error === 'not_paid'){
+      dropBatchSession();
+      showLogin('', f.text);
+    } else {
+      showError(f.title, f.text);
     }
   }catch(err){
     console.error(err);
-    toast(err.message, true);
+    showError('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
+  }
+}
+
+async function doBatchLogin(){
+  const email = $('liEmail').value.trim();
+  const dob   = $('liDob').value;
+  const btn   = $('liBtn');
+
+  if(!email || !dob) return showLogin('', BATCH_ERRORS.missing_details[1]);
+
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+  try{
+    const out = await batchLogin(batchToken, email, dob, deviceId());
+
+    if(out.result === 'success'){
+      saveBatchSession(out.session);
+      renderBatch(out.data);
+      showState('stateSheet');
+      return;
+    }
+    const f = batchFail(out.error, out);
+    showLogin('', f.text);
+  }catch(err){
+    console.error(err);
+    showLogin('', 'Could not reach the academy. Please check your internet and try again.');
   }finally{
     btn.disabled = false;
-    btn.textContent = oldLabel;
+    btn.textContent = 'Sign in';
   }
-};
-
-function validateForm(){
-  let ok = true;
-  const mark = (el, bad) => {
-    const f = el.closest(".field");
-    f.classList.toggle("invalid", bad);
-    if(bad) ok = false;
-  };
-  mark($("fName"),      !$("fName").value.trim());
-  mark($("fStudentId"), !$("fStudentId").value.trim());
-  mark($("fCourse"),    !$("fCourse").value);
-  mark($("fJoinDate"),  !$("fJoinDate").value);
-
-  const wa = $("fWhatsapp").value.trim();
-  mark($("fWhatsapp"), !!wa && !/^https?:\/\//i.test(wa));
-
-  return ok;
 }
-document.querySelectorAll("#formModal input, #formModal select").forEach(el => {
-  el.addEventListener("input",  () => el.closest(".field").classList.remove("invalid"));
-  el.addEventListener("change", () => el.closest(".field").classList.remove("invalid"));
-});
 
-/* ---------------- Share ---------------- */
-function openShare(c){
-  shareBatch  = null;
-  shareTarget = c;
-  $("shareSubtitle").textContent = `${c["Student Name"]} · ${c["Student ID"]}`;
-  $("shareLinkInput").value = shareUrl(c);
-  openModal("shareModal");
-}
-$("shareCloseBtn").onclick = () => closeModal("shareModal");
+$('liBtn').addEventListener('click', doBatchLogin);
+$('liDob').addEventListener('keydown', e => { if(e.key === 'Enter') doBatchLogin(); });
+$('liEmail').addEventListener('keydown', e => { if(e.key === 'Enter') $('liDob').focus(); });
 
-$("copyLinkBtn").onclick = async () => {
-  const url = $("shareLinkInput").value;
-  try{
-    await navigator.clipboard.writeText(url);
-    toast("Link copied to clipboard");
-  }catch(e){
-    $("shareLinkInput").select();
-    document.execCommand("copy");
-    toast("Link copied");
+/* Render a batch sheet. It reuses everything the individual sheet has —
+   the calendar engine, the notice board, the subjects — and differs only
+   where a batch genuinely differs: no join date, no per-student study
+   material, and the batch name shown above the student's own. */
+function renderBatch(d){
+  batchMode = true;
+  batchShare = d.shareToken || '';
+  studentNameCache = d.studentName || 'Student';
+  $('studentName').innerHTML = accentLastWord(studentNameCache);
+  $('headSub').textContent = d.teacher ? 'Teacher view' : (d.batchName || 'Batch class');
+
+  $('ovId').textContent     = d.studentId || '—';
+  $('ovCourse').textContent = d.course || '—';
+  $('ovJoin').textContent   = d.batchName || '—';
+  $('ovJoinLabel').textContent = 'Batch';
+  $('ovStatus').textContent = d.teacher ? 'Teacher' : (d.status || 'Active');
+
+  // A visible marker, so nobody has to guess which link they are holding.
+  const tm = $('teacherMark');
+  if(tm) tm.hidden = !d.teacher;
+
+  const subs = Array.isArray(d.subjects) ? d.subjects : [];
+  const sr = $('ovSubjects');
+  if(subs.length){
+    sr.innerHTML = subs.map(x => `<span class="subj-pill">${escapeHtml(x)}</span>`).join('');
+    sr.hidden = false;
+  } else { sr.innerHTML = ''; sr.hidden = true; }
+
+  // Grace: they are in, but on last month's payment. Say so plainly rather
+  // than letting the lockout arrive as a surprise in a few days.
+  /* Say it before it happens. A child locked out mid-week with no warning
+     is a phone call to the academy; a week's notice is not. */
+  const banner = $('statusBanner');
+  const left = (d.daysLeft === null || d.daysLeft === undefined) ? null : d.daysLeft;
+  banner.classList.remove('show', 'warn');
+
+  if(d.grace){
+    banner.textContent = d.paidUntil
+      ? `Your access ran out on ${fmtDate(d.paidUntil)}. You can still join for a few days — please contact the academy.`
+      : `Your fee for this month hasn't been recorded yet. You can still join for the first ${d.graceDays} day${d.graceDays === 1 ? '' : 's'} — please contact the academy.`;
+    banner.classList.add('show', 'warn');
+  } else if(left !== null && left <= 5){
+    banner.textContent = left === 0
+      ? `Today is your last day on this batch. Please contact the academy to continue.`
+      : `${left} day${left === 1 ? '' : 's'} left on your batch, until ${fmtDate(d.paidUntil)}. Please contact the academy to continue.`;
+    banner.classList.add('show', 'warn');
   }
-};
 
-$("waShareBtn").onclick = () => {
-  let msg;
-  if(shareBatch){
-    msg = `Assalamu Alaikum 👋\n\n*${shareBatch.name}* — ManzilulQuran batch class:\n${batchShareUrl(shareBatch)}\n\nSign in with the email and date of birth you gave the academy, in shā’ Allāh.`;
-  } else if(shareTarget){
-    msg = `Assalamu Alaikum 👋\n\n*${shareTarget["Student Name"]}* — ManzilulQuran class sheet:\n${shareUrl(shareTarget)}\n\nAll class details are in this link, in shā’ Allāh.`;
-  } else { return; }
-  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
-};
+  const wa = $('waBtn');
+  if(d.whatsapp){ wa.href = d.whatsapp; wa.hidden = false; } else { wa.hidden = true; }
 
-$("resetLinkBtn").onclick = () => {
-  if(shareBatch){
-    const b = shareBatch;
-    askConfirm("Reset this batch link?",
-      `The current link for ${b.name} stops working immediately, and every student signed in on it is signed out. They will need the new link and their email and date of birth.`,
-      async () => {
-        const out = await postBatch({ action: "resetBatchToken", batchId: b.batchId });
-        if(out.result !== "success") return toast(out.error || "Could not reset the link", true);
-        b.token = out.token;
-        $("shareLinkInput").value = batchShareUrl(b);
-        await loadBatches();
-        toast("New batch link created");
-      });
+  // No per-student material or Hifz report on a batch sheet.
+  $('tabMaterial').hidden = true;
+  $('tabHifz').hidden = true;
+
+  renderNotices(Array.isArray(d.notices) ? d.notices : []);
+
+  calendars = d.calendars || [];
+  activeCalIdx = 0;
+  renderCalendarStatus();
+  renderCalendars();
+}
+
+/* ---------------- Notices ----------------
+   The board itself lives in notices.v1.js, shared with the batch page.
+   What stays here is how this page wires it up: which tab to reveal,
+   and what opening that tab means. */
+let noticeData = [];
+
+function renderNotices(list){
+  noticeData = list;
+
+  const tab = $('tabNotices');
+  tab.hidden = !list.length;
+  if(!list.length){
+    $('ntcTicker').hidden = true;
+    $('ntcBell').hidden = true;
     return;
   }
-  if(!shareTarget) return;
-  askConfirm(
-    "Reset this link?",
-    `The current link for ${shareTarget["Student Name"]} will stop working immediately. Anyone still using it will lose access.`,
-    async () => {
-      try{
-        const data = await resetClassToken(shareTarget["Class ID"]);
-        if(data.result !== "success") throw new Error(data.error || "Reset failed");
 
-        shareTarget["Share Token"] = data.token;
-        $("shareLinkInput").value = shareUrl(shareTarget);
-        toast("New link created — old link is dead");
-        loadClasses();
-      }catch(err){
-        toast(err.message, true);
-      }
-    }
-  );
-};
+  ntcRenderBell(list);
+  ntcRenderTicker(list);
+  ntcRenderList(list);
+  updateNoticeDot();
 
-/* ---------------- Delete ---------------- */
-function askDelete(c){
-  askConfirm(
-    "Delete this class sheet?",
-    `${c["Student Name"]} (${c["Student ID"]}) will be permanently removed, and their share link will stop working. This cannot be undone.`,
-    async () => {
-      try{
-        const data = await deleteClassApi(c["Class ID"]);
-        if(data.result !== "success") throw new Error(data.error || "Delete failed");
-        toast("Class sheet deleted");
-        loadClasses();
-      }catch(err){
-        toast(err.message, true);
-      }
-    }
-  );
+  // One announcement per device per notice, after the sheet has settled
+  // so it lands on a drawn page rather than a half-built one.
+  setTimeout(() => ntcAnnounce(list, () => activateTab('notices')), 700);
 }
 
-/* ---------------- Confirm modal ---------------- */
-function askConfirm(title, text, onOk){
-  $("confirmTitle").innerHTML = escapeHtml(title).replace(/(\?)$/, '<span class="accent">$1</span>');
-  $("confirmText").textContent = text;
-  confirmAction = onOk;
-  openModal("confirmModal");
+function updateNoticeDot(){
+  const dot = $('tabNoticesDot');
+  if(dot) dot.hidden = ntcUnseen(noticeData).length === 0;
 }
-$("confirmCancelBtn").onclick = () => { confirmAction = null; closeModal("confirmModal"); };
-$("confirmOkBtn").onclick = async () => {
-  const fn = confirmAction;
-  confirmAction = null;
-  closeModal("confirmModal");
-  if(fn) await fn();
-};
 
-/* ---------------- Modal helpers ---------------- */
-function openModal(id){
-  $(id).classList.add("show");
-  document.body.style.overflow = "hidden";
-}
-function closeModal(id){
-  $(id).classList.remove("show");
-  if(!document.querySelector(".modal-backdrop.show")) document.body.style.overflow = "";
-}
-document.querySelectorAll(".modal-backdrop").forEach(m => {
-  m.addEventListener("click", e => { if(e.target === m) closeModal(m.id); });
-});
-document.addEventListener("keydown", e => {
-  if(e.key === "Escape"){
-    const open = document.querySelector(".modal-backdrop.show");
-    if(open) closeModal(open.id);
+$('ntcBell').addEventListener('click', () => { activateTab('notices'); noticesWereRead(); });
+
+/* ---------------- Overview: calendar status line ---------------- */
+function renderCalendarStatus(){
+  const box = $('ovCalendar');
+  if(!calendars.length){ box.textContent = 'No calendar sheets yet'; return; }
+
+  const running = calendars.find(c => calStatus(c) === 'Active');
+  if(running){
+    const days = buildDays(running);
+    const t = today0().getTime();
+    const idx = days.findIndex(d => d.date.getTime() === t);
+    const dayLine = idx >= 0 ? ` · Day ${idx+1} of ${running.days}` : '';
+    box.innerHTML = `<b style="color:var(--mint);font-weight:800">${escapeHtml(running.name)}</b>
+      <span style="color:var(--frost-dim)"> · Running${dayLine}</span>`;
+    return;
   }
-});
 
-/* ---------------- Toast ---------------- */
-let toastTimer = null;
-function toast(msg, isErr){
-  const t = $("toast");
-  t.textContent = msg;
-  t.classList.toggle("err", !!isErr);
-  t.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove("show"), 3000);
+  const upcoming = calendars.find(c => calStatus(c) === 'Upcoming');
+  if(upcoming){
+    box.innerHTML = `<b style="color:var(--azure-light);font-weight:800">${escapeHtml(upcoming.name)}</b>
+      <span style="color:var(--frost-dim)"> · Starts ${fmtDate(parseDate(upcoming.startDate))}</span>`;
+    return;
+  }
+
+  box.innerHTML = `<span style="color:var(--frost-dim)">${calendars.length} calendar sheet${calendars.length>1?'s':''} · none running right now</span>`;
 }
 
-/* ---------------- Utils ---------------- */
-function toDateInput(v){
-  if(!v) return '';
-  const d = new Date(v);
-  if(isNaN(d.getTime())) return String(v).slice(0,10);
-  return d.toISOString().slice(0,10);
+/* ---------------- Calendar tab ---------------- */
+function renderCalendars(){
+  const area = $('calArea');
+
+  if(!calendars.length) return;  // keep the empty state already in the HTML
+
+  // Arrived from an invite? Open the calendar that actually contains that
+  // day. Otherwise: whatever is running, then the next upcoming, then the first.
+  let start = -1;
+  if(focusDate){
+    start = calendars.findIndex(c => buildDays(c).some(d => isoDate(d.date) === focusDate));
+  }
+  if(start < 0) start = calendars.findIndex(c => calStatus(c) === 'Active');
+  if(start < 0) start = calendars.findIndex(c => calStatus(c) === 'Upcoming');
+  if(start < 0) start = 0;
+  activeCalIdx = start;
+
+  if(focusDate) activateTab('calendar');
+
+  area.innerHTML = `<div class="cal-chips" id="calChips"></div><div id="calBody"></div>`;
+  renderChips();
+  renderCalBody();
 }
+
+function renderChips(){
+  $('calChips').innerHTML = calendars.map((c, i) => {
+    const st = calStatus(c);
+    const colour = st === 'Active'   ? 'var(--mint)'
+                 : st === 'Upcoming' ? 'var(--azure-light)'
+                 : st === 'Inactive' ? 'var(--rose)'
+                 : 'var(--frost-faint)';
+    return `<button class="cal-chip ${i === activeCalIdx ? 'on' : ''}" data-i="${i}">
+      <b>${escapeHtml(c.name)}</b>
+      <span class="st" style="color:${colour}">${st}</span>
+    </button>`;
+  }).join('');
+
+  $('calChips').querySelectorAll('.cal-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      activeCalIdx = parseInt(chip.dataset.i, 10);
+      renderChips();
+      renderCalBody();
+    });
+  });
+}
+
+function renderCalBody(){
+  const cal = calendars[activeCalIdx];
+  if(!cal) return;
+
+  const st    = calStatus(cal);
+  const s     = parseDate(cal.startDate);
+  const e     = endDate(cal);
+  const days  = buildDays(cal);
+  const classCount = days.filter(d => !d.isOff).length;
+  const canJoin = joinAllowed(cal);
+  const offTxt  = (cal.weeklyOff && cal.weeklyOff.length) ? cal.weeklyOff.join(', ') : 'None';
+
+  const stColour = st === 'Active'   ? 'var(--mint)'
+                 : st === 'Upcoming' ? 'var(--azure-light)'
+                 : st === 'Inactive' ? 'var(--rose)'
+                 : 'var(--frost-faint)';
+
+  let note = '';
+  if(st === 'Completed'){
+    note = `<div class="cal-note dim">This plan finished on ${fmtDate(e)}. Kept here for your records.</div>`;
+  } else if(st === 'Inactive'){
+    note = `<div class="cal-note warn">This calendar has been switched off by the academy. Join buttons are disabled.</div>`;
+  } else if(st === 'Upcoming'){
+    note = `<div class="cal-note dim">This plan starts on ${fmtDate(s)}, in shā’ Allāh.</div>`;
+  }
+
+  const t = today0().getTime();
+
+  $('calBody').innerHTML = `
+    <div class="cal-summary">
+      <div>
+        <h3>${escapeHtml(cal.name)}</h3>
+        <div class="sub">
+          <b>${fmtDate(s)} – ${fmtDate(e)}</b> · ${cal.days} days (${classCount} classes)<br>
+          Weekly off: <b>${escapeHtml(offTxt)}</b>
+        </div>
+      </div>
+      <span class="pill" style="color:${stColour};border:1px solid ${stColour};background:transparent">${st}</span>
+    </div>
+    ${note}
+    <div class="days">
+      ${days.map(d => {
+        const isToday = d.date.getTime() === t;
+        const isPast  = d.date.getTime() < t;
+        const isFocus = !!focusDate && isoDate(d.date) === focusDate;
+        if(d.isOff){
+          return `<div class="day off ${isFocus ? 'spotlight' : ''} ${isPast && !isFocus ? 'past' : ''}">
+            <div class="day-left">
+              <div class="day-n">Day ${d.n}</div>
+              <div class="day-date">${fmtDate(d.date)}<span class="day-dow">${DAYS_SHORT[d.date.getDay()]}</span></div>
+            </div>
+            <div class="day-holiday">Holiday</div>
+          </div>`;
+        }
+        /* A finished day is never joinable again. The academy switching a
+           calendar on, or a link still sitting in the rotation, does not
+           bring yesterday back — before this, every past day inside a
+           running plan kept a live Meet button. */
+        const joinable = canJoin && d.link && !isPast;
+        return `<div class="day ${isFocus ? 'spotlight' : (isToday ? 'today' : '')} ${isPast && !isToday && !isFocus ? 'past' : ''}">
+          <div class="day-left">
+            <div class="day-n">Day ${d.n}</div>
+            <div class="day-date">${fmtDate(d.date)}<span class="day-dow">${DAYS_SHORT[d.date.getDay()]}</span>${isToday ? '<span class="today-tag">Today</span>' : ''}${isFocus && !isToday ? '<span class="invited-tag">Invited</span>' : ''}</div>
+          </div>
+          <div class="day-btns">
+            ${joinable
+              ? `<button class="btn-invite" data-invite="${isoDate(d.date)}" title="Send this class on WhatsApp">
+                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/></svg>
+                   Invite
+                 </button>`
+              : ''}
+            ${joinable
+              ? `<a class="btn-join" href="${escapeHtml(d.link)}" target="_blank" rel="noopener">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                   Join
+                 </a>`
+              : `<span class="btn-join dead">${isPast ? 'Finished' : 'Join'}</span>`}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  $('calBody').querySelectorAll('[data-invite]').forEach(b => {
+    b.addEventListener('click', () => sendInvite(b.dataset.invite));
+  });
+
+  // Scroll to the invited day if we came from an invite, otherwise to today
+  const target = $('calBody').querySelector('.day.spotlight') || $('calBody').querySelector('.day.today');
+  if(target) target.scrollIntoView({ block:'center', behavior:'smooth' });
+}
+
+/* ---------------- Invite ----------------
+   WhatsApp has no URL that opens a specific group AND prefills a message —
+   Meta doesn't allow it. wa.me/?text= is the closest thing that exists:
+   it opens WhatsApp with the message written, and you pick the group once.
+
+   The message carries a /join/ link rather than the raw Meet URL, so the
+   student lands on an academy page first, and the Meet link is resolved
+   fresh at click time (change the links later and old invites still work).
+------------------------------------------ */
+function sendInvite(isoDay){
+  const d = parseDate(isoDay);
+  const pretty = d ? d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : isoDay;
+  /* A batch has one link for the whole group and no per-student token, so
+     a /join/ invite would carry an empty t= and land on "invalid link".
+     The batch invite points at the batch link itself instead — the student
+     still signs in, and still has to be ticked as paid. */
+  const url = batchMode
+    ? `${location.origin}${mqUrl('/class/')}?b=${encodeURIComponent(batchShare)}&d=${encodeURIComponent(isoDay)}`
+    : `${location.origin}${mqUrl('/join/')}?t=${encodeURIComponent(shareToken)}&dt=${encodeURIComponent(isoDay)}`;
+
+  /* A batch message goes to a whole group, so it names the batch and says
+     plainly that a sign-in is still needed. Otherwise the first reply is
+     always "it asked me for my email". */
+  const msg = batchMode
+    ? `Assalamu Alaikum 🌙\n\n` +
+      `*${studentNameCache}* — Quran class\n` +
+      `📅 ${pretty}\n\n` +
+      `Open here:\n${url}\n\n` +
+      `Sign in with the email and date of birth given to the academy.\n\n` +
+      `_ManzilulQuran E-learning Academy_`
+    : `Assalamu Alaikum 🌙\n\n` +
+      `*${studentNameCache}* — Quran class\n` +
+      `📅 ${pretty}\n\n` +
+      `Join here:\n${url}\n\n` +
+      `_ManzilulQuran E-learning Academy_`;
+
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+/* =================================================================
+   Boot LAST. load() paints straight from cache on a warm open, which
+   reaches the calendar engine defined below — so it must not run until
+   this whole script has been evaluated.
+   ================================================================= */
+load();
+
+load();
 </script>
 </body>
 </html>
