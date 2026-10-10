@@ -340,6 +340,12 @@
   .pr-meter{height:6px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
   .pr-meter i{display:block;height:100%;border-radius:99px}
   .pr-cmt{font-size:11px;opacity:.7;font-style:italic;margin-top:5px}
+  .pr-stars{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 15px;
+    background:rgba(255,255,255,.03);margin-bottom:8px}
+  .pr-stars .glyphs{font-size:23px;letter-spacing:2px;color:var(--accent);line-height:1}
+  .pr-stars .glyphs .off{opacity:.22}
+  .pr-stars .word{font-size:12.5px;opacity:.75}
   .pr-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
   .pr-chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--accent);
     padding:5px 12px;border-radius:99px;font-size:12px;font-weight:500}
@@ -373,6 +379,9 @@
   @media print{
     body{background:#fff;color:#000;padding:0}
     .pr-edit,.pr-chip button{display:none !important}
+    .pr-stars{background:#faf6ee !important;border-color:#d9e4df !important}
+    .pr-stars .glyphs{color:#c9a24b !important}
+    .pr-stars .word{opacity:1;color:#4a5a54}
     .pr-meta div,.pr-att,.pr-rate{background:#faf6ee !important;
       -webkit-print-color-adjust:exact;print-color-adjust:exact}
     .pr-meter{background:#ddd !important}
@@ -890,7 +899,9 @@ function progressDetail(r){
 
   const ratings = answers.filter(a => a.type === 'rating');
   const longs   = answers.filter(a => a.type === 'textarea');
-  const facts   = answers.filter(a => a.type !== 'rating' && a.type !== 'textarea');
+  const stars   = answers.filter(a => a.type === 'stars');
+  const facts   = answers.filter(a =>
+    a.type !== 'rating' && a.type !== 'textarea' && a.type !== 'stars');
 
   let inner = `<div class="pr-meta">
     ${prCell('Student', r.studentName)}
@@ -946,6 +957,19 @@ function progressDetail(r){
         `<span class="pr-chip">${esc(x.name)}<span class="st">${esc(x.status)}</span></span>`
       ).join('') + `</div>`;
     }
+  }
+
+  if(stars.length){
+    const STAR_WORD = {1:'Needs attention',2:'Fair',3:'Good',4:'Very good',5:'Excellent'};
+    inner += `<div class="pr-sec">Overall Monthly Performance</div>`;
+    stars.forEach(a => {
+      const v = Math.max(0, Math.min(5, parseInt(a.value, 10) || 0));
+      inner += `<div class="pr-stars">
+        <span class="glyphs">${'\u2605'.repeat(v)}<span class="off">${'\u2605'.repeat(5-v)}</span></span>
+        <span class="word">${v ? esc(STAR_WORD[v]) + ' \u00b7 ' + v + '/5' : 'Not rated'}</span>
+        ${a.comment ? `<span class="pr-cmt">${esc(a.comment)}</span>` : ''}
+      </div>`;
+    });
   }
 
   if(ratings.length){
@@ -1046,6 +1070,13 @@ function prField(key,label,type,val){
     <input type="${type}" id="pr_${key}" value="${esc(val || '')}"></div>`;
 }
 function prAnswerInput(a,i){
+  if(a.type === 'stars'){
+    const cur = String(parseInt(a.value,10) || '');
+    const WORD = {1:'Needs attention',2:'Fair',3:'Good',4:'Very good',5:'Excellent'};
+    return `<select data-prans="${i}"><option value="">\u2014 Not rated \u2014</option>` +
+      [5,4,3,2,1].map(v => `<option value="${v}"${cur === String(v) ? ' selected' : ''}>` +
+        `${'\u2605'.repeat(v)} ${v}/5 \u00b7 ${WORD[v]}</option>`).join('') + `</select>`;
+  }
   if(a.type === 'rating'){
     return `<select data-prans="${i}">` + PR_RATINGS.map(v =>
       `<option${String(a.value) === v ? ' selected' : ''}>${esc(v)}</option>`).join('') + `</select>`;
