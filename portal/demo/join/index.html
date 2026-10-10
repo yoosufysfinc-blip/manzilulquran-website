@@ -104,10 +104,15 @@
 window.MQ_BASE       = "/portal/demo";   // live build omits this line
 window.MQ_PERF       = true;   // TEMPORARY — timing only
 window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
+// Stage 2: class sheets are read from Supabase first (api.v3.js).
+// PUBLIC key only — it can call get_class / list_courses and nothing else.
+window.MQ_SUPABASE_URL    = "https://uuwboujrotmmpofjynhz.supabase.co";
+window.MQ_SUPABASE_KEY    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2JvdWpyb3RtbXBvZmp5bmh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Mjk4OTQsImV4cCI6MjEwMjAwNTg5NH0.z0_G7oKlmGILPr8zzOOQEgtUDrT8rNQLjrV9GQQdA9U";
+window.MQ_SUPABASE_PREFIX = "clsdemo_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v2.js"></script>
+<script src="/assets/classes/api.v3.js"></script>
 <script>
 spawnStars(40);
 /* =================================================================
