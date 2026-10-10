@@ -99,13 +99,20 @@
     <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a>
   </footer>
 
-<!-- LIVE BUILD — the live Classes spreadsheet. -->
+<!-- DEMO BUILD — demo spreadsheet only. -->
 <script>
-window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
+window.MQ_BASE       = "/portal/demo";   // live build omits this line
+window.MQ_PERF       = true;   // TEMPORARY — timing only
+window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
+// Stage 2: class sheets are read from Supabase first (api.v3.js).
+// PUBLIC key only — it can call get_class / list_courses and nothing else.
+window.MQ_SUPABASE_URL    = "https://uuwboujrotmmpofjynhz.supabase.co";
+window.MQ_SUPABASE_KEY    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2JvdWpyb3RtbXBvZmp5bmh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Mjk4OTQsImV4cCI6MjEwMjAwNTg5NH0.z0_G7oKlmGILPr8zzOOQEgtUDrT8rNQLjrV9GQQdA9U";
+window.MQ_SUPABASE_PREFIX = "clsdemo_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v2.js"></script>
+<script src="/assets/classes/api.v3.js"></script>
 <script>
 spawnStars(40);
 /* =================================================================
@@ -171,14 +178,6 @@ function resolve(calendars, want){
   return null;
 }
 
-function fillWho(data){
-  const name = data.studentName || 'Student';
-  const parts = name.trim().split(/\s+/);
-  $('who').innerHTML = parts.length > 1
-    ? esc(parts.slice(0,-1).join(' ')) + ' <span class="accent">' + esc(parts[parts.length-1]) + '</span>'
-    : esc(name);
-}
-
 /* ---------------- Go ---------------- */
 (async function(){
   const q = new URLSearchParams(location.search);
@@ -212,23 +211,6 @@ function fillWho(data){
   const found = resolve(data.calendars || [], want);
   const pretty = want.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
 
-  /* An invite for a day that has already gone by still opens — it lands
-     on the class sheet with that day in focus, and never offers Join.
-     Holiday, no-link and finished-plan days in the past all go the same
-     way; only a plan the academy switched off is still refused. */
-  if(want.getTime() < today0().getTime() && !(found && found.status === 'Inactive')){
-    fillWho(data);
-    $('when').textContent = found
-      ? `${found.cal.name} · Day ${found.day.n} · ${pretty}`
-      : pretty;
-    const pastUrl = `${mqUrl('/class/')}?t=${encodeURIComponent(token)}&d=${encodeURIComponent(dt)}`;
-    $('goNowBtn').href = pastUrl;
-    $('goStatus').textContent = 'This class day has passed · opening your class sheet…';
-    showState('stateGo');
-    countdownThenGo(pastUrl);
-    return;
-  }
-
   if(!found){
     fail('No class that day', `There is no class scheduled for ${pretty}.`);
     return;
@@ -249,8 +231,19 @@ function fillWho(data){
     fail('No link for this class', 'The academy hasn’t added a class link for that day yet.');
     return;
   }
+  /* An invite for a day that has already gone by. The sheet is still
+     useful, the meeting is not. */
+  if(want.getTime() < today0().getTime()){
+    fail('That class has finished', `${pretty} has already passed. Open your class sheet for the current schedule.`);
+    return;
+  }
+
   // Fill the page in
-  fillWho(data);
+  const name = data.studentName || 'Student';
+  const parts = name.trim().split(/\s+/);
+  $('who').innerHTML = parts.length > 1
+    ? esc(parts.slice(0,-1).join(' ')) + ' <span class="accent">' + esc(parts[parts.length-1]) + '</span>'
+    : esc(name);
   $('when').textContent = `${found.cal.name} · Day ${found.day.n} · ${pretty}`;
 
   // Land on the class sheet, on the calendar tab, with this day spotlighted.
