@@ -81,6 +81,25 @@
     40%{box-shadow:0 0 0 8px rgba(127,209,168,.34),0 0 26px rgba(127,209,168,.5);border-color:var(--glow)}
     100%{box-shadow:0 0 0 4px rgba(127,209,168,.18),0 0 14px rgba(127,209,168,.32);border-color:var(--glow)}}
 
+  /* overall performance stars */
+  .star-field{background:#fafcfb;border:1px solid var(--line);border-radius:11px;padding:14px}
+  .star-field.answered{border-color:var(--glow);background:#f6fcf9;
+    box-shadow:0 0 12px rgba(127,209,168,.25)}
+  .star-head{display:flex;justify-content:space-between;align-items:center;gap:10px;
+    margin-bottom:10px;flex-wrap:wrap}
+  .star-head label{margin:0;font-size:13px}
+  .star-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .star-pick{display:inline-flex;flex-direction:row-reverse;gap:4px}
+  .star-pick input{position:absolute;opacity:0;pointer-events:none}
+  .star-pick label{margin:0;cursor:pointer;font-size:30px;line-height:1;color:#d8d8d8;
+    padding:0 2px;transition:color .15s,transform .15s,text-shadow .3s;user-select:none}
+  .star-pick label:hover,.star-pick label:hover ~ label,
+  .star-pick input:checked ~ label{color:var(--gold)}
+  .star-pick label:hover{transform:scale(1.12)}
+  .star-pick input:checked ~ label{text-shadow:0 0 12px rgba(201,162,75,.55)}
+  .star-score{font-size:12.5px;color:var(--ink-soft);background:var(--gold-soft);
+    padding:5px 13px;border-radius:999px;min-width:104px;text-align:center}
+
   /* rating pills */
   .rate-field{background:#fafcfb;border:1px solid var(--line);border-radius:11px;padding:12px 14px}
   .rate-field.answered{border-color:var(--glow);background:#f6fcf9;
@@ -229,7 +248,7 @@
   <div class="rail">
     <div class="rail-step active" id="rs1"><span class="n">1</span>Selection</div>
     <div class="rail-step" id="rs2"><span class="n">2</span>Course Assessment</div>
-    <div class="rail-step" id="rs3"><span class="n">3</span>Feedback</div>
+    <div class="rail-step" id="rs3"><span class="n">3</span>Home Support</div>
   </div>
 
   <form id="reportForm" novalidate>
@@ -355,7 +374,6 @@ var MODULES = {
     title: "Madrasa / Foundation Assessment",
     note: "Rate the student's standing in each area for this reporting period.",
     fields: [
-      { key:"arabicLetterRecognition", label:"Arabic Letter Recognition", type:"rating", comment:true },
       { key:"letterReading",           label:"Letter Reading",            type:"rating", comment:true },
       { key:"letterWriting",           label:"Letter Writing",            type:"rating", comment:true },
       { key:"basicArabic",             label:"Basic Arabic",              type:"rating", comment:true },
@@ -369,7 +387,8 @@ var MODULES = {
       { key:"improvement",             label:"Improvement Observed",      type:"textarea", rows:2,
         ph:"What has clearly improved since last month?" },
       { key:"nextMonthFocus",          label:"Next Month's Focus",        type:"textarea", rows:2,
-        ph:"Which areas will be prioritised next month?" }
+        ph:"Which areas will be prioritised next month?" },
+      { key:"overallPerformance", label:"Overall Monthly Performance", type:"stars", required:true }
     ]
   },
 
@@ -384,14 +403,14 @@ var MODULES = {
       { key:"currentLevel",  label:"Current Reading Level / Progress", type:"text",
         ph:"e.g. Qaida completed, now on Juz Amma" },
       { key:"readingFluency",  label:"Reading Fluency",  type:"rating", comment:true, required:true },
-      { key:"readingAccuracy", label:"Reading Accuracy", type:"rating", comment:true, required:true },
       { key:"makharij",        label:"Makharij (Articulation)", type:"rating", comment:true, required:true },
       { key:"tajweedBasic",    label:"Tajweed Application", type:"rating", comment:true },
       { key:"commonMistakes",  label:"Common Mistakes", type:"textarea", rows:2,
         ph:"Recurring errors noticed during recitation." },
       { key:"improvementObserved", label:"Improvement Observed", type:"textarea", rows:2 },
       { key:"areasRequiringFocus", label:"Areas Requiring Focus", type:"textarea", rows:2 },
-      { key:"nextMonthTarget",     label:"Next Month's Learning Target", type:"textarea", rows:2 }
+      { key:"nextMonthTarget",     label:"Next Month's Learning Target", type:"textarea", rows:2 },
+      { key:"overallPerformance", label:"Overall Monthly Performance", type:"stars", required:true }
     ]
   },
 
@@ -406,7 +425,6 @@ var MODULES = {
       { key:"currentLevel", label:"Current Level / Progress", type:"text",
         ph:"e.g. Tarteel Basic - Level 2" },
       { key:"readingFluency",  label:"Reading Fluency",         type:"rating", comment:true, required:true },
-      { key:"readingAccuracy", label:"Reading Accuracy",        type:"rating", comment:true, required:true },
       { key:"makharij",        label:"Makharij (Articulation)", type:"rating", comment:true, required:true },
       { key:"tajweed",         label:"Tajweed (Overall)",       type:"rating", comment:true, required:true },
       { key:"madd",            label:"Madd (Elongation)",       type:"rating", comment:true },
@@ -417,7 +435,8 @@ var MODULES = {
       { key:"commonMistakes",  label:"Common Mistakes", type:"textarea", rows:2 },
       { key:"improvementObserved", label:"Improvement Observed", type:"textarea", rows:2 },
       { key:"areasRequiringFocus", label:"Areas Requiring Focus", type:"textarea", rows:2 },
-      { key:"nextMonthTarget",     label:"Next Month's Learning Target", type:"textarea", rows:2 }
+      { key:"nextMonthTarget",     label:"Next Month's Learning Target", type:"textarea", rows:2 },
+      { key:"overallPerformance", label:"Overall Monthly Performance", type:"stars", required:true }
     ]
   },
 
@@ -458,19 +477,19 @@ var MODULES = {
     ]
   },
 
-  /* ---------- Shared teacher feedback (all courses) ---------- */
+  /* ---------- Home support (all courses) ----------
+     The old "Teacher Feedback" block was removed: its questions duplicated
+     what each course module already asks (improvement, areas to focus,
+     next month's target). Only Recommended Home Support had no equivalent,
+     so it survives here on its own.
+     The module KEY is still "feedback" so the Config_Courses sheet rows
+     ("common,madrasa,feedback" etc.) keep working unchanged. */
   feedback: {
-    title: "Teacher Feedback",
+    title: "Home Support",
     note: "This section appears on the parent-facing report.",
     fields: [
-      { key:"keyAchievements",  label:"Key Achievements This Month", type:"textarea", rows:2, required:true },
-      { key:"improvementsNoticed", label:"Improvements Noticed",     type:"textarea", rows:2 },
-      { key:"areasToFocus",     label:"Areas to Focus On",           type:"textarea", rows:2, required:true },
-      { key:"homeSupport",      label:"Recommended Home Support",    type:"textarea", rows:2,
-        ph:"What can the parents do at home to support progress?" },
-      { key:"nextMonthPlan",    label:"Next Month's Learning Plan",  type:"textarea", rows:2, required:true },
-      { key:"finalComment",     label:"Final Teacher Comment",       type:"textarea", rows:3, required:true,
-        ph:"A closing note addressed to the parents." }
+      { key:"homeSupport", label:"Recommended Home Support", type:"textarea", rows:3, required:true,
+        ph:"What can the parents do at home to support progress?" }
     ]
   }
 };
@@ -621,6 +640,23 @@ function buildField(modKey, modTitle, f) {
       '</div></div>';
   }
 
+  if (f.type === "stars") {
+    // 1-5, rendered row-reverse so the CSS sibling selector can light up
+    // every star to the left of the one hovered or chosen.
+    var sOpts = [5, 4, 3, 2, 1].map(function (v) {
+      var sid = modKey + "_" + f.key + "_" + v;
+      return '<input type="radio" id="' + sid + '" name="' + f.key + '" value="' + v + '"' +
+             (f.required ? " required" : "") + ' ' + dm + '>' +
+             '<label for="' + sid + '" title="' + v + ' / 5">&#9733;</label>';
+    }).join("");
+    return '<div class="field field-full"><div class="star-field" data-star="' + f.key + '">' +
+      '<div class="star-head"><label>' + f.label + req + '</label></div>' +
+      '<div class="star-row"><div class="star-pick" role="radiogroup" aria-label="' +
+        esc(stripTags(f.label)) + '">' + sOpts + '</div>' +
+      '<span class="star-score" id="score_' + f.key + '">Not rated</span></div>' +
+      '</div></div>';
+  }
+
   if (f.type === "textarea") {
     return '<div class="' + cls + '"><label for="' + f.key + '">' + f.label + req + '</label>' +
       '<textarea id="' + f.key + '" name="' + f.key + '" rows="' + (f.rows || 2) + '"' +
@@ -690,6 +726,18 @@ function bindDynamic() {
     r.onchange = function () {
       var box = r.closest(".rate-field");
       box.classList.remove("answered"); void box.offsetWidth; box.classList.add("answered");
+      updateRail();
+    };
+  });
+
+  // overall performance stars
+  var STAR_WORD = { 1:"Needs attention", 2:"Fair", 3:"Good", 4:"Very good", 5:"Excellent" };
+  document.querySelectorAll('.star-pick input[type=radio]').forEach(function (r) {
+    r.onchange = function () {
+      var box = r.closest(".star-field");
+      box.classList.remove("answered"); void box.offsetWidth; box.classList.add("answered");
+      var score = document.getElementById("score_" + r.name);
+      if (score) score.textContent = STAR_WORD[r.value] + " (" + r.value + "/5)";
       updateRail();
     };
   });
@@ -918,6 +966,8 @@ function resetAll(keepCourse) {
   $("reportDate").valueAsDate = new Date();
   form.querySelectorAll(".field").forEach(function (f) { f.classList.remove("completed"); });
   form.querySelectorAll(".rate-field").forEach(function (f) { f.classList.remove("answered"); });
+  form.querySelectorAll(".star-field").forEach(function (f) { f.classList.remove("answered"); });
+  form.querySelectorAll(".star-score").forEach(function (f) { f.textContent = "Not rated"; });
   if (keepCourse === false && c) { $("courseId").value = c; $("courseId").dispatchEvent(new Event("change")); }
   else { $("courseModules").innerHTML = ""; $("feedbackModule").innerHTML = "";
          $("afterCourse").classList.add("hidden"); $("selectPrompt").classList.remove("hidden"); }
