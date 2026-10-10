@@ -19,9 +19,10 @@
   <div class="lock-screen" id="lockScreen">
     <div class="lock-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
     <div class="lock-title">Calendar Sheets</div>
-    <div class="lock-sub">Enter the portal password to continue.</div>
-    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="off" autofocus />
-    <button class="lock-btn" id="lockBtn">Unlock</button>
+    <div class="lock-sub">Sign in with your admin account.</div>
+    <input type="email" class="lock-input" id="lockEmail" placeholder="Email" autocomplete="username" autofocus style="letter-spacing:0;margin-bottom:10px" />
+    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="current-password" />
+    <button class="lock-btn" id="lockBtn">Sign in</button>
     <div class="lock-error" id="lockError">&nbsp;</div>
     <div class="lock-hint">Admin access only.<br><a href="./">← Back to Classes</a></div>
   </div>
@@ -143,11 +144,15 @@
 <script>
 window.MQ_BASE       = "/portal/demo";
 window.MQ_PERF         = true;   // TEMPORARY — timing only
-window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweI6Vrq5s3JJuMoR8lXHvweD6w0Keb5EPYj2oEjRxOHmaHKcRmeFWQLpyrOD4t7_Na/exec";
+// Stage 4: Supabase is the backend. No Apps Script URL on purpose —
+// with none set, api.v5.js never falls back to the retired Sheet.
+window.MQ_SUPABASE_URL    = "https://uuwboujrotmmpofjynhz.supabase.co";
+window.MQ_SUPABASE_KEY    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2JvdWpyb3RtbXBvZmp5bmh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Mjk4OTQsImV4cCI6MjEwMjAwNTg5NH0.z0_G7oKlmGILPr8zzOOQEgtUDrT8rNQLjrV9GQQdA9U";   // PUBLIC key only
+window.MQ_SUPABASE_PREFIX = "clsdemo_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v2.js"></script>
+<script src="/assets/classes/api.v5.js"></script>
 <script>
 /* =================================================================
    ░░  CALENDAR SHEETS ADMIN  ░░
@@ -173,10 +178,8 @@ let confirmAction = null;
 
 /* ---------------- Lock ---------------- */
 function isUnlocked(){
-  try{
-    const at = parseInt(sessionStorage.getItem(SESSION_KEY) || "0", 10);
-    return at && (Date.now() - at) < SESSION_MAX_MS;
-  }catch(e){ return false; }
+  // Stage 4: a Supabase admin sign-in, not a password typed into this page.
+  return mqAdminSignedIn();
 }
 function unlock(){
   try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
@@ -184,17 +187,28 @@ function unlock(){
   $("adminView").classList.add("show");
   load();
 }
-function tryPassword(){
-  if(($("lockInput").value || "").trim() === PORTAL_PASSWORD){ unlock(); }
+async function tryPassword(){
+  const btn = $("lockBtn");
+  const email = ($("lockEmail").value || "").trim();
+  const pw = $("lockInput").value || "";
+  if(!email || !pw){ $("lockError").textContent = "Enter your email and password."; return; }
+  btn.disabled = true; btn.textContent = "Signing in…";
+  $("lockError").innerHTML = "&nbsp;";
+  const r = await mqAdminSignIn(email, pw);
+  btn.disabled = false; btn.textContent = "Sign in";
+  if(r.ok){ $("lockInput").value = ""; unlock(); }
   else{
     $("lockInput").classList.add("wrong");
-    $("lockError").textContent = "Wrong password. Try again.";
+    $("lockError").textContent = r.error || "Could not sign in.";
     setTimeout(()=>$("lockInput").classList.remove("wrong"), 400);
     $("lockInput").select();
   }
 }
 $("lockBtn").onclick = tryPassword;
 $("lockInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryPassword(); });
+$("lockEmail").addEventListener("keydown", e=>{ if(e.key==="Enter") $("lockInput").focus(); });
+/* Stage 4: an expired sign-in brings the sign-in screen back. */
+window.MQ_ON_SIGNED_OUT = function(){ if(typeof lock === "function") lock(); else location.reload(); };
 if(isUnlocked()){
   $("lockScreen").style.display = "none";
   $("adminView").classList.add("show");
