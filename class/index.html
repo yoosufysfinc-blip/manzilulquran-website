@@ -218,7 +218,7 @@
 <!-- LIVE BUILD — the live Classes spreadsheet. -->
 <script>
 window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
-// Stage 2: class sheets are read from Supabase first (api.v3.js).
+// Stage 2+3: class sheets, batch pages and batch sign-in use Supabase first (api.v4.js).
 // PUBLIC key only — it can call get_class / list_courses and nothing else.
 window.MQ_SUPABASE_URL    = "https://uuwboujrotmmpofjynhz.supabase.co";
 window.MQ_SUPABASE_KEY    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2JvdWpyb3RtbXBvZmp5bmh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Mjk4OTQsImV4cCI6MjEwMjAwNTg5NH0.z0_G7oKlmGILPr8zzOOQEgtUDrT8rNQLjrV9GQQdA9U";
@@ -226,7 +226,7 @@ window.MQ_SUPABASE_PREFIX = "cls_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v3.js"></script>
+<script src="/assets/classes/api.v4.js"></script>
 <script src="/assets/classes/catalog.v1.js"></script>
 <script src="/assets/classes/notices.v1.js"></script>
 <script src="/assets/classes/pen.v2.js"></script>
