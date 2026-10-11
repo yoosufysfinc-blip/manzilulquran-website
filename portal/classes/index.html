@@ -849,7 +849,7 @@ $("crsList").addEventListener("click", async (e) => {
   const course = courses.find(c => c.courseId === id);
   if(!course) return;
 
-  const act = e.target.dataset.act;
+  const act = (e.target.closest("[data-act]") || { dataset: {} }).dataset.act;
   const subs = [...row.querySelectorAll(".crs-sub")].map(x => x.childNodes[0].nodeValue.trim());
 
   if(act === "delsub"){
@@ -1158,7 +1158,7 @@ $("nList").addEventListener("click", async (e) => {
   if(!row) return;
   const n = notices.find(x => x.noticeId === row.dataset.id);
   if(!n) return;
-  const act = e.target.dataset.act;
+  const act = (e.target.closest("[data-act]") || { dataset: {} }).dataset.act;
 
   if(act === "edit"){
     nFillForm(n);
@@ -1340,7 +1340,7 @@ $("bList").addEventListener("click", async (e) => {
   if(!card) return;
   const b = batches.find(x => x.batchId === card.dataset.id);
   if(!b) return;
-  const act = e.target.dataset.act;
+  const act = (e.target.closest("[data-act]") || { dataset: {} }).dataset.act;
 
   if(act === "roster") return openRoster(b.batchId);
   if(act === "btime")  return openTimeModal(b.batchId, "batch");
@@ -1492,7 +1492,7 @@ $("rList").addEventListener("click", async (e) => {
   const row = e.target.closest(".r-row");
   if(!row) return;
   const sid = row.dataset.sid;
-  const act = e.target.dataset.act;
+  const act = (e.target.closest("[data-act]") || { dataset: {} }).dataset.act;
 
   if(act === "devices"){
     const out = await postBatch({ action: "resetDevices", batchId: rosterBatch, studentId: sid });
@@ -1766,7 +1766,8 @@ $("liveRefresh").addEventListener("click", async () => { await loadClasses(); aw
 $("liveCloseBtn").addEventListener("click", () => { clearInterval(liveTimer); closeModal("liveModal"); });
 
 $("liveList").addEventListener("click", (e) => {
-  if(e.target.dataset.act !== "livetime") return;
+  const lt = e.target.closest("[data-act]");
+  if(!lt || lt.dataset.act !== "livetime") return;
   const row = e.target.closest(".live-row");
   if(row) promptClassTime(row.dataset.id, row.dataset.kind);
 });
