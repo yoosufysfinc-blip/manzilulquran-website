@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — core.v5.js. v5: the Google Sheet is send-only; the sheet importer and pull code are gone. */
+/* Academic Service — core.v6.js. v6: tables load in pages (no 1,000-row cut-off); each attendance mark has a fixed ID (plan + date); note-only marks are kept out of the money logic. */
 /* ==========================================================================
    ManzilulQuran — Academy Manager (single file)
 
@@ -52,7 +52,9 @@ function num(n){ return (+n || 0).toLocaleString("en-IN"); }
 function pct(a, b){ return b > 0 ? Math.round((a / b) * 100) : 0; }
 function uid(prefix, list, pad, start){
   pad = pad || 3; let max = (start ? start - 1 : 0);
-  list.forEach(o => { const n = parseInt(String(o.id).replace(/\D/g, ""), 10); if (!isNaN(n) && n > max) max = n; });
+  /* only IDs of this form count (CLS0042), so fixed mark IDs such as IPL0012-20261012 never push the counter */
+  const re = new RegExp("^" + prefix + "(\\d+)$");
+  list.forEach(o => { const m = re.exec(String(o.id)); const n = m ? parseInt(m[1], 10) : NaN; if (!isNaN(n) && n > max) max = n; });
   return prefix + String(max + 1).padStart(pad, "0");
 }
 const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -114,14 +116,31 @@ const Supa = {
     } catch (e) { this.st.ready = false; this.st.err = String(e.message || e); return false; }
   },
 
+  /* every row of one table, page by page. Supabase sends at most its "Max rows" per request
+     (1,000 by default), so one request would silently cut a big table short. Reads continue
+     until an empty page comes back, so it works whatever that limit is set to. */
+  async selectAll(table, cols){
+    const out = []; let from = 0;
+    for (let guard = 0; guard < 500; guard++) {
+      const { data, error } = await this.client.from(table).select(cols || "id,data,deleted")
+        .order("id", { ascending: true }).range(from, from + 999);
+      if (error) throw new Error(error.message);
+      const n = (data || []).length;
+      if (!n) break;
+      for (let i = 0; i < n; i++) out.push(data[i]);
+      from += n;
+    }
+    return out;
+  },
+
   /* pull EVERY row from EVERY table into the in-memory DB (source of truth on load) */
   async pullAll(){
     if (!this.st.ready && !this.init()) return { ok:false, error:"Supabase not configured" };
     this.st.busy = true; this.paint("busy", "loading from Supabase…");
     try {
       /* all tables at once (was one after another); applied only when every table arrived */
-      const res = await Promise.all(SUPA_COLLS.map(c =>
-        this.client.from(SUPA_TABLE[c]).select("id,data,deleted").limit(10000)));
+      const res = await Promise.all(SUPA_COLLS.map(c => this.selectAll(SUPA_TABLE[c])
+        .then(data => ({ data: data }), e => ({ error: { message: String(e.message || e) } }))));
       res.forEach((r, i) => { if (r.error) throw new Error(SUPA_COLLS[i] + ": " + r.error.message); });
       SUPA_COLLS.forEach((c, i) => {
         const data = res[i].data;
@@ -279,8 +298,17 @@ const SupaTrack = {
 
 /* Derived data is cached and dropped on every write, so nothing can go stale. */
 const Cache = {
-  _p: null, _pLen: -1, _l: null,
-  clear(){ Cache._p = null; Cache._pLen = -1; Cache._l = null; },
+  _p: null, _pLen: -1, _l: null, _c: null, _cRef: null, _cLen: -1,
+  clear(){ Cache._p = null; Cache._pLen = -1; Cache._l = null; Cache._c = null; },
+  /* plan + date → class record, so the attendance sheet does not search the whole log for every cell */
+  classIndex(){
+    if (Cache._c === null || Cache._cRef !== DB.classes || Cache._cLen !== DB.classes.length) {
+      const idx = {};
+      DB.classes.forEach(c => { const k = c.planId + "|" + c.date; if (!idx[k]) idx[k] = c; });
+      Cache._c = idx; Cache._cRef = DB.classes; Cache._cLen = DB.classes.length;
+    }
+    return Cache._c;
+  },
   paymentsFor(feeId){
     if (Cache._p === null || Cache._pLen !== DB.payments.length) {
       const idx = {};
@@ -576,8 +604,9 @@ const DataService = {
   getPlan(id){ return DB.plans.find(p => p.id === id) || null; },
   getActivePlan(studentId){ return DB.plans.find(p => p.studentId === studentId && p.status === "Active") || null; },
   savePlan(p){ return upsert("plans", p, "IPL"); },
+  /* note-only marks (status "Note") never reach fees or pay: only the attendance sheet asks for them */
   getClasses(f){
-    let r = DB.classes.slice();
+    let r = DB.classes.filter(c => c.status !== "Note" || (f && f.notes));
     if (!f) return r;
     if (f.studentId) r = r.filter(c => c.studentId === f.studentId);
     if (f.teacherId) r = r.filter(c => c.teacherId === f.teacherId);
@@ -586,7 +615,16 @@ const DataService = {
     if (f.date)      r = r.filter(c => c.date === f.date);
     return r;
   },
-  saveClass(c){ return upsert("classes", c, "CLS", 4); },
+  /* a mark's fixed ID: the same plan on the same day is always the same record, from any device */
+  classKey(planId, date){ return String(planId) + "-" + String(date).replace(/-/g, ""); },
+  classAt(planId, date){ return Cache.classIndex()[planId + "|" + date] || null; },
+  saveClass(c){
+    if (!c.id && c.planId && c.date) {
+      const k = DataService.classKey(c.planId, c.date);
+      if (!DB.classes.some(x => x.id === k)) c.id = k;
+    }
+    return upsert("classes", c, "CLS", 4);
+  },
   deleteClass(id){ DB.classes = DB.classes.filter(c => c.id !== id); persist(); },
 
   /* --- fees (both streams live in one table, tagged by source) --- */
