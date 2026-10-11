@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — forms-actions.v17.js. v17: per-student salary editing (base, additions, deductions) and the teacher salary report. */
+/* Academic Service — forms-actions.v18.js. v18: substitute rate on the teacher form, "taken by" on a class, Unmarked-day warning before reconciling, tables read in pages. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -211,9 +211,9 @@ function classForm(c, presetPlan, presetStudent){
     field("Duration (min)", '<input class="input" type="number" name="duration" min="0" value="' +
       esc(c.duration !== undefined ? c.duration : (pl ? pl.duration : 45)) + '">') +
     field("Class status", sel("status", optList(CLASS_STATUSES.map(x => ({ value: x.value, label: x.code + "  " + x.label })), c.status || "Completed"))) +
-    '<div></div>' +
+    field("Taken by (substitute only)", sel("takenBy", teacherOpts(c.takenBy || "", "—"))) +
     '<div class="field span2"><label>Notes</label><input class="input" name="notes" value="' + esc(c.notes || "") + '"></div>' +
-    '<div class="field span2"><div class="note" style="margin:0">Only a <b>Completed</b> class counts towards the <b>student fee</b>. ' +
+    '<div class="field span2"><div class="note" style="margin:0">A <b>Completed</b> or <b>Substitute</b> class counts towards the <b>student fee</b>; a substitute class pays the teacher in <b>Taken by</b>. ' +
       'For the <b>teacher</b>, the states that count are set in Settings — by default class taken, student absent and student leave.</div></div>' +
   '</div>';
 }
@@ -238,6 +238,8 @@ function teacherForm(t){
     ruleBlock("ind", "Individual class pay (default for all their students)", "indRateType", IND_RATE_TYPES, t.indRateType || "perClass",
       { rate: "indRate", base: "indBase", included: "indIncluded", min: "indMin", max: "indMax" }, t) +
     '<div class="field span2"><span class="hint">A different rule for one student can be set on that student\'s class plan.</span></div>' +
+    field("Substitute rate (per class)", '<input class="input" type="number" name="subRate" min="0" step="0.01" value="' + esc(t.subRate || "") + '" placeholder="Not set">') +
+    '<div class="field"><span class="hint" style="display:block;padding-top:26px">Paid for each class this teacher takes for someone else (mark Sub). Left empty, Teacher pay asks for the amount.</span></div>' +
     field("Batch class pay", sel("batchPayType", optList(BATCH_PAY_TYPES, t.batchPayType || "none"))) +
     field("Batch rate", '<input class="input" type="number" name="batchRate" min="0" step="0.01" value="' + esc(t.batchRate || 0) + '">') +
     '</div>' +
@@ -936,9 +938,11 @@ const Actions = {
     render();
   },
   "reconcile": () => {
-    const m = State.month, unfinished = monthEnd(m) > today();
-    confirmAction({ title: "Reconcile " + monthLabel(m), danger: unfinished,
-      note: (unfinished ? "⚠ " + monthLabel(m) + " has not finished yet — classes still to come would be credited back as if " +
+    const m = State.month, unfinished = monthEnd(m) > today(), um = Logic.unmarked(m).count;
+    confirmAction({ title: "Reconcile " + monthLabel(m), danger: unfinished || um > 0,
+      note: (um ? "⚠ " + um + " class day" + (um > 1 ? "s" : "") + " in " + monthLabel(m) + " have no attendance mark — " +
+          "on per-class fees an unmarked day counts as a class not held and is credited back. Mark them in Attendance first. " : "") +
+        (unfinished ? "⚠ " + monthLabel(m) + " has not finished yet — classes still to come would be credited back as if " +
           "they never happened. Reconcile once the month is over. " : "") +
         "Each individual class fee is compared with the class log. Classes not held come back as a credit on " +
         monthLabel(addMonths(m, 1)) + "; extra classes are added on. The month is then locked and never rewritten.",
@@ -1041,6 +1045,8 @@ const Actions = {
       onSubmit: function(d){
         if (!d.planId) { toast("Pick the class plan", "bad"); return false; }
         const pl = DataService.getPlan(d.planId);
+        if (d.status === "Substitute" && !d.takenBy) { toast("Choose who took the class in Taken by", "bad"); return false; }
+        if (d.status !== "Substitute") d.takenBy = "";
         d.studentId = pl.studentId; d.duration = +d.duration || 0;
         const cid = DataService.saveClass(d);
         toast("Class " + cid + " recorded", "ok"); render();
@@ -1055,6 +1061,8 @@ const Actions = {
   "class-edit": (id) => openModal({ title: "Edit class " + id, body: classForm(DB.classes.find(c => c.id === id)), submitText: "Save changes",
     onSubmit: function(d){
       const pl = DataService.getPlan(d.planId);
+      if (d.status === "Substitute" && !d.takenBy) { toast("Choose who took the class in Taken by", "bad"); return false; }
+      if (d.status !== "Substitute") d.takenBy = "";
       d.id = id; d.duration = +d.duration || 0; if (pl) d.studentId = pl.studentId;
       DataService.saveClass(d); toast("Class updated", "ok"); render();
     } }),
@@ -1625,19 +1633,19 @@ Object.assign(Actions, {
   "staff-new": () => openModal({ title: "Add staff", wide: true, body: teacherForm({ kind: "staff" }), submitText: "Save staff",
     onSubmit: function(d){
       if (!d.name) { toast("Name is needed", "bad"); return false; }
-      d.indRate = +d.indRate || 0; ["indBase","indIncluded","indMin","indMax"].forEach(k => d[k] = +d[k] || 0); d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0; d.kind = "staff"; delete d.id; joinCC(d);
+      d.indRate = +d.indRate || 0; ["indBase","indIncluded","indMin","indMax"].forEach(k => d[k] = +d[k] || 0); d.batchRate = +d.batchRate || 0; d.subRate = +d.subRate || 0; d.monthlySalary = +d.monthlySalary || 0; d.kind = "staff"; delete d.id; joinCC(d);
       const id = DataService.saveTeacher(d);
       toast("Staff " + id + " added", "ok"); celebrate("👤"); render();
     } }),
   "teacher-new": () => openModal({ title: "Add teacher", wide: true, body: teacherForm({}), submitText: "Save teacher",
     onSubmit: function(d){
       if (!d.name) { toast("Name is needed", "bad"); return false; }
-      d.indRate = +d.indRate || 0; ["indBase","indIncluded","indMin","indMax"].forEach(k => d[k] = +d[k] || 0); d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0; delete d.id; joinCC(d);
+      d.indRate = +d.indRate || 0; ["indBase","indIncluded","indMin","indMax"].forEach(k => d[k] = +d[k] || 0); d.batchRate = +d.batchRate || 0; d.subRate = +d.subRate || 0; d.monthlySalary = +d.monthlySalary || 0; delete d.id; joinCC(d);
       const id = DataService.saveTeacher(d);
       toast((d.kind === "staff" ? "Staff " : "Teacher ") + id + " added", "ok"); celebrate(d.kind === "staff" ? "👤" : "🧑‍🏫"); render();
     } }),
   "teacher-edit": (id) => openModal({ title: "Edit " + id, wide: true, body: teacherForm(DataService.getTeacher(id)), submitText: "Save changes",
-    onSubmit: function(d){ d.id = id; d.indRate = +d.indRate || 0; ["indBase","indIncluded","indMin","indMax"].forEach(k => d[k] = +d[k] || 0); d.batchRate = +d.batchRate || 0; d.monthlySalary = +d.monthlySalary || 0; joinCC(d);
+    onSubmit: function(d){ d.id = id; d.indRate = +d.indRate || 0; ["indBase","indIncluded","indMin","indMax"].forEach(k => d[k] = +d[k] || 0); d.batchRate = +d.batchRate || 0; d.subRate = +d.subRate || 0; d.monthlySalary = +d.monthlySalary || 0; joinCC(d);
       DataService.saveTeacher(d); toast("Saved", "ok"); render(); } }),
   "tpay-new": (teacherId) => {
     const m = State.tpay.month || State.month;
@@ -1857,6 +1865,11 @@ async function supaUpsert(coll, recs, deleted){
   }
   return rows.length;
 }
+/* every row of a table, page by page (Supa.selectAll), in the { data, error } shape */
+async function supaReadAll(c){
+  try { return { data: await Supa.selectAll(SUPA_TABLE[c]), error: null }; }
+  catch (e) { return { data: null, error: { message: String(e.message || e) } }; }
+}
 function supaReady(){ return typeof Supa !== "undefined" && Supa.on() && (Supa.st.ready || Supa.init()); }
 let WIPE_SNAPSHOT = null;
 function wipeScreen(title, html, done){
@@ -1877,7 +1890,7 @@ async function wipeAll(){
     for (const c of WIPE_COLLS) {
       set('<div class="note">Keep this page open — removing <b>' + esc(c) + '</b>…</div>' + line());
       try {
-        const { data, error } = await Supa.client.from(SUPA_TABLE[c]).select("id,data,deleted").limit(10000);
+        const { data, error } = await supaReadAll(c);
         if (error) throw new Error(error.message);
         const live = (data || []).filter(r => !r.deleted);
         const recs = live.map(r => Object.assign({}, r.data || {}, { id: r.id }));
@@ -1889,7 +1902,7 @@ async function wipeAll(){
     const left = [];
     for (const c of WIPE_COLLS) {
       try {
-        const { data, error } = await Supa.client.from(SUPA_TABLE[c]).select("id,data,deleted").limit(10000);
+        const { data, error } = await supaReadAll(c);
         if (error) throw new Error(error.message);
         const n = (data || []).filter(r => !r.deleted).length;
         if (n) left.push(c + ": " + n);
