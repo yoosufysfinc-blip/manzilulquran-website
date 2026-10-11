@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-books.v11.js. v11: student-wise salary table with per-student additions and deductions, and the salary report. */
+/* Academic Service — ws-books.v13.js. v13: Teacher pay warns about unmarked class days; the substitute rate shows on the teacher. (v12: Salary report button on Teacher pay.) */
 /* one line per individual student on a teacher's month — rule, amount and an Override button */
 /* The student-wise salary table: every student the teacher taught this month, their own
    attendance, their own base, and the additions and deductions entered against them. */
@@ -421,7 +421,8 @@ Pages.teachers = function(){
         ["Individual pay", esc(Logic.indRateLabel(t.indRateType)) + (t.indRateType === "percent" ? " · " + t.indRate + "%" :
           t.indRateType === "none" ? "" : " · " + money(t.indRate))],
         ["Batch pay", esc(Logic.batchPayLabel(t.batchPayType)) + (t.batchPayType === "percent" ? " · " + t.batchRate + "%" :
-          t.batchPayType === "none" ? "" : " · " + money(t.batchRate))]
+          t.batchPayType === "none" ? "" : " · " + money(t.batchRate))],
+        ["Substitute rate", +t.subRate > 0 ? money(t.subRate) + " per class" : '<span class="muted">Not set</span>']
       ]) +
       '<div class="sub-hd">' + esc(monthLabel(m)) + ' payslip</div>' +
       '<div class="minirow"><span>Individual — ' + esc(t.pv.indBasis) + '</span><b>' + money(t.pv.indAmount) + '</b></div>' +
@@ -679,6 +680,18 @@ Pages.expenses = function(){
   '</div></div>';
 };
 
+/* individual pay is worked out from attendance marks — warn while class days in the month have none */
+function tpayUnmarkedNote(m){
+  if (typeof Logic.unmarked !== "function") return "";
+  const um = Logic.unmarked(m);
+  if (!um.count) return "";
+  const byT = {};
+  um.lines.forEach(l => { byT[l.teacherId] = (byT[l.teacherId] || 0) + l.dates.length; });
+  const names = Object.keys(byT).map(function(id){ const t = DataService.getTeacher(id); return (t ? t.name : id) + " " + byT[id]; });
+  return '<div class="note" style="border-color:#e0776b">⚠ <b>' + um.count + ' class day' + (um.count > 1 ? "s" : "") + ' in ' + esc(monthLabel(m)) +
+    ' have no attendance mark</b> — individual pay counts only marked classes. ' + esc(names.slice(0, 8).join(" · ")) + (names.length > 8 ? " …" : "") +
+    ' <button type="button" class="btn btn-sm" data-act="goto" data-page="iAtt">Open attendance</button></div>';
+}
 Pages.tpay = function(){
   const m = State.tpay.month || State.month;
   const rows = Logic.payrollMonth(m);
@@ -691,6 +704,7 @@ Pages.tpay = function(){
 
   return '' +
   '<div class="note">Each teacher gets one payable for the month: what they earned from individual classes plus what they earned from batch classes, then bonus and deduction. Paying them is a single expense in the books.</div>' +
+  tpayUnmarkedNote(m) +
   '<div class="toolbar no-print">' +
     field("Month", sel("m", monthOpts(m, ""), 'data-fset="tpay.month"')) +
     '<div class="push btn-row"><button class="btn" data-act="tpay-csv">CSV</button>' +
@@ -730,6 +744,7 @@ Pages.tpay = function(){
             p.remarks ? ["Remarks", esc(p.remarks)] : null]) +
         acts((p.balance > 0 ? '<button class="btn btn-sm btn-primary" data-act="tpay-new" data-id="' + p.teacherId + '">Pay ' + money(p.balance) + '</button>' : "") +
           '<button class="btn btn-sm" data-act="tadj-edit" data-id="' + p.teacherId + '">Bonus / deduction</button>' +
+          '<button class="btn btn-sm btn-primary" data-act="salary-report" data-id="' + p.teacherId + '">📄 Salary report (PDF)</button>' +
           '<button class="btn btn-sm" data-act="tstatement" data-id="' + p.teacherId + '">Statement</button>'),
       sorts: [{ key: "bal", label: "Most unpaid first", val: p => p.balance, desc: true },
               { key: "pay", label: "Highest payable first", val: p => p.payable, desc: true },
