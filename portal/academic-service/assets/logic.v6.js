@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — logic.v5.js. v5: student-wise teacher salary — attendance counted per student, with additions and deductions per student. */
+/* Academic Service — logic.v6.js. v6: attendance sheet marks; substitute classes count for the student and pay the teacher who took them; Unmarked-day check; "monthly pay only if taught" applied. */
 /* ==========================================================================
    LOGIC
    ========================================================================== */
@@ -55,6 +55,30 @@ const CLASS_STATUSES = [
   { value: "Cancelled",      code: "C", label: "Cancelled",                pays: false }
 ];
 const CLASS_CODE = {}; CLASS_STATUSES.forEach(x => CLASS_CODE[x.value] = x.code);
+
+/* the attendance sheet's marks and what each one saves into the class log.
+   Exam and test days are classes held (status Completed) with an activity on top.
+   A note-only mark is stored with status "Note", which getClasses keeps away from fees and pay. */
+const ATT_MARKS = [
+  { k: "P", sym: "✓",   name: "Present",          status: "Completed",      key: "p" },
+  { k: "A", sym: "✕s",  name: "Absent (student)", status: "Student Absent", key: "a" },
+  { k: "T", sym: "✕t",  name: "Absent (teacher)", status: "Teacher Absent", key: "t" },
+  { k: "L", sym: "Lv",  name: "Leave",            status: "Student Leave",  key: "l" },
+  { k: "S", sym: "Sub", name: "Substitute class", status: "Substitute",     key: "s" },
+  { k: "E", sym: "Exa", name: "Exam day",         status: "Completed", activity: "Exam", key: "e" },
+  { k: "X", sym: "Test", name: "Class test",      status: "Completed", activity: "Test", key: "x" },
+  { k: "N", sym: "●",   name: "Note only",        status: "Note",           key: "d" },
+  { k: "R", sym: "R",   name: "Rescheduled",      status: "Rescheduled",    key: "r" },
+  { k: "C", sym: "C",   name: "Cancelled",        status: "Cancelled",      key: "c" }
+];
+const ATT_MK = {}; ATT_MARKS.forEach(m => ATT_MK[m.k] = m);
+/* the mark a class record shows as — worked out from its status, so an edit in the class log stays in step */
+function markOf(c){
+  if (!c) return "";
+  if (c.status === "Completed") return c.activity === "Exam" ? "E" : c.activity === "Test" ? "X" : "P";
+  const m = ATT_MARKS.find(x => x.status === c.status && !x.activity);
+  return m ? m.k : "";
+}
 /* which states earn the teacher money. Settings().payCountStatuses (comma separated) overrides the defaults. */
 function paidStatuses(){
   const set = Settings().payCountStatuses;
@@ -83,7 +107,8 @@ const Logic = {
 
   /* ---- class log roll-up (individual stream) ---- */
   classStats(rows){
-    const done = rows.filter(c => c.status === "Completed"), days = {};
+    /* held for the student = taken by their teacher or by a substitute */
+    const done = rows.filter(c => c.status === "Completed" || c.status === "Substitute"), days = {};
     done.forEach(c => days[c.date] = true);
     const pay = paidStatuses(), counted = rows.filter(c => pay.indexOf(c.status) >= 0);
     return { total: rows.length, completed: done.length,
@@ -506,7 +531,7 @@ const Logic = {
         if (!o.overwrite) continue;
         found.status = o.status; found.duration = o.status === "Completed" ? (+pl.duration || 0) : 0; res.updated++;
       } else {
-        DB.classes.push({ id: uid("CLS", DB.classes, 4), date: ds, studentId: pl.studentId, planId: pl.id,
+        DB.classes.push({ id: DataService.classKey(pl.id, ds), date: ds, studentId: pl.studentId, planId: pl.id,
           teacherId: pl.teacherId, duration: o.status === "Completed" ? (+pl.duration || 0) : 0,
           status: o.status, notes: o.notes || "" });
         res.created++;
@@ -580,6 +605,12 @@ Object.assign(Logic, {
         } else basis = "teacher's default · not paid";
       }
 
+      /* Settings: fixed monthly pay only in a month where the class was actually taught */
+      const isMonthly = type === "monthly" || (source === "default" && t.indRateType === "monthly");
+      if (isMonthly && Settings().monthlyPayOnlyIfTaught === "yes" && !cs.counted) {
+        base = 0; basis += " · no classes counted this month";
+      }
+
       /* the month's own edits for this student */
       const hasOverride = o.amount !== undefined && o.amount !== "";
       if (hasOverride) { base = round2(+o.amount || 0); basis = "Amount set for this month"; needsAmount = false; source = "override"; }
@@ -591,13 +622,95 @@ Object.assign(Logic, {
         perWeek: (pl.days || []).length || +pl.perWeek || 0, startDate: pl.startDate || "",
         payType: type, payRate: pr,
         planned: planned.total, holidays: planned.holidays || 0,
-        taken: cs.completed, studentAbsent: cs.studentAbsent, studentLeave: cs.studentLeave,
+        taken: cs.completed - cs.substitute, studentAbsent: cs.studentAbsent, studentLeave: cs.studentLeave,
         teacherAbsent: cs.teacherAbsent, substitute: cs.substitute, cancelled: cs.cancelled,
         rescheduled: cs.rescheduled, counted: cs.counted, logged: cs.total,
         base: round2(base), add: add, deduct: deduct, amount: final,
         basis: basis, note: o.note || "", needsAmount: needsAmount, source: source,
         rows: mine.slice().sort((a, b) => String(a.date).localeCompare(String(b.date))) };
-    }).filter(Boolean).sort((a, b) => String(a.studentName).localeCompare(String(b.studentName)));
+    }).filter(Boolean).sort((a, b) => String(a.studentName).localeCompare(String(b.studentName)))
+      .concat(Logic.substituteLines(t, month, ov));
+  },
+  /* classes this teacher took for someone else (mark S, "taken by" = this teacher).
+     Paid at the teacher's own substitute rate; with no rate set the line asks for an amount. */
+  substituteLines(t, month, ov){
+    ov = ov || Logic.parseLines((DataService.getAdjust(t.id, month) || {}).planLines);
+    const rows = DataService.getClasses({ month: month }).filter(r => r.status === "Substitute" && r.takenBy === t.id);
+    const byPlan = {};
+    rows.forEach(r => { (byPlan[r.planId] = byPlan[r.planId] || []).push(r); });
+    const rate = +t.subRate || 0;
+    return Object.keys(byPlan).map(function(pid){
+      const mine = byPlan[pid].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+      const pl = DataService.getPlan(pid) || {}, st = DataService.getStudent(mine[0].studentId || pl.studentId);
+      const reg = DataService.getTeacher(mine[0].teacherId || pl.teacherId);
+      const key = "SUB:" + pid, o = ov[key] || {}, n = mine.length;
+      let base = round2(n * rate), basis = n + " substitute class" + (n > 1 ? "es" : "") + " × " + money(rate),
+          needsAmount = !(rate > 0), source = "substitute";
+      if (needsAmount) basis = n + " substitute class" + (n > 1 ? "es" : "") + " — no substitute rate set";
+      const hasOverride = o.amount !== undefined && o.amount !== "";
+      if (hasOverride) { base = round2(+o.amount || 0); basis = "Amount set for this month"; needsAmount = false; source = "override"; }
+      const add = round2(+o.add || 0), deduct = round2(+o.deduct || 0);
+      return { planId: key, substituteFor: pid, studentId: st ? st.id : (pl.studentId || ""),
+        studentName: (st ? st.name : (pl.studentId || pid)) + " (substitute" + (reg && reg.name ? " for " + reg.name : "") + ")",
+        course: pl.course || "", time: pl.time || "", days: [], perWeek: 0, startDate: "",
+        payType: "substitute", payRate: rate, planned: 0, holidays: 0,
+        taken: n, studentAbsent: 0, studentLeave: 0, teacherAbsent: 0, substitute: 0, cancelled: 0, rescheduled: 0,
+        counted: n, logged: n, base: round2(base), add: add, deduct: deduct,
+        amount: round2(Math.max(0, base + add - deduct)), basis: basis, note: o.note || "",
+        needsAmount: needsAmount, source: source, rows: mine };
+    });
+  },
+  /* the plans that belong on a month's attendance sheet: active in the month, or with a mark in it.
+     Ordered by class time, then name — the order of the attached sheet. */
+  sheetPlans(month){
+    const ms = monthStart(month), me = monthEnd(month);
+    const marked = {};
+    DataService.getClasses({ month: month, notes: true }).forEach(c => marked[c.planId] = true);
+    return DataService.getPlans().filter(function(pl){
+      if (!DataService.getStudent(pl.studentId)) return false;
+      if (marked[pl.id]) return true;
+      if (pl.startDate && pl.startDate > me) return false;
+      if (pl.endDate && pl.endDate < ms) return false;
+      return pl.status === "Active" || (pl.endDate && pl.endDate >= ms);
+    }).sort(function(a, b){
+      return String(a.time || "99:99").localeCompare(String(b.time || "99:99")) ||
+        String((DataService.getStudent(a.studentId) || {}).name || "").localeCompare(String((DataService.getStudent(b.studentId) || {}).name || ""));
+    });
+  },
+  /* is this day one the plan should have a class on? (class day, inside start/end, not a holiday) */
+  planDay(pl, ds){
+    if (pl.startDate && ds < pl.startDate) return false;
+    if (pl.endDate && ds > pl.endDate) return false;
+    if ((pl.days || []).indexOf(DOW[parseYMD(ds).getDay()]) < 0) return false;
+    return !Logic.isHoliday(ds);
+  },
+  /* class days that have already passed with no mark (a note alone is not a mark).
+     Counted up to yesterday, so today's classes are not flagged before they happen. */
+  unmarked(month, o){
+    o = o || {};
+    const y = parseYMD(today()); y.setDate(y.getDate() - 1);
+    const upTo = monthEnd(month) < ymd(y) ? monthEnd(month) : ymd(y);
+    const out = { count: 0, lines: [] };
+    if (upTo < monthStart(month)) return out;
+    Logic.sheetPlans(month).forEach(function(pl){
+      if (pl.status !== "Active" && !pl.endDate) return;
+      if (o.teacherId && pl.teacherId !== o.teacherId) return;
+      const dates = [];
+      for (let i = 1; i <= daysInMonth(month); i++) {
+        const ds = month + "-" + pad2(i);
+        if (ds > upTo) break;
+        if (!Logic.planDay(pl, ds)) continue;
+        const c = DataService.classAt(pl.id, ds);
+        if (!c || c.status === "Note") dates.push(ds);
+      }
+      if (dates.length) {
+        const st = DataService.getStudent(pl.studentId);
+        out.lines.push({ planId: pl.id, studentId: pl.studentId, studentName: st ? st.name : pl.studentId,
+          teacherId: pl.teacherId, dates: dates });
+        out.count += dates.length;
+      }
+    });
+    return out;
   },
   /* the day-by-day grid: one row per student, one cell per day of the month */
   salaryGrid(t, month, lines){
@@ -643,7 +756,7 @@ Object.assign(Logic, {
       const ac = DataService.getAdjust(t.id, month);
       ind = round2(ind + (ac ? (+ac.custom || 0) : 0));
     }
-    const nStu = indLines.length;
+    const nStu = indLines.filter(L => L.source !== "substitute").length;
     let indBasis = nStu ? nStu + (nStu === 1 ? " student" : " students") + " · " +
         indLines.reduce((x, L) => x + L.counted, 0) + " classes counted"
       : "No individual students this month";
@@ -672,7 +785,10 @@ Object.assign(Logic, {
     const sessionCount = lines.reduce((x, l) => x + l.sessions, 0);
     const batchStudents = lines.reduce((x, l) => x + l.students, 0);
     let bat = 0, batBasis = "Not paid for batch classes";
-    if (t.batchPayType === "monthly") {
+    if (t.batchPayType === "monthly" && Settings().monthlyPayOnlyIfTaught === "yes" && !sessionCount) {
+      bat = 0; batBasis = "Monthly fixed — no batch sessions this month";
+      lines.forEach(l => { l.amount = 0; l.basis = "no sessions this month"; });
+    } else if (t.batchPayType === "monthly") {
       bat = brate; batBasis = "Monthly fixed across " + lines.length + " group(s)";
       if (lines.length) { const each = round2(brate / lines.length); lines.forEach(l => { l.amount = each; l.basis = "share of monthly fixed"; }); }
     } else if (t.batchPayType && t.batchPayType !== "none") {
