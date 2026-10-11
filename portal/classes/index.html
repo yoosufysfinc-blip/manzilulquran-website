@@ -19,9 +19,10 @@
   <div class="lock-screen" id="lockScreen">
     <div class="lock-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
     <div class="lock-title">Classes</div>
-    <div class="lock-sub">Enter the portal password to continue.</div>
-    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="off" autofocus />
-    <button class="lock-btn" id="lockBtn">Unlock</button>
+    <div class="lock-sub">Sign in with your admin account.</div>
+    <input type="email" class="lock-input" id="lockEmail" placeholder="Email" autocomplete="username" autofocus style="letter-spacing:0;margin-bottom:10px" />
+    <input type="password" class="lock-input" id="lockInput" placeholder="Password" autocomplete="current-password" />
+    <button class="lock-btn" id="lockBtn">Sign in</button>
     <div class="lock-error" id="lockError">&nbsp;</div>
     <div class="lock-hint">Admin access only.<br><a href="/portal/">← Back to portal</a></div>
   </div>
@@ -190,6 +191,13 @@
           <label>WhatsApp group <span class="opt">optional</span></label>
           <input type="url" id="bWhatsapp" placeholder="https://chat.whatsapp.com/…" autocomplete="off" />
         </div>
+        <div class="field">
+          <label>Study material <span class="opt">optional — every student on the batch sees it</span></label>
+          <div class="sm-summary">
+            <span id="bSmSummaryText">No study material selected</span>
+            <button type="button" class="btn-outline sm-summary-btn" id="bSmOpenBtn">Add Study Material</button>
+          </div>
+        </div>
         <div class="field-row">
           <div class="field">
             <label>Class time · IST</label>
@@ -262,12 +270,12 @@
 
         <div class="r-ticksbar">
           <span id="rPaidCount">—</span>
-          <button class="btn-solid sm" id="rSaveAccess">Save ticks</button>
+          <span class="r-add-note">Ticks save as you tap them.</span>
         </div>
         <div id="rList"><div class="loading"><div class="loading-spin"></div><div>Loading roster…</div></div></div>
 
         <div class="r-add">
-          <div class="r-add-title">Add a student</div>
+          <div class="r-add-title" id="rAddTitle">Add a student</div>
           <div class="r-add-grid">
             <input type="text" id="rName" placeholder="Full name" autocomplete="off" />
             <input type="text" id="rSid" placeholder="Student ID" autocomplete="off" />
@@ -276,7 +284,8 @@
             <input type="text" id="rMqId" placeholder="MQ ID (optional)" autocomplete="off" />
           </div>
           <div class="r-add-actions">
-            <span class="r-add-note">The student signs in with this email and date of birth.</span>
+            <span class="r-add-note" id="rAddNote">The student signs in with this email and date of birth.</span>
+            <button class="btn-outline sm" id="rCancelEdit" hidden>Cancel</button>
             <button class="btn-solid sm" id="rAddBtn">Add</button>
           </div>
         </div>
@@ -606,13 +615,17 @@
 
   <div class="toast" id="toast"></div>
 
-<!-- LIVE BUILD — the live Classes spreadsheet. -->
+<!-- LIVE BUILD — Supabase (cls_). -->
 <script>
-window.MQ_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9uqbMyCpT8wm9C0DDc4Q95AelCjAoy2DKW8rIa6N2awRKq_RYqnSkX2JLEq0zhB1L3w/exec";
+// Stage 4: Supabase is the backend. No Apps Script URL on purpose —
+// with none set, api.v5.js never falls back to the retired Sheet.
+window.MQ_SUPABASE_URL    = "https://uuwboujrotmmpofjynhz.supabase.co";
+window.MQ_SUPABASE_KEY    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2JvdWpyb3RtbXBvZmp5bmh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Mjk4OTQsImV4cCI6MjEwMjAwNTg5NH0.z0_G7oKlmGILPr8zzOOQEgtUDrT8rNQLjrV9GQQdA9U";   // PUBLIC key only
+window.MQ_SUPABASE_PREFIX = "cls_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v2.js"></script>
+<script src="/assets/classes/api.v5.js"></script>
 <script src="/assets/classes/catalog.v1.js"></script>
 <script>
 /* =================================================================
@@ -1300,6 +1313,7 @@ function openBatchForm(b){
   $("bGrace").value = b ? b.graceDays : 5;
   $("bTime").value = b ? (b.classTime || "") : "";
   $("bStatus").value = b ? b.status : "Active";
+  smBuild(smParse(b ? (b.studyMaterial || "") : ""));   // the picker is shared with the class form
   document.querySelectorAll("#batchModal .field").forEach(f => f.classList.remove("invalid"));
   openModal("batchModal");
 }
@@ -1309,6 +1323,7 @@ $("newBatchBtn").addEventListener("click", async () => {
   openBatchForm(null);
 });
 $("bCancelBtn").addEventListener("click", () => closeModal("batchModal"));
+$("bSmOpenBtn").addEventListener("click", () => openModal("smModal"));
 $("bCourse").addEventListener("change", () => bBuildSubjects([]));
 
 $("bSaveBtn").addEventListener("click", async () => {
@@ -1325,7 +1340,8 @@ $("bSaveBtn").addEventListener("click", async () => {
     whatsapp: $("bWhatsapp").value.trim(),
     graceDays: $("bGrace").value,
     classTime: $("bTime").value,
-    status: $("bStatus").value
+    status: $("bStatus").value,
+    studyMaterial: smStringify(smCollect())
   });
   if(out.result !== "success") return toast(out.error || "Could not save the batch", true);
 
@@ -1384,6 +1400,7 @@ function thisMonth(){
 }
 
 async function openRoster(batchId){
+  rResetForm();          // always start with an empty "Add a student" box
   rosterBatch = batchId;
   openModal("rosterModal");
   await loadRoster();
@@ -1430,6 +1447,7 @@ function renderRoster(){
         <span class="r-flag${st.devices >= 2 ? ' full' : ''}">${st.devices}/2 devices</span>
       </div>
       <div class="r-btns">
+        <button class="btn-ghost sm" data-act="edit">Edit</button>
         <button class="btn-ghost sm" data-act="devices">Reset devices</button>
         <button class="btn-ghost sm danger" data-act="remove">Remove</button>
       </div>
@@ -1471,21 +1489,30 @@ $("rCloseBtn").addEventListener("click", async () => {
    written until Save dates. */
 
 
-$("rSaveAccess").addEventListener("click", async () => {
-  if(!rosterData) return;
-  const entries = [...$("rList").querySelectorAll(".r-row")].map(row => ({
-    studentId: row.dataset.sid,
-    allowed: row.querySelector(".r-allow").checked
-  }));
-  const out = await postBatch({
-    action: "setAccess",
-    batchId: rosterBatch,
-    entries: entries
-  });
-  if(out.result !== "success") return toast(out.error || "Could not save", true);
-  await loadRoster();
-  const paid = entries.filter(e => e.allowed).length;
-  toast(`Saved — ${paid} of ${entries.length} can open the batch`);
+/* A tick saves the moment it is tapped — there is no separate Save
+   button to forget before pressing Done. If the save fails, the box
+   goes back to what the server holds. */
+$("rList").addEventListener("change", async (e) => {
+  const box = e.target.closest(".r-allow");
+  if(!box) return;
+  const row = box.closest(".r-row");
+  const allowed = box.checked;
+  box.disabled = true;
+  updatePaidCount();
+  let out;
+  try{
+    out = await postBatch({ action: "setAccess", batchId: rosterBatch,
+                            entries: [{ studentId: row.dataset.sid, allowed: allowed }] });
+  }catch(err){ out = { result: "error", error: "Could not reach the server" }; }
+  box.disabled = false;
+  if(out.result !== "success"){
+    box.checked = !allowed;
+    updatePaidCount();
+    return toast(out.error || "Could not save that tick", true);
+  }
+  const st = rosterData && rosterData.roster.find(x => String(x.studentId) === row.dataset.sid);
+  if(st) st.allowed = allowed;
+  toast(allowed ? "Marked paid" : "Marked unpaid");
 });
 
 $("rList").addEventListener("click", async (e) => {
@@ -1494,6 +1521,11 @@ $("rList").addEventListener("click", async (e) => {
   const sid = row.dataset.sid;
   const act = (e.target.closest("[data-act]") || { dataset: {} }).dataset.act;
 
+  if(act === "edit"){
+    const st = rosterData.roster.find(x => String(x.studentId) === sid);
+    if(st) rStartEdit(st);
+    return;
+  }
   if(act === "devices"){
     const out = await postBatch({ action: "resetDevices", batchId: rosterBatch, studentId: sid });
     if(out.result !== "success") return toast(out.error || "Could not reset", true);
@@ -1514,25 +1546,68 @@ $("rList").addEventListener("click", async (e) => {
   }
 });
 
+/* The same box adds a student or edits one. The admin only ever sees a
+   masked email and date of birth, so when editing those two may be left
+   blank — blank means "keep what is stored". */
+let rosterEditing = null;     // Student ID being edited, or null
+
+function rResetForm(){
+  rosterEditing = null;
+  ["rName","rSid","rEmail","rDob","rMqId"].forEach(id => $(id).value = "");
+  $("rAddTitle").textContent = "Add a student";
+  $("rAddNote").textContent = "The student signs in with this email and date of birth.";
+  $("rEmail").placeholder = "Email for sign-in";
+  $("rAddBtn").textContent = "Add";
+  $("rCancelEdit").hidden = true;
+}
+
+function rStartEdit(st){
+  rosterEditing = String(st.studentId);
+  $("rName").value = st.studentName || "";
+  $("rSid").value  = st.studentId || "";
+  $("rMqId").value = st.mqId || "";
+  $("rEmail").value = ""; $("rDob").value = "";
+  $("rEmail").placeholder = "New email (blank = keep " + (st.email || "current") + ")";
+  $("rAddTitle").textContent = "Edit " + (st.studentName || "student");
+  $("rAddNote").textContent = "Leave email and date of birth empty to keep the current ones.";
+  $("rAddBtn").textContent = "Save changes";
+  $("rCancelEdit").hidden = false;
+  $("rName").scrollIntoView({ behavior: "smooth", block: "center" });
+  setTimeout(() => $("rName").focus(), 250);
+}
+$("rCancelEdit").addEventListener("click", rResetForm);
+
 $("rAddBtn").addEventListener("click", async () => {
-  const name = $("rName").value.trim();
+  const name  = $("rName").value.trim();
   const sid   = $("rSid").value.trim();
   const email = $("rEmail").value.trim();
   const dob   = $("rDob").value;
-  if(!name || !sid || !email || !dob) return toast("Name, ID, email and date of birth are all needed", true);
+  const editing = rosterEditing;
+  if(editing){
+    if(!name || !sid) return toast("Name and Student ID are needed", true);
+  } else if(!name || !sid || !email || !dob){
+    return toast("Name, ID, email and date of birth are all needed", true);
+  }
 
-  const out = await postBatch({
+  const body = {
     action: "saveRosterStudent",
     batchId: rosterBatch,
     studentId: sid, studentName: name, email: email, dob: dob,
     mqId: ($("rMqId").value || "").trim()
-  });
-  if(out.result !== "success") return toast(out.error || "Could not add the student", true);
+  };
+  if(editing) body.originalStudentId = editing;
 
-  ["rName","rSid","rEmail","rDob","rMqId"].forEach(id => $(id).value = "");
+  const btn = $("rAddBtn"); btn.disabled = true;
+  let out;
+  try{ out = await postBatch(body); }catch(err){ out = { result: "error", error: "Could not reach the server" }; }
+  btn.disabled = false;
+  if(out.result !== "success") return toast(out.error || (editing ? "Could not save the changes" : "Could not add the student"), true);
+
+  rResetForm();
   await loadRoster();
-  toast("Student added — they still need a paid tick for this month");
+  toast(editing ? "Student updated" : "Student added — tick Paid when their fee is in");
 });
+
 
 
 /* ---------------- Teacher link ----------------
@@ -1950,10 +2025,8 @@ try{ if(localStorage.getItem(ALERTS_KEY) === "1") applyAlertsCollapsed(true); }c
 
 /* ---------------- Lock ---------------- */
 function isUnlocked(){
-  try{
-    const at = parseInt(sessionStorage.getItem(SESSION_KEY) || "0", 10);
-    return at && (Date.now() - at) < SESSION_MAX_MS;
-  }catch(e){ return false; }
+  // Stage 4: a Supabase admin sign-in, not a password typed into this page.
+  return mqAdminSignedIn();
 }
 function unlock(){
   try{ setWorkspace(sessionStorage.getItem(WS_KEY) || "individual"); }catch(e){ setWorkspace("individual"); }
@@ -1963,23 +2036,35 @@ function unlock(){
   loadClasses();
 }
 function lock(){
+  mqAdminSignOut();
   try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
   $("adminView").classList.remove("show");
   $("lockScreen").style.display = "";
   $("lockInput").value = "";
-  setTimeout(()=>$("lockInput").focus(), 100);
+  setTimeout(()=>$("lockEmail").focus(), 100);
 }
-function tryPassword(){
-  if(($("lockInput").value || "").trim() === PORTAL_PASSWORD){ unlock(); }
+async function tryPassword(){
+  const btn = $("lockBtn");
+  const email = ($("lockEmail").value || "").trim();
+  const pw = $("lockInput").value || "";
+  if(!email || !pw){ $("lockError").textContent = "Enter your email and password."; return; }
+  btn.disabled = true; btn.textContent = "Signing in…";
+  $("lockError").innerHTML = "&nbsp;";
+  const r = await mqAdminSignIn(email, pw);
+  btn.disabled = false; btn.textContent = "Sign in";
+  if(r.ok){ $("lockInput").value = ""; unlock(); }
   else{
     $("lockInput").classList.add("wrong");
-    $("lockError").textContent = "Wrong password. Try again.";
+    $("lockError").textContent = r.error || "Could not sign in.";
     setTimeout(()=>$("lockInput").classList.remove("wrong"), 400);
     $("lockInput").select();
   }
 }
 $("lockBtn").onclick = tryPassword;
 $("lockInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryPassword(); });
+$("lockEmail").addEventListener("keydown", e=>{ if(e.key==="Enter") $("lockInput").focus(); });
+/* Stage 4: an expired sign-in brings the sign-in screen back. */
+window.MQ_ON_SIGNED_OUT = function(){ if(typeof lock === "function") lock(); else location.reload(); };
 $("lockAgainBtn").onclick = lock;
 if(isUnlocked()){
   $("lockScreen").style.display = "none";
@@ -2336,7 +2421,9 @@ function smSummaryLabel(){
   return list.length + " courses selected";
 }
 function updateSmSummary(){
-  $("fSmSummaryText").textContent = smSummaryLabel();
+  const label = smSummaryLabel();
+  $("fSmSummaryText").textContent = label;
+  if($("bSmSummaryText")) $("bSmSummaryText").textContent = label;   // batch form shares the picker
 }
 
 /* Read the picker back out */
