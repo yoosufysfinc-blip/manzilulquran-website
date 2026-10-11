@@ -692,8 +692,9 @@ function renderBatch(d){
   const wa = $('waBtn');
   if(d.whatsapp){ wa.href = d.whatsapp; wa.hidden = false; } else { wa.hidden = true; }
 
-  // No per-student material or Hifz report on a batch sheet.
-  $('tabMaterial').hidden = true;
+  // A batch carries ONE study-material list for everyone on it (set in
+  // the admin's batch form). No Hifz report on a batch sheet.
+  renderStudyMaterial(d.studyMaterial);
   $('tabHifz').hidden = true;
 
   renderNotices(Array.isArray(d.notices) ? d.notices : []);
