@@ -11,9 +11,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="/assets/classes/admin.v1.css" />
+<link rel="stylesheet" href="/assets/classes/admin.v2.css" />
 </head>
 <body>
+  <div class="ambient" aria-hidden="true"><i class="amb-gold"></i><i class="amb-jade"></i></div>
 
   <!-- LOCK -->
   <div class="lock-screen" id="lockScreen">
@@ -29,122 +30,131 @@
 
   <!-- ADMIN -->
   <div class="admin" id="adminView">
-    <div class="admin-head">
-      <div class="admin-head-left">
-        <div class="admin-logo"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
-        <div>
-          <div class="admin-title">Class <span class="accent">Sheets</span></div>
-          <div class="admin-sub">Student Workspaces</div>
+    <header class="topbar" data-enter style="--i:0">
+      <div class="brand">
+        <div class="brand-mark"><img src="/logo.png" alt="ManzilulQuran" onerror="this.style.display='none'" /></div>
+        <div class="brand-text">
+          <div class="brand-title">Class <span class="accent">Sheets</span></div>
+          <div class="brand-sub">Student workspaces</div>
         </div>
       </div>
-      <div class="admin-actions">
-        <button class="btn-gold" id="newClassBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Class Sheet
-        </button>
-        <button class="btn-gold" id="newBatchBtn" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Batch
-        </button>
-        <button class="btn-ghost" id="liveBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M6.5 6.5a7.8 7.8 0 000 11M17.5 6.5a7.8 7.8 0 010 11"/></svg>
-          Live
-        </button>
-        <button class="btn-ghost" id="timesBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
-          Times
-        </button>
-        <button class="btn-ghost" id="noticesBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
-          Notices
-        </button>
-        <button class="btn-ghost" id="coursesBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-          Courses
-        </button>
-        <button class="btn-ghost" id="refreshBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
-          Refresh
-        </button>
-        <button class="btn-ghost" id="lockAgainBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          Lock
-        </button>
-      </div>
-    </div>
+      <button class="live-pill" id="liveBtn" type="button" aria-label="Live today">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="live-word">Live</span>
+        <span class="live-n" id="liveCount" hidden>0</span>
+      </button>
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-haspopup="true" aria-expanded="false" aria-controls="menuSheet">
+        <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+    </header>
 
     <!-- =========================================================
          WORKSPACES. Individual is the system that has always been
-         here. Batch is new and starts empty. Switching is a local
-         toggle only — it fetches nothing and writes nothing.
+         here; Batch is the group one. The switch shows one and hides
+         the other. The batch list loads once in the background after
+         the class sheets, so switching never waits on the network.
          ========================================================= -->
-    <div class="ws-tabs" role="tablist">
-      <button class="ws-tab active" data-ws="individual" role="tab" aria-selected="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-        </svg>
-        Individual
-        <span class="ws-count" id="wsCountIndividual">—</span>
+    <div class="ws-bar" data-enter style="--i:1">
+      <div class="ws-toggle" id="wsToggle" role="tablist" aria-label="Workspace" data-active="individual">
+        <span class="ws-thumb" id="wsThumb" aria-hidden="true"></span>
+        <button class="ws-tab active" data-ws="individual" role="tab" aria-selected="true" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>Individual</span>
+          <span class="ws-count" id="wsCountIndividual">—</span>
+        </button>
+        <button class="ws-tab" data-ws="batch" role="tab" aria-selected="false" type="button" tabindex="-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+          <span>Batch</span>
+          <span class="ws-count" id="wsCountBatch">—</span>
+        </button>
+      </div>
+      <button class="btn-new" id="newClassBtn" type="button" aria-label="New class sheet">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span class="lbl">New class sheet</span>
       </button>
-      <button class="ws-tab" data-ws="batch" role="tab" aria-selected="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
-          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-        </svg>
-        Batch
-        <span class="ws-count" id="wsCountBatch">—</span>
+      <button class="btn-new" id="newBatchBtn" type="button" aria-label="New batch" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span class="lbl">New batch</span>
       </button>
     </div>
 
     <div class="ws" id="wsIndividual">
 
-    <div class="alerts" id="alerts">
+    <div class="statbar" data-enter style="--i:2">
+      <div class="sb-nums">
+        <span class="sb-n"><b id="statActive">—</b> active</span>
+        <span class="sb-n dim"><b id="statInactive">—</b> inactive</span>
+        <span class="sb-n total"><b id="statTotal">—</b> class sheets</span>
+      </div>
+      <div class="sb-track" aria-hidden="true"><i class="sb-fill" id="statFill"></i></div>
+    </div>
+
+    <div class="alerts" id="alerts" data-enter style="--i:3">
       <div class="alerts-head">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
           <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>
         <h4>Needs attention</h4>
-        <button class="alerts-toggle" id="alertsToggle" aria-expanded="true" title="Collapse">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-        </button>
         <span class="count" id="alertCount">0</span>
+        <button class="alerts-find" id="alertsFindBtn" type="button" aria-label="Search needs attention" aria-expanded="false" aria-controls="alertsSearch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <button class="alerts-toggle" id="alertsToggle" type="button" aria-expanded="true" aria-label="Collapse" title="Collapse">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
+      </div>
+      <div class="alerts-search" id="alertsSearch" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="alertsQuery" placeholder="Name, ID, course or plan" autocomplete="off" enterkeyhint="search" aria-label="Search needs attention" />
+        <span class="as-count" id="alertsMatch" aria-live="polite"></span>
+        <button class="as-close" id="alertsClear" type="button" aria-label="Close search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
       <div id="alertRows"></div>
     </div>
 
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Total class sheets</div><div class="stat-value" id="statTotal">—</div></div>
-      <div class="stat"><div class="stat-label">Active</div><div class="stat-value" id="statActive">—</div></div>
-      <div class="stat"><div class="stat-label">Inactive</div><div class="stat-value" id="statInactive">—</div></div>
-    </div>
-
-    <div class="list-wrap">
-      <div class="list-search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInput" placeholder="Search by student name, student ID, or course..." />
-        <span id="resultCount"></span>
+    <div class="list-wrap" data-enter style="--i:4">
+      <div class="list-tools">
+        <label class="list-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="searchInput" placeholder="Search name, ID or course" autocomplete="off" enterkeyhint="search" aria-label="Search class sheets" />
+        </label>
+        <button class="flt-btn" id="filterToggle" type="button" aria-expanded="false" aria-controls="filtersWrap" aria-label="Filters and sort">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17.5 7H20M4 17h3.5M12 17h8"/><circle cx="15.3" cy="7" r="2.3"/><circle cx="9.8" cy="17" r="2.3"/></svg>
+          <span class="flt-lbl">Filters</span>
+          <span class="flt-n" id="filterCount" hidden>0</span>
+        </button>
       </div>
 
-      <div class="filters">
-        <select id="filterCourse"><option value="">All courses</option></select>
-        <select id="filterStatus">
-          <option value="">All status</option>
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-        </select>
-        <select id="filterMonth"><option value="">All join months</option></select>
-        <select id="filterYear"><option value="">All join years</option></select>
-        <select id="sortBy">
-          <option value="createdDesc">Recently created</option>
-          <option value="updatedDesc">Recently updated</option>
-          <option value="nameAsc">Student name (A–Z)</option>
-          <option value="joinDesc">Join date (newest)</option>
-          <option value="joinAsc">Join date (oldest)</option>
-          <option value="courseAsc">Course</option>
-          <option value="statusAsc">Status</option>
-        </select>
+      <div class="filters-wrap" id="filtersWrap">
+        <div class="filters-inner" id="filtersInner" inert>
+          <div class="filters">
+            <select id="filterCourse"><option value="">All courses</option></select>
+            <select id="filterStatus">
+              <option value="">All status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+            <select id="filterMonth"><option value="">All join months</option></select>
+            <select id="filterYear"><option value="">All join years</option></select>
+            <select id="sortBy">
+              <option value="createdDesc">Recently created</option>
+              <option value="updatedDesc">Recently updated</option>
+              <option value="nameAsc">Student name (A–Z)</option>
+              <option value="joinDesc">Join date (newest)</option>
+              <option value="joinAsc">Join date (oldest)</option>
+              <option value="courseAsc">Course</option>
+              <option value="statusAsc">Status</option>
+            </select>
+          </div>
+        </div>
       </div>
+      <div class="list-meta"><span id="resultCount"></span></div>
 
       <div id="listContent">
         <div class="loading"><div class="loading-spin"></div><div>Loading class sheets…</div></div>
@@ -154,15 +164,47 @@
 
     <!-- BATCH WORKSPACE — shell only. Nothing here talks to the server yet. -->
     <div class="ws" id="wsBatch" hidden>
-      <div class="stats" id="bStats">
-        <div class="stat"><div class="stat-label">Batches</div><div class="stat-value" id="bStatTotal">—</div></div>
-        <div class="stat"><div class="stat-label">Students</div><div class="stat-value" id="bStatStudents">—</div></div>
-        <div class="stat"><div class="stat-label">Paid this month</div><div class="stat-value" id="bStatPaid">—</div></div>
+      <div class="statbar" id="bStats" data-enter style="--i:2">
+        <div class="sb-nums">
+          <span class="sb-n"><b id="bStatPaid">—</b> paid this month</span>
+          <span class="sb-n dim"><b id="bStatStudents">—</b> students</span>
+          <span class="sb-n total"><b id="bStatTotal">—</b> batches</span>
+        </div>
+        <div class="sb-track" aria-hidden="true"><i class="sb-fill" id="bStatFill"></i></div>
       </div>
-      <div id="bList"><div class="loading"><div class="loading-spin"></div><div>Loading batches…</div></div></div>
+      <div id="bList" data-enter style="--i:3"><div class="loading"><div class="loading-spin"></div><div>Loading batches…</div></div></div>
     </div>
   </div>
     </div>
+  </div>
+
+  <!-- MENU — Times, Notices, Courses, Refresh and Sign out. A bottom
+       sheet on a phone, a small panel under the button on a wide screen. -->
+  <div class="menu-scrim" id="menuScrim"></div>
+  <div class="menu-sheet" id="menuSheet" role="menu" aria-label="Menu" inert>
+    <div class="menu-grab" aria-hidden="true"></div>
+    <div class="menu-who">Signed in as<b id="menuWho">—</b></div>
+    <button class="menu-item" id="timesBtn" type="button" role="menuitem">
+      <span class="mi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg></span>
+      <span class="mi-txt"><b>Class times</b><small>Set or change times in one place</small></span>
+    </button>
+    <button class="menu-item" id="noticesBtn" type="button" role="menuitem">
+      <span class="mi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></span>
+      <span class="mi-txt"><b>Notice board</b><small>Announcements to students</small></span>
+    </button>
+    <button class="menu-item" id="coursesBtn" type="button" role="menuitem">
+      <span class="mi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>
+      <span class="mi-txt"><b>Courses</b><small>Courses and their subjects</small></span>
+    </button>
+    <div class="menu-sep" role="separator"></div>
+    <button class="menu-item" id="refreshBtn" type="button" role="menuitem">
+      <span class="mi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg></span>
+      <span class="mi-txt"><b>Refresh</b><small>Load the latest from the server</small></span>
+    </button>
+    <button class="menu-item danger" id="lockAgainBtn" type="button" role="menuitem">
+      <span class="mi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+      <span class="mi-txt"><b>Sign out</b><small>Lock this page on this device</small></span>
+    </button>
   </div>
 
   <!-- BATCH: create / edit -->
@@ -340,19 +382,20 @@
     </div>
   </div>
 
-  <!-- LIVE — today's classes, in time order -->
-  <div class="modal-backdrop" id="liveModal">
-    <div class="modal modal-wide">
-      <div class="modal-head">
-        <h3>Live <span class="accent">Today</span></h3>
-        <p id="liveSub">Classes running today, in time order. Holidays and finished plans are left out.</p>
+  <!-- LIVE — today's classes, grouped and in time order -->
+  <div class="modal-backdrop sheet-backdrop" id="liveModal">
+    <div class="modal live-sheet" role="dialog" aria-modal="true" aria-labelledby="liveTitle">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <div class="live-head">
+        <div class="live-head-l">
+          <h3 id="liveTitle">Live <span class="accent">Today</span></h3>
+          <p id="liveSub">Classes running today, in time order.</p>
+        </div>
+        <button class="sheet-ib" id="liveRefresh" type="button" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg></button>
+        <button class="sheet-ib" id="liveCloseBtn" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
-      <div class="modal-body">
+      <div class="live-body">
         <div id="liveList"><div class="loading"><div class="loading-spin"></div><div>Working out today's classes…</div></div></div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-outline" id="liveRefresh">Refresh</button>
-        <button class="btn-solid" id="liveCloseBtn">Done</button>
       </div>
     </div>
   </div>
@@ -688,17 +731,31 @@ function classAlert(c){
    kept for the tab session so a refresh lands where you left off. */
 const WS_KEY = "mq_demo_ws";
 
-function setWorkspace(name){
-  const batch = (name === "batch");
+/* Motion is optional: everything works the same without it, and it is
+   switched off for anyone whose device asks for less motion. */
+const RM = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+function motionOK(){ return !(RM && RM.matches); }
 
-  $("wsIndividual").hidden = batch;
-  $("wsBatch").hidden      = !batch;
+let wsSwap = null;            // timers of a workspace switch that is still moving
+let batchesTried = false;     // the background batch load runs once per sign-in
+let alertItems = [];          // Needs attention rows, before the search filter
+const modalCloseTimers = {};  // sheets that are sliding closed
+const WA_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/></svg>';
+
+function setWorkspace(name, opts){
+  const batch  = (name === "batch");
+  const inEl   = batch ? $("wsBatch") : $("wsIndividual");
+  const outEl  = batch ? $("wsIndividual") : $("wsBatch");
+  const motion = !!(opts && opts.animate) && motionOK();
 
   document.querySelectorAll(".ws-tab").forEach(function(t){
     const on = (t.dataset.ws === name);
     t.classList.toggle("active", on);
     t.setAttribute("aria-selected", on ? "true" : "false");
+    t.tabIndex = on ? 0 : -1;
   });
+  $("wsToggle").dataset.active = name;
+  document.body.classList.toggle("ws-batch", batch);
 
   // The header action belongs to whichever workspace is open.
   $("newClassBtn").hidden = batch;
@@ -706,13 +763,60 @@ function setWorkspace(name){
 
   try{ sessionStorage.setItem(WS_KEY, name); }catch(e){}
 
-  // The batch list is fetched the first time that workspace is opened,
-  // not on unlock — most sessions never leave the Individual tab.
-  if(batch && !batches.length) loadBatches();
+  // Normally loaded already, in the background after the class sheets;
+  // this covers a slow or failed first load.
+  if(batch && !batches.length){ batchesTried = true; loadBatches(); }
+
+  // A switch still moving is finished at once, so quick taps never leave
+  // both sides half-faded.
+  if(wsSwap){
+    clearTimeout(wsSwap.out); clearTimeout(wsSwap.done);
+    $("wsIndividual").classList.remove("ws-out", "ws-in");
+    $("wsBatch").classList.remove("ws-out", "ws-in");
+    wsSwap = null;
+  }
+
+  if(!motion || (!inEl.hidden && outEl.hidden)){
+    inEl.hidden = false;
+    outEl.hidden = true;
+    return;
+  }
+
+  // The old side slips out, then the new side arrives from the direction
+  // of travel (.ws-out / .ws-in in admin.v2.css). An entrance still
+  // running on either side gives way to the switch.
+  [inEl, outEl].forEach(function(w){
+    w.style.setProperty("--dir", batch ? 1 : -1);
+    w.querySelectorAll(".enter").forEach(function(el){ el.classList.remove("enter"); });
+  });
+  const thumb = $("wsThumb");
+  thumb.classList.remove("flash"); void thumb.offsetWidth; thumb.classList.add("flash");
+
+  outEl.classList.add("ws-out");
+  const swap = wsSwap = {};
+  swap.out = setTimeout(function(){
+    outEl.hidden = true;
+    outEl.classList.remove("ws-out");
+    inEl.hidden = false;
+    inEl.classList.add("ws-in");
+    swap.done = setTimeout(function(){
+      inEl.classList.remove("ws-in");
+      if(wsSwap === swap) wsSwap = null;
+    }, 1500);
+  }, 190);
 }
 
 document.querySelectorAll(".ws-tab").forEach(function(t){
-  t.addEventListener("click", function(){ setWorkspace(t.dataset.ws); });
+  t.addEventListener("click", function(){ setWorkspace(t.dataset.ws, { animate: true }); });
+});
+// Left and right arrows move between the two tabs, as a tab list should.
+$("wsToggle").addEventListener("keydown", function(e){
+  if(e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  e.preventDefault();
+  const next = (e.key === "ArrowRight") ? "batch" : "individual";
+  setWorkspace(next, { animate: true });
+  const t = document.querySelector('.ws-tab[data-ws="' + next + '"]');
+  if(t) t.focus();
 });
 
 
@@ -1229,22 +1333,27 @@ async function loadBatches(){
     batches = (out.result === "success") ? (out.batches || []) : [];
   }catch(e){ console.error(e); batches = []; }
   renderBatches();
+  revealRows($("bList"));
 }
 
 function renderBatches(){
+  const students = batches.reduce((n, b) => n + b.students, 0);
+  const paid     = batches.reduce((n, b) => n + b.allowed, 0);
   $("wsCountBatch").textContent  = batches.length;
   $("bStatTotal").textContent    = batches.length;
-  $("bStatStudents").textContent = batches.reduce((n, b) => n + b.students, 0);
-  $("bStatPaid").textContent     = batches.reduce((n, b) => n + b.allowed, 0);
+  $("bStatStudents").textContent = students;
+  $("bStatPaid").textContent     = paid;
+  $("bStatFill").style.setProperty("--p", students ? Math.min(1, paid / students).toFixed(3) : "0");
+  updateLiveDot();
 
   if(!batches.length){
-    $("bList").innerHTML = '<div class="empty-state">No batches yet. Create the first one with the New Batch button.</div>';
+    $("bList").innerHTML = '<div class="empty-state">No batches yet. Use the <b style="color:var(--gold-light)">+</b> button beside the switch to create the first one.</div>';
     return;
   }
 
-  $("bList").innerHTML = batches.map(b => {
+  $("bList").innerHTML = batches.map((b, i) => {
     const unpaid = b.students - b.allowed;
-    return `<div class="b-card${b.status === 'Active' ? '' : ' paused'}" data-id="${b.batchId}">
+    return `<div class="b-card${i < 10 ? ' rv' : ''}${b.status === 'Active' ? '' : ' paused'}"${i < 10 ? ` style="--r:${i}"` : ''} data-id="${escapeHtml(b.batchId)}">
       <div class="b-top">
         <div class="b-id">${escapeHtml(b.batchId)}</div>
         <div class="b-name">${escapeHtml(b.name)}</div>
@@ -1259,7 +1368,7 @@ function renderBatches(){
       </div>
       <div class="b-btns">
         <button class="ib ib-roster" data-act="roster" data-tip="Roster &amp; fees" aria-label="Roster &amp; fees">${ic('roster')}</button>
-        <button class="ib ib-time ${b.classTime ? 'has-time' : 'no-time'}" data-act="btime" data-tip="${b.classTime ? 'Change time' : 'Set time'}" aria-label="${b.classTime ? 'Class time ' + escapeHtml(formatTime(b.classTime)) : 'Set class time'}">${ic('time')}${b.classTime ? '<span class="tval">' + escapeHtml(formatTime(b.classTime)) + '</span>' : ''}</button>
+        <button class="ib ib-time ${b.classTime ? 'has-time' : 'no-time'}" data-act="btime" data-tip="${b.classTime ? 'Change time' : 'Set time'}" aria-label="${b.classTime ? 'Class time ' + escapeHtml(formatTime(b.classTime)) : 'Set class time'}">${ic('time')}${b.classTime ? '<span class="tlbl">Class time</span><span class="tval">' + escapeHtml(formatTime(b.classTime)) + '</span>' : '<span class="tlbl">Set class time</span>'}</button>
         <button class="ib ib-cal" data-act="cal" data-tip="Calendars" aria-label="Calendars">${ic('cal')}</button>
         <button class="ib ib-share" data-act="share" data-tip="Share link" aria-label="Share link">${ic('share')}</button>
         <button class="ib ib-edit" data-act="edit" data-tip="Edit" aria-label="Edit">${ic('edit')}</button>
@@ -1742,7 +1851,8 @@ const IC = {
   edit:   '<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/>',
   del:    '<path d="M4 7h16M9 7V4.8A.8.8 0 019.8 4h4.4a.8.8 0 01.8.8V7M6.5 7l1 12.2a1.8 1.8 0 001.8 1.8h5.4a1.8 1.8 0 001.8-1.8L17.5 7"/>',
   roster: '<circle cx="9" cy="8" r="3.4"/><path d="M3.5 19a5.5 5.5 0 0111 0"/><path d="M16 5.2a3.2 3.2 0 010 5.6M18 19a5 5 0 00-2.4-4.3"/>',
-  join:   '<path d="M15.5 10.5l5-3v9l-5-3"/><rect x="3" y="6.5" width="12.5" height="11" rx="2.2"/>'
+  join:   '<path d="M15.5 10.5l5-3v9l-5-3"/><rect x="3" y="6.5" width="12.5" height="11" rx="2.2"/>',
+  nolink: '<path d="M10.5 13.5l3-3"/><path d="M12.6 7.3l1.1-1.1a3.6 3.6 0 015.1 5.1l-1.1 1.1M11.4 16.7l-1.1 1.1a3.6 3.6 0 01-5.1-5.1l1.1-1.1"/><path d="M4 4l16 16"/>'
 };
 function ic(name){
   return '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
@@ -1755,7 +1865,10 @@ function ic(name){
    opening this from another country sees the academy's day. */
 let liveTimer = null;
 
-function renderLive(){
+/* Today's entries from both workspaces. The Live sheet and the dot on
+   the Live button are worked out from the same list, so they cannot
+   disagree. */
+function liveEntries(){
   const entries = [];
 
   classes.forEach(c => {
@@ -1780,50 +1893,77 @@ function renderLive(){
     });
   });
 
-  const rows = buildLiveList(entries);
-  const live = rows.filter(r => r.state === "live").length;
-  const noTime = rows.filter(r => !r.classTime).length;
+  return entries;
+}
 
-  $("liveSub").textContent =
-    rows.length
-      ? `${rows.length} class${rows.length === 1 ? "" : "es"} today · ${live} running now` +
-        (noTime ? ` · ${noTime} with no time set` : "")
-      : "No classes today. Holidays and finished plans are left out.";
+/* The Live button's dot pings while a class is running, with the count. */
+function updateLiveDot(rows){
+  if(typeof buildLiveList !== "function") return;
+  const list = rows || buildLiveList(liveEntries());
+  const n = list.filter(r => r.state === "live").length;
+  const pill = $("liveBtn");
+  pill.classList.toggle("on", n > 0);
+  $("liveCount").textContent = n;
+  $("liveCount").hidden = (n === 0);
+  pill.setAttribute("aria-label", n ? `Live today: ${n} class${n === 1 ? "" : "es"} on now` : "Live today");
+}
+
+function liveNowLabel(){
+  const m = istNowMinutes();
+  return formatTime(String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"));
+}
+
+function liveRowHtml(r){
+  let note;
+  if(r.state === "live")      note = `${r.minutes} min left`;
+  else if(r.state === "soon"){ const h = Math.floor(r.minutes / 60), m = r.minutes % 60; note = "in " + (h ? h + "h " : "") + m + "m"; }
+  else if(r.state === "done") note = "finished";
+  else                        note = "no time set";
+
+  const parts = r.timeLabel ? r.timeLabel.split(" ") : null;      // "7:00 pm" → ["7:00", "pm"]
+  const rest  = [r.sub, "Day " + r.dayNo + (r.calName ? " of " + r.calName : "")].filter(Boolean).join(" · ");
+
+  return `<div class="live-row ${escapeHtml(r.state)}" data-id="${escapeHtml(r.id)}" data-kind="${escapeHtml(r.kind)}">
+    <div class="live-time">${parts ? `<b>${escapeHtml(parts[0])}</b><small>${escapeHtml(parts[1] || "")}</small>` : '<b class="none">—</b>'}</div>
+    <div class="live-who">
+      <div class="live-name">${r.state === "live" ? '<i class="lv-dot" aria-hidden="true"></i>' : ''}<span class="ln">${escapeHtml(r.name)}</span>${r.kind === "batch" ? '<span class="lv-kind">batch</span>' : ''}</div>
+      <div class="live-sub"><span class="live-note">${escapeHtml(note)}</span><span class="lv-rest">${escapeHtml(rest)}</span></div>
+    </div>
+    <div class="live-btns">
+      ${r.link
+        ? `<a class="ib ib-join" href="${escapeHtml(r.link)}" target="_blank" rel="noopener" data-tip="Join class" aria-label="Join class">${ic('join')}</a>`
+        : `<span class="ib ib-nolink" role="img" data-tip="No link today" aria-label="No link today">${ic('nolink')}</span>`}
+      <button class="ib ib-time ${r.classTime ? 'has-time' : 'no-time'}" data-act="livetime" data-tip="${r.classTime ? 'Change time' : 'Set time'}" aria-label="${r.classTime ? 'Change time' : 'Set time'}">${ic('time')}</button>
+    </div>
+  </div>`;
+}
+
+function renderLive(){
+  const rows = buildLiveList(liveEntries());
+  updateLiveDot(rows);
+
+  const groups = [
+    { state: "live",    title: "On now" },
+    { state: "soon",    title: "Later today" },
+    { state: "unknown", title: "No time set" },
+    { state: "done",    title: "Finished" }
+  ].map(g => Object.assign(g, { rows: rows.filter(r => r.state === g.state) }))
+   .filter(g => g.rows.length);
+
+  $("liveSub").textContent = rows.length
+    ? `Academy time (IST), now ${liveNowLabel()}`
+    : "No classes today. Holidays and finished plans are left out.";
 
   if(!rows.length){
     $("liveList").innerHTML = '<div class="empty-state">Nothing scheduled for today.</div>';
     return;
   }
 
-  $("liveList").innerHTML = rows.map(r => {
-    let badge = "", note = "";
-    if(r.state === "live"){
-      badge = '<span class="live-badge">Live now</span>';
-      note = `${r.minutes} min left`;
-    } else if(r.state === "soon"){
-      const h = Math.floor(r.minutes / 60), m = r.minutes % 60;
-      note = "in " + (h ? h + "h " : "") + m + "m";
-    } else if(r.state === "done"){
-      note = "finished";
-    } else {
-      badge = '<span class="live-badge none">No time set</span>';
-    }
-
-    return `<div class="live-row ${escapeHtml(r.state)}" data-id="${escapeHtml(r.id)}" data-kind="${escapeHtml(r.kind)}">
-      <div class="live-time">${r.timeLabel ? escapeHtml(r.timeLabel) : "—"}</div>
-      <div class="live-who">
-        <div class="live-name">${escapeHtml(r.name)} ${badge}</div>
-        <div class="live-sub">${escapeHtml(r.sub)} · Day ${r.dayNo} of ${escapeHtml(r.calName)}</div>
-      </div>
-      <div class="live-note">${escapeHtml(note)}</div>
-      <div class="live-btns">
-        ${r.link
-          ? `<a class="ib ib-join" href="${escapeHtml(r.link)}" target="_blank" rel="noopener" data-tip="Join class" aria-label="Join class">${ic('join')}</a>`
-          : `<span class="btn-ghost sm dim">No link</span>`}
-        <button class="ib ib-time" data-act="livetime" data-tip="Change time" aria-label="Change time">${ic('time')}</button>
-      </div>
-    </div>`;
-  }).join("");
+  $("liveList").innerHTML = groups.map(g =>
+    `<div class="live-group lg-${g.state}">
+      <div class="lg-head">${g.title} <span>${g.rows.length}</span></div>
+      ${g.rows.map(liveRowHtml).join("")}
+    </div>`).join("");
 }
 
 async function openLive(){
@@ -1839,7 +1979,13 @@ async function openLive(){
 }
 
 $("liveBtn").addEventListener("click", openLive);
-$("liveRefresh").addEventListener("click", async () => { await loadClasses(); await loadBatches(); renderLive(); });
+$("liveRefresh").addEventListener("click", async () => {
+  const b = $("liveRefresh");
+  if(b.classList.contains("busy")) return;
+  b.classList.add("busy");
+  try{ await loadClasses(); await loadBatches(); renderLive(); }
+  finally{ b.classList.remove("busy"); }
+});
 $("liveCloseBtn").addEventListener("click", () => { clearInterval(liveTimer); closeModal("liveModal"); });
 
 $("liveList").addEventListener("click", (e) => {
@@ -2017,12 +2163,42 @@ function applyAlertsCollapsed(on){
   const box = $("alerts");
   box.classList.toggle("collapsed", on);
   $("alertsToggle").setAttribute("aria-expanded", on ? "false" : "true");
+  $("alertsToggle").setAttribute("aria-label", on ? "Expand" : "Collapse");
   $("alertsToggle").title = on ? "Expand" : "Collapse";
+  if(on) closeAlertSearch();
   try{ localStorage.setItem(ALERTS_KEY, on ? "1" : "0"); }catch(e){}
 }
 $("alertsToggle").addEventListener("click", () => {
   applyAlertsCollapsed(!$("alerts").classList.contains("collapsed"));
 });
+
+/* ---------------- Needs attention: search ----------------
+   The lens shows only while the panel is open. It filters the rows that
+   are already loaded — it sends nothing. */
+function openAlertSearch(){
+  const box = $("alertsSearch");
+  box.hidden = false;
+  box.classList.remove("open"); void box.offsetWidth; box.classList.add("open");
+  $("alertsFindBtn").classList.add("on");
+  $("alertsFindBtn").setAttribute("aria-expanded", "true");
+  setTimeout(() => $("alertsQuery").focus(), 30);
+}
+function closeAlertSearch(){
+  $("alertsSearch").hidden = true;
+  $("alertsSearch").classList.remove("open");
+  $("alertsFindBtn").classList.remove("on");
+  $("alertsFindBtn").setAttribute("aria-expanded", "false");
+  if($("alertsQuery").value){ $("alertsQuery").value = ""; paintAlerts(); }
+}
+$("alertsFindBtn").addEventListener("click", () => {
+  if($("alertsSearch").hidden) openAlertSearch(); else closeAlertSearch();
+});
+$("alertsQuery").addEventListener("input", paintAlerts);
+$("alertsQuery").addEventListener("keydown", (e) => {
+  if(e.key === "Escape"){ e.stopPropagation(); closeAlertSearch(); $("alertsFindBtn").focus(); }
+});
+$("alertsClear").addEventListener("click", () => { closeAlertSearch(); $("alertsFindBtn").focus(); });
+
 try{ if(localStorage.getItem(ALERTS_KEY) === "1") applyAlertsCollapsed(true); }catch(e){}
 
 /* ---------------- Lock ---------------- */
@@ -2030,17 +2206,51 @@ function isUnlocked(){
   // Stage 4: a Supabase admin sign-in, not a password typed into this page.
   return mqAdminSignedIn();
 }
-function unlock(){
+function unlock(fromLogin){
   try{ setWorkspace(sessionStorage.getItem(WS_KEY) || "individual"); }catch(e){ setWorkspace("individual"); }
   try{ sessionStorage.setItem(SESSION_KEY, String(Date.now())); }catch(e){}
-  $("lockScreen").style.display = "none";
-  $("adminView").classList.add("show");
   loadClasses();
+  enterAdmin(!!fromLogin);
 }
+/* Sign-in and the admin share one screen: the card lifts away, then the
+   admin's parts arrive one after another (.enter in admin.v2.css). */
+function enterAdmin(fromLogin){
+  const lockEl = $("lockScreen"), view = $("adminView");
+  const show = () => {
+    lockEl.style.display = "none";
+    lockEl.classList.remove("leaving");
+    view.classList.add("show");
+    playEntrance();
+  };
+  if(fromLogin && motionOK()){
+    // Wait for the card to finish lifting away (a timer is only the
+    // fallback), so it never vanishes half-faded.
+    let shown = false;
+    const go = () => { if(!shown){ shown = true; show(); } };
+    lockEl.addEventListener("animationend", function done(e){
+      if(e.target === lockEl && e.animationName === "lockOut"){ lockEl.removeEventListener("animationend", done); go(); }
+    });
+    lockEl.classList.add("leaving");
+    setTimeout(go, 700);
+  } else show();
+}
+function playEntrance(){
+  if(!motionOK()) return;
+  document.querySelectorAll("#adminView [data-enter]").forEach(el => {
+    if(!el.getClientRects().length) return;      // not on screen yet: it animates when it appears
+    el.classList.remove("enter"); void el.offsetWidth; el.classList.add("enter");
+  });
+}
+document.addEventListener("animationend", (e) => {
+  if(e.animationName === "enterRise" || e.animationName === "enterDown") e.target.classList.remove("enter");
+});
 function lock(){
+  closeMenu(false);
   mqAdminSignOut();
   try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  batchesTried = false;
   $("adminView").classList.remove("show");
+  $("lockScreen").classList.remove("leaving");
   $("lockScreen").style.display = "";
   $("lockInput").value = "";
   setTimeout(()=>$("lockEmail").focus(), 100);
@@ -2053,9 +2263,16 @@ async function tryPassword(){
   btn.disabled = true; btn.textContent = "Signing in…";
   $("lockError").innerHTML = "&nbsp;";
   const r = await mqAdminSignIn(email, pw);
-  btn.disabled = false; btn.textContent = "Sign in";
-  if(r.ok){ $("lockInput").value = ""; unlock(); }
+  btn.disabled = false;
+  if(r.ok){
+    $("lockInput").value = "";
+    btn.textContent = "Signed in";
+    btn.classList.add("ok");
+    setTimeout(() => { btn.textContent = "Sign in"; btn.classList.remove("ok"); }, 900);
+    unlock(true);
+  }
   else{
+    btn.textContent = "Sign in";
     $("lockInput").classList.add("wrong");
     $("lockError").textContent = r.error || "Could not sign in.";
     setTimeout(()=>$("lockInput").classList.remove("wrong"), 400);
@@ -2068,11 +2285,9 @@ $("lockEmail").addEventListener("keydown", e=>{ if(e.key==="Enter") $("lockInput
 /* Stage 4: an expired sign-in brings the sign-in screen back. */
 window.MQ_ON_SIGNED_OUT = function(){ if(typeof lock === "function") lock(); else location.reload(); };
 $("lockAgainBtn").onclick = lock;
-if(isUnlocked()){
-  $("lockScreen").style.display = "none";
-  $("adminView").classList.add("show");
-  loadClasses();
-}
+// Already signed in on this device: straight in, same entrance, and back
+// to the workspace that was open.
+if(isUnlocked()) unlock(false);
 
 /* ---------------- Load ---------------- */
 async function loadClasses(){
@@ -2090,6 +2305,11 @@ async function loadClasses(){
     updateStats();
     renderAlerts();
     applyView();
+    revealRows($("listContent"));
+    updateLiveDot();
+    // The batch side loads once in the background, so its count, the Live
+    // dot and a switch to Batch are ready without a wait.
+    if(!batchesTried){ batchesTried = true; loadBatches(); }
   }catch(err){
     console.error(err);
     $("listContent").innerHTML = `<div class="empty-state">Failed to load class sheets.<br><br>
@@ -2113,48 +2333,71 @@ function renderAlerts(){
     return x.a.left - y.a.left;
   });
 
-  if(!rows.length){ $("alerts").classList.remove("show"); return; }
+  alertItems = rows;
+  const box = $("alerts");
+  if(!rows.length){ closeAlertSearch(); box.classList.remove("show"); return; }
 
   $("alertCount").textContent = rows.length;
-  $("alertRows").innerHTML = rows.map(({c, a}) => {
+  paintAlerts();
+
+  // Appearing for the first time while the admin is on screen: it arrives
+  // the way the rest of the page did.
+  if(!box.classList.contains("show") && motionOK() &&
+     $("adminView").classList.contains("show") && !$("wsIndividual").hidden){
+    box.classList.remove("enter"); void box.offsetWidth; box.classList.add("enter");
+  }
+  box.classList.add("show");
+}
+
+function paintAlerts(){
+  const q = ($("alertsQuery").value || "").trim().toLowerCase();
+  const list = !q ? alertItems : alertItems.filter(({ c, a }) =>
+    [c["Student Name"], c["Student ID"], c["Course"], a.cal ? a.cal.name : ""].join(" ").toLowerCase().includes(q));
+
+  $("alertsMatch").textContent = q ? `${list.length} of ${alertItems.length}` : "";
+
+  if(!list.length){
+    $("alertRows").innerHTML = q ? `<div class="alerts-none">No one here matches “${escapeHtml(q)}”.</div>` : "";
+    return;
+  }
+
+  $("alertRows").innerHTML = list.map(({ c, a }) => {
     const phone = digits(c["Phone"]);
-    const sub = a.kind === 'ending'
-      ? `<b>${escapeHtml(a.cal.name)}</b> · ${a.left === 0 ? 'no classes left' : a.left + (a.left === 1 ? ' class left' : ' classes left')} · ends ${fmtDate(endDate(a.cal))}`
-      : `No calendar plan running`;
+    const name  = c["Student Name"] || "—";
+    const left  = a.kind === 'ending'
+      ? (a.left === 0 ? 'No classes left' : a.left + (a.left === 1 ? ' class left' : ' classes left'))
+      : '';
+    const meta  = [a.kind === 'ending' ? a.cal.name : '', c["Student ID"], c["Course"] || '—'].filter(Boolean);
 
     return `<div class="alert-row">
       <div class="alert-info">
-        <div class="alert-name">${escapeHtml(c["Student Name"])}
-          <span class="tag ${a.kind}">${a.kind === 'ending' ? 'Ending soon' : 'No plan'}</span>
-        </div>
-        <div class="alert-sub">${escapeHtml(c["Student ID"])} · ${escapeHtml(c["Course"] || '—')} — ${sub}</div>
+        <div class="alert-name"><span>${escapeHtml(name)}</span><span class="tag ${a.kind}">${a.kind === 'ending' ? 'Ending soon' : 'No plan'}</span></div>
+        <div class="alert-sub">${a.kind === 'ending'
+          ? `<b>${escapeHtml(left)}</b> · ends ${escapeHtml(fmtDate(endDate(a.cal)))}`
+          : 'No calendar plan running'}</div>
+        <div class="alert-meta">${meta.map(escapeHtml).join(' · ')}</div>
       </div>
       <div class="alert-btns">
         ${phone
-          ? `<button class="btn-wa-sm" data-wa="${escapeHtml(c["Class ID"])}">
-               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/></svg>
-               Message
-             </button>`
-          : `<span class="btn-wa-sm off" title="Add a contact number to this class sheet">No number</span>`}
-        <button data-cal="${escapeHtml(c["Class ID"])}" style="background:transparent;border:1px solid rgba(201,169,110,0.3);color:var(--gold-light);padding:8px 14px;border-radius:100px;cursor:pointer;font-size:10.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;font-family:'Manrope',sans-serif">Calendars</button>
+          ? `<button class="ib ib-wa" data-wa="${escapeHtml(c["Class ID"])}" data-tip="WhatsApp" aria-label="Message ${escapeHtml(name)} on WhatsApp">${WA_ICON}</button>`
+          : `<span class="ib ib-wa off" role="img" data-tip="No number saved" aria-label="No contact number saved">${WA_ICON}</span>`}
+        <button class="ib ib-cal" data-cal="${escapeHtml(c["Class ID"])}" data-tip="Calendars" aria-label="Calendars for ${escapeHtml(name)}">${ic('cal')}</button>
       </div>
     </div>`;
   }).join('');
-
-  $("alertRows").querySelectorAll('[data-wa]').forEach(b => {
-    b.addEventListener('click', () => {
-      const c = classes.find(x => x["Class ID"] === b.dataset.wa);
-      if(c) messageStudent(c);
-    });
-  });
-  $("alertRows").querySelectorAll('[data-cal]').forEach(b => {
-    b.addEventListener('click', () => {
-      window.location.href = "calendars.html?id=" + encodeURIComponent(b.dataset.cal);
-    });
-  });
-
-  $("alerts").classList.add("show");
 }
+
+// One listener for the panel, so re-drawing the rows never loses it.
+$("alertRows").addEventListener("click", (e) => {
+  const wa = e.target.closest("[data-wa]");
+  if(wa){
+    const c = classes.find(x => x["Class ID"] === wa.dataset.wa);
+    if(c) messageStudent(c);
+    return;
+  }
+  const cal = e.target.closest("[data-cal]");
+  if(cal) window.location.href = "calendars.html?id=" + encodeURIComponent(cal.dataset.cal);
+});
 
 /* Opens a 1-to-1 WhatsApp chat with the student.
    The number lives only in the admin sheet — it is never sent to the share
@@ -2189,10 +2432,13 @@ function digits(v){
 
 /* ---------------- Stats ---------------- */
 function updateStats(){
-  $("wsCountIndividual").textContent = classes.length;
-  $("statTotal").textContent = classes.length;
-  $("statActive").textContent = classes.filter(c => c["Status"] === "Active").length;
+  const total  = classes.length;
+  const active = classes.filter(c => c["Status"] === "Active").length;
+  $("wsCountIndividual").textContent = total;
+  $("statTotal").textContent = total;
+  $("statActive").textContent = active;
   $("statInactive").textContent = classes.filter(c => c["Status"] !== "Active").length;
+  $("statFill").style.setProperty("--p", total ? (active / total).toFixed(3) : "0");
 }
 
 /* ---------------- Filters ---------------- */
@@ -2271,6 +2517,7 @@ function applyView(){
 
   renderList(list);
   $("resultCount").textContent = `Showing ${list.length} of ${classes.length}`;
+  updateFilterCount();
 }
 
 /* ---------------- List ---------------- */
@@ -2288,7 +2535,7 @@ function needsHifzLink(c){
 function renderList(items){
   if(!classes.length){
     $("listContent").innerHTML = `<div class="empty-state">
-      No class sheets yet.<br>Click <b style="color:var(--gold-light)">New Class Sheet</b> to create the first one.
+      No class sheets yet.<br>Use the <b style="color:var(--gold-light)">+</b> button beside the switch to create the first one.
     </div>`;
     return;
   }
@@ -2297,16 +2544,16 @@ function renderList(items){
     return;
   }
 
-  const rows = items.map(c => {
+  const rows = items.map((c, i) => {
     const isActive = (c["Status"] || "Active") === "Active";
-    return `<tr>
+    return `<tr${i < 14 ? ` class="rv" style="--r:${i}"` : ''}>
       <td data-label="Student">${escapeHtml(c["Student Name"] || "—")}${needsHifzLink(c) ? '<span class="row-note" title="Paste their link from the Hifz Command Center in Edit">No Hifz link</span>' : ''}</td>
       <td class="sid" data-label="Student ID">${escapeHtml(c["Student ID"] || "—")}</td>
       <td data-label="Course">${escapeHtml(c["Course"] || "—")}</td>
       <td class="date" data-label="Joined">${fmtDate(c["Join Date"])}</td>
       <td data-label="Status"><span class="pill ${isActive ? 'active':'inactive'}">${isActive ? 'Active':'Inactive'}</span></td>
       <td class="actions">
-        <button data-act="time"  data-id="${escapeHtml(c["Class ID"])}" class="ib ib-time ${c["Class Time"] ? 'has-time' : 'no-time'}" data-tip="${c["Class Time"] ? 'Change time' : 'Set time'}" aria-label="${c["Class Time"] ? 'Class time ' + escapeHtml(formatTime(c["Class Time"])) : 'Set class time'}">${ic('time')}${c["Class Time"] ? '<span class="tval">' + escapeHtml(formatTime(c["Class Time"])) + '</span>' : ''}</button>
+        <button data-act="time"  data-id="${escapeHtml(c["Class ID"])}" class="ib ib-time ${c["Class Time"] ? 'has-time' : 'no-time'}" data-tip="${c["Class Time"] ? 'Change time' : 'Set time'}" aria-label="${c["Class Time"] ? 'Class time ' + escapeHtml(formatTime(c["Class Time"])) : 'Set class time'}">${ic('time')}${c["Class Time"] ? '<span class="tlbl">Class time</span><span class="tval">' + escapeHtml(formatTime(c["Class Time"])) + '</span>' : '<span class="tlbl">Set class time</span>'}</button>
         <button data-act="cal"   data-id="${escapeHtml(c["Class ID"])}" class="ib ib-cal" data-tip="Calendars" aria-label="Calendars">${ic('cal')}</button>
         <button data-act="open"  data-id="${escapeHtml(c["Class ID"])}" class="ib ib-open" data-tip="Open sheet" aria-label="Open sheet">${ic('open')}</button>
         <button data-act="share" data-id="${escapeHtml(c["Class ID"])}" class="ib ib-share" data-tip="Share link" aria-label="Share link">${ic('share')}</button>
@@ -2640,24 +2887,205 @@ $("confirmOkBtn").onclick = async () => {
   if(fn) await fn();
 };
 
-/* ---------------- Modal helpers ---------------- */
+/* ---------------- Modal helpers ----------------
+   A modal opened from inside another (Set time from Live, Study material
+   from a form) is raised above it. Before, every modal sat on the same
+   level, so one earlier in the page opened BEHIND an open one — which is
+   why Set time from Live looked like it did nothing. */
 function openModal(id){
-  $(id).classList.add("show");
+  const el = $(id);
+  clearTimeout(modalCloseTimers[id]);
+  el.classList.remove("closing");
+  el.style.zIndex = "";
+  const own = parseInt(getComputedStyle(el).zIndex, 10) || 100;
+  let top = 0;
+  document.querySelectorAll(".modal-backdrop.show").forEach(m => {
+    if(m !== el) top = Math.max(top, parseInt(getComputedStyle(m).zIndex, 10) || 0);
+  });
+  if(top >= own) el.style.zIndex = String(top + 1);
+  el.classList.add("show");
   document.body.style.overflow = "hidden";
 }
 function closeModal(id){
-  $(id).classList.remove("show");
-  if(!document.querySelector(".modal-backdrop.show")) document.body.style.overflow = "";
+  const el = $(id);
+  if(id === "liveModal") clearInterval(liveTimer);
+  const finish = () => {
+    el.classList.remove("show", "closing");
+    el.style.zIndex = "";
+    const panel = el.querySelector(".modal");
+    if(panel) panel.style.removeProperty("--drag");
+    if(!document.querySelector(".modal-backdrop.show")) document.body.style.overflow = "";
+  };
+  // The Live sheet slides away; every other modal closes at once, as before.
+  if(el.classList.contains("show") && el.classList.contains("sheet-backdrop") && motionOK()){
+    if(el.classList.contains("closing")) return;
+    el.classList.add("closing");
+    modalCloseTimers[id] = setTimeout(finish, 250);
+  } else {
+    clearTimeout(modalCloseTimers[id]);
+    finish();
+  }
+}
+// The modal on top: highest level, and on a tie the later one (it paints last).
+function topModal(){
+  let top = null, z = -1;
+  document.querySelectorAll(".modal-backdrop.show:not(.closing)").forEach(m => {
+    const zi = parseInt(getComputedStyle(m).zIndex, 10) || 0;
+    if(zi >= z){ z = zi; top = m; }
+  });
+  return top;
 }
 document.querySelectorAll(".modal-backdrop").forEach(m => {
   m.addEventListener("click", e => { if(e.target === m) closeModal(m.id); });
 });
 document.addEventListener("keydown", e => {
-  if(e.key === "Escape"){
-    const open = document.querySelector(".modal-backdrop.show");
-    if(open) closeModal(open.id);
-  }
+  if(e.key !== "Escape") return;
+  if(menuIsOpen()){ closeMenu(true); return; }
+  const open = topModal();
+  if(open) closeModal(open.id);
 });
+
+/* ---------------- Menu ----------------
+   Times, Notices, Courses, Refresh and Sign out live here, so the top bar
+   holds only what is used all day: Live and this button. */
+function menuIsOpen(){ return $("menuSheet").classList.contains("open"); }
+function openMenu(){
+  const sheet = $("menuSheet"), r = $("menuBtn").getBoundingClientRect();
+  sheet.style.setProperty("--menu-top", Math.round(r.bottom + 10) + "px");
+  sheet.style.setProperty("--menu-right", Math.max(12, Math.round(window.innerWidth - r.right)) + "px");
+  $("menuWho").textContent = (typeof mqAdminEmail === "function" && mqAdminEmail()) || "—";
+  sheet.inert = false;
+  sheet.classList.add("open");
+  $("menuScrim").classList.add("open");
+  $("menuBtn").setAttribute("aria-expanded", "true");
+  document.body.style.overflow = "hidden";
+  setTimeout(() => {
+    const first = sheet.querySelector(".menu-item");
+    if(first && menuIsOpen()) first.focus({ preventScroll: true });
+  }, 80);
+}
+function closeMenu(returnFocus){
+  const sheet = $("menuSheet");
+  if(!sheet.classList.contains("open")) return;
+  sheet.classList.remove("open");
+  $("menuScrim").classList.remove("open");
+  $("menuBtn").setAttribute("aria-expanded", "false");
+  sheet.inert = true;
+  if(!document.querySelector(".modal-backdrop.show")) document.body.style.overflow = "";
+  if(returnFocus) $("menuBtn").focus({ preventScroll: true });
+}
+$("menuBtn").addEventListener("click", () => menuIsOpen() ? closeMenu(true) : openMenu());
+$("menuScrim").addEventListener("click", () => closeMenu(false));
+// Choosing an item closes the menu; the item's own handler does the rest.
+$("menuSheet").addEventListener("click", (e) => { if(e.target.closest(".menu-item")) closeMenu(false); });
+$("menuSheet").addEventListener("keydown", (e) => {
+  if(e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+  e.preventDefault();
+  const items = [...$("menuSheet").querySelectorAll(".menu-item")];
+  const i = items.indexOf(document.activeElement);
+  items[e.key === "ArrowDown" ? (i + 1) % items.length : (i - 1 + items.length) % items.length].focus();
+});
+(function(){
+  // A phone's address bar resizes the page as it scrolls; only a real
+  // change of width (rotation, a resized window) closes the menu.
+  let w = window.innerWidth;
+  window.addEventListener("resize", () => { if(window.innerWidth !== w){ w = window.innerWidth; closeMenu(false); } });
+})();
+
+/* ---------------- Filters tray ---------------- */
+function updateFilterCount(){
+  const n = ["filterCourse","filterStatus","filterMonth","filterYear"].filter(id => $(id).value !== "").length;
+  $("filterCount").textContent = n;
+  $("filterCount").hidden = (n === 0);
+  $("filterToggle").setAttribute("aria-label", n ? `Filters and sort, ${n} on` : "Filters and sort");
+}
+$("filterToggle").addEventListener("click", () => {
+  const open = !$("filtersWrap").classList.contains("open");
+  $("filtersWrap").classList.toggle("open", open);
+  $("filtersInner").inert = !open;
+  $("filterToggle").setAttribute("aria-expanded", open ? "true" : "false");
+});
+
+/* The first rows of a freshly loaded list arrive one after another. */
+function revealRows(box){
+  if(!box || !motionOK()) return;
+  box.classList.remove("rows-in"); void box.offsetWidth; box.classList.add("rows-in");
+  clearTimeout(box._revealTimer);
+  box._revealTimer = setTimeout(() => box.classList.remove("rows-in"), 1400);
+}
+
+/* ---------------- Touch ----------------
+   A ring opens from the exact point a finger lands on anything that can
+   be tapped. Feedback only: it never blocks or delays the tap. */
+(function(){
+  const TAPPABLE = "button, a[href], [role='tab'], .list-table tbody tr, select, .subj-chip, .sm-chk, .ntc-target, .times-toggle";
+  let rings = 0;
+  document.addEventListener("pointerdown", (e) => {
+    if(!motionOK() || rings > 4 || (e.button && e.button !== 0)) return;
+    if(e.target.closest("input, textarea")) return;
+    const t = e.target.closest(TAPPABLE);
+    if(!t || t.disabled) return;
+    const ring = document.createElement("span");
+    ring.className = "tap-ring";
+    ring.style.setProperty("--x", e.clientX + "px");
+    ring.style.setProperty("--y", e.clientY + "px");
+    document.body.appendChild(ring);
+    rings++;
+    const done = () => { if(ring.isConnected){ ring.remove(); rings--; } };
+    ring.addEventListener("animationend", done);
+    setTimeout(done, 900);
+  }, { capture: true, passive: true });
+})();
+
+/* ---------------- Bottom sheets: pull down to close ----------------
+   Phone only. The grab bar and the heading can be pulled down; past a
+   short distance the sheet lets go and closes from where the finger left
+   it, otherwise it settles back. */
+function sheetDrag(handles, panel, onClose){
+  if(!panel) return;
+  const phone = window.matchMedia("(max-width:640px)");
+  let y0 = null, dy = 0, pid = null;
+  const end = (e) => {
+    if(y0 === null || (e && e.pointerId !== pid)) return;
+    y0 = null;
+    panel.classList.remove("dragging");
+    if(dy > 90){
+      panel.style.setProperty("--drag", dy + "px");
+      panel.style.transform = "";
+      onClose();
+    } else {
+      panel.style.transition = "transform .45s var(--ease)";
+      panel.style.transform = "";
+      setTimeout(() => { panel.style.transition = ""; }, 460);
+    }
+    dy = 0;
+  };
+  handles.forEach(h => {
+    if(!h) return;
+    h.addEventListener("pointerdown", (e) => {
+      if(!phone.matches || (e.button && e.button !== 0) || e.target.closest("button, a, input, select")) return;
+      y0 = e.clientY; dy = 0; pid = e.pointerId;
+      try{ h.setPointerCapture(pid); }catch(err){}
+      panel.classList.add("dragging");
+    });
+    h.addEventListener("pointermove", (e) => {
+      if(y0 === null || e.pointerId !== pid) return;
+      dy = Math.max(0, e.clientY - y0);
+      panel.style.transform = "translate3d(0," + dy + "px,0)";
+    });
+    h.addEventListener("pointerup", end);
+    h.addEventListener("pointercancel", end);
+  });
+}
+sheetDrag([document.querySelector("#liveModal .sheet-grab"), document.querySelector("#liveModal .live-head")],
+          document.querySelector("#liveModal .live-sheet"),
+          () => closeModal("liveModal"));
+sheetDrag([document.querySelector("#menuSheet .menu-grab"), document.querySelector("#menuSheet .menu-who")],
+          $("menuSheet"),
+          () => closeMenu(false));
+
+// Classes start and finish while the page sits open; the Live dot follows.
+setInterval(() => { if($("adminView").classList.contains("show")) updateLiveDot(); }, 60000);
 
 /* ---------------- Toast ---------------- */
 let toastTimer = null;
