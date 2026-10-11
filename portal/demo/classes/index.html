@@ -191,6 +191,13 @@
           <label>WhatsApp group <span class="opt">optional</span></label>
           <input type="url" id="bWhatsapp" placeholder="https://chat.whatsapp.com/…" autocomplete="off" />
         </div>
+        <div class="field">
+          <label>Study material <span class="opt">optional — every student on the batch sees it</span></label>
+          <div class="sm-summary">
+            <span id="bSmSummaryText">No study material selected</span>
+            <button type="button" class="btn-outline sm-summary-btn" id="bSmOpenBtn">Add Study Material</button>
+          </div>
+        </div>
         <div class="field-row">
           <div class="field">
             <label>Class time · IST</label>
@@ -263,12 +270,12 @@
 
         <div class="r-ticksbar">
           <span id="rPaidCount">—</span>
-          <button class="btn-solid sm" id="rSaveAccess">Save ticks</button>
+          <span class="r-add-note">Ticks save as you tap them.</span>
         </div>
         <div id="rList"><div class="loading"><div class="loading-spin"></div><div>Loading roster…</div></div></div>
 
         <div class="r-add">
-          <div class="r-add-title">Add a student</div>
+          <div class="r-add-title" id="rAddTitle">Add a student</div>
           <div class="r-add-grid">
             <input type="text" id="rName" placeholder="Full name" autocomplete="off" />
             <input type="text" id="rSid" placeholder="Student ID" autocomplete="off" />
@@ -277,7 +284,8 @@
             <input type="text" id="rMqId" placeholder="MQ ID (optional)" autocomplete="off" />
           </div>
           <div class="r-add-actions">
-            <span class="r-add-note">The student signs in with this email and date of birth.</span>
+            <span class="r-add-note" id="rAddNote">The student signs in with this email and date of birth.</span>
+            <button class="btn-outline sm" id="rCancelEdit" hidden>Cancel</button>
             <button class="btn-solid sm" id="rAddBtn">Add</button>
           </div>
         </div>
@@ -856,7 +864,7 @@ $("crsList").addEventListener("click", async (e) => {
   const course = courses.find(c => c.courseId === id);
   if(!course) return;
 
-  const act = e.target.dataset.act;
+  const act = (e.target.closest("[data-act]") || { dataset: {} }).dataset.act;
   const subs = [...row.querySelectorAll(".crs-sub")].map(x => x.childNodes[0].nodeValue.trim());
 
   if(act === "delsub"){
@@ -1165,7 +1173,7 @@ $("nList").addEventListener("click", async (e) => {
   if(!row) return;
   const n = notices.find(x => x.noticeId === row.dataset.id);
   if(!n) return;
-  const act = e.target.dataset.act;
+  const act = (e.target.closest("[data-act]") || { dataset: {} }).dataset.act;
 
   if(act === "edit"){
     nFillForm(n);
@@ -1307,6 +1315,7 @@ function openBatchForm(b){
   $("bGrace").value = b ? b.graceDays : 5;
   $("bTime").value = b ? (b.classTime || "") : "";
   $("bStatus").value = b ? b.status : "Active";
+  smBuild(smParse(b ? (b.studyMaterial || "") : ""));   // the picker is shared with the class form
   document.querySelectorAll("#batchModal .field").forEach(f => f.classList.remove("invalid"));
   openModal("batchModal");
 }
@@ -1316,6 +1325,7 @@ $("newBatchBtn").addEventListener("click", async () => {
   openBatchForm(null);
 });
 $("bCancelBtn").addEventListener("click", () => closeModal("batchModal"));
+$("bSmOpenBtn").addEventListener("click", () => openModal("smModal"));
 $("bCourse").addEventListener("change", () => bBuildSubjects([]));
 
 $("bSaveBtn").addEventListener("click", async () => {
@@ -1332,7 +1342,8 @@ $("bSaveBtn").addEventListener("click", async () => {
     whatsapp: $("bWhatsapp").value.trim(),
     graceDays: $("bGrace").value,
     classTime: $("bTime").value,
-    status: $("bStatus").value
+    status: $("bStatus").value,
+    studyMaterial: smStringify(smCollect())
   });
   if(out.result !== "success") return toast(out.error || "Could not save the batch", true);
 
@@ -1347,7 +1358,7 @@ $("bList").addEventListener("click", async (e) => {
   if(!card) return;
   const b = batches.find(x => x.batchId === card.dataset.id);
   if(!b) return;
-  const act = e.target.dataset.act;
+  const act = (e.target.closest("[data-act]") || { dataset: {} }).dataset.act;
 
   if(act === "roster") return openRoster(b.batchId);
   if(act === "btime")  return openTimeModal(b.batchId, "batch");
@@ -1391,6 +1402,7 @@ function thisMonth(){
 }
 
 async function openRoster(batchId){
+  rResetForm();          // always start with an empty "Add a student" box
   rosterBatch = batchId;
   openModal("rosterModal");
   await loadRoster();
@@ -1437,6 +1449,7 @@ function renderRoster(){
         <span class="r-flag${st.devices >= 2 ? ' full' : ''}">${st.devices}/2 devices</span>
       </div>
       <div class="r-btns">
+        <button class="btn-ghost sm" data-act="edit">Edit</button>
         <button class="btn-ghost sm" data-act="devices">Reset devices</button>
         <button class="btn-ghost sm danger" data-act="remove">Remove</button>
       </div>
@@ -1478,29 +1491,43 @@ $("rCloseBtn").addEventListener("click", async () => {
    written until Save dates. */
 
 
-$("rSaveAccess").addEventListener("click", async () => {
-  if(!rosterData) return;
-  const entries = [...$("rList").querySelectorAll(".r-row")].map(row => ({
-    studentId: row.dataset.sid,
-    allowed: row.querySelector(".r-allow").checked
-  }));
-  const out = await postBatch({
-    action: "setAccess",
-    batchId: rosterBatch,
-    entries: entries
-  });
-  if(out.result !== "success") return toast(out.error || "Could not save", true);
-  await loadRoster();
-  const paid = entries.filter(e => e.allowed).length;
-  toast(`Saved — ${paid} of ${entries.length} can open the batch`);
+/* A tick saves the moment it is tapped — there is no separate Save
+   button to forget before pressing Done. If the save fails, the box
+   goes back to what the server holds. */
+$("rList").addEventListener("change", async (e) => {
+  const box = e.target.closest(".r-allow");
+  if(!box) return;
+  const row = box.closest(".r-row");
+  const allowed = box.checked;
+  box.disabled = true;
+  updatePaidCount();
+  let out;
+  try{
+    out = await postBatch({ action: "setAccess", batchId: rosterBatch,
+                            entries: [{ studentId: row.dataset.sid, allowed: allowed }] });
+  }catch(err){ out = { result: "error", error: "Could not reach the server" }; }
+  box.disabled = false;
+  if(out.result !== "success"){
+    box.checked = !allowed;
+    updatePaidCount();
+    return toast(out.error || "Could not save that tick", true);
+  }
+  const st = rosterData && rosterData.roster.find(x => String(x.studentId) === row.dataset.sid);
+  if(st) st.allowed = allowed;
+  toast(allowed ? "Marked paid" : "Marked unpaid");
 });
 
 $("rList").addEventListener("click", async (e) => {
   const row = e.target.closest(".r-row");
   if(!row) return;
   const sid = row.dataset.sid;
-  const act = e.target.dataset.act;
+  const act = (e.target.closest("[data-act]") || { dataset: {} }).dataset.act;
 
+  if(act === "edit"){
+    const st = rosterData.roster.find(x => String(x.studentId) === sid);
+    if(st) rStartEdit(st);
+    return;
+  }
   if(act === "devices"){
     const out = await postBatch({ action: "resetDevices", batchId: rosterBatch, studentId: sid });
     if(out.result !== "success") return toast(out.error || "Could not reset", true);
@@ -1521,25 +1548,68 @@ $("rList").addEventListener("click", async (e) => {
   }
 });
 
+/* The same box adds a student or edits one. The admin only ever sees a
+   masked email and date of birth, so when editing those two may be left
+   blank — blank means "keep what is stored". */
+let rosterEditing = null;     // Student ID being edited, or null
+
+function rResetForm(){
+  rosterEditing = null;
+  ["rName","rSid","rEmail","rDob","rMqId"].forEach(id => $(id).value = "");
+  $("rAddTitle").textContent = "Add a student";
+  $("rAddNote").textContent = "The student signs in with this email and date of birth.";
+  $("rEmail").placeholder = "Email for sign-in";
+  $("rAddBtn").textContent = "Add";
+  $("rCancelEdit").hidden = true;
+}
+
+function rStartEdit(st){
+  rosterEditing = String(st.studentId);
+  $("rName").value = st.studentName || "";
+  $("rSid").value  = st.studentId || "";
+  $("rMqId").value = st.mqId || "";
+  $("rEmail").value = ""; $("rDob").value = "";
+  $("rEmail").placeholder = "New email (blank = keep " + (st.email || "current") + ")";
+  $("rAddTitle").textContent = "Edit " + (st.studentName || "student");
+  $("rAddNote").textContent = "Leave email and date of birth empty to keep the current ones.";
+  $("rAddBtn").textContent = "Save changes";
+  $("rCancelEdit").hidden = false;
+  $("rName").scrollIntoView({ behavior: "smooth", block: "center" });
+  setTimeout(() => $("rName").focus(), 250);
+}
+$("rCancelEdit").addEventListener("click", rResetForm);
+
 $("rAddBtn").addEventListener("click", async () => {
-  const name = $("rName").value.trim();
+  const name  = $("rName").value.trim();
   const sid   = $("rSid").value.trim();
   const email = $("rEmail").value.trim();
   const dob   = $("rDob").value;
-  if(!name || !sid || !email || !dob) return toast("Name, ID, email and date of birth are all needed", true);
+  const editing = rosterEditing;
+  if(editing){
+    if(!name || !sid) return toast("Name and Student ID are needed", true);
+  } else if(!name || !sid || !email || !dob){
+    return toast("Name, ID, email and date of birth are all needed", true);
+  }
 
-  const out = await postBatch({
+  const body = {
     action: "saveRosterStudent",
     batchId: rosterBatch,
     studentId: sid, studentName: name, email: email, dob: dob,
     mqId: ($("rMqId").value || "").trim()
-  });
-  if(out.result !== "success") return toast(out.error || "Could not add the student", true);
+  };
+  if(editing) body.originalStudentId = editing;
 
-  ["rName","rSid","rEmail","rDob","rMqId"].forEach(id => $(id).value = "");
+  const btn = $("rAddBtn"); btn.disabled = true;
+  let out;
+  try{ out = await postBatch(body); }catch(err){ out = { result: "error", error: "Could not reach the server" }; }
+  btn.disabled = false;
+  if(out.result !== "success") return toast(out.error || (editing ? "Could not save the changes" : "Could not add the student"), true);
+
+  rResetForm();
   await loadRoster();
-  toast("Student added — they still need a paid tick for this month");
+  toast(editing ? "Student updated" : "Student added — tick Paid when their fee is in");
 });
+
 
 
 /* ---------------- Teacher link ----------------
@@ -1773,7 +1843,8 @@ $("liveRefresh").addEventListener("click", async () => { await loadClasses(); aw
 $("liveCloseBtn").addEventListener("click", () => { clearInterval(liveTimer); closeModal("liveModal"); });
 
 $("liveList").addEventListener("click", (e) => {
-  if(e.target.dataset.act !== "livetime") return;
+  const lt = e.target.closest("[data-act]");
+  if(!lt || lt.dataset.act !== "livetime") return;
   const row = e.target.closest(".live-row");
   if(row) promptClassTime(row.dataset.id, row.dataset.kind);
 });
@@ -2352,7 +2423,9 @@ function smSummaryLabel(){
   return list.length + " courses selected";
 }
 function updateSmSummary(){
-  $("fSmSummaryText").textContent = smSummaryLabel();
+  const label = smSummaryLabel();
+  $("fSmSummaryText").textContent = label;
+  if($("bSmSummaryText")) $("bSmSummaryText").textContent = label;   // batch form shares the picker
 }
 
 /* Read the picker back out */
