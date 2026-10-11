@@ -1,5 +1,7 @@
 "use strict";
-/* Academic Service — ws-attendance.v1.js. The attendance sheet for individual classes (Individual workspace → Attendance).
+/* Academic Service — ws-attendance.v2.js. v2: shared by Academic Service and the class-admin link (/portal/attendance/):
+   who marked (ATT_ACTOR), other devices' marks pulled in every minute, Admin links manager (office only).
+   The attendance sheet for individual classes (Individual workspace → Attendance).
    Every mark is saved straight into the class log (mq_classes) that fees and teacher pay already read:
      one record per class plan per day, with the fixed ID plan + date (DataService.classKey).
    Batch classes are not here — their teachers mark them on the teacher link. */
@@ -10,9 +12,16 @@
   if (manage && !manage[1].some(x => x[0] === "iAtt")) manage[1].unshift(["iAtt", "▦", "Attendance", "Attendance"]);
   PAGE_WS.iAtt = "ind";
   PAGE_SUB.iAtt = "Mark each class day. Marks go straight into the class log — fees, reconciliation and teacher pay read them.";
-  HEAD_ACTS.iAtt = '<button class="btn" data-act="holidays">Holidays</button>' +
-                   '<button class="btn" data-act="att-full">Full view</button>';
+  HEAD_ACTS.iAtt = window.MQ_ADMIN
+    ? '<button class="btn" data-act="att-full">Full view</button>'
+    : '<button class="btn" data-act="att-admins">Admin links</button>' +
+      '<button class="btn" data-act="holidays">Holidays</button>' +
+      '<button class="btn" data-act="att-full">Full view</button>';
 })();
+/* who is marking: the office, or the admin whose link opened the page (set by att-admin.vN.js) */
+function attActor(){ return window.ATT_ACTOR || { name: Settings().markerName || "Academic Service", via: "academic-service" }; }
+/* the admin page adds its own buttons through these */
+const ATT_HOOKS = { toolbar: () => "", rowButtons: () => "" };
 
 State.iatt = { view: "", date: today(), teacher: "", q: "", unmarked: false, brush: "", sel: null, open: {} };
 const ATT_TAGS = ["Starts", "Restarts", "Stopped", "Class finished", "Paused", "Teacher changed", "Rescheduled",
@@ -35,6 +44,7 @@ const ATT_UNDO = [], ATT_REDO = [];
 function attLocked(month){ const l = Settings().attLockedThrough || ""; return !!l && month <= l; }
 function attCanEdit(month){
   if (!attLocked(month)) return true;
+  if (window.MQ_ADMIN) { toast(monthLabel(month) + " is closed by the office — ask them to change it", "warn", 4500); return false; }
   if (State.iatt.open[month]) return true;
   confirmAction({ title: monthLabel(month) + " is closed",
     note: "Payroll and reconciliation for this month may already be done. If you change a mark, recalculate the month and check Teacher pay afterwards.",
@@ -72,9 +82,9 @@ function attRecord(pl, ds, k, extra, cur){
   Object.assign(rec, x);
   const noClass = k === "T" || k === "R" || k === "C" || k === "N";
   rec.duration = noClass ? 0 : (+x.mins || +pl.duration || 0);
-  rec.markedBy = Settings().markerName || "Academic Service";
+  rec.markedBy = attActor().name;
   rec.markedAt = new Date().toISOString();
-  rec.via = "academic-service";
+  rec.via = attActor().via;
   return rec;
 }
 /* list = [{ planId, ds, k, extra }] ; k "" clears the day */
@@ -249,6 +259,7 @@ function attPickBar(month){
 /* ---- the page ---- */
 Pages.iAtt = function(){
   const f = State.iatt, month = State.month;
+  if (!window.MQ_ADMIN && Date.now() - ATT_LIVE.at > 60000) setTimeout(() => attPull(false), 50);
   const view = f.view || (window.innerWidth < 700 ? "today" : "month");
   const locked = attLocked(month);
   const R = attRows(month);
@@ -261,7 +272,9 @@ Pages.iAtt = function(){
     '<div class="push btn-row">' +
       '<button type="button" class="btn btn-sm" data-act="att-undo"' + (ATT_UNDO.length ? "" : " disabled") + '>↶ Undo</button>' +
       '<button type="button" class="btn btn-sm" data-act="att-redo"' + (ATT_REDO.length ? "" : " disabled") + '>↷ Redo</button>' +
-      (locked ? '<button type="button" class="btn btn-sm" data-act="att-reopen">🔒 Reopen ' + esc(monthShort(month)) + '</button>'
+      '<button type="button" class="btn btn-sm" data-act="att-refresh" title="Bring in marks saved on other devices">↻</button>' +
+      ATT_HOOKS.toolbar() +
+      (window.MQ_ADMIN ? "" : locked ? '<button type="button" class="btn btn-sm" data-act="att-reopen">🔒 Reopen ' + esc(monthShort(month)) + '</button>'
               : '<button type="button" class="btn btn-sm" data-act="att-close">Close ' + esc(monthShort(month)) + '</button>') +
     '</div></div>';
   const info = '<div class="att-info">' +
@@ -270,8 +283,10 @@ Pages.iAtt = function(){
       : '<span class="chip ok">✓ No unmarked class days in ' + esc(monthShort(month)) + '</span>') +
     (locked ? '<span class="chip">🔒 ' + esc(monthLabel(month)) + ' is closed</span>' : "") +
     (function(){ const n = R.rows.filter(r => attNoDays(r.pl)).length;
-      return n ? '<button type="button" class="chip warn" data-act="goto" data-page="plans">⚠ ' + n + ' plan' + (n > 1 ? "s have" : " has") +
-        ' no class days set — missed days can\'t be flagged until the days are set in Class plans</button>' : ""; })() +
+      if (!n) return "";
+      const txt = '⚠ ' + n + ' plan' + (n > 1 ? "s have" : " has") + ' no class days set — missed days can\'t be flagged until the days are set ' +
+        (window.MQ_ADMIN ? "(tap a student → Change teacher / days)" : "in Class plans");
+      return window.MQ_ADMIN ? '<span class="chip warn">' + txt + '</span>' : '<button type="button" class="chip warn" data-act="goto" data-page="plans">' + txt + '</button>'; })() +
     '</div>';
   return tools + info + (view === "today" ? attToday(R) : attMonth(month, R.rows));
 };
@@ -292,11 +307,11 @@ function attMonth(month, rows){
 }
 function attToday(R){
   const f = State.iatt, ds = f.date || today();
-  const pick = '<div class="toolbar no-print" style="margin-top:0">' +
-    '<button type="button" class="btn btn-sm" data-act="att-day" data-id="-1">‹</button>' +
-    field("Day", '<input class="input" type="date" data-act="att-date" value="' + esc(ds) + '">') +
-    '<button type="button" class="btn btn-sm" data-act="att-day" data-id="1">›</button>' +
-    (ds !== today() ? '<button type="button" class="btn btn-sm" data-act="att-day" data-id="0">Today</button>' : "") + '</div>';
+  const pick = '<div class="no-print" style="display:flex;gap:8px;align-items:center;margin:0 0 12px">' +
+    '<button type="button" class="btn" style="min-width:44px" data-act="att-day" data-id="-1" aria-label="Previous day">‹</button>' +
+    '<input class="input" type="date" data-act="att-date" value="' + esc(ds) + '" aria-label="Day" style="flex:1;min-width:0;margin:0">' +
+    '<button type="button" class="btn" style="min-width:44px" data-act="att-day" data-id="1" aria-label="Next day">›</button>' +
+    (ds !== today() ? '<button type="button" class="btn" data-act="att-day" data-id="0">Today</button>' : "") + '</div>';
   const hol = Logic.isHoliday(ds);
   const ids = {};
   R.rows.forEach(r => ids[r.pl.id] = r);
@@ -320,7 +335,8 @@ function attToday(R){
       const st = DataService.getStudent(pl.studentId) || {}, t = DataService.getTeacher(pl.teacherId) || {};
       const c = DataService.classAt(pl.id, ds), note = attNoteLine(c);
       return head + '<div class="att-trow' + (c && c.status !== "Note" ? " done" : "") + (attNoDays(pl) && !c ? " nodays" : "") + '">' +
-        '<div class="att-tinfo"><b>' + esc(st.name || pl.studentId) + '</b>' +
+        '<div class="att-tinfo"><button type="button" data-act="att-row" data-id="' + esc(pl.id) + '" style="all:unset;cursor:pointer;display:block;font-weight:700;font-size:14.5px" title="Details and changes">' +
+          esc(st.name || pl.studentId) + ' <span style="color:var(--muted-2);font-weight:400">›</span></button>' +
           '<small>' + esc((pl.time ? time12(pl.time) + " · " : "") + (t.name || "—") + (pl.course ? " · " + pl.course : "")) + '</small>' +
           (note ? '<small class="att-tnote">' + esc(note) + '</small>' : "") + '</div>' +
         '<div class="att-tbtns">' +
@@ -444,6 +460,81 @@ document.addEventListener("paste", function(e){
   render();
 });
 
+/* ---- other devices: pull their marks in while this page is open ---- */
+const ATT_LIVE = { busy: false, at: 0 };
+function attRedraw(){
+  const sc = $("#attScroll"), x = sc ? sc.scrollLeft : 0, y = window.scrollY;
+  render(); const sc2 = $("#attScroll"); if (sc2) sc2.scrollLeft = x; window.scrollTo(0, y);
+}
+async function attPull(force){
+  if (ATT_LIVE.busy || typeof Supa === "undefined" || !Supa.on() || !Supa.refresh) return { changed: 0 };
+  const live = window.MQ_ADMIN || State.page === "iAtt" || State.page === "tpay";
+  if (!force && (!live || document.hidden)) return { changed: 0 };
+  ATT_LIVE.busy = true;
+  try {
+    const colls = ["classes", "plans", "students", "teachers", "holidays"].concat(window.MQ_ADMIN ? ["settings"] : []);
+    const r = await Supa.refresh(colls);
+    ATT_LIVE.at = Date.now();
+    if (r.changed && !$("#mScrim") && (State.page === "iAtt" || State.page === "tpay")) attRedraw();
+    if (window.MQ_ADMIN && typeof attAdminCheck === "function") attAdminCheck();
+    return r;
+  } finally { ATT_LIVE.busy = false; }
+}
+setInterval(() => attPull(false), 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && Date.now() - ATT_LIVE.at > 20000) attPull(false); });
+
+/* ---- Admin links (office only): one secret link per class admin ---- */
+function attLinkUrl(token){ return location.origin + "/portal/attendance/#k=" + token; }
+function attNewToken(){
+  const a = new Uint8Array(18); (window.crypto || window.msCrypto).getRandomValues(a);
+  return btoa(String.fromCharCode.apply(null, Array.from(a))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function attAdminsBody(){
+  const links = Settings().attAdminLinks || [];
+  return '<div class="note">Each class admin gets their own link. Anyone holding a link can use the attendance page, so send it only to that person. ' +
+      'Switch a link off and it stops working within a minute.</div>' +
+    (links.length ? links.map(function(l, i){
+      return '<div class="minirow" style="flex-wrap:wrap;gap:6px"><span><b>' + esc(l.name) + '</b>' + (l.active ? "" : ' <span class="out">· switched off</span>') +
+        '<br><small class="mono">' + esc(attLinkUrl(l.token)).slice(0, 60) + '…</small></span><span class="btn-row">' +
+        (l.active ? '<button type="button" class="btn btn-sm" data-act="att-admin-copy" data-id="' + i + '">Copy link</button>' +
+          '<button type="button" class="btn btn-sm btn-wa" data-act="att-admin-wa" data-id="' + i + '">WhatsApp</button>' +
+          '<button type="button" class="btn btn-sm btn-danger" data-act="att-admin-off" data-id="' + i + '">Switch off</button>'
+          : '<button type="button" class="btn btn-sm" data-act="att-admin-on" data-id="' + i + '">Switch on</button>') + '</span></div>';
+    }).join("") : '<div class="minirow"><span>No admin links yet</span><b>—</b></div>') +
+    '<div class="form-grid" style="margin-top:12px">' +
+      field("Admin's name", '<input class="input" name="name" placeholder="e.g. Farisa">') +
+      field("WhatsApp (optional)", '<input class="input mono" name="phone" placeholder="91…">') + '</div>';
+}
+function attSaveLinks(links){ DataService.saveSettings({ attAdminLinks: links }); }
+Object.assign(Actions, {
+  "att-admins": () => openModal({ title: "Attendance admin links", wide: true, submitText: "Make a new link", body: attAdminsBody(),
+    onSubmit: function(d){
+      const name = String(d.name || "").trim();
+      if (!name) { toast("Type the admin's name", "bad"); return false; }
+      const links = (Settings().attAdminLinks || []).slice();
+      links.push({ token: attNewToken(), name: name, phone: String(d.phone || "").replace(/\D/g, ""), active: true, created: today() });
+      attSaveLinks(links); toast("Link made for " + name, "ok");
+      setTimeout(() => Actions["att-admins"](), 50);
+    } }),
+  "att-admin-copy": (i) => {
+    const l = (Settings().attAdminLinks || [])[+i]; if (!l) return;
+    const url = attLinkUrl(l.token);
+    if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast("Link copied", "ok"), () => prompt("Copy this link", url));
+    else prompt("Copy this link", url);
+  },
+  "att-admin-wa": (i) => {
+    const l = (Settings().attAdminLinks || [])[+i]; if (!l) return;
+    const msg = "Assalamu Alaikum " + l.name + ",\n\nThis is your attendance link for " + (Settings().academyName || "ManzilulQuran") +
+      ". Please keep it private — it works like a password.\n" + attLinkUrl(l.token);
+    window.open(Logic.waLink(l.phone || "", msg), "_blank");
+  },
+  "att-admin-off": (i) => { const links = (Settings().attAdminLinks || []).slice(); if (!links[+i]) return;
+    links[+i] = Object.assign({}, links[+i], { active: false }); attSaveLinks(links); toast(links[+i].name + "'s link switched off", "ok"); Actions["att-admins"](); },
+  "att-admin-on": (i) => { const links = (Settings().attAdminLinks || []).slice(); if (!links[+i]) return;
+    links[+i] = Object.assign({}, links[+i], { active: true }); attSaveLinks(links); toast(links[+i].name + "'s link switched on", "ok"); Actions["att-admins"](); },
+  "att-refresh": async () => { const r = await attPull(true); toast(r && r.changed ? r.changed + " change" + (r.changed > 1 ? "s" : "") + " brought in" : "Up to date", "ok"); attRedraw(); }
+});
+
 /* ---- actions ---- */
 Object.assign(Actions, {
   "att-view": (v) => { State.iatt.view = v; render(); },
@@ -524,7 +615,8 @@ Object.assign(Actions, {
           ["Unmarked", um.length ? '<span class="out">' + um.length + ' day' + (um.length > 1 ? "s" : "") + ': ' + um.map(d => +d.slice(8)).join(", ") + '</span>' : "None"]]) +
         '<div class="btn-row" style="margin-top:12px">' +
           (um.length ? '<button type="button" class="btn btn-primary" data-act="att-fill" data-id="' + esc(planId) + '">Mark the ' + um.length + ' unmarked day' + (um.length > 1 ? "s" : "") + ' ✓ Present</button>' : "") +
-          '<button type="button" class="btn" data-act="profile-open" data-id="' + esc(pl.studentId) + '">Open student</button>' +
+          ATT_HOOKS.rowButtons(pl) +
+          (window.MQ_ADMIN ? "" : '<button type="button" class="btn" data-act="profile-open" data-id="' + esc(pl.studentId) + '">Open student</button>') +
         '</div>' });
   },
   "att-fill": (planId) => {
