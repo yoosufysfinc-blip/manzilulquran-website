@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — core.v6.js. v6: tables load in pages (no 1,000-row cut-off); each attendance mark has a fixed ID (plan + date); note-only marks are kept out of the money logic. */
+/* Academic Service — core.v7.js. v7: several people can work at once — new students, teachers and plans take their number from the database (claim), Supa.refresh merges other devices' changes, and an attendance-admin mode (window.MQ_ADMIN) loads only what the admin link needs. (v6: paged loading, fixed mark IDs.) */
 /* ==========================================================================
    ManzilulQuran — Academy Manager (single file)
 
@@ -69,7 +69,8 @@ function b64d(str){
 /* ==========================================================================
    STORAGE ADAPTER — the only place that touches localStorage
    ========================================================================== */
-const STORE_KEY = "mq_academy_v1";
+/* the admin link keeps its own copy on the device, never mixed with the office copy */
+const STORE_KEY = (typeof window !== "undefined" && window.MQ_ADMIN) ? "mq_att_admin_v1" : "mq_academy_v1";
 const Storage = {
   load(){ try { const r = localStorage.getItem(STORE_KEY); return r ? JSON.parse(r) : null; }
           catch (e) { console.warn(e); return null; } },
@@ -98,10 +99,14 @@ const SUPA_TABLE = {
   adjustments:"mq_adjustments", transfers:"mq_transfers", accounts:"mq_accounts", settings:"mq_settings",
   holds:"mq_holds"
 };
-const SUPA_COLLS = Object.keys(SUPA_TABLE);
+/* the attendance-admin link loads only names, plans, the class log and holidays — never fees, payments or books */
+const ADMIN_COLLS = ["students", "teachers", "plans", "classes", "holidays", "settings"];
+const SUPA_COLLS = (typeof window !== "undefined" && window.MQ_ADMIN) ? ADMIN_COLLS.slice() : Object.keys(SUPA_TABLE);
+/* records whose number is claimed in the database before they are saved there */
+const CLAIM_COLLS = { students: { prefix: "MQ", pad: 4, start: 4150 }, teachers: { prefix: "MQ", pad: 4, start: 8086 }, plans: { prefix: "IPL", pad: 4 } };
 
 const Supa = {
-  client: null,
+  client: null, claiming: {}, claimQueue: [],
   st: { ready:false, busy:false, at:0, err:"", pending:0 },
 
   on(){ const s = Settings(); return !!(s.supabaseOn && s.supabaseUrl && s.supabaseKey && window.supabase); },
@@ -131,6 +136,87 @@ const Supa = {
       from += n;
     }
     return out;
+  },
+
+  /* bring in what other devices saved since this page loaded, without losing this device's unsent changes.
+     A record changed here and not yet sent stays as it is here; everything else takes the database copy. */
+  async refresh(colls){
+    if (!this.on() || (!this.st.ready && !this.init())) return { ok: false, changed: 0 };
+    if (SupaTrack.busy || !SupaTrack.base) return { ok: false, changed: 0 };
+    let changed = 0;
+    try {
+      const got = await Promise.all(colls.map(c => this.selectAll(SUPA_TABLE[c])));
+      if (SupaTrack.busy) return { ok: false, changed: 0 };
+      colls.forEach((c, ci) => {
+        const rows = got[ci];
+        if (c === "settings") {
+          rows.forEach(r => { if (r.deleted) return; const v = r.data && r.data.value !== undefined ? r.data.value : r.data;
+            if (JSON.stringify(DB.settings[r.id]) !== JSON.stringify(v)) { DB.settings[r.id] = v; changed++; } });
+          return;
+        }
+        const base = SupaTrack.base[c] = SupaTrack.base[c] || {};
+        const local = {}; (DB[c] || []).forEach(r => { if (r && r.id) local[String(r.id)] = r; });
+        const pending = id => (local[id] && base[id] !== JSON.stringify(local[id])) || (!local[id] && base[id] !== undefined) || Supa.claiming[c + "|" + id];
+        const next = [], seen = {};
+        rows.forEach(function(r){
+          const id = String(r.id); seen[id] = true;
+          if (pending(id)) { if (local[id]) next.push(local[id]); return; }
+          if (r.deleted) { if (local[id]) changed++; delete base[id]; return; }
+          const rec = Object.assign({ id: id }, r.data), sig = JSON.stringify(rec);
+          if (!local[id] || JSON.stringify(local[id]) !== sig) changed++;
+          next.push(rec); base[id] = sig;
+        });
+        Object.keys(local).forEach(id => { if (!seen[id]) { if (pending(id)) next.push(local[id]); else { changed++; delete base[id]; } } });
+        DB[c] = next;
+      });
+      if (changed) { Cache.clear(); Storage.save(DB); }
+      this.st.at = Date.now();
+      this.retryClaims();
+      return { ok: true, changed: changed };
+    } catch (e) { this.st.err = String(e.message || e); return { ok: false, changed: 0, error: this.st.err }; }
+  },
+  /* highest number of this form already in the database table */
+  async maxId(table, prefix){
+    const { data, error } = await this.client.from(table).select("id").like("id", prefix + "%").order("id", { ascending: false }).limit(300);
+    if (error) throw new Error(error.message);
+    const re = new RegExp("^" + prefix + "(\\d+)$");
+    return (data || []).reduce((m, r) => { const x = re.exec(String(r.id)); return x ? Math.max(m, +x[1]) : m; }, 0);
+  },
+  /* a new student / teacher / plan is INSERTED (never upserted): if another device already took the
+     number, the insert fails and the next free number is used — the record and everything pointing at it are renamed */
+  async claimNew(coll, rec){
+    const cfg = CLAIM_COLLS[coll], table = SUPA_TABLE[coll];
+    const first = rec.id; let id = rec.id;
+    this.claiming[coll + "|" + first] = true;
+    try {
+      for (let tries = 0; tries < 25; tries++) {
+        const cur = (DB[coll] || []).find(r => r.id === first) || rec;
+        const { error } = await this.client.from(table).insert({ id: id, data: Object.assign({}, cur, { id: id }), deleted: false });
+        if (!error) break;
+        const dup = error.code === "23505" || /duplicate key/i.test(error.message || "");
+        if (!dup) throw new Error(error.message || "insert failed");
+        const localMax = parseInt(uid(cfg.prefix, DB[coll] || [], cfg.pad, cfg.start).slice(cfg.prefix.length), 10) - 1;
+        const remoteMax = await this.maxId(table, cfg.prefix);
+        id = cfg.prefix + String(Math.max(localMax, remoteMax, cfg.start ? cfg.start - 1 : 0) + 1 + tries).padStart(cfg.pad, "0");
+      }
+      delete this.claiming[coll + "|" + first];
+      if (id !== first) {
+        renameId(coll, first, id);
+        if (typeof toast === "function") toast(first + " was just taken on another device — saved as " + id, "warn", 6000);
+        if (typeof render === "function") try { render(); } catch (e) {}
+      }
+      const saved = (DB[coll] || []).find(r => r.id === id);
+      if (saved) SupaTrack.mark(coll, saved);
+      this.st.at = Date.now(); this.paint("ok", "saved");
+    } catch (e) {
+      /* offline or refused: keep it out of the normal push and try again later */
+      if (!this.claimQueue.some(q => q.coll === coll && q.id === first)) this.claimQueue.push({ coll: coll, id: first });
+      this.st.err = String(e.message || e); this.paint("err", "waiting to save " + first);
+    }
+  },
+  retryClaims(){
+    const q = this.claimQueue.splice(0);
+    q.forEach(it => { const r = (DB[it.coll] || []).find(x => x.id === it.id); if (r) { delete this.claiming[it.coll + "|" + it.id]; this.claimNew(it.coll, r); } });
   },
 
   /* pull EVERY row from EVERY table into the in-memory DB (source of truth on load) */
@@ -274,6 +360,7 @@ const SupaTrack = {
           if (!r || !r.id) return;
           const id = String(r.id), sig = JSON.stringify(r);
           seen[id] = true;
+          if (Supa.claiming[c + "|" + id]) return;   /* a new record still claiming its number */
           if (base[id] !== sig) { rows.push({ id: id, data: r, deleted: false }); sigs[id] = sig; }
         });
         Object.keys(base).forEach(function(id){
@@ -499,13 +586,32 @@ const Sync = {
 function coll(name){ return DB[name] || (DB[name] = []); }
 function upsert(name, obj, prefix, pad, start){
   const list = coll(name);
+  const isNew = !obj.id;
   if (!obj.id) obj.id = uid(prefix, list, pad, start);
+  const online = typeof Supa !== "undefined" && Supa.on() && SUPA_TABLE[name];
+  const claim = isNew && online && CLAIM_COLLS[name];
+  if (claim) Supa.claiming[name + "|" + obj.id] = true;
   const i = list.findIndex(x => x.id === obj.id);
   if (i >= 0) list[i] = Object.assign({}, list[i], obj); else list.push(obj);
   persist();
   /* live write to Supabase (the primary bank); the sheet mirror runs via Sync */
-  if (typeof Supa !== "undefined" && Supa.on() && SUPA_TABLE[name]) Supa.put(name, list[i >= 0 ? i : list.length - 1]);
+  const rec = list[i >= 0 ? i : list.length - 1];
+  if (claim) Supa.claimNew(name, rec);
+  else if (online) Supa.put(name, rec);
   return obj.id;
+}
+/* give a record a new ID and repoint everything that refers to it */
+function renameId(collName, from, to){
+  const rec = (DB[collName] || []).find(r => r.id === from);
+  if (rec) rec.id = to;
+  const fields = { students: ["studentId"], teachers: ["teacherId", "takenBy"], plans: ["planId"] }[collName] || [];
+  Object.keys(SUPA_TABLE).forEach(function(c){
+    if (c === "settings" || !Array.isArray(DB[c])) return;
+    DB[c].forEach(function(r){ fields.forEach(f => { if (r[f] === from) r[f] = to; }); });
+  });
+  /* a mark's fixed ID carries its plan ID */
+  if (collName === "plans") (DB.classes || []).forEach(c => { if (String(c.id).indexOf(from + "-") === 0) c.id = to + String(c.id).slice(from.length); });
+  persist();
 }
 /* remove-from-store also needs to reach Supabase as a soft delete */
 function removeRow(name, id){
@@ -603,7 +709,7 @@ const DataService = {
   },
   getPlan(id){ return DB.plans.find(p => p.id === id) || null; },
   getActivePlan(studentId){ return DB.plans.find(p => p.studentId === studentId && p.status === "Active") || null; },
-  savePlan(p){ return upsert("plans", p, "IPL"); },
+  savePlan(p){ return upsert("plans", p, "IPL", 4); },
   /* note-only marks (status "Note") never reach fees or pay: only the attendance sheet asks for them */
   getClasses(f){
     let r = DB.classes.filter(c => c.status !== "Note" || (f && f.notes));
