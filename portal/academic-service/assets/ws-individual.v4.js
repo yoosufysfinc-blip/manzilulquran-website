@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-individual.v3.js. v3: class plans sort by student ID and start date too. */
+/* Academic Service — ws-individual.v4.js. v4: classes are marked on the Attendance page — the old Record class / Log a range buttons now open it; the class log is the history view. (v3: plan sorting.) */
 /* ==========================================================================
    INDIVIDUAL WORKSPACE
    ========================================================================== */
@@ -23,10 +23,10 @@ Pages.iDash = function(){
 
   return '' +
   '<div class="qbar no-print">' +
-    '<button class="qbtn" data-act="class-new"><span class="qi">✓</span> Record class</button>' +
+    '<button class="qbtn" data-act="goto" data-page="iAtt"><span class="qi">✓</span> Mark attendance</button>' +
     '<button class="qbtn" data-act="ind-fees-build"><span class="qi">₹</span> Calculate ' + esc(monthShort(m)) + ' fees</button>' +
     '<button class="qbtn" data-act="plan-new"><span class="qi">＋</span> New class plan</button>' +
-    '<button class="qbtn" data-act="cls-range"><span class="qi">▤</span> Log a date range</button>' +
+
   '</div>' +
   '<div class="kpi-grid">' +
     kpi("Active plans", num(plans.length), num(new Set(plans.map(p => p.studentId)).size) + " students") +
@@ -108,8 +108,7 @@ Pages.plans = function(){
         [monthShort(m) + " balance", p.balance ? '<span class="out">' + money(p.balance) + '</span>' : "—"],
         p.notes ? ["Notes", esc(p.notes)] : null
       ]) + acts('<button class="btn btn-sm" data-act="plan-edit" data-id="' + p.id + '">Edit plan</button>' +
-        '<button class="btn btn-sm" data-act="class-new" data-id="' + p.id + '">Record class</button>' +
-        '<button class="btn btn-sm" data-act="cls-range" data-id="' + p.id + '">Log a range</button>' +
+        '<button class="btn btn-sm" data-act="goto" data-page="iAtt">Attendance</button>' +
         '<button class="btn btn-sm" data-act="profile-open" data-id="' + p.studentId + '">Open student</button>'),
       sorts: [{ key: "name", label: "Student name A–Z", val: p => p.studentName },
               { key: "sid", label: "Student ID", val: p => p.studentId },
@@ -145,11 +144,10 @@ Pages.classes = function(){
     field("Month", sel("m", monthOpts(m, ""), 'data-fset="classes.month"')) +
     field("Student", sel("s", studentOpts(f.student, "All students"), 'data-fset="classes.student"')) +
     field("Teacher", sel("t", teacherOpts(f.teacher), 'data-fset="classes.teacher"')) +
-    field("Status", sel("q", optList(["Completed","Cancelled","Student Absent","Teacher Absent","Rescheduled"], f.status, "All"), 'data-fset="classes.status"')) +
+    field("Status", sel("q", optList(CLASS_STATUSES.map(x => x.value), f.status, "All"), 'data-fset="classes.status"')) +
     '<div class="push btn-row">' +
-      '<button class="btn btn-dark" data-act="cls-range">Range / bulk log</button>' +
       '<button class="btn" data-act="classes-csv">CSV</button>' +
-      '<button class="btn btn-primary" data-act="class-new">+ Record class</button>' +
+      '<button class="btn btn-primary" data-act="goto" data-page="iAtt">Open attendance</button>' +
     '</div>' +
   '</div>' +
   '<div class="kpi-grid" style="margin-bottom:12px">' +
@@ -168,7 +166,7 @@ Pages.classes = function(){
         ["Student", esc(c.studentName) + " " + idchip(c.studentId)], ["Teacher", esc(c.teacherName)],
         ["Course", esc(c.course || "—")], ["Duration", c.duration ? c.duration + " min" : "—"],
         ["Status", badge(c.status)], c.notes ? ["Notes", esc(c.notes)] : null]) +
-        '<div class="note" style="margin:10px 0 0">Only a <b>Completed</b> class counts towards the student fee and the teacher payment.</div>' +
+        '<div class="note" style="margin:10px 0 0">Marks are made on the Attendance page. A Completed or Substitute class counts towards the student fee; which marks pay the teacher is set in Settings.</div>' +
         acts('<button class="btn btn-sm" data-act="class-edit" data-id="' + c.id + '">Edit</button>' +
           '<button class="btn btn-sm btn-danger" data-act="class-del" data-id="' + c.id + '">Remove</button>' +
           '<button class="btn btn-sm" data-act="profile-open" data-id="' + c.studentId + '">Open student</button>'),
@@ -176,7 +174,7 @@ Pages.classes = function(){
               { key: "name", label: "Student name", val: c => c.studentName }],
       emptyTitle: "No classes logged for " + monthLabel(m),
       emptyText: "Record a class and the fee follows from it automatically.",
-      emptyAction: '<button class="btn btn-primary" data-act="class-new">+ Record class</button>'
+      emptyAction: '<button class="btn btn-primary" data-act="goto" data-page="iAtt">Open attendance</button>'
     }) +
   '</div></div>';
 };
