@@ -1,11 +1,16 @@
 "use strict";
-/* Academic Service — ws-attendance.v3.js. v3: the attendance page opens as a full-screen sheet in the look of the
-   original single-file attendance sheet (MQ-Attendance.html, styles in att-sheet.v1.css), with:
-     · Today list, month Sheet, Class days (set days / time for many plans at once), Make-ups, Results — tabs along the bottom
-     · Select / Brush modes, drag across cells to brush, drag rows by # to reorder, pinch or ⋯ menu to zoom, light / dark theme
-     · WhatsApp to a parent from an absent mark, fee status badge on each row (office only),
-       monthly attendance reports for a student, a teacher, and exam / test results (print or save as PDF)
-   Shared by Academic Service and the class-admin link (/portal/attendance/). Data rules unchanged from v2:
+/* Academic Service — ws-attendance.v4.js. v4: a quieter sheet.
+     · one clean top bar: tap the month to jump, a save dot, ⋯ — the month tabs, the counts line and the refresh button are gone
+     · the marks are one compact control; teacher and find sit together; three totals (Present, Absent, %) instead of seven;
+       a paid fee is a quiet dot, a fee that needs action is a word
+     · the office copy wears the Academy Manager look; the class-admin link (/portal/attendance/) wears the Class Sheets look
+       (html.adm-skin — styles in att-sheet.v2.css)
+     · motion: the sheet slides in, a new view rises, a changed day pops, the picker and menus rise, the tab marker slides —
+       only when something changed, never on a plain repaint; reduced motion is respected
+     · Admin links: edit a name or number, switch on or off, make a new secret link (the old one stops), delete a switched-off
+       link; the same list sits on Settings → Attendance admin links
+   (v3: the full-screen sheet — Today / Sheet / Class days / Make-ups / Results, WhatsApp to a parent, fee badge, reports, drag rows.)
+   Shared by Academic Service and the class-admin link. Data rules unchanged from v2:
    every mark is one record in mq_classes with the fixed ID plan + date (DataService.classKey). Batch classes are not here. */
 
 /* ---- register the page ---- */
@@ -17,10 +22,15 @@
   HEAD_ACTS.iAtt = "";
 })();
 function attActor(){ return window.ATT_ACTOR || { name: Settings().markerName || "Academic Service", via: "academic-service" }; }
-const ATT_HOOKS = { toolbar: () => "", rowButtons: () => "" };
+/* hooks the class-admin link fills in (att-admin): extra buttons on a student's window, and the items under + Add */
+const ATT_HOOKS = { toolbar: () => "", rowButtons: () => "", addItems: () => [] };
+if (window.MQ_ADMIN) document.documentElement.classList.add("adm-skin");
+/* motion bookkeeping: what changed since the last paint, so only that moves */
+const ATT_FX = { cells: {}, menu: false, add: false, pick: "", ind: null, save: "", bulk: false };
+function attCalm(){ try { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch (e) { return false; } }
 
 State.iatt = { tab: "", date: today(), teacher: "", q: "", unmarked: false, mode: "select", brush: "P", sel: null, open: {},
-  menu: false, pick: {}, bulkDays: [], bulkTime: "", onlyNoDays: false, shrink: null };
+  menu: false, add: false, pick: {}, bulkDays: [], bulkTime: "", onlyNoDays: false, shrink: null };
 const ATT_TAGS = ["Starts", "Restarts", "Stopped", "Class finished", "Paused", "Teacher changed", "Rescheduled",
   "Payment pending", "Payment done", "Juz submitted"];
 const ATT_FIELDS = { P: ["by", "mins", "makeup"], A: ["inf", "before"], T: ["inf", "makeup"], L: ["inf", "until"],
@@ -95,6 +105,7 @@ function attWrite(list, label, noUndo){
   const undo = [];
   list.forEach(function(it){
     const pl = DataService.getPlan(it.planId); if (!pl) return;
+    ATT_FX.cells[it.planId + "|" + it.ds] = 1;
     const cur = DataService.classAt(it.planId, it.ds);
     undo.push({ planId: it.planId, ds: it.ds, before: cur ? JSON.parse(JSON.stringify(cur)) : null });
     if (!it.k) { if (cur) { DB.classes = DB.classes.filter(c => c !== cur); Cache.clear(); } return; }
@@ -110,6 +121,7 @@ function attWrite(list, label, noUndo){
 function attRestore(items){
   const back = [];
   items.forEach(function(u){
+    ATT_FX.cells[u.planId + "|" + u.ds] = 1;
     const cur = DataService.classAt(u.planId, u.ds);
     back.push({ planId: u.planId, ds: u.ds, before: cur ? JSON.parse(JSON.stringify(cur)) : null });
     if (cur) DB.classes = DB.classes.filter(c => c !== cur);
@@ -218,13 +230,15 @@ function attFeeMap(month){
   } catch (e) {}
   return map;
 }
+/* a paid fee is a quiet dot, a fee not due yet a hollow one; only what needs action gets a word */
 function attFeeBadge(v){
   if (!v || v.status === "Nil") return "";
-  const s = v.status;
-  const cls = s === "Paid" || s === "Waived" ? "fee-ok" : s === "Overdue" ? "fee-bad" : "fee-due";
-  const txt = s === "Paid" ? "Paid" : s === "Waived" ? "Waived" : s === "Overdue" ? "Overdue" : s === "Partial" ? "Part paid" :
-    s === "Needs amount" ? "Fee not set" : s === "Due Today" ? "Due today" : "Due " + fmtDate(v.dueDate).replace(/ \d{4}$/, "");
-  return '<span class="ax-st ' + cls + '" title="' + esc(monthLabel(v.month) + " fee · " + s) + '">' + esc(txt) + '</span>';
+  const s = v.status, tip = esc(monthLabel(v.month) + " fee · " + (s === "Upcoming" ? "due " + fmtDate(v.dueDate) : s));
+  if (s === "Paid" || s === "Waived") return '<span class="ax-fee ok" title="' + tip + '" role="img" aria-label="' + tip + '"></span>';
+  if (s === "Upcoming") return '<span class="ax-fee up" title="' + tip + '" role="img" aria-label="' + tip + '"></span>';
+  const cls = s === "Overdue" ? "fee-bad" : "fee-due";
+  const txt = s === "Overdue" ? "Overdue" : s === "Partial" ? "Part paid" : s === "Needs amount" ? "Fee not set" : s === "Due Today" ? "Due today" : s;
+  return '<span class="ax-st ' + cls + '" title="' + tip + '">' + esc(txt) + '</span>';
 }
 
 /* ---- WhatsApp to a parent ---- */
@@ -291,65 +305,93 @@ function attPending(){
   });
   return n + ((typeof Supa !== "undefined" && Supa.claimQueue) ? Supa.claimQueue.length : 0);
 }
-function attSaveText(){
+/* the save state: a dot that is calm when everything is saved, and pulses while something waits to send */
+function attSaveState(){
   const n = attPending(), off = !navigator.onLine;
-  return '<span class="ax-save' + (n ? " wait" : "") + '" id="axSave">' + (n ? (off ? "Offline · " : "") + n + " waiting to send" : (off ? "Offline · saved on this device" : "All saved")) + '</span>';
+  const st = n ? "wait" : off ? "off" : "ok";
+  const txt = n ? (off ? "Offline · " : "") + n + " to send" : off ? "Offline" : "Saved";
+  const tip = n ? n + " change" + (n > 1 ? "s" : "") + " waiting to send" + (off ? " — they go when you are back online" : "")
+    : off ? "Offline — everything is kept on this device" : "All saved";
+  return '<span class="ax-save ' + st + '" id="axSave" title="' + esc(tip) + '" role="status"><i aria-hidden="true"></i><em>' + esc(txt) + '</em></span>';
 }
-setInterval(function(){ const el = document.getElementById("axSave"); if (el) el.outerHTML = attSaveText(); }, 2500);
+function attSaveText(){ ATT_FX.save = attSaveState(); return ATT_FX.save; }
+setInterval(function(){
+  const el = document.getElementById("axSave"); if (!el) return;
+  const h = attSaveState(); if (h !== ATT_FX.save) { el.outerHTML = h; ATT_FX.save = h; }
+}, 2500);
 
+/* ---- top bar: brand, the month (tap it to jump), save dot, ⋯ ---- */
+function attMonthSelect(month){
+  const cur = currentMonth();
+  let ms = allMonths();
+  if (ms.indexOf(month) < 0) ms = ms.concat([month]).sort();
+  return '<select class="ax-msel" data-act="ax-pickmonth" aria-label="Choose a month">' + ms.slice().reverse().map(m =>
+    '<option value="' + m + '"' + (m === month ? " selected" : "") + '>' + esc(monthLabel(m)) + (m === cur ? " · this month" : "") + '</option>').join("") + '</select>';
+}
 function attTop(month, R){
-  const s = Settings(), today_ = today();
-  const rev = !window.MQ_ADMIN && typeof revCount === "function" ? revCount() : 0;
+  const s = Settings(), admin = !!window.MQ_ADMIN;
+  const rev = !admin && typeof revCount === "function" ? revCount() : 0;
+  const who = admin && window.ATT_ACTOR ? window.ATT_ACTOR.name : "";
   return '<header class="ax-top">' +
-    '<div class="ax-brand">' + ATT_STAR + '<div><b>' + esc(s.academyName || "ManzilulQuran") + '</b><small>Attendance</small></div></div>' +
+    '<div class="ax-brand"><span class="ax-logo" aria-hidden="true"></span><div class="ax-bt">' +
+      (admin ? '<b>Class <em>Attendance</em></b><small>' + esc(who ? "Marking as " + who : (s.academyName || "ManzilulQuran")) + '</small>'
+             : '<b>Attendance</b><small>Individual classes</small>') + '</div></div>' +
     '<div class="ax-ttl">' +
       '<button type="button" class="ax-nav" data-act="ax-month" data-id="-1" aria-label="Previous month">‹</button>' +
-      '<h1><span class="lg">' + esc(monthLabel(month)) + '</span><span class="sm">' + esc(monthShort(month)) + '</span></h1>' +
+      '<label class="ax-mon" title="Choose a month"><span class="lg">' + esc(monthLabel(month)) + '</span><span class="sm">' + esc(monthShort(month)) + '</span>' +
+        (attLocked(month) ? '<span class="lk" title="Closed by the office">🔒</span>' : "") + '<span class="cv" aria-hidden="true"></span>' + attMonthSelect(month) + '</label>' +
       '<button type="button" class="ax-nav" data-act="ax-month" data-id="1" aria-label="Next month">›</button>' +
-      '<span class="sub">' + R.rows.length + ' class' + (R.rows.length === 1 ? "" : "es") + ' · today ' + esc(fmtDate(today_)) + (attLocked(month) ? " · 🔒 closed" : "") + '</span>' +
     '</div>' +
     '<div class="ax-topr">' +
-      (rev ? '<button type="button" class="ax-btn warn" data-act="ax-go" data-id="iRev">' + rev + ' to review</button>' : "") +
-      (window.MQ_ADMIN && window.ATT_ACTOR ? '<span class="ax-who">👤 <b>' + esc(window.ATT_ACTOR.name) + '</b></span>' : "") +
+      (rev ? '<button type="button" class="ax-pill warn" data-act="ax-go" data-id="iRev">' + rev + ' to review</button>' : "") +
       attSaveText() +
-      '<button type="button" class="ax-btn icon" data-act="ax-menu" aria-label="More">⋯</button>' +
-      (window.MQ_ADMIN ? "" : '<button type="button" class="ax-btn" data-act="ax-exit" title="Back to Academic Service">✕</button>') +
+      '<button type="button" class="ax-ib" data-act="ax-menu" aria-label="More" aria-haspopup="menu" aria-expanded="' + !!State.iatt.menu + '">⋯</button>' +
+      (admin ? "" : '<button type="button" class="ax-ib" data-act="ax-exit" title="Back to Academic Service" aria-label="Close attendance">✕</button>') +
     '</div></header>';
 }
 function attHookHtml(h){
-  return String(h || "").replace(/class="btn btn-sm btn-primary"/g, 'class="ax-btn primary"').replace(/class="btn btn-sm"/g, 'class="ax-btn"')
-    .replace(/class="btn btn-primary"/g, 'class="ax-btn primary"').replace(/class="btn btn-danger"/g, 'class="ax-btn bad"').replace(/class="btn"/g, 'class="ax-btn"');
+  return String(h || "").replace(/class="btn btn-sm btn-primary"/g, 'class="ax-pill primary"').replace(/class="btn btn-sm"/g, 'class="ax-pill"')
+    .replace(/class="btn btn-primary"/g, 'class="ax-pill primary"').replace(/class="btn btn-danger"/g, 'class="ax-pill bad"').replace(/class="btn"/g, 'class="ax-pill"');
 }
+/* the ten marks and Clear as one compact control (names and keys in the tooltip) */
 function attMarkChips(){
-  const f = State.iatt;
+  const f = State.iatt, b = f.mode === "brush" ? f.brush : null;
   return '<div class="ax-marks" role="toolbar" aria-label="Marks">' + ATT_MARKS.map(m =>
-    '<button type="button" class="mkb m-' + m.k + (f.mode === "brush" && f.brush === m.k ? " on" : "") + '" data-act="ax-mk" data-id="' + m.k +
-      '" title="' + esc(m.name) + ' (' + m.key + ')">' + esc(m.sym) + '<span class="lbl">' + esc(ATT_LABEL[m.k]) + '</span></button>').join("") +
-    '<button type="button" class="mkb clr' + (f.mode === "brush" && f.brush === "-" ? " on" : "") + '" data-act="ax-mk" data-id="-" title="Clear (Delete)">⌫<span class="lbl">Clear</span></button></div>';
+    '<button type="button" class="mkb m-' + m.k + (b === m.k ? " on" : "") + '" data-act="ax-mk" data-id="' + m.k + '" title="' + esc(m.name + " · key " + m.key) +
+      '" aria-label="' + esc(m.name) + '">' + esc(m.sym) + '</button>').join("") +
+    '<button type="button" class="mkb clr' + (b === "-" ? " on" : "") + '" data-act="ax-mk" data-id="-" title="Clear · Delete" aria-label="Clear">⌫</button></div>';
+}
+/* teacher and find, folded into one control */
+function attFilter(){
+  const f = State.iatt;
+  return '<div class="ax-filter' + (f.teacher || f.q ? " on" : "") + '">' +
+    '<select class="ax-sel" data-fset="iatt.teacher" aria-label="Teacher">' + teacherOpts(f.teacher) + '</select>' +
+    '<span class="ax-findw"><input class="ax-find" type="search" data-fset="iatt.q" value="' + esc(f.q) + '" placeholder="Find" aria-label="Find a student or teacher" autocomplete="off"></span>' +
+  '</div>';
+}
+/* class-admin link: + Add opens Student / Class / Teacher */
+function attAddMenu(){
+  const items = ATT_HOOKS.addItems ? ATT_HOOKS.addItems() : [];
+  if (!items.length) return attHookHtml(ATT_HOOKS.toolbar());
+  return '<div class="ax-addw"><button type="button" class="ax-pill primary" data-act="ax-add" aria-haspopup="menu" aria-expanded="' + !!State.iatt.add + '">＋ Add</button>' +
+    (State.iatt.add ? '<div class="ax-pop' + (ATT_FX.add ? " in" : "") + '" role="menu">' + items.map(it =>
+      '<button type="button" class="ax-mi" role="menuitem" data-act="' + esc(it[0]) + '">' + esc(it[1]) + '</button>').join("") + '</div>' : "") + '</div>';
 }
 function attTools(tab, month, R){
   const f = State.iatt;
-  const find = '<select class="ax-sel" data-fset="iatt.teacher" aria-label="Teacher">' + teacherOpts(f.teacher) + '</select>' +
-    '<input class="ax-find" data-fset="iatt.q" value="' + esc(f.q) + '" placeholder="Find student or teacher" aria-label="Find">';
-  if (tab === "days") return '<div class="ax-tools">' +
-    '<button type="button" class="ax-chip' + (f.onlyNoDays ? " on" : "") + '" data-act="ax-nodays">Only plans with no days</button>' +
-    '<span class="sp"></span>' + find + '</div>';
-  if (tab === "makeups" || tab === "results") return '<div class="ax-tools"><span class="sp"></span>' + find +
-    (tab === "results" ? '<button type="button" class="ax-btn" data-act="ax-rep-results">Print results</button>' : "") + '</div>';
-  const nod = R.rows.filter(r => attNoDays(r.pl)).length;
+  const right = extra => '<span class="sp"></span>' + (extra || "") + attFilter() + attAddMenu();
+  if (tab === "days") return '<div class="ax-tools"><button type="button" class="ax-pill' + (f.onlyNoDays ? " on" : "") + '" data-act="ax-nodays" aria-pressed="' + !!f.onlyNoDays + '">No class days only</button>' + right() + '</div>';
+  if (tab === "makeups") return '<div class="ax-tools">' + right() + '</div>';
+  if (tab === "results") return '<div class="ax-tools"><button type="button" class="ax-pill" data-act="ax-rep-results">Print results</button>' + right() + '</div>';
+  const ur = '<div class="ax-ur"><button type="button" class="ax-ib sm" data-act="att-undo" title="Undo (Ctrl+Z)" aria-label="Undo"' + (ATT_UNDO.length ? "" : " disabled") + '>↶</button>' +
+    '<button type="button" class="ax-ib sm" data-act="att-redo" title="Redo" aria-label="Redo"' + (ATT_REDO.length ? "" : " disabled") + '>↷</button></div>';
+  const um = R.um.count ? '<button type="button" class="ax-pill ' + (f.unmarked ? "on" : "bad") + '" data-act="att-um" aria-pressed="' + !!f.unmarked +
+    '" title="Show only the rows with unmarked class days">' + R.um.count + ' unmarked</button>' : "";
+  if (tab === "today") return '<div class="ax-tools">' + ur + right(um) + '</div>';
   return '<div class="ax-tools">' +
-    '<div class="ax-seg modeseg"><button type="button" class="' + (f.mode === "select" ? "on" : "") + '" data-act="ax-mode" data-id="select">Select</button>' +
+    '<div class="ax-seg modeseg" role="group" aria-label="Mode"><button type="button" class="' + (f.mode === "select" ? "on" : "") + '" data-act="ax-mode" data-id="select">Select</button>' +
       '<button type="button" class="' + (f.mode === "brush" ? "on" : "") + '" data-act="ax-mode" data-id="brush">Brush</button></div>' +
-    attMarkChips() +
-    '<button type="button" class="ax-btn icon" data-act="att-undo" title="Undo (Ctrl+Z)"' + (ATT_UNDO.length ? "" : " disabled") + '>↶</button>' +
-    '<button type="button" class="ax-btn icon" data-act="att-redo" title="Redo"' + (ATT_REDO.length ? "" : " disabled") + '>↷</button>' +
-    '<span class="sp"></span>' +
-    (R.um.count ? '<button type="button" class="ax-chip ' + (f.unmarked ? "on" : "bad") + '" data-act="att-um">⚠ ' + R.um.count + ' unmarked</button>' : "") +
-    (nod ? '<button type="button" class="ax-chip warn" data-act="ax-tab" data-id="days" title="Set class days so missed days are flagged">' + nod + ' without class days</button>' : "") +
-    find +
-    '<button type="button" class="ax-btn icon" data-act="att-refresh" title="Bring in marks saved on other devices">↻</button>' +
-    attHookHtml(ATT_HOOKS.toolbar()) +
-  '</div>';
+    attMarkChips() + ur + right(um) + '</div>';
 }
 function attDock(tab){
   if (tab !== "sheet") return "";
@@ -358,20 +400,31 @@ function attDock(tab){
     '<div class="modes"><button type="button" class="' + (f.mode === "select" ? "on" : "") + '" data-act="ax-mode" data-id="select">Select</button>' +
       '<button type="button" class="' + (f.mode === "brush" ? "on" : "") + '" data-act="ax-mode" data-id="brush">Brush</button></div>' +
     '<div class="dm">' + ATT_MARKS.map(m => '<button type="button" class="mkb m-' + m.k + (f.mode === "brush" && f.brush === m.k ? " on" : "") +
-      '" data-act="ax-mk" data-id="' + m.k + '" title="' + esc(m.name) + '">' + esc(m.sym) + '</button>').join("") +
-      '<button type="button" class="mkb clr' + (f.mode === "brush" && f.brush === "-" ? " on" : "") + '" data-act="ax-mk" data-id="-" title="Clear">⌫</button></div></div>';
+      '" data-act="ax-mk" data-id="' + m.k + '" title="' + esc(m.name) + '" aria-label="' + esc(m.name) + '">' + esc(m.sym) + '</button>').join("") +
+      '<button type="button" class="mkb clr' + (f.mode === "brush" && f.brush === "-" ? " on" : "") + '" data-act="ax-mk" data-id="-" title="Clear" aria-label="Clear">⌫</button></div></div>';
 }
+/* five views along the bottom; the marker slides from the old tab to the new one */
 function attTabs(tab, month){
-  const cur = currentMonth();
-  let ms = allMonths().filter(m => m >= addMonths(cur, -5) && m <= addMonths(cur, 1));
-  if (ms.indexOf(month) < 0) ms = ms.concat([month]).sort();
   const mu = attMakeups(month).filter(x => x.state === "overdue" || x.state === "nodate").length;
-  const t = (id, label, extra) => '<button type="button" class="ax-tab' + (tab === id ? " on" : "") + '" data-act="ax-tab" data-id="' + id + '">' + label + (extra || "") + '</button>';
-  return '<nav class="ax-tabs" aria-label="Sheets">' +
-    t("today", "Today") + t("sheet", "Sheet") + t("days", "Class days") + t("makeups", "Make-ups", mu ? '<span class="n">' + mu + '</span>' : "") + t("results", "Results") +
-    '<span class="ax-tsep" aria-hidden="true"></span>' +
-    ms.map(m => '<button type="button" class="ax-tab' + (m === month ? " on" : "") + '" data-act="ax-setmonth" data-id="' + m + '">' + esc(monthShort(m)) +
-      (m === cur ? '<i class="now"></i>' : "") + '</button>').join("") + '</nav>';
+  const nod = DataService.getPlans().filter(p => p.status === "Active" && attNoDays(p)).length;
+  const t = (id, label, n, tip) => '<button type="button" class="ax-tab' + (tab === id ? " on" : "") + '" data-act="ax-tab" data-id="' + id + '"' +
+    (tab === id ? ' aria-current="page"' : "") + (tip ? ' title="' + esc(tip) + '"' : "") + '>' + label + (n ? '<span class="n">' + n + '</span>' : "") + '</button>';
+  return '<nav class="ax-tabs" aria-label="Views"><div class="ax-tabin"><span class="ax-ind" aria-hidden="true"></span>' +
+    t("today", "Today") + t("sheet", "Sheet") + t("days", "Class days", nod, nod ? nod + " active plans have no class days" : "") +
+    t("makeups", "Make-ups", mu, mu ? mu + " make-ups need a date or are overdue" : "") + t("results", "Results") + '</div></nav>';
+}
+function attTabInd(app){
+  const box = app.querySelector(".ax-tabin"), on = box && box.querySelector(".ax-tab.on"), ind = box && box.querySelector(".ax-ind");
+  if (!on || !ind || !on.offsetWidth) return;
+  const L = on.offsetLeft, W = on.offsetWidth, prev = ATT_FX.ind;
+  box.classList.add("has-ind");
+  if (prev && (prev.l !== L || prev.w !== W) && !attCalm()) {
+    ind.style.transition = "none"; ind.style.transform = "translateX(" + prev.l + "px)"; ind.style.width = prev.w + "px";
+    void ind.offsetWidth;
+    ind.style.transition = "";
+  }
+  ind.style.transform = "translateX(" + L + "px)"; ind.style.width = W + "px";
+  ATT_FX.ind = { l: L, w: W };
 }
 
 /* ---- Sheet tab: the month grid ---- */
@@ -379,39 +432,41 @@ function attCols(){
   const z = attZoom(), phone = window.innerWidth < 761;
   const shrink = State.iatt.shrink === null ? phone : State.iatt.shrink;
   const w = v => Math.round(v * z);
-  const cols = shrink ? [["idx", "#", w(40)], ["student", "Student", w(phone ? 128 : 170)]]
-    : [["idx", "#", w(46)], ["teacher", "Teacher", w(130)], ["course", "Course", w(92)], ["time", "Time", w(78)], ["student", "Student", w(200)]];
+  const cols = shrink ? [["idx", "#", w(38)], ["student", "Student", w(phone ? 136 : 186)]]
+    : [["idx", "#", w(40)], ["student", "Student", w(196)], ["time", "Time", w(72)], ["teacher", "Teacher", w(124)]];
   let left = 0; cols.forEach(c => { c[3] = left; left += c[2]; });
-  return { cols: cols, shrink: shrink, day: w(34), tot: w(46) };
+  return { cols: cols, shrink: shrink, day: w(34), tot: w(50), width: left };
 }
 function attSheet(month, rows){
   if (!rows.length) return '<div class="ax-scroll pad" id="axScroll"><div class="ax-empty"><h2>No classes in ' + esc(monthLabel(month)) + '</h2>' +
-    '<p>' + (State.iatt.q || State.iatt.teacher || State.iatt.unmarked ? "Nothing matches the filter. Clear the search or the teacher." : "Class plans active this month appear here as rows.") + '</p></div></div>';
+    '<p>' + (State.iatt.q || State.iatt.teacher || State.iatt.unmarked ? "Nothing matches — clear the search or the teacher." : "Class plans active this month show here as rows.") + '</p></div></div>';
   const C = attCols(), n = daysInMonth(month), td = today();
   const y = parseYMD(td); y.setDate(y.getDate() - 1); const yday = ymd(y);
-  const fees = attFeeMap(month), sel = State.iatt.sel;
-  const stk = c => ' class="stk k-' + c[0] + '" style="left:' + c[3] + 'px;width:' + c[2] + 'px;min-width:' + c[2] + 'px;max-width:' + c[2] + 'px"';
+  const fees = attFeeMap(month), sel = State.iatt.sel, last = C.cols[C.cols.length - 1][0];
+  const stk = (c, extra) => ' class="stk k-' + c[0] + (extra ? " " + extra : "") + (c[0] === last ? " edge" : "") + '" style="left:' + c[3] + 'px;width:' + c[2] + 'px;min-width:' + c[2] + 'px;max-width:' + c[2] + 'px"';
   let h = '<table class="ax-g" id="axGrid"><thead><tr>';
-  C.cols.forEach(c => { h += '<th' + stk(c) + '>' + esc(c[1]) + (c[0] === "student" ? '<button type="button" class="ax-shr" data-act="ax-shrink" title="' + (C.shrink ? "Show teacher, course and time" : "Hide teacher, course and time") + '">' + (C.shrink ? "»" : "«") + '</button>' : "") + '</th>'; });
+  C.cols.forEach(c => { h += '<th' + stk(c) + '>' + esc(c[1]) + (c[0] === "student" ? '<button type="button" class="ax-shr" data-act="ax-shrink" title="' +
+    (C.shrink ? "Show time and teacher" : "Hide time and teacher") + '" aria-label="' + (C.shrink ? "Show more columns" : "Show fewer columns") + '">' + (C.shrink ? "»" : "«") + '</button>' : "") + '</th>'; });
   for (let i = 1; i <= n; i++) {
     const ds = month + "-" + pad2(i), hol = Logic.isHoliday(ds);
-    h += '<th class="dh' + (ds === td ? " today" : "") + (hol ? " hol" : "") + '" style="width:' + C.day + 'px;min-width:' + C.day + 'px" title="' + esc(hol ? hol.name : fmtDate(ds)) + '"><b>' + i + '</b><i>' + DOW[parseYMD(ds).getDay()] + '</i></th>';
+    h += '<th class="dh' + (ds === td ? " today" : "") + (hol ? " hol" : "") + '" style="width:' + C.day + 'px;min-width:' + C.day + 'px" title="' + esc(hol ? hol.name : fmtDate(ds)) + '"><b>' + i + '</b><i>' + DOW[parseYMD(ds).getDay()].slice(0, 2) + '</i></th>';
   }
-  [["Present"], ["Abs-S"], ["Abs-T"], ["Leave"], ["Sub"], ["Held"], ["Attend %"]].forEach(t => { h += '<th class="tot" style="width:' + C.tot + 'px;min-width:' + C.tot + 'px">' + t[0] + '</th>'; });
+  [["Present", "Classes held with the student there (a substitute class counts)"], ["Absent", "Student absent"], ["%", "Attendance this month"]].forEach((t, i) => {
+    h += '<th class="tot' + (i === 0 ? " first" : "") + '" style="width:' + C.tot + 'px;min-width:' + C.tot + 'px" title="' + esc(t[1]) + '">' + t[0] + '</th>'; });
   h += '</tr></thead><tbody>';
   const daily = new Array(n + 1).fill(0); let sumP = 0;
   rows.forEach(function(r, ri){
-    const pl = r.pl, tt = attTotals(pl, month);
-    sumP += tt.p;
+    const pl = r.pl, tt = attTotals(pl, month), pres = tt.p + tt.s;
+    sumP += pres;
     h += '<tr data-pid="' + esc(pl.id) + '">';
     C.cols.forEach(function(c){
-      const base = stk(c);
-      if (c[0] === "idx") h += '<td' + base.replace('class="stk', 'class="stk k-idx') + ' title="Drag to move this row"><span class="gr">⋮⋮</span>' + (ri + 1) + '</td>';
-      else if (c[0] === "teacher") h += '<td' + base.replace('class="stk', 'class="stk inf') + ' data-act="att-row" data-id="' + esc(pl.id) + '">' + esc(r.teacher) + '</td>';
-      else if (c[0] === "course") h += '<td' + base.replace('class="stk', 'class="stk inf') + ' data-act="att-row" data-id="' + esc(pl.id) + '">' + esc(pl.course || "") + '</td>';
-      else if (c[0] === "time") h += '<td' + base.replace('class="stk', 'class="stk inf') + ' data-act="att-row" data-id="' + esc(pl.id) + '">' + esc(pl.time ? time12(pl.time) : "") + '</td>';
-      else h += '<td' + base.replace('class="stk', 'class="stk inf') + ' data-act="att-row" data-id="' + esc(pl.id) + '" title="' + esc(r.name + (C.shrink ? " · " + r.teacher + (pl.time ? " · " + time12(pl.time) : "") : "")) + '">' +
-        esc(r.name) + attFeeBadge(fees[pl.id] || fees["s:" + pl.studentId]) + (attNoDays(pl) ? '<span class="ax-st nodays">no days</span>' : "") + (pl.status !== "Active" ? '<span class="ax-st">' + esc(pl.status) + '</span>' : "") + '</td>';
+      if (c[0] === "idx") h += '<td' + stk(c) + ' title="Drag to move this row"><span class="gr" aria-hidden="true">⋮⋮</span>' + (ri + 1) + '</td>';
+      else if (c[0] === "student") h += '<td' + stk(c, "inf") + ' data-act="att-row" data-id="' + esc(pl.id) + '" title="' + esc([r.name, r.teacher, pl.course, pl.time ? time12(pl.time) : ""].filter(Boolean).join(" · ")) + '">' +
+        '<span class="nm">' + esc(r.name) + '</span>' + attFeeBadge(fees[pl.id] || fees["s:" + pl.studentId]) +
+        (attNoDays(pl) ? '<span class="ax-st nodays" title="Class days not set — set them on Class days">no days</span>' : "") +
+        (pl.status !== "Active" ? '<span class="ax-st">' + esc(pl.status) + '</span>' : "") + '</td>';
+      else if (c[0] === "time") h += '<td' + stk(c, "inf num") + ' data-act="att-row" data-id="' + esc(pl.id) + '">' + esc(pl.time ? time12(pl.time) : "") + '</td>';
+      else h += '<td' + stk(c, "inf") + ' data-act="att-row" data-id="' + esc(pl.id) + '" title="' + esc(r.teacher + (pl.course ? " · " + pl.course : "")) + '">' + esc(r.teacher) + '</td>';
     });
     for (let i = 1; i <= n; i++) {
       const ds = month + "-" + pad2(i), c = DataService.classAt(pl.id, ds), k = markOf(c);
@@ -424,50 +479,53 @@ function attSheet(month, rows){
       if (!k && !hol && !out && !off && ds <= yday && !attNoDays(pl)) cls += " um";
       if (ds === td) cls += " tdy";
       if (sel && sel.planId === pl.id && sel.ds === ds) cls += " sel";
+      if (ATT_FX.cells[pl.id + "|" + ds]) cls += " pop";
       if (k === "P" || k === "E" || k === "X" || k === "S") daily[i]++;
       h += '<td class="' + cls + '" data-pid="' + esc(pl.id) + '" data-ds="' + ds + '"' + (c ? ' title="' + esc((ATT_MK[k] ? ATT_MK[k].name : "") + (attNoteLine(c) ? " · " + attNoteLine(c) : "")) + '"' : "") + '>' +
         (k ? '<span class="mk">' + esc(attSym(k)) + '</span>' : "") + '</td>';
     }
-    h += '<td class="tot k-p">' + tt.p + '</td><td class="tot k-a">' + tt.a + '</td><td class="tot k-t">' + tt.t + '</td>' +
-      '<td class="tot k-l">' + tt.l + '</td><td class="tot k-s">' + tt.s + '</td><td class="tot">' + tt.h + '</td>' +
-      '<td class="tot k-pct ' + (tt.pct === null ? "" : tt.pct >= 80 ? "good" : tt.pct < 50 ? "bad" : "") + '">' + (tt.pct === null ? "" : tt.pct + "%") + '</td></tr>';
+    h += '<td class="tot k-p first">' + pres + '</td><td class="tot k-a">' + (tt.a || "") + '</td>' +
+      '<td class="tot k-pct ' + (tt.pct === null ? "" : tt.pct >= 80 ? "good" : tt.pct < 50 ? "bad" : "") + '">' + (tt.pct === null ? "–" : Math.round(tt.pct) + "%") + '</td></tr>';
   });
-  h += '</tbody><tfoot><tr>' + C.cols.map(c => '<td' + stk(c) + '>' + (c[0] === "student" ? "Daily present →" : "") + '</td>').join("");
-  for (let i = 1; i <= n; i++) h += '<td' + (Logic.isHoliday(month + "-" + pad2(i)) ? ' class="hol"' : "") + '>' + daily[i] + '</td>';
-  h += '<td>' + sumP + '</td><td colspan="6"></td></tr></tfoot></table>';
+  h += '</tbody><tfoot><tr>' + C.cols.map(c => '<td' + stk(c, c[0] === last ? "lbl" : "") + '>' + (c[0] === last ? "Present each day" : "") + '</td>').join("");
+  for (let i = 1; i <= n; i++) h += '<td' + (Logic.isHoliday(month + "-" + pad2(i)) ? ' class="hol"' : "") + '>' + (daily[i] || "") + '</td>';
+  h += '<td class="first">' + sumP + '</td><td colspan="2"></td></tr></tfoot></table>';
   return '<div class="ax-scroll' + (State.iatt.mode === "brush" ? " brush" : "") + '" id="axScroll" tabindex="0" aria-label="Attendance sheet">' + h + '</div>' + attPick(month);
 }
+/* the mark picker: rises as a card on a computer, a bottom sheet on a phone */
 function attPick(month){
   const s = State.iatt.sel;
   if (!s || monthOf(s.ds) !== month || State.iatt.mode !== "select") return "";
   const pl = DataService.getPlan(s.planId); if (!pl) return "";
   const st = DataService.getStudent(pl.studentId) || {}, c = DataService.classAt(s.planId, s.ds), k = markOf(c);
-  const hol = Logic.isHoliday(s.ds);
-  const when = c && c.markedAt ? "Marked by " + (c.markedBy || "—") + " · " + fmtDate(c.markedAt.slice(0, 10)) + ", " + c.markedAt.slice(11, 16) + " UTC" : "Not marked";
-  return '<div class="ax-pick" role="dialog" aria-label="Mark this day"><div class="ph"><div><b>' + esc(st.name || pl.studentId) + '</b> · ' +
-      esc(DOW[parseYMD(s.ds).getDay()] + " " + fmtDate(s.ds)) + (hol ? ' · Holiday: ' + esc(hol.name) : "") +
-      (!Logic.planDay(pl, s.ds) && !hol && !attNoDays(pl) ? " · not a class day" : "") +
+  const hol = Logic.isHoliday(s.ds), key = s.planId + "|" + s.ds;
+  const when = c && c.markedAt ? "Marked by " + (c.markedBy || "—") + " · " + fmtDate(c.markedAt.slice(0, 10)) + ", " + c.markedAt.slice(11, 16) + " UTC" : "Not marked yet";
+  const flag = hol ? "Holiday · " + hol.name : (!Logic.planDay(pl, s.ds) && !attNoDays(pl) ? "Not a class day" : "");
+  return '<div class="ax-pick' + (ATT_FX.pick !== key ? " in" : "") + '" role="dialog" aria-label="Mark this day">' +
+    '<div class="ph"><div><b>' + esc(st.name || pl.studentId) + '</b><span class="d">' + esc(DOW[parseYMD(s.ds).getDay()] + " " + fmtDate(s.ds)) + '</span>' +
+      (flag ? '<span class="fl">' + esc(flag) + '</span>' : "") +
       '<small>' + esc(attNoteLine(c) ? attNoteLine(c) + " · " + when : when) + '</small></div>' +
       '<button type="button" class="ax-x" data-act="att-unsel" aria-label="Close">×</button></div>' +
     '<div class="row">' + ATT_MARKS.map(m => '<button type="button" class="mkb m-' + m.k + (k === m.k ? " on" : "") + '" data-act="att-set" data-id="' + esc(pl.id) +
-      '" data-ds="' + s.ds + '" data-k="' + m.k + '" title="' + esc(m.name) + '" aria-pressed="' + (k === m.k) + '">' + esc(m.sym) + '</button>').join("") +
-      '<button type="button" class="mkb clr" data-act="att-set" data-id="' + esc(pl.id) + '" data-ds="' + s.ds + '" data-k="" title="Clear">⌫</button></div>' +
-    '<div class="ft"><button type="button" class="ax-btn" data-act="att-note" data-id="' + esc(pl.id) + '" data-ds="' + s.ds + '">Note…</button>' +
-      (k === "A" ? '<button type="button" class="ax-btn primary" data-act="ax-wa" data-id="' + esc(pl.id) + '" data-ds="' + s.ds + '">💬 WhatsApp parent</button>' : "") +
-      '<button type="button" class="ax-btn" data-act="att-row" data-id="' + esc(pl.id) + '">Student…</button></div>' +
-    '<div class="hint">Keys: p a t l s e x d r c · arrows move · Enter = note · Delete clears · paste from Google Sheets</div></div>';
+      '" data-ds="' + s.ds + '" data-k="' + m.k + '" title="' + esc(m.name) + '" aria-label="' + esc(m.name) + '" aria-pressed="' + (k === m.k) + '">' + esc(m.sym) + '</button>').join("") +
+      '<button type="button" class="mkb clr" data-act="att-set" data-id="' + esc(pl.id) + '" data-ds="' + s.ds + '" data-k="" title="Clear" aria-label="Clear">⌫</button></div>' +
+    '<div class="ft"><button type="button" class="ax-pill" data-act="att-note" data-id="' + esc(pl.id) + '" data-ds="' + s.ds + '">Note…</button>' +
+      (k === "A" ? '<button type="button" class="ax-pill primary" data-act="ax-wa" data-id="' + esc(pl.id) + '" data-ds="' + s.ds + '">💬 WhatsApp parent</button>' : "") +
+      '<button type="button" class="ax-pill" data-act="att-row" data-id="' + esc(pl.id) + '">Student…</button>' +
+      '<span class="hint">p a t l s e x d r c · arrows · Enter = note</span></div></div>';
 }
 
 /* ---- Today tab ---- */
 function attToday(R){
-  const f = State.iatt, ds = f.date || today();
-  const head = '<div style="display:flex;gap:8px;align-items:center;margin:0 0 12px;max-width:900px">' +
-    '<button type="button" class="ax-btn" style="height:40px;min-width:44px" data-act="att-day" data-id="-1" aria-label="Previous day">‹</button>' +
-    '<input class="ax-find" type="date" data-act="att-date" value="' + esc(ds) + '" aria-label="Day" style="flex:1;width:auto;height:40px">' +
-    '<button type="button" class="ax-btn" style="height:40px;min-width:44px" data-act="att-day" data-id="1" aria-label="Next day">›</button>' +
-    (ds !== today() ? '<button type="button" class="ax-btn" style="height:40px" data-act="att-day" data-id="0">Today</button>' : "") + '</div>';
+  const f = State.iatt, ds = f.date || today(), td = today();
+  const lab = (ds === td ? "Today · " : "") + DOW[parseYMD(ds).getDay()] + " " + fmtDate(ds);
+  const head = '<div class="ax-dayhead">' +
+    '<button type="button" class="ax-ib" data-act="att-day" data-id="-1" aria-label="Previous day">‹</button>' +
+    '<label class="ax-dayl"><b>' + esc(lab) + '</b><span class="cv" aria-hidden="true"></span><input type="date" data-act="att-date" value="' + esc(ds) + '" aria-label="Choose a day"></label>' +
+    '<button type="button" class="ax-ib" data-act="att-day" data-id="1" aria-label="Next day">›</button>' +
+    (ds !== td ? '<button type="button" class="ax-pill" data-act="att-day" data-id="0">Today</button>' : "") + '</div>';
   const hol = Logic.isHoliday(ds);
-  if (hol) return '<div class="ax-scroll pad" id="axScroll">' + head + '<div class="ax-empty"><h2>Holiday: ' + esc(hol.name) + '</h2><p>No classes are expected on ' + esc(fmtDate(ds)) + '.</p></div></div>';
+  if (hol) return '<div class="ax-scroll pad" id="axScroll">' + head + '<div class="ax-empty"><h2>Holiday · ' + esc(hol.name) + '</h2><p>No classes are expected on ' + esc(fmtDate(ds)) + '.</p></div></div>';
   const ids = {}; R.rows.forEach(r => ids[r.pl.id] = r);
   const q = (f.q || "").toLowerCase().trim();
   const list = attOrdered(Logic.sheetPlans(monthOf(ds))).filter(pl => {
@@ -477,23 +535,24 @@ function attToday(R){
     return attPossible(pl, ds) || !!DataService.classAt(pl.id, ds);
   });
   list.sort((a, b) => (attNoDays(a) ? 1 : 0) - (attNoDays(b) ? 1 : 0));
-  if (!list.length) return '<div class="ax-scroll pad" id="axScroll">' + head + '<div class="ax-empty"><h2>No classes on ' + esc(fmtDate(ds)) + '</h2><p>No class plan meets on this day.</p></div></div>';
+  if (!list.length) return '<div class="ax-scroll pad" id="axScroll">' + head + '<div class="ax-empty"><h2>No classes on this day</h2><p>No class plan meets on ' + esc(fmtDate(ds)) + '.</p></div></div>';
   const done = list.filter(pl => { const c = DataService.classAt(pl.id, ds); return c && c.status !== "Note"; }).length;
-  const fees = attFeeMap(monthOf(ds));
+  const fees = attFeeMap(monthOf(ds)), pct = Math.round(done * 100 / list.length);
   return '<div class="ax-scroll pad" id="axScroll">' + head +
-    '<div class="ax-sub" style="margin-top:0">' + done + ' of ' + list.length + ' marked · ' + esc(DOW[parseYMD(ds).getDay()] + " " + fmtDate(ds)) + '</div>' +
+    '<div class="ax-progress" role="progressbar" aria-valuemin="0" aria-valuemax="' + list.length + '" aria-valuenow="' + done + '"><div class="bar"><i style="width:' + pct + '%"></i></div>' +
+      '<span><b>' + done + '</b> of ' + list.length + ' marked</span></div>' +
     '<div class="ax-list">' + list.map(function(pl, i){
-      const grp = attNoDays(pl) && (i === 0 || !attNoDays(list[i - 1])) ? '<div class="ax-grp">Class days not set — mark the ones that had a class on this day</div>' : "";
+      const grp = attNoDays(pl) && (i === 0 || !attNoDays(list[i - 1])) ? '<div class="ax-grp">Class days not set — mark the ones that had a class today</div>' : "";
       const st = DataService.getStudent(pl.studentId) || {}, t = DataService.getTeacher(pl.teacherId) || {};
-      const c = DataService.classAt(pl.id, ds), k = markOf(c), note = attNoteLine(c);
-      return grp + '<div class="ax-row' + (c && c.status !== "Note" ? " done" : attNoDays(pl) ? " plain" : "") + '">' +
-        '<div class="info"><button type="button" class="ax-namebtn" data-act="att-row" data-id="' + esc(pl.id) + '">' + esc(st.name || pl.studentId) + ' ›</button>' +
+      const c = DataService.classAt(pl.id, ds), k = markOf(c), note = attNoteLine(c), hit = !!ATT_FX.cells[pl.id + "|" + ds];
+      return grp + '<div class="ax-row' + (c && c.status !== "Note" ? " done" : attNoDays(pl) ? " plain" : "") + '" style="--i:' + Math.min(i, 14) + '">' +
+        '<div class="info"><button type="button" class="ax-namebtn" data-act="att-row" data-id="' + esc(pl.id) + '">' + esc(st.name || pl.studentId) + '</button>' +
           '<small>' + esc((pl.time ? time12(pl.time) + " · " : "") + (t.name || "—") + (pl.course ? " · " + pl.course : "")) + attFeeBadge(fees[pl.id] || fees["s:" + pl.studentId]) + '</small>' +
           (note ? '<small class="axnote">' + esc(note) + '</small>' : "") + '</div>' +
-        '<div class="btns">' + ["P", "A", "T", "L", "S"].map(m => '<button type="button" class="mkb m-' + m + (k === m ? " on" : "") +
-            '" data-act="att-set" data-id="' + esc(pl.id) + '" data-ds="' + ds + '" data-k="' + m + '" aria-pressed="' + (k === m) + '" title="' + esc(ATT_MK[m].name) + '">' + esc(ATT_MK[m].sym) + '</button>').join("") +
-          (k === "A" ? '<button type="button" class="mkb more" data-act="ax-wa" data-id="' + esc(pl.id) + '" data-ds="' + ds + '" title="WhatsApp the parent">💬</button>' : "") +
-          '<button type="button" class="mkb more' + ("EXNRC".indexOf(k) >= 0 && k ? " m-" + k : "") + '" data-act="att-note" data-id="' + esc(pl.id) + '" data-ds="' + ds + '" title="More marks and notes">' +
+        '<div class="btns">' + ["P", "A", "T", "L", "S"].map(m => '<button type="button" class="mkb m-' + m + (k === m ? " on" + (hit ? " pop" : "") : "") +
+            '" data-act="att-set" data-id="' + esc(pl.id) + '" data-ds="' + ds + '" data-k="' + m + '" aria-pressed="' + (k === m) + '" title="' + esc(ATT_MK[m].name) + '" aria-label="' + esc(ATT_MK[m].name) + '">' + esc(ATT_MK[m].sym) + '</button>').join("") +
+          (k === "A" ? '<button type="button" class="mkb more wa" data-act="ax-wa" data-id="' + esc(pl.id) + '" data-ds="' + ds + '" title="WhatsApp the parent" aria-label="WhatsApp the parent">💬</button>' : "") +
+          '<button type="button" class="mkb more' + ("EXNRC".indexOf(k) >= 0 && k ? " m-" + k + " on" + (hit ? " pop" : "") : "") + '" data-act="att-note" data-id="' + esc(pl.id) + '" data-ds="' + ds + '" title="More marks and notes" aria-label="More marks and notes">' +
             ("EXNRC".indexOf(k) >= 0 && k ? esc(attSym(k)) : "…") + '</button>' +
         '</div></div>';
     }).join("") + '</div></div>';
@@ -514,20 +573,21 @@ const ATT_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 function attDays(){
   const f = State.iatt, rows = attSchedRows(), picked = Object.keys(f.pick).filter(k => f.pick[k]);
   const noDays = DataService.getPlans().filter(p => p.status === "Active" && attNoDays(p)).length;
-  const bulk = picked.length ? '<div class="ax-bulk"><b>' + picked.length + ' selected</b><span>Days</span><div class="ax-wk">' +
-      ATT_WEEK.map(d => '<button type="button" class="ax-dayb' + (f.bulkDays.indexOf(d) >= 0 ? " on" : "") + '" data-act="ax-bday" data-id="' + d + '">' + d.slice(0, 2) + '</button>').join("") + '</div>' +
-      '<span>Time</span><input class="ax-find" type="time" style="width:120px" data-act="ax-btime" value="' + esc(f.bulkTime) + '">' +
-      '<button type="button" class="ax-btn primary" data-act="ax-bapply">Apply to ' + picked.length + '</button>' +
-      '<button type="button" class="ax-btn" data-act="ax-bclear">Clear selection</button></div>' : "";
-  let h = '<div class="ax-h">Class days</div><div class="ax-sub">' + (noDays ? '<b>' + noDays + '</b> active plan' + (noDays > 1 ? "s have" : " has") + ' no class days yet — they are listed first. ' : "") +
-    'Tap the days each class meets; time and minutes save as you change them. Tick several rows to set them all at once.</div>' + bulk;
+  const rise = picked.length && !ATT_FX.bulk; ATT_FX.bulk = picked.length > 0;
+  const bulk = picked.length ? '<div class="ax-bulk' + (rise ? " in" : "") + '"><b>' + picked.length + ' selected</b><div class="ax-wk">' +
+      ATT_WEEK.map(d => '<button type="button" class="ax-dayb' + (f.bulkDays.indexOf(d) >= 0 ? " on" : "") + '" data-act="ax-bday" data-id="' + d + '" aria-pressed="' + (f.bulkDays.indexOf(d) >= 0) + '">' + d.slice(0, 2) + '</button>').join("") + '</div>' +
+      '<input class="ax-time" type="time" data-act="ax-btime" value="' + esc(f.bulkTime) + '" aria-label="Class time for the selected plans">' +
+      '<button type="button" class="ax-pill primary" data-act="ax-bapply">Apply to ' + picked.length + '</button>' +
+      '<button type="button" class="ax-pill" data-act="ax-bclear">Clear</button></div>' : "";
+  let h = '<div class="ax-h">Class days</div><div class="ax-sub">' + (noDays ? '<b>' + noDays + '</b> active plan' + (noDays > 1 ? "s have" : " has") + ' no class days — listed first. ' : "") +
+    'Tap the days each class meets; changes save as you go. Tick rows to set many at once.</div>' + bulk;
   if (!rows.length) return '<div class="ax-scroll pad" id="axScroll">' + h + '<div class="ax-empty"><h2>No active plans match</h2><p>Clear the search or the teacher.</p></div></div>';
   h += '<table class="ax-g sched"><thead><tr><th style="width:38px"><input type="checkbox" data-act="ax-pickall" aria-label="Select all"' + (rows.every(p => f.pick[p.id]) ? " checked" : "") + '></th>' +
     '<th style="width:190px">Student</th><th style="width:130px">Teacher</th><th style="width:96px">Course</th><th style="width:118px">Time</th>' +
     '<th style="width:250px">Class days</th><th style="width:84px">Minutes</th><th style="width:140px">Start</th></tr></thead><tbody>';
   rows.forEach(function(p){
     const st = DataService.getStudent(p.studentId) || {}, t = DataService.getTeacher(p.teacherId) || {};
-    h += '<tr class="' + (attNoDays(p) ? "nodays" : "") + '"><td class="c" style="text-align:center"><input type="checkbox" data-act="ax-pickrow" data-id="' + esc(p.id) + '"' + (f.pick[p.id] ? " checked" : "") + '></td>' +
+    h += '<tr class="' + (attNoDays(p) ? "nodays" : "") + (f.pick[p.id] ? " picked" : "") + '"><td class="c" style="text-align:center"><input type="checkbox" data-act="ax-pickrow" data-id="' + esc(p.id) + '"' + (f.pick[p.id] ? " checked" : "") + ' aria-label="Select ' + esc(st.name || p.studentId) + '"></td>' +
       '<td class="k-student" title="' + esc(p.id) + '">' + esc(st.name || p.studentId) + '</td><td>' + esc(t.name || "—") + '</td><td>' + esc(p.course || "") + '</td>' +
       '<td class="c"><input type="time" data-act="ax-ptime" data-id="' + esc(p.id) + '" value="' + esc(p.time || "") + '" aria-label="Class time"></td>' +
       '<td class="c"><div class="ax-wk">' + ATT_WEEK.map(d => '<button type="button" class="ax-dayb' + ((p.days || []).indexOf(d) >= 0 ? " on" : "") + '" data-act="ax-pday" data-id="' + esc(p.id) + '" data-day="' + d + '" aria-pressed="' + ((p.days || []).indexOf(d) >= 0) + '">' + d.slice(0, 2) + '</button>').join("") + '</div></td>' +
@@ -572,21 +632,23 @@ function attMakeupsHtml(month){
     return !q || (st.name + " " + (x.pl.course || "")).toLowerCase().indexOf(q) >= 0;
   });
   const cnt = s => all.filter(x => x.state === s).length;
-  const label = { overdue: "Make-up date passed — not marked yet", nodate: "No make-up date set", planned: "Planned", done: "Made up" };
+  const label = { overdue: "Make-up date passed — not marked yet", nodate: "No make-up date", planned: "Planned", done: "Made up" };
   let h = '<div class="ax-h">Make-ups</div><div class="ax-sub">Teacher-absent and rescheduled days in ' + esc(monthShort(addMonths(month, -1))) + ' and ' + esc(monthShort(month)) +
-    '. A day is made up when a class is marked on its make-up date, or a Present mark says "make-up for" that day.</div>' +
-    '<div class="ax-kpis">' + [["overdue", "Overdue"], ["nodate", "No date"], ["planned", "Planned"], ["done", "Made up"]].map(k => '<div class="ax-kpi"><b>' + cnt(k[0]) + '</b><span>' + k[1] + '</span></div>').join("") + '</div>';
+    '. A day counts as made up once a class is marked on its make-up date.</div>' +
+    '<div class="ax-counts">' + [["overdue", "overdue"], ["nodate", "no date"], ["planned", "planned"], ["done", "made up"]].map(k =>
+      '<span class="c-' + k[0] + (cnt(k[0]) ? "" : " zero") + '"><b>' + cnt(k[0]) + '</b> ' + k[1] + '</span>').join("") + '</div>';
   if (!all.length) return '<div class="ax-scroll pad" id="axScroll">' + h + '<div class="ax-empty"><h2>Nothing to make up</h2><p>No teacher-absent or rescheduled days in these two months.</p></div></div>';
+  let i = 0;
   ["overdue", "nodate", "planned", "done"].forEach(function(s){
     const list = all.filter(x => x.state === s); if (!list.length) return;
-    h += '<div class="ax-grp">' + label[s] + ' · ' + list.length + '</div><div class="ax-list" style="margin-top:6px">' + list.map(function(x){
+    h += '<div class="ax-grp">' + label[s] + ' · ' + list.length + '</div><div class="ax-list">' + list.map(function(x){
       const st = DataService.getStudent(x.pl.studentId) || {}, t = DataService.getTeacher(x.c.teacherId || x.pl.teacherId) || {};
-      return '<div class="ax-row' + (s === "done" ? " done" : s === "planned" ? " plain" : "") + '"><div class="info"><b>' + esc(st.name || x.pl.studentId) + '</b>' +
-        '<small>' + esc((x.c.status === "Teacher Absent" ? "Teacher absent" : "Rescheduled") + " on " + DOW[parseYMD(x.c.date).getDay()] + " " + fmtDate(x.c.date) + " · " + (t.name || "—") + (x.pl.course ? " · " + x.pl.course : "")) + '</small>' +
-        '<small class="axnote">' + esc(s === "done" ? "Made up on " + fmtDate(x.done.date) : x.c.makeup ? "Make-up on " + fmtDate(x.c.makeup) : "No make-up date") + '</small></div>' +
+      return '<div class="ax-row' + (s === "done" ? " done" : s === "planned" ? " plain" : "") + '" style="--i:' + Math.min(i++, 14) + '"><div class="info"><b>' + esc(st.name || x.pl.studentId) + '</b>' +
+        '<small>' + esc((x.c.status === "Teacher Absent" ? "Teacher absent" : "Rescheduled") + " · " + DOW[parseYMD(x.c.date).getDay()] + " " + fmtDate(x.c.date) + " · " + (t.name || "—") + (x.pl.course ? " · " + x.pl.course : "")) + '</small>' +
+        '<small class="axnote">' + esc(s === "done" ? "Made up on " + fmtDate(x.done.date) : x.c.makeup ? "Make-up on " + fmtDate(x.c.makeup) : "No make-up date yet") + '</small></div>' +
         '<div class="btns">' + (s === "done" ? "" :
-          '<button type="button" class="ax-btn" data-act="att-note" data-id="' + esc(x.pl.id) + '" data-ds="' + x.c.date + '">' + (x.c.makeup ? "Change date" : "Set make-up date") + '</button>' +
-          '<button type="button" class="ax-btn primary" data-act="ax-mu-held" data-id="' + esc(x.pl.id) + '" data-ds="' + x.c.date + '">Mark make-up held</button>') + '</div></div>';
+          '<button type="button" class="ax-pill" data-act="att-note" data-id="' + esc(x.pl.id) + '" data-ds="' + x.c.date + '">' + (x.c.makeup ? "Change date" : "Set date") + '</button>' +
+          '<button type="button" class="ax-pill primary" data-act="ax-mu-held" data-id="' + esc(x.pl.id) + '" data-ds="' + x.c.date + '">Mark held</button>') + '</div></div>';
     }).join("") + '</div>';
   });
   return '<div class="ax-scroll pad" id="axScroll">' + h + '</div>';
@@ -604,14 +666,14 @@ function attResults(month){
 }
 function attResultsHtml(month){
   const list = attResults(month);
-  let h = '<div class="ax-h">Exam and test results · ' + esc(monthLabel(month)) + '</div><div class="ax-sub">From days marked Exa or Test. Tap a row to change the portion or result.</div>';
-  if (!list.length) return '<div class="ax-scroll pad" id="axScroll">' + h + '<div class="ax-empty"><h2>No exams or tests yet</h2><p>Mark a day Exa or Test and add the portion and result in its note.</p></div></div>';
+  let h = '<div class="ax-h">Exam and test results · ' + esc(monthLabel(month)) + '</div><div class="ax-sub">Days marked Exa or Test. Tap a row to change the portion or result.</div>';
+  if (!list.length) return '<div class="ax-scroll pad" id="axScroll">' + h + '<div class="ax-empty"><h2>No exams or tests yet</h2><p>Mark a day Exa or Test, then add the portion and result in its note.</p></div></div>';
   h += '<table class="ax-g sched"><thead><tr><th style="width:96px">Date</th><th style="width:190px">Student</th><th style="width:90px">Kind</th><th style="width:110px">Course</th>' +
     '<th style="width:220px">Portion</th><th style="width:110px">Result</th><th style="width:130px">Teacher</th></tr></thead><tbody>' +
     list.map(function(c){
       const st = DataService.getStudent(c.studentId) || {}, pl = DataService.getPlan(c.planId) || {}, t = DataService.getTeacher(c.takenBy || c.teacherId) || {};
       return '<tr class="inf" data-act="att-note" data-id="' + esc(c.planId) + '" data-ds="' + c.date + '" style="cursor:pointer"><td>' + esc(fmtDate(c.date)) + '</td><td class="k-student">' + esc(st.name || c.studentId) +
-        '</td><td><span class="ax-st m-' + (c.activity === "Exam" ? "E" : "X") + '" style="border:0">' + esc(c.activity) + '</span></td><td>' + esc(pl.course || "") + '</td><td title="' + esc(c.portion || "") + '">' + esc(c.portion || "—") +
+        '</td><td><span class="ax-st m-' + (c.activity === "Exam" ? "E" : "X") + '">' + esc(c.activity) + '</span></td><td>' + esc(pl.course || "") + '</td><td title="' + esc(c.portion || "") + '">' + esc(c.portion || "—") +
         '</td><td><b>' + esc(c.result || "—") + '</b></td><td>' + esc(t.name || "—") + '</td></tr>';
     }).join("") + '</tbody></table>';
   return '<div class="ax-scroll pad" id="axScroll">' + h + '</div>';
@@ -620,19 +682,22 @@ function attResultsHtml(month){
 /* ---- ⋯ menu ---- */
 function attMenu(){
   if (!State.iatt.menu) return "";
-  const admin = !!window.MQ_ADMIN, locked = attLocked(State.month), th = attTheme();
-  const mi = (act, label, id, cls) => '<button type="button" class="ax-mi' + (cls ? " " + cls : "") + '" data-act="' + act + '"' + (id !== undefined ? ' data-id="' + esc(id) + '"' : "") + '>' + label + '</button>';
-  return '<div class="ax-menu" role="menu">' +
-    '<div class="ax-mh">Reports (print or save as PDF)</div>' +
-    mi("ax-rep-student", "Student attendance report…") + mi("ax-rep-teacher", "Teacher attendance report…") + mi("ax-rep-results", "Exam and test results") +
-    '<div class="ax-msep"></div><div class="ax-mh">Sheet</div>' +
+  const admin = !!window.MQ_ADMIN, locked = attLocked(State.month), th = attTheme(), z = attZoom();
+  const mi = (act, label, id, cls) => '<button type="button" class="ax-mi' + (cls ? " " + cls : "") + '" role="menuitem" data-act="' + act + '"' + (id !== undefined ? ' data-id="' + esc(id) + '"' : "") + '>' + label + '</button>';
+  const seg = (items) => '<div class="ax-seg sm">' + items.map(it => '<button type="button" class="' + (it[3] ? "on" : "") + '" data-act="' + it[0] + '" data-id="' + esc(it[1]) + '"' +
+    (it[4] ? ' aria-label="' + esc(it[4]) + '"' : "") + '>' + esc(it[2]) + '</button>').join("") + '</div>';
+  return '<div class="ax-menu' + (ATT_FX.menu ? " in" : "") + '" role="menu">' +
+    '<div class="ax-mh">Reports</div>' +
+    mi("ax-rep-student", "Student report…") + mi("ax-rep-teacher", "Teacher report…") + mi("ax-rep-results", "Exam and test results") +
+    '<div class="ax-msep"></div><div class="ax-mh">View</div>' +
     mi("ax-sort", "Sort rows by class time") +
-    mi("ax-zoom", "Zoom in", "1") + mi("ax-zoom", "Zoom out", "-1") + mi("ax-zoom", "Zoom 100%", "0") +
-    mi("ax-theme", (th === "auto" ? "✓ " : "") + "Theme: automatic", "auto") + mi("ax-theme", (th === "light" ? "✓ " : "") + "Theme: light", "light") + mi("ax-theme", (th === "dark" ? "✓ " : "") + "Theme: dark", "dark") +
+    '<div class="ax-mrow"><span>Zoom</span>' + seg([["ax-zoom", "-1", "−", false, "Zoom out"], ["ax-zoom", "0", Math.round(z * 100) + "%", false, "Zoom 100%"], ["ax-zoom", "1", "+", false, "Zoom in"]]) + '</div>' +
+    (admin ? "" : '<div class="ax-mrow"><span>Theme</span>' + seg([["ax-theme", "auto", "Auto", th === "auto"], ["ax-theme", "light", "Light", th === "light"], ["ax-theme", "dark", "Dark", th === "dark"]]) + '</div>') +
+    mi("ax-refresh", "Refresh now") +
     (admin ? "" : '<div class="ax-msep"></div><div class="ax-mh">Office</div>' +
-      mi("att-admins", "Admin links…") + mi("holidays", "Holidays…") + mi("ax-wa-text", "Absent WhatsApp message…") +
-      (Actions["imp-open"] ? mi("imp-open", "Import old attendance sheet…") : "") +
-      (locked ? mi("att-reopen", "🔒 Reopen " + monthLabel(State.month)) : mi("att-close", "Close " + monthLabel(State.month) + "…"))) +
+      mi("att-admins", "Admin links…") + mi("holidays", "Holidays…") + mi("ax-wa-text", "Absent message…") +
+      (Actions["imp-open"] ? mi("imp-open", "Import old sheet…") : "") +
+      (locked ? mi("att-reopen", "Reopen " + esc(monthLabel(State.month))) : mi("att-close", "Close " + esc(monthLabel(State.month)) + "…"))) +
   '</div>';
 }
 
@@ -649,27 +714,32 @@ function attPaint(){
   const month = State.month, tab = attTab(), R = attRows(month);
   let app = document.getElementById("attApp");
   if (!app) {
-    app = document.createElement("div"); app.id = "attApp"; app.className = "ax";
+    app = document.createElement("div"); app.id = "attApp"; app.className = "ax mount" + (window.MQ_ADMIN ? " adm" : "");
     document.body.appendChild(app); document.body.classList.add("ax-open");
     attWire(app);
+    setTimeout(() => app.classList.remove("mount"), 800);
   }
   const sc0 = document.getElementById("axScroll");
-  const key = tab + "|" + month;
-  if (sc0 && ATT_VIEW.key === key) { ATT_VIEW.left = sc0.scrollLeft; ATT_VIEW.top = sc0.scrollTop; }
-  app.setAttribute("data-theme", attTheme());
+  const key = tab + "|" + month, fresh = ATT_VIEW.key !== key;
+  if (sc0 && !fresh) { ATT_VIEW.left = sc0.scrollLeft; ATT_VIEW.top = sc0.scrollTop; }
+  if (window.MQ_ADMIN) app.removeAttribute("data-theme"); else app.setAttribute("data-theme", attTheme());
   const z = attZoom();
   app.style.setProperty("--fs", (13 * z).toFixed(1) + "px"); app.style.setProperty("--rh", Math.round(32 * z) + "px"); app.style.setProperty("--hh", Math.round(40 * z) + "px");
   const body = tab === "today" ? attToday(R) : tab === "days" ? attDays() : tab === "makeups" ? attMakeupsHtml(month) : tab === "results" ? attResultsHtml(month) : attSheet(month, R.rows);
-  app.innerHTML = attTop(month, R) + attTools(tab, month, R) + '<main class="ax-stage">' + body + attMenu() + '</main>' + attDock(tab) + attTabs(tab, month);
+  app.innerHTML = attTop(month, R) + attTools(tab, month, R) + '<main class="ax-stage' + (fresh && !ATT_VIEW.first ? " enter" : "") + '">' + body + attMenu() + '</main>' + attDock(tab) + attTabs(tab, month);
   const sc = document.getElementById("axScroll");
   if (sc) {
-    if (ATT_VIEW.key === key) { sc.scrollLeft = ATT_VIEW.left; sc.scrollTop = ATT_VIEW.top; }
+    if (!fresh) { sc.scrollLeft = ATT_VIEW.left; sc.scrollTop = ATT_VIEW.top; }
     else if (tab === "sheet") {
       const th = sc.querySelector("th.dh.today"), C = attCols();
-      if (th) sc.scrollLeft = Math.max(0, th.offsetLeft - C.cols.reduce((a, c) => a + c[2], 0) - C.day * 3);
+      if (th) sc.scrollLeft = Math.max(0, th.offsetLeft - C.width - C.day * 3);
     }
   }
-  ATT_VIEW.key = key;
+  attTabInd(app);
+  const s = State.iatt.sel;
+  ATT_FX.cells = {}; ATT_FX.menu = false; ATT_FX.add = false;
+  ATT_FX.pick = s && tab === "sheet" && State.iatt.mode === "select" ? s.planId + "|" + s.ds : "";
+  ATT_VIEW.key = key; ATT_VIEW.first = false;
 }
 Pages.iAtt = function(){
   if (!window.MQ_ADMIN && Date.now() - ATT_LIVE.at > 60000) setTimeout(() => attPull(false), 50);
@@ -683,10 +753,20 @@ go = function(page){ _attGo(page); if (page !== "iAtt") attUnmount(); };
 const ATT_DRAG = { brush: null, row: null, pinch: null };
 function attCellAt(x, y){ const el = document.elementFromPoint(x, y); return el ? el.closest("#axGrid td.dc") : null; }
 function attWire(app){
+  /* a menu item closes its menu at once, before its action runs; a tap on the day opens the date picker */
+  app.addEventListener("click", function(e){
+    if (e.target.closest(".ax-menu .ax-mi, .ax-pop .ax-mi")) {
+      State.iatt.menu = false; State.iatt.add = false;
+      app.querySelectorAll(".ax-menu, .ax-pop").forEach(m => m.remove());
+    }
+    const dl = e.target.closest(".ax-dayl input");
+    if (dl && typeof dl.showPicker === "function") { try { dl.showPicker(); } catch (er) {} }
+  }, true);
   app.addEventListener("pointerdown", function(e){
     const td = e.target.closest("#axGrid td.dc");
     const idx = e.target.closest("#axGrid td.k-idx");
     if (State.iatt.menu && !e.target.closest(".ax-menu") && !e.target.closest('[data-act="ax-menu"]')) { State.iatt.menu = false; render(); return; }
+    if (State.iatt.add && !e.target.closest(".ax-addw")) { State.iatt.add = false; render(); return; }
     if (idx && e.button === 0) {
       const tr = idx.closest("tr");
       ATT_DRAG.row = { pid: tr.dataset.pid, y: e.clientY, moved: false, target: null, after: false };
@@ -794,7 +874,7 @@ document.addEventListener("keydown", function(e){
   if (State.page !== "iAtt" || $("#mScrim")) return;
   const tg = e.target.tagName;
   if (tg === "INPUT" || tg === "SELECT" || tg === "TEXTAREA") return;
-  if (e.key === "Escape") { if (State.iatt.menu || State.iatt.sel) { State.iatt.menu = false; State.iatt.sel = null; render(); } return; }
+  if (e.key === "Escape") { if (State.iatt.menu || State.iatt.sel || State.iatt.add) { State.iatt.menu = false; State.iatt.add = false; State.iatt.sel = null; render(); } return; }
   if ((e.ctrlKey || e.metaKey) && (e.key === "z" || e.key === "Z")) { e.preventDefault(); Actions[e.shiftKey ? "att-redo" : "att-undo"](); return; }
   if ((e.ctrlKey || e.metaKey) && (e.key === "y" || e.key === "Y")) { e.preventDefault(); Actions["att-redo"](); return; }
   const s = State.iatt.sel; if (!s || e.ctrlKey || e.metaKey || e.altKey || attTab() !== "sheet") return;
@@ -859,29 +939,50 @@ async function attPull(force){
 setInterval(() => attPull(false), 60000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && Date.now() - ATT_LIVE.at > 20000) attPull(false); });
 
-/* ---- Admin links (office only) ---- */
+/* ---- Admin links (office only): one private link per class admin ----
+   The token is 18 random bytes (base64url). The list shows only its last four characters; Copy and WhatsApp send the full link.
+   A link that is switched off, deleted or replaced stops working on the admin's phone at its next check (within a minute). */
 function attLinkUrl(token){ return location.origin + "/portal/attendance/#k=" + token; }
 function attNewToken(){
   const a = new Uint8Array(18); (window.crypto || window.msCrypto).getRandomValues(a);
   return btoa(String.fromCharCode.apply(null, Array.from(a))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
+function attMask(t){ t = String(t || ""); return t ? "••••" + t.slice(-4) : "—"; }
+function attLinkLine(l){
+  return [l.phone ? "WhatsApp •••• " + String(l.phone).slice(-4) : "no WhatsApp number", "link " + attMask(l.token),
+    l.rotated ? "new link " + fmtDate(l.rotated) : (l.created ? "made " + fmtDate(l.created) : "")].filter(Boolean).join(" · ");
+}
+function attLinkRows(links, compact){
+  if (!links.length) return '<div class="lk-empty">No admin links yet.</div>';
+  return links.map(function(l, i){
+    return '<div class="lk-row' + (l.active ? "" : " off") + '">' +
+      '<div class="lk-main"><b>' + esc(l.name) + '</b>' + (l.active ? '<span class="badge b-ok">On</span>' : '<span class="badge b-idle">Off</span>') +
+        '<small>' + esc(attLinkLine(l)) + '</small></div>' +
+      '<div class="lk-acts">' +
+        (l.active ? '<button type="button" class="btn btn-sm" data-act="att-admin-copy" data-id="' + i + '">Copy link</button>' +
+          (compact ? "" : '<button type="button" class="btn btn-sm btn-wa" data-act="att-admin-wa" data-id="' + i + '">WhatsApp</button>') : "") +
+        '<button type="button" class="btn btn-sm" data-act="att-admin-edit" data-id="' + i + '">Edit</button>' +
+      '</div></div>';
+  }).join("");
+}
 function attAdminsBody(){
   const links = Settings().attAdminLinks || [];
-  return '<div class="note">Each class admin gets their own link. Anyone holding a link can use the attendance page, so send it only to that person. ' +
-      'Switch a link off and it stops working within a minute.</div>' +
-    (links.length ? links.map(function(l, i){
-      return '<div class="minirow" style="flex-wrap:wrap;gap:6px"><span><b>' + esc(l.name) + '</b>' + (l.active ? "" : ' <span class="out">· switched off</span>') +
-        '<br><small class="mono">' + esc(attLinkUrl(l.token)).slice(0, 60) + '…</small></span><span class="btn-row">' +
-        (l.active ? '<button type="button" class="btn btn-sm" data-act="att-admin-copy" data-id="' + i + '">Copy link</button>' +
-          '<button type="button" class="btn btn-sm btn-wa" data-act="att-admin-wa" data-id="' + i + '">WhatsApp</button>' +
-          '<button type="button" class="btn btn-sm btn-danger" data-act="att-admin-off" data-id="' + i + '">Switch off</button>'
-          : '<button type="button" class="btn btn-sm" data-act="att-admin-on" data-id="' + i + '">Switch on</button>') + '</span></div>';
-    }).join("") : '<div class="minirow"><span>No admin links yet</span><b>—</b></div>') +
-    '<div class="form-grid" style="margin-top:12px">' +
-      field("Admin's name", '<input class="input" name="name" placeholder="e.g. Farisa">') +
-      field("WhatsApp (optional)", '<input class="input mono" name="phone" placeholder="91…">') + '</div>';
+  return '<div class="note">Each class admin has their own private link — it works like a password, so send it only to that person. ' +
+      'Edit a link to change the name or number, switch it off, or make a new secret link if it reached the wrong person.</div>' +
+    '<div class="lk-list">' + attLinkRows(links) + '</div>' +
+    '<div class="lk-new"><div class="lk-h">New link</div><div class="form-grid">' +
+      field("Admin's name", '<input class="input" name="name" placeholder="e.g. Farisa" autocomplete="off">') +
+      field("WhatsApp (optional)", '<input class="input mono" name="phone" placeholder="91…" inputmode="tel" autocomplete="off">') + '</div></div>';
 }
 function attSaveLinks(links){ DataService.saveSettings({ attAdminLinks: links }); }
+function attLinkAt(i){ return (Settings().attAdminLinks || [])[+i] || null; }
+function attLinkPatch(i, patch){
+  const all = (Settings().attAdminLinks || []).slice(); if (!all[+i]) return null;
+  all[+i] = Object.assign({}, all[+i], patch, { updated: today() });
+  attSaveLinks(all); return all[+i];
+}
+/* after a change: back to the list — or, when the change was made from Settings, just refresh that page */
+function attLinksReopen(){ setTimeout(() => { if (State.page === "settings") render(); else Actions["att-admins"](); }, 50); }
 Object.assign(Actions, {
   "att-admins": () => { State.iatt.menu = false; openModal({ title: "Attendance admin links", wide: true, submitText: "Make a new link", body: attAdminsBody(),
     onSubmit: function(d){
@@ -889,27 +990,86 @@ Object.assign(Actions, {
       if (!name) { toast("Type the admin's name", "bad"); return false; }
       const links = (Settings().attAdminLinks || []).slice();
       links.push({ token: attNewToken(), name: name, phone: String(d.phone || "").replace(/\D/g, ""), active: true, created: today() });
-      attSaveLinks(links); toast("Link made for " + name, "ok");
+      attSaveLinks(links); toast("Link made for " + name + " — copy it or send it on WhatsApp", "ok", 4200);
       setTimeout(() => Actions["att-admins"](), 50);
     } }); },
   "att-admin-copy": (i) => {
-    const l = (Settings().attAdminLinks || [])[+i]; if (!l) return;
+    const l = attLinkAt(i); if (!l) return;
     const url = attLinkUrl(l.token);
     if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast("Link copied", "ok"), () => prompt("Copy this link", url));
     else prompt("Copy this link", url);
   },
   "att-admin-wa": (i) => {
-    const l = (Settings().attAdminLinks || [])[+i]; if (!l) return;
+    const l = attLinkAt(i); if (!l) return;
     const msg = "Assalamu Alaikum " + l.name + ",\n\nThis is your attendance link for " + (Settings().academyName || "ManzilulQuran") +
       ". Please keep it private — it works like a password.\n" + attLinkUrl(l.token);
     window.open(Logic.waLink(l.phone || "", msg), "_blank");
   },
-  "att-admin-off": (i) => { const links = (Settings().attAdminLinks || []).slice(); if (!links[+i]) return;
-    links[+i] = Object.assign({}, links[+i], { active: false }); attSaveLinks(links); toast(links[+i].name + "'s link switched off", "ok"); Actions["att-admins"](); },
-  "att-admin-on": (i) => { const links = (Settings().attAdminLinks || []).slice(); if (!links[+i]) return;
-    links[+i] = Object.assign({}, links[+i], { active: true }); attSaveLinks(links); toast(links[+i].name + "'s link switched on", "ok"); Actions["att-admins"](); },
+  /* edit one link: name, number, on / off — plus a new secret link, and delete once it is off */
+  "att-admin-edit": (i) => {
+    const l = attLinkAt(i); if (!l) return;
+    openModal({ title: "Edit link · " + l.name, submitText: "Save changes",
+      body: '<div class="form-grid">' +
+          field("Admin's name", '<input class="input" name="name" value="' + esc(l.name) + '" autocomplete="off">') +
+          field("WhatsApp", '<input class="input mono" name="phone" value="' + esc(l.phone || "") + '" placeholder="91…" inputmode="tel" autocomplete="off">') +
+          '<div class="field span2"><label>Link</label>' + sel("active", optList([{ value: "1", label: "On — the link works" }, { value: "0", label: "Off — the link stops working" }], l.active ? "1" : "0")) + '</div>' +
+        '</div>' +
+        '<div class="lk-secret"><div><b>Secret link</b><small class="mono">' + esc(location.host + "/portal/attendance/#k=" + attMask(l.token)) + '</small>' +
+          '<small>' + esc(l.rotated ? "Replaced on " + fmtDate(l.rotated) : (l.created ? "Made on " + fmtDate(l.created) : "")) + '</small></div>' +
+          '<button type="button" class="btn btn-sm" data-act="att-admin-rotate" data-id="' + esc(i) + '">Make a new secret link</button></div>' +
+        '<div class="note" style="margin:12px 0 0">A new name shows on marks made from now on; earlier marks keep the name they were made with.</div>' +
+        (!l.active ? '<div class="lk-del"><button type="button" class="btn btn-sm btn-danger" data-act="att-admin-del" data-id="' + esc(i) + '">Delete this link</button></div>' : ""),
+      onSubmit: function(d){
+        const name = String(d.name || "").trim();
+        if (!name) { toast("Type the admin's name", "bad"); return false; }
+        const was = attLinkAt(i); if (!was) return;
+        const on = d.active === "1";
+        attLinkPatch(i, { name: name, phone: String(d.phone || "").replace(/\D/g, ""), active: on });
+        toast(was.active && !on ? name + "'s link switched off — it stops within a minute" : !was.active && on ? name + "'s link switched on" : "Saved", "ok", 3600);
+        attLinksReopen();
+      } });
+  },
+  "att-admin-rotate": (i) => {
+    const l = attLinkAt(i); if (!l) return;
+    confirmAction({ title: "New secret link for " + l.name, danger: true,
+      note: "The old link stops working within a minute on every phone that has it. Send the new link to " + l.name + " straight after.",
+      message: "Make a new link for " + l.name + "?", submitText: "Make the new link",
+      onConfirm: function(){
+        attLinkPatch(i, { token: attNewToken(), rotated: today() });
+        toast("New link made for " + l.name + " — copy it or send it on WhatsApp", "ok", 4500);
+        attLinksReopen();
+      } });
+  },
+  "att-admin-del": (i) => {
+    const l = attLinkAt(i); if (!l) return;
+    if (l.active) { toast("Switch the link off first", "warn"); return; }
+    confirmAction({ title: "Delete " + l.name + "'s link", danger: true,
+      note: "The link is already off. Marks made with it stay, with " + l.name + "'s name on them.",
+      message: "Delete this link from the list?", submitText: "Delete",
+      onConfirm: function(){
+        const all = (Settings().attAdminLinks || []).slice(); all.splice(+i, 1); attSaveLinks(all);
+        toast("Link deleted", "ok"); attLinksReopen();
+      } });
+  },
+  /* kept for older buttons: switch off / on straight from a list */
+  "att-admin-off": (i) => { const l = attLinkPatch(i, { active: false }); if (l) { toast(l.name + "'s link switched off", "ok"); attLinksReopen(); } },
+  "att-admin-on": (i) => { const l = attLinkPatch(i, { active: true }); if (l) { toast(l.name + "'s link switched on", "ok"); attLinksReopen(); } },
   "att-refresh": async () => { const r = await attPull(true); toast(r && r.changed ? r.changed + " change" + (r.changed > 1 ? "s" : "") + " brought in" : "Up to date", "ok"); attRedraw(); }
 });
+/* Settings gets its own card for the links, so they are easy to find outside the attendance sheet */
+if (!window.MQ_ADMIN && typeof Pages.settings === "function") {
+  const _attSettings = Pages.settings;
+  Pages.settings = function(){
+    const html = _attSettings();
+    const links = Settings().attAdminLinks || [];
+    const card = '<div class="card lk-card" style="margin-bottom:14px"><div class="card-hd"><h3>Attendance admin links</h3><span class="spacer"></span>' +
+      '<button type="button" class="btn btn-sm btn-primary" data-act="att-admins">Manage links</button></div><div class="card-bd">' +
+      '<div class="tagline">Class admins open the attendance sheet with their own private link. Edit a name or number, switch a link off, or make a new secret link here.</div>' +
+      '<div class="lk-list">' + attLinkRows(links, true) + '</div></div></div>';
+    const at = html.indexOf('<div class="card"><div class="card-hd"><h3>Academy details</h3>');
+    return at >= 0 ? html.slice(0, at) + card + html.slice(at) : card + html;
+  };
+}
 
 /* ---- reports: a page to print or save as PDF ---- */
 function attReportWindow(title, body){
@@ -1006,7 +1166,10 @@ Object.assign(Actions, {
   "ax-tab": (t) => { State.iatt.tab = t; State.iatt.menu = false; if (t !== "sheet") State.iatt.sel = null; render(); },
   "ax-month": (n) => { State.month = addMonths(State.month, +n); State.iatt.sel = null; const gm = $("#globalMonth"); if (gm) gm.innerHTML = monthOpts(State.month, ""); render(); },
   "ax-setmonth": (m) => { State.month = m; State.iatt.sel = null; if (State.iatt.tab === "today") State.iatt.tab = "sheet"; const gm = $("#globalMonth"); if (gm) gm.innerHTML = monthOpts(State.month, ""); render(); },
-  "ax-menu": () => { State.iatt.menu = !State.iatt.menu; render(); },
+  "ax-menu": () => { State.iatt.menu = !State.iatt.menu; State.iatt.add = false; ATT_FX.menu = State.iatt.menu; render(); },
+  "ax-add": () => { State.iatt.add = !State.iatt.add; State.iatt.menu = false; ATT_FX.add = State.iatt.add; render(); },
+  "ax-pickmonth": (id, el) => { if (el && el.value && el.value !== State.month) Actions["ax-setmonth"](el.value); },
+  "ax-refresh": () => { State.iatt.menu = false; Actions["att-refresh"](); },
   "ax-mode": (m) => { State.iatt.mode = m; if (m === "brush") State.iatt.sel = null; render(); },
   "ax-mk": (k) => {
     const f = State.iatt, s = f.sel;
@@ -1018,13 +1181,13 @@ Object.assign(Actions, {
     }
     f.mode = "brush"; f.brush = k; f.sel = null;
     if (attTab() !== "sheet") f.tab = "sheet";
-    toast("Brush: tap or drag across days to mark them " + (k === "-" ? "empty" : ATT_MK[k].name), "ok", 2600);
+    toast("Brush on — tap or drag across days to mark them " + (k === "-" ? "empty" : ATT_MK[k].name), "ok", 2600);
     render();
   },
   "ax-shrink": () => { const C = attCols(); State.iatt.shrink = !C.shrink; render(); },
   "ax-sort": () => { attPref("order", []); State.iatt.menu = false; toast("Rows sorted by class time", "ok"); render(); },
   "ax-zoom": (d) => { const z = +d === 0 ? 1 : Math.max(0.7, Math.min(1.6, Math.round((attZoom() + (+d) * 0.1) * 100) / 100)); attPref("zoom", z); render(); },
-  "ax-theme": (t) => { attPref("theme", t); State.iatt.menu = false; render(); },
+  "ax-theme": (t) => { attPref("theme", t); render(); },
   "ax-nodays": () => { State.iatt.onlyNoDays = !State.iatt.onlyNoDays; render(); },
   "ax-wa": (planId, el) => {
     const pl = DataService.getPlan(planId); if (!pl) return;
