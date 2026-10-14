@@ -1,6 +1,9 @@
 "use strict";
-/* Academic Service — att-admin.v1.js. The class-admin link (/portal/attendance/#k=TOKEN).
-   Loaded only by portal/attendance/index.html, after core.v7 (window.MQ_ADMIN = true), logic, ui, forms-actions and ws-attendance.v2.
+/* Academic Service — att-admin.v2.js. The class-admin link (/portal/attendance/#k=TOKEN).
+   v2: a link that stops working (switched off, replaced with a new secret link, or deleted) clears this phone's copy AND stops
+       change tracking first, so nothing on the phone can be pushed back as deleted; + Add (student / class / teacher) items for
+       the v4 sheet; the blocked screen in the Class Sheets look.
+   Loaded only by portal/attendance/index.html, after core.v7 (window.MQ_ADMIN = true), logic, ui, forms-actions and ws-attendance.v4.
    · the link's token must match an active entry in Settings().attAdminLinks (made in Academic Service → Attendance → Admin links)
    · admins mark attendance, add students / teachers / classes, and change class details — never fees, pay rules or settings
    · everything an admin adds or changes is flagged reviewed:false with a history entry, for the office review list
@@ -22,8 +25,13 @@ function admToken(){
 function attAdminCheck(){
   const links = Settings().attAdminLinks || [];
   const l = links.find(x => x && x.token === ADM.token);
-  if (!ADM.token || !l || !l.active) { admBlock(!ADM.token ? "This page opens only from your attendance link." :
-    (l ? "This link is switched off. Ask the office for a new link." : "This link is not valid. Ask the office for your attendance link.")); ADM.ok = false; return false; }
+  if (!ADM.token || !l || !l.active) {
+    admBlock(!ADM.token ? "This page opens only from your attendance link." :
+      (l ? "This link is switched off. Ask the office to switch it on, then open your link again." : "This link no longer works. Ask the office for your new attendance link."));
+    ADM.ok = false;
+    if (ADM.token) admWipe();
+    return false;
+  }
   window.ATT_ACTOR = { name: l.name, via: "admin-link" };
   ADM.ok = true;
   const who = $("#admWho"); if (who) who.textContent = l.name;
@@ -33,7 +41,15 @@ function attAdminCheck(){
 function admBlock(msg){
   let b = $("#admBlock");
   if (!b) { b = document.createElement("div"); b.id = "admBlock"; b.className = "adm-block"; document.body.appendChild(b); }
-  b.innerHTML = '<div class="box"><h2>Attendance</h2><p>' + esc(msg) + '</p></div>';
+  b.innerHTML = '<div class="box" role="alert"><div class="lg" aria-hidden="true"></div><h2>Class <em>Attendance</em></h2><p>' + esc(msg) + '</p></div>';
+}
+/* the link stopped working: stop tracking changes FIRST (an emptied list must never be sent as "deleted"), then forget the copy */
+function admWipe(){
+  if (typeof SupaTrack !== "undefined") { clearTimeout(SupaTrack.timer); SupaTrack.base = null; }
+  if (typeof Supa !== "undefined" && Supa.claimQueue) Supa.claimQueue.length = 0;
+  if (typeof attUnmount === "function") attUnmount();
+  DB.students = []; DB.teachers = []; DB.plans = []; DB.classes = [];
+  Cache.clear(); Storage.save(DB);
 }
 
 /* ---- matching: spot a student or teacher who is already in the records ---- */
@@ -294,6 +310,7 @@ Object.assign(Actions, {
       } });
   }
 });
+ATT_HOOKS.addItems = () => [["adm-student", "New student…"], ["adm-plan", "New class…"], ["adm-teacher", "New teacher…"]];
 ATT_HOOKS.toolbar = () =>
   '<button type="button" class="btn btn-sm btn-primary" data-act="adm-student">+ Student</button>' +
   '<button type="button" class="btn btn-sm" data-act="adm-plan">+ Class</button>' +
@@ -322,7 +339,7 @@ function admPaintState(){
   el.textContent = n ? (off ? "Offline · " : "") + n + " waiting to send" : (off ? "Offline · all saved on this phone" : "All saved");
 }
 setInterval(admPaintState, 2500);
-window.addEventListener("online", () => { if (typeof SupaTrack !== "undefined") SupaTrack.schedule(); if (Supa.retryClaims) Supa.retryClaims(); attPull(true); });
+window.addEventListener("online", () => { if (!ADM.ok) return; if (typeof SupaTrack !== "undefined") SupaTrack.schedule(); if (Supa.retryClaims) Supa.retryClaims(); attPull(true); });
 
 /* ---- start ---- */
 async function admInit(){
@@ -345,7 +362,7 @@ async function admInit(){
     else admBlock("Cannot reach the academy records. Check the internet and reload.");
     return;
   }
-  if (!attAdminCheck()) { DB.students = []; DB.teachers = []; DB.plans = []; DB.classes = []; Storage.save(DB); return; }
+  if (!attAdminCheck()) return;   /* attAdminCheck has already stopped tracking and cleared the copy */
   const m2 = allMonths();
   if (m2.indexOf(State.month) < 0) State.month = m2[m2.length - 1];
   $("#globalMonth").innerHTML = monthOpts(State.month, "");
