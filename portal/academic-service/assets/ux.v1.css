@@ -1,0 +1,127 @@
+/* Academic Service — ux.v1.css. A calmer layout and the motion that goes with it (loaded after dash.v1.css):
+   the tab row for pages that share a menu item, the ⋯ menu, profile rows, the stop / Pay all forms, and
+   windows, menus, tabs and row details that open and close with a short eased or elastic movement.
+   --ux-motion tells ui.v9.js that closing animations are available. Reduced motion is respected. */
+:root{
+  --ux-motion:1;
+  --ux-ease:cubic-bezier(.16,1,.3,1);
+  --ux-spring:cubic-bezier(.34,1.56,.64,1);
+  --ux-soft:cubic-bezier(.22,1.18,.36,1);
+}
+
+/* ---------- tabs for pages that share a menu item (Money, Teachers, Plans, Fees, Classes) ---------- */
+.subtabs{ display:flex; gap:3px; padding:4px; margin:0 0 14px; border-radius:999px; overflow-x:auto; scrollbar-width:none;
+  background:rgba(255,255,255,.05); border:1px solid var(--shell-line); width:max-content; max-width:100%; }
+.subtabs::-webkit-scrollbar{ display:none; }
+.subtabs .st{ border:0; background:transparent; color:var(--on-dark-2); font:inherit; font-size:13.2px; font-weight:600;
+  padding:8px 15px; border-radius:999px; cursor:pointer; white-space:nowrap;
+  transition:background .25s var(--ux-ease), color .2s, transform .15s var(--ux-spring); }
+.subtabs .st:hover{ color:#fff; background:rgba(255,255,255,.06); }
+.subtabs .st.is-on{ background:#fff; color:#14201B; box-shadow:0 4px 14px rgba(0,0,0,.18); animation:uxTab .38s var(--ux-spring) both; }
+.subtabs .st:active{ transform:scale(.95); }
+@keyframes uxTab{ from{ transform:scale(.88); opacity:.6 } to{ transform:none; opacity:1 } }
+
+/* ---------- the ⋯ menu ---------- */
+.mm{ position:relative; display:inline-flex; }
+.mm-btn{ min-width:42px; font-size:16px; line-height:1; letter-spacing:.06em; }
+.mm-pop{ position:absolute; right:0; top:calc(100% + 7px); z-index:60; min-width:228px; padding:6px; border-radius:16px;
+  background:var(--card); color:var(--text); border:1px solid var(--line); box-shadow:0 18px 46px rgba(3,14,9,.38);
+  transform-origin:top right; animation:uxPop .3s var(--ux-spring) both; }
+.mm-pop[hidden]{ display:none; }
+.mm-i{ display:block; width:100%; text-align:left; border:0; background:transparent; color:var(--text); font:inherit; font-size:13.6px;
+  font-weight:500; padding:11px 12px; border-radius:11px; cursor:pointer; transition:background .15s, transform .12s; }
+.mm-i:hover{ background:var(--card-2); }
+.mm-i:active{ transform:scale(.98); }
+.mm-i.danger{ color:var(--bad); }
+.mm-i + .mm-i{ margin-top:1px; }
+@keyframes uxPop{ from{ opacity:0; transform:translateY(-6px) scale(.9) } to{ opacity:1; transform:none } }
+.ldet .mm-pop,.card .mm-pop{ right:auto; left:0; transform-origin:top left; }
+
+/* ---------- list rows that open a profile ---------- */
+.lrow.is-link .lchev{ transition:transform .25s var(--ux-spring); }
+.lrow.is-link:hover .lchev{ transform:translateX(3px); color:var(--pri); }
+.lrow{ transition:background .18s, transform .12s; }
+.lrow:active{ transform:scale(.995); }
+.lrow.row-warn{ box-shadow:inset 3px 0 0 var(--warn); }
+.ldet{ animation:uxDrop .32s var(--ux-ease) both; transform-origin:top center; }
+@keyframes uxDrop{ from{ opacity:0; transform:translateY(-8px) } to{ opacity:1; transform:none } }
+.lfull,.lbar [data-act="lfullpage"]{ display:none !important; }
+
+/* ---------- profile: class plans, students of a teacher ---------- */
+.pf-plan{ display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:11px 0; border-bottom:1px dashed var(--line); }
+.pf-plan:last-of-type{ border-bottom:0; }
+.pf-plan.off{ opacity:.62; }
+.pf-pm{ flex:1 1 240px; min-width:0; }
+.pf-pm b{ font-size:14.5px; }
+.pf-pm small{ display:block; color:var(--muted); font-size:12.4px; margin-top:3px; }
+.pf-acts .mm-pop{ right:auto; left:0; transform-origin:top left; }
+
+/* ---------- stopping a class / pay all ---------- */
+.stoprow{ padding:12px 0 4px; border-top:1px solid var(--line-2); }
+.stoprow:first-of-type{ border-top:0; }
+.stop-h{ font-size:14.5px; }
+.stoprow .hint{ display:block; margin:3px 0 8px; }
+.stop-amt.is-hidden{ display:none; }
+/* a message never covers the buttons of an open window — it moves to the top while one is open */
+body:has(.modal-scrim:not(.out)) .toasts{ top:16px; bottom:auto; }
+.payall{ display:flex; flex-direction:column; gap:2px; margin-top:12px; max-height:52vh; overflow-y:auto; border:1px solid var(--line-2); border-radius:14px; padding:4px 10px; }
+.pa-row{ display:flex; gap:12px; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px dashed var(--line); cursor:text; }
+.pa-row:last-child{ border-bottom:0; }
+.pa-n{ flex:1; min-width:0; }
+.pa-n b{ display:block; font-size:14px; }
+.pa-n small{ display:block; color:var(--muted); font-size:12px; }
+.pa-row .input{ width:120px; flex:none; text-align:right; }
+
+/* ---------- buttons on light surfaces keep their colour when hovered or tapped
+   (as.v9 turned a hovered green / red / WhatsApp button pale, and the white text then vanished) ---------- */
+.card .btn-primary:hover,.ldet .btn-primary:hover,.modal .btn-primary:hover,.empty .btn-primary:hover{ background:var(--grad); filter:brightness(1.07); }
+.card .btn-danger:hover,.ldet .btn-danger:hover,.modal .btn-danger:hover{ background:var(--bad-bg); filter:brightness(.96); }
+.card .btn-wa:hover,.ldet .btn-wa:hover,.modal .btn-wa:hover{ background:#0E6F64; }
+.card .btn-dark:hover,.modal .btn-dark:hover{ background:var(--pri-dk); }
+
+/* ---------- windows: open with a soft spring, close with a quick fade ---------- */
+.modal-scrim{ animation:mScrimIn .24s ease both; }
+.modal{ animation:uxModal .46s var(--ux-soft) both; }
+.modal-scrim.out{ animation:uxFadeOut .19s ease forwards; pointer-events:none; }
+.modal-scrim.out .modal{ animation:uxModalOut .19s ease forwards; }
+@keyframes uxModal{ from{ opacity:0; transform:translateY(18px) scale(.95) } to{ opacity:1; transform:none } }
+@keyframes uxModalOut{ to{ opacity:0; transform:translateY(10px) scale(.97) } }
+@keyframes uxFadeOut{ to{ opacity:0 } }
+.toast{ animation:uxToast .48s var(--ux-spring) both; }
+@keyframes uxToast{ from{ opacity:0; transform:translateY(16px) scale(.94) } to{ opacity:1; transform:none } }
+.btn,.subtabs .st,.mm-i,.chip,.tab{ -webkit-tap-highlight-color:transparent; }
+.btn{ transition:background .2s, border-color .2s, color .2s, transform .16s var(--ux-spring), filter .15s; }
+.btn:active:not(:disabled){ transform:scale(.95); }
+.tab{ transition:color .2s, border-color .25s var(--ux-ease); }
+.chip{ transition:background .2s, color .2s, transform .15s var(--ux-spring); }
+.chip:active{ transform:scale(.95); }
+
+/* ---------- phones ---------- */
+@media (max-width:680px){
+  /* a shorter page top: the menu and the tabs already say where you are */
+  .crumb,.page-sub{ display:none; }
+  .head{ padding-top:12px; }
+  /* filters two to a row; the box itself says what it is ("All months", "Teacher name or ID") */
+  .toolbar{ gap:8px; }
+  .toolbar .field:has(> select)>label,.toolbar .field.grow:has(> input)>label{ display:none; }
+  .toolbar .field:has(> select){ flex:1 1 calc(50% - 4px); }
+  .toolbar .push{ flex:1 1 100%; }
+  /* figures two to a row */
+  .kpi-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .kpi{ padding:12px 13px; }
+  .kpi-v{ font-size:21px; margin-top:4px; }
+  .kpi-l{ font-size:9px; letter-spacing:.14em; }
+  .subtabs{ width:100%; border-radius:16px; }
+  .subtabs .st{ flex:1 0 auto; padding:9px 13px; }
+  .mm-pop,.ldet .mm-pop,.card .mm-pop,.pf-acts .mm-pop{ position:fixed; left:12px; right:12px; top:auto; bottom:12px; min-width:0; padding:8px;
+    border-radius:20px; transform-origin:bottom center; animation:uxSheet .42s var(--ux-soft) both; box-shadow:0 -10px 50px rgba(3,14,9,.45); }
+  .mm-i{ padding:14px 14px; font-size:15px; }
+  .modal{ animation:uxSheet .46s var(--ux-soft) both; }
+  .modal-scrim.out .modal{ animation:uxSheetOut .2s ease forwards; }
+  .pa-row .input{ width:104px; }
+}
+@keyframes uxSheet{ from{ transform:translateY(100%) } to{ transform:none } }
+@keyframes uxSheetOut{ to{ transform:translateY(100%) } }
+@media (prefers-reduced-motion:reduce){
+  .modal,.modal-scrim,.toast,.mm-pop,.ldet,.subtabs .st.is-on{ animation:none !important; }
+}
