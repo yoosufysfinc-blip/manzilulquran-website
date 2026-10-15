@@ -1,5 +1,9 @@
 "use strict";
-/* Academic Service — forms-actions.v18.js. v18: substitute rate on the teacher form, "taken by" on a class, Unmarked-day warning before reconciling, tables read in pages. */
+/* Academic Service — forms-actions.v19.js. v19: stopping a class plan offers to waive only the unpaid months after
+   its end date (an earlier month still owed stays owing) — and only that plan's months: v18 listed and waived every
+   unpaid fee in the academy, because the plan filter was ignored. Fees waived by that mistake can be restored from the
+   fees pages (Restore). The fee toasts say how many students were left out for a hold.
+   (v18: substitute rate on the teacher form, "taken by" on a class, Unmarked-day warning before reconciling, tables read in pages. */
 /* ==========================================================================
    FORMS
    ========================================================================== */
@@ -934,7 +938,7 @@ const Actions = {
     const r = Logic.buildBoth(nm);
     State.month = nm; $("#globalMonth").innerHTML = monthOpts(State.month, "");
     toast(monthLabel(nm) + " opened · " + r.created + " fee records raised" +
-      (r.skipped ? ", " + r.skipped + " already existed" : ""), "ok", 4500);
+      (r.skipped ? ", " + r.skipped + " already existed" : "") + (r.held ? ", " + r.held + " on hold (no fee)" : ""), "ok", 4500);
     render();
   },
   "reconcile": () => {
@@ -1021,13 +1025,16 @@ const Actions = {
       ["duration","rate","discount","dueDay"].concat(RULE_NUM).forEach(k => d[k] = +d[k] || 0);
       const was = DataService.getPlan(id) || {};
       DataService.savePlan(d);
-      /* stopping only stops future months — offer to clear the months already raised and unpaid */
-      if (was.status === "Active" && d.status === "Stopped") {
-        const open = Logic.feeViews({ planId: id }).filter(v => v.balance > 0 && !v.waived);
+      /* stopping only stops future months — offer to clear the months already raised and unpaid after the last month
+         of class (v19: an earlier month that is still owed is left owing; asked again whenever a stopped plan is saved) */
+      if (d.status === "Stopped") {
+        const last = monthOf(d.endDate || was.endDate || today());
+        const open = Logic.feeViews({ planId: id }).filter(v => v.planId === id && v.month > last && v.balance > 0 && !v.waived && !(v.paidAmount > 0));
         if (open.length) {
           setTimeout(() => confirmAction({ title: "Waive the unpaid months?",
             note: "Stopping a plan does not touch months already raised. " + open.length +
-              " month" + (open.length > 1 ? "s are" : " is") + " still unpaid for this student.",
+              " month" + (open.length > 1 ? "s" : "") + " after " + monthLabel(last) + (open.length > 1 ? " are" : " is") +
+              " raised and unpaid. Months up to " + monthLabel(last) + " are not changed.",
             message: open.map(v => monthLabel(v.month) + " · " + money(v.balance)).join(" · "),
             submitText: "Waive them", cancelText: "Keep them owing",
             onConfirm: function(){
@@ -1148,7 +1155,7 @@ const Actions = {
       const r = Logic.buildBatchMonth(d.month, { prorate: !!d.prorate });
       State.month = d.month; $("#globalMonth").innerHTML = monthOpts(State.month, "");
       toast(r.created + " batch fee records created for " + monthLabel(d.month) +
-        (r.skipped ? " · " + r.skipped + " already existed" : ""), r.created ? "ok" : "warn", 4200);
+        (r.skipped ? " · " + r.skipped + " already existed" : "") + (r.held ? " · " + r.held + " on hold, no fee" : ""), r.created ? "ok" : "warn", 4200);
       render();
     }
   }),
@@ -1161,13 +1168,14 @@ const Actions = {
       const r = Logic.buildIndMonth(d.month);
       State.month = d.month; $("#globalMonth").innerHTML = monthOpts(State.month, "");
       toast(r.created + " created, " + r.updated + " updated from the class log" +
-        (r.skipped ? ", " + r.skipped + " unchanged" : ""), "ok", 4200);
+        (r.skipped ? ", " + r.skipped + " unchanged" : "") + (r.held ? ", " + r.held + " on hold (no fee)" : ""), "ok", 4200);
       render();
     }
   }),
   "build-both": () => {
     const r = Logic.buildBoth(State.month);
-    toast(r.created + " fee records created, " + r.updated + " updated for " + monthLabel(State.month), "ok", 4200);
+    toast(r.created + " fee records created, " + r.updated + " updated for " + monthLabel(State.month) +
+      (r.held ? " · " + r.held + " on hold (no fee)" : ""), "ok", 4200);
     render();
   },
   "fee-edit": (id) => {
@@ -2330,3 +2338,42 @@ function openSalaryReport(t, m, opt){
   closeModal();
   toast("Salary report ready — use Save as PDF", "ok", 4200);
 }
+
+
+/* ---- v19: restore fees waived by the v18 "stop a plan" mistake ----
+   v18 offered to waive "this plan's" unpaid months but listed every unpaid fee in the academy. Those fees carry the
+   remark "Waived — class plan stopped". One belongs to the mistake when its own plan is not stopped (or it has no plan,
+   e.g. a batch fee). A stopped plan's own months are left alone — undo one by hand (fee → untick Waived) if needed. */
+const STOP_WAIVE = "Waived — class plan stopped";
+function stopWaiveWrong(){
+  return DB.fees.filter(function(f){
+    if (!f.waived || String(f.remarks || "").indexOf(STOP_WAIVE) < 0) return false;
+    const pl = f.planId ? DataService.getPlan(f.planId) : null;
+    return !(pl && pl.status === "Stopped");
+  });
+}
+function stopWaiveNote(){
+  const n = stopWaiveWrong().length;
+  return n ? '<div class="note" style="border-color:#e0776b">⚠ ' + n + ' fee' + (n > 1 ? "s were" : " was") + ' waived by mistake when a class plan ' +
+    'was stopped (they belong to other students, whose classes are still running). ' +
+    '<button type="button" class="btn btn-sm btn-primary" data-act="stopwaive-fix" style="margin-left:6px">Restore ' + n + ' fee' + (n > 1 ? "s" : "") + '</button></div>' : "";
+}
+Actions["stopwaive-fix"] = function(){
+  const list = stopWaiveWrong(); if (!list.length) { toast("Nothing to restore", "ok"); render(); return; }
+  confirmAction({ title: "Restore " + list.length + " fee" + (list.length > 1 ? "s" : ""),
+    note: "These fees were waived only because another student's class plan was stopped. Restoring makes them owing again, exactly as before.",
+    message: list.slice(0, 12).map(f => { const st = DataService.getStudent(f.studentId); return (st ? st.name : f.studentId) + " · " + monthLabel(f.month); }).join(" · ") +
+      (list.length > 12 ? " · and " + (list.length - 12) + " more" : ""),
+    submitText: "Restore them",
+    onConfirm: function(){
+      list.forEach(function(f){
+        const rem = String(f.remarks || "").split(" · ").filter(x => x !== STOP_WAIVE).join(" · ");
+        DataService.saveFee({ id: f.id, waived: false, locked: false, remarks: rem });
+      });
+      toast(list.length + " fee" + (list.length > 1 ? "s" : "") + " restored", "ok", 4200); render();
+    } });
+};
+if (!window.MQ_ADMIN) ["iFees", "bFees"].forEach(function(pg){
+  const orig = Pages[pg]; if (typeof orig !== "function") return;
+  Pages[pg] = function(){ return stopWaiveNote() + orig.apply(this, arguments); };
+});
