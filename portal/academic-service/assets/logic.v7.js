@@ -1,5 +1,7 @@
 "use strict";
-/* Academic Service — logic.v7.js. v7: calculating a month no longer raises a fee for a student on a hold that waives
+/* Academic Service — logic.v8.js. v8: prepaid on the student's own day — a month whose fee fell due before the plan
+   started is not raised (a student who joins on 11 October pays then for November; October is not billed, and a student
+   who restarts is not billed for the months away). (v7: calculating a month no longer raises a fee for a student on a hold that waives
    the fee (student or academy-wide), for an individual plan whose end date has passed, or for a student who is no
    longer Active (from the current month on). (v6: attendance sheet marks; substitute classes count for the student and pay the teacher who took them; Unmarked-day check; "monthly pay only if taught" applied. */
 /* ==========================================================================
@@ -401,6 +403,9 @@ const Logic = {
       /* v7: nothing new is raised after the plan's end date, for a student who has left, or during a hold that waives the fee */
       if (!found) {
         if (pl.endDate && monthOf(pl.endDate) < month) { skipped++; return; }
+        /* v8: prepaid on the student's own day — a month that fell due before the plan started is not theirs to pay */
+        if (prepaid && pl.startDate && (Settings().prepaidDue || "studentDay") === "studentDay" &&
+            Logic.feeDueDate(month, pl.dueDay || Settings().defaultDueDay || 5) < pl.startDate) { skipped++; return; }
         if (month >= currentMonth() && st.status && st.status !== "Active") { skipped++; return; }
         const hold = DataService.holdFor(pl.studentId, month);
         if (hold && hold.waiveFee) { held++; return; }
