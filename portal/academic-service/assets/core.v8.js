@@ -1,5 +1,6 @@
 "use strict";
-/* Academic Service — core.v8.js. v8: a save made while a load from Supabase is still on its way is no longer
+/* Academic Service — core.v9.js. v9: other income and expenses can be removed when entered by mistake (kept as
+   "voided" with a reason, left out of every total, the ledger and reports — like payments). (v8: a save made while a load from Supabase is still on its way is no longer
    overwritten by the older copy the load brings back (pullAll on opening, refresh on the attendance sheet) —
    e.g. a class plan switched to Stopped jumped back to Active. getFees / feeViews now filter by planId (it was ignored).
    (v7: several people can work at once — new students, teachers and plans take their number from the database (claim), Supa.refresh merges other devices' changes, and an attendance-admin mode (window.MQ_ADMIN) loads only what the admin link needs. (v6: paged loading, fixed mark IDs.) */
@@ -818,9 +819,10 @@ const DataService = {
   savePayment(p){ p.id = uid("PAY", DB.payments, 5); p.createdAt = new Date().toISOString(); DB.payments.push(p); persist(); return p.id; },
   getRefunds(){ return DB.refunds.slice(); },
   saveRefund(r){ r.id = uid("REF", DB.refunds); DB.refunds.push(r); persist(); return r.id; },
-  getIncome(){ return DB.income.slice(); },
+  /* v9: an entry removed by mistake stays on record as voided and is left out — ask for those with { voided: true } */
+  getIncome(f){ return DB.income.filter(x => (f && f.voided) ? !!x.voided : !x.voided); },
   saveIncome(x){ return upsert("income", x, "INC"); },
-  getExpenses(){ return DB.expenses.slice(); },
+  getExpenses(f){ return DB.expenses.filter(x => (f && f.voided) ? !!x.voided : !x.voided); },
   saveExpense(x){ return upsert("expenses", x, "EXP"); },
   getTeacherPayments(f){
     let r = DB.teacherPayments.filter(p => (f && f.voided) ? !!p.voided : !p.voided);
@@ -834,6 +836,10 @@ const DataService = {
   voidPayment(id, reason){
     const p = DB.payments.find(x => x.id === id); if (!p || p.voided) return null;
     p.voided = true; p.voidReason = reason || ""; p.voidAt = new Date().toISOString(); persist(); return p;
+  },
+  voidEntry(coll, id, reason){
+    const x = (DB[coll] || []).find(r => r.id === id); if (!x || x.voided) return null;
+    x.voided = true; x.voidReason = reason || ""; x.voidAt = new Date().toISOString(); persist(); return x;
   },
   voidTeacherPayment(id, reason){
     const p = DB.teacherPayments.find(x => x.id === id); if (!p || p.voided) return null;
