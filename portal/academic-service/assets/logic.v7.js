@@ -1,5 +1,7 @@
 "use strict";
-/* Academic Service — logic.v6.js. v6: attendance sheet marks; substitute classes count for the student and pay the teacher who took them; Unmarked-day check; "monthly pay only if taught" applied. */
+/* Academic Service — logic.v7.js. v7: calculating a month no longer raises a fee for a student on a hold that waives
+   the fee (student or academy-wide), for an individual plan whose end date has passed, or for a student who is no
+   longer Active (from the current month on). (v6: attendance sheet marks; substitute classes count for the student and pay the teacher who took them; Unmarked-day check; "monthly pay only if taught" applied. */
 /* ==========================================================================
    LOGIC
    ========================================================================== */
@@ -330,8 +332,12 @@ const Logic = {
     let created = 0, skipped = 0, seq = 0;
     DB.fees.forEach(f => { const n = parseInt(String(f.id).replace(/\D/g, ""), 10); if (!isNaN(n) && n > seq) seq = n; });
 
+    let held = 0;
     Object.keys(byStudent).forEach(function(sid){
       if (existing[sid]) { skipped++; return; }
+      /* v7: a hold that waives the fee (the student's own or academy-wide) means no fee for the month */
+      const hold = DataService.holdFor(sid, month);
+      if (hold && hold.waiveFee) { held++; return; }
       /* the enrolment they ended the month in wins: active first, then newest */
       const en = byStudent[sid].slice().sort(function(a, b){
         const aa = a.status === "Active" ? 0 : 1, bb = b.status === "Active" ? 0 : 1;
@@ -365,7 +371,7 @@ const Logic = {
       created++;
     });
     persist();
-    return { created: created, skipped: skipped };
+    return { created: created, skipped: skipped, held: held };
   },
 
   /* ---- INDIVIDUAL fee generation ----
@@ -374,7 +380,7 @@ const Logic = {
                 the month that was reconciled.
      POSTPAID : billed on the classes actually completed, refreshed on demand. ---- */
   buildIndMonth(month){
-    let created = 0, updated = 0, skipped = 0, seq = 0;
+    let created = 0, updated = 0, skipped = 0, held = 0, seq = 0;
     DB.fees.forEach(f => { const n = parseInt(String(f.id).replace(/\D/g, ""), 10); if (!isNaN(n) && n > seq) seq = n; });
     const existing = {};
     DataService.getFees({ month: month, source: "individual" }).forEach(f => existing[f.planId] = f);
@@ -392,6 +398,13 @@ const Logic = {
       const fx = Logic.ruleExtra(pl, "fee"), manual = pl.feeType === "manual";
       const gross = Logic.computeGross(pl.feeType, pl.rate, stats, fx);
       const found = existing[pl.id];
+      /* v7: nothing new is raised after the plan's end date, for a student who has left, or during a hold that waives the fee */
+      if (!found) {
+        if (pl.endDate && monthOf(pl.endDate) < month) { skipped++; return; }
+        if (month >= currentMonth() && st.status && st.status !== "Active") { skipped++; return; }
+        const hold = DataService.holdFor(pl.studentId, month);
+        if (hold && hold.waiveFee) { held++; return; }
+      }
       if (found) {
         /* A settled, locked or already-paid month is never rewritten. */
         /* prepaid: once money is in against the planned month, that month stands */
@@ -419,7 +432,7 @@ const Logic = {
     });
     persist();
     const carried = Logic.applyPending(month);
-    return { created: created, updated: updated, skipped: skipped, carried: carried };
+    return { created: created, updated: updated, skipped: skipped, held: held, carried: carried };
   },
 
   /* Anything a reconciliation left waiting is set off against the first month
@@ -543,7 +556,7 @@ const Logic = {
 
   buildBoth(month){
     const b = Logic.buildBatchMonth(month), i = Logic.buildIndMonth(month);
-    return { created: b.created + i.created, updated: i.updated, skipped: b.skipped + i.skipped };
+    return { created: b.created + i.created, updated: i.updated, skipped: b.skipped + i.skipped, held: (b.held || 0) + (i.held || 0) };
   }
 };
 
