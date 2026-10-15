@@ -1,5 +1,9 @@
 "use strict";
-/* Academic Service — ui.v8.js. v8: sort choice moved to the top of every list; empty values always sort last. */
+/* Academic Service — ui.v9.js. v9: a calmer layout — fewer menu items (related pages sit together as tabs: Money, Teachers,
+   Plans, Fees, Classes), Review shows only when something waits, the Full view buttons are gone, a list row can open a
+   profile instead of folding open, secondary buttons go under a ⋯ menu, windows close with a short animation, and the
+   duplicate page buttons (the same + Add in the header and the toolbar) are removed.
+   (v8: sort choice moved to the top of every list; empty values always sort last.) */
 /* ==========================================================================
    UI KIT
    ========================================================================== */
@@ -34,7 +38,7 @@ function joinCC(d){
 }
 let modalSubmit = null;
 function openModal(o){
-  closeModal();
+  closeModal(true);
   $("#modalRoot").innerHTML =
     '<div class="modal-scrim" id="mScrim"><div class="modal' + (o.wide ? " wide" : "") + '" role="dialog" aria-modal="true">' +
       '<div class="modal-hd"><h3>' + esc(o.title) + '</h3><button class="x" data-act="modal-close">×</button></div>' +
@@ -59,7 +63,23 @@ function openModal(o){
   const first = form.querySelector("input:not([readonly]),select,textarea");
   if (first && !o.noFocus) setTimeout(() => first.focus(), 40);
 }
-function closeModal(){ $("#modalRoot").innerHTML = ""; modalSubmit = null; }
+/* v9: windows leave with a short animation when ux.v1.css is loaded (it sets --ux-motion); otherwise at once */
+let modalT = 0;
+function uxMotion(){
+  try {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+    return !!getComputedStyle(document.documentElement).getPropertyValue("--ux-motion").trim();
+  } catch (e) { return false; }
+}
+function closeModal(now){
+  const root = $("#modalRoot"); modalSubmit = null;
+  clearTimeout(modalT);
+  const scrim = $("#mScrim");
+  if (!scrim || now === true || !uxMotion()) { root.innerHTML = ""; return; }
+  scrim.classList.add("out"); scrim.removeAttribute("id");
+  const form = scrim.querySelector("#mForm"); if (form) form.removeAttribute("id");
+  modalT = setTimeout(() => { if (scrim.isConnected) scrim.remove(); }, 190);
+}
 function confirmAction(o){
   openModal({ title: o.title || "Please confirm", danger: o.danger, submitText: o.submitText || "Yes, continue",
     body: '<div class="note">' + esc(o.note || "This changes saved records.") + '</div><p style="margin:0">' + esc(o.message) + '</p>',
@@ -67,7 +87,7 @@ function confirmAction(o){
 }
 
 const FEE_BADGE = { "Paid":"b-ok","Partial":"b-warn","Overdue":"b-bad","Due Today":"b-warn","Upcoming":"b-info",
-  "Waived":"b-idle","Nil":"b-idle","Pending":"b-bad","Needs amount":"b-warn" };
+  "Waived":"b-idle","Nil":"b-idle","Pending":"b-bad","Needs amount":"b-warn","Not paid yet":"b-warn","Nothing due":"b-idle" };
 const GEN_BADGE = { "Active":"b-ok","Inactive":"b-idle","Suspended":"b-bad","Completed":"b-ok","Left":"b-idle",
   "Stopped":"b-idle","Upcoming":"b-acc","Transferred":"b-info","Present":"b-ok","Absent":"b-bad","Leave":"b-warn",
   "Excused":"b-info","Cancelled":"b-idle","Student Absent":"b-bad","Teacher Absent":"b-warn","Rescheduled":"b-info",
@@ -115,32 +135,32 @@ function renderList(lid, rows, o){
   const body = shown.map(function(r){
     const k = String(o.key(r));
     const isOpen = openKey === lid + "::" + k;
-    return '<button class="lrow ' + (isOpen ? "is-open " : "") + (o.rowClass ? o.rowClass(r) : "") + '" type="button" ' +
-        'data-act="lrow" data-lid="' + lid + '" data-k="' + esc(k) + '" aria-expanded="' + isOpen + '">' +
+    /* v9: o.go(r) → { act, id } makes the row open something (a profile) instead of folding open */
+    const g = o.go ? o.go(r) : null;
+    return '<button class="lrow ' + (isOpen && !g ? "is-open " : "") + (g ? "is-link " : "") + (o.rowClass ? o.rowClass(r) : "") + '" type="button" ' +
+        (g ? 'data-act="' + esc(g.act) + '" data-id="' + esc(g.id) + '"'
+           : 'data-act="lrow" data-lid="' + lid + '" data-k="' + esc(k) + '" aria-expanded="' + isOpen + '"') + '>' +
         '<span class="lchev">›</span>' +
         '<span class="lmain"><span class="lt">' + o.title(r) + '</span>' +
           '<span class="ls">' + (o.sub ? o.sub(r) : "") + '</span></span>' +
         '<span class="lright">' +
           (o.amount ? '<span class="lamt">' + o.amount(r) + '</span>' : "") +
           (o.badge ? o.badge(r) : "") +
-          '<span class="lfull" role="button" tabindex="0" title="Open full view" aria-label="Open full view" ' +
-            'data-act="lfull" data-lid="' + lid + '" data-k="' + esc(k) + '">⤢</span>' +
         '</span></button>' +
-      (isOpen ? '<div class="ldet">' + o.detail(r) + '</div>' : "");
+      (isOpen && !g && o.detail ? '<div class="ldet">' + o.detail(r) + '</div>' : "");
   }).join("");
 
   const more = rows.length > limit
     ? '<button class="more no-print" data-act="lmore" data-lid="' + lid + '">Show ' +
       Math.min(25, rows.length - limit) + ' more · ' + num(rows.length - limit) + ' left</button>' : "";
   const foot = o.foot ? '<div class="lfoot">' + o.foot + '</div>' : "";
-  /* sort sits at the top next to the count and Full view, where it can be seen */
+  /* sort sits at the top next to the count, where it can be seen */
   const sortSel = sorts.length > 1
     ? '<label class="lsort"><span>Sort</span><select class="select" data-act="lsort" data-lid="' + lid + '">' +
       sorts.map(s => '<option value="' + s.key + '"' + ((UI.sort[lid] || sorts[0].key) === s.key ? " selected" : "") + '>' +
         esc(s.label) + '</option>').join("") + '</select></label>' : "";
   const bar = '<div class="lbar no-print"><span>' + num(rows.length) + (rows.length === 1 ? " record" : " records") +
-    (rows.length > limit ? " · showing " + shown.length : "") + '</span>' + sortSel +
-    '<button type="button" class="btn btn-sm" data-act="lfullpage" data-lid="' + lid + '">⤢ Full view</button></div>';
+    (rows.length > limit ? " · showing " + shown.length : "") + '</span>' + sortSel + '</div>';
   return bar + '<div class="list">' + head + body + more + '</div>' + foot;
 }
 function dl(pairs){
@@ -414,30 +434,45 @@ function bootData(){
 const WS = {
   batch: { label: "Batch classes", sub: "Batch workspace", home: "bDash", nav: [
     ["Overview", [["bDash", "◱", "Batch dashboard", "Dashboard"]]],
-    ["Manage", [["batches", "▤", "Courses & classes", "Classes"], ["subclasses", "◨", "Sub-classes", "Sub-classes"],
-      ["enrol", "⇄", "Enrolment", "Enrolment"], ["attendance", "✓", "Attendance", "Attendance"]]],
-    ["Fees", [["bFees", "₹", "Batch fees", "Fees"], ["bDues", "!", "Due & overdue", "Dues"]]],
+    ["Manage", [["batches", "▤", "Courses & classes", "Classes"], ["enrol", "⇄", "Enrolment", "Enrolment"],
+      ["attendance", "✓", "Attendance", "Attendance"]]],
+    ["Fees", [["bFees", "₹", "Batch fees", "Fees"]]],
     ["Reports", [["bReports", "▥", "Batch reports", "Reports"]]]
   ]},
   ind: { label: "Individual classes", sub: "Individual workspace", home: "iDash", nav: [
     ["Overview", [["iDash", "◱", "Individual dashboard", "Dashboard"]]],
-    ["Manage", [["plans", "☺", "Class plans", "Plans"], ["classes", "✓", "Class log", "Class log"]]],
-    ["Fees", [["iFees", "₹", "Individual fees", "Fees"], ["iDues", "!", "Due & overdue", "Dues"]]],
+    ["Manage", [["plans", "☺", "Class plans", "Plans"]]],
+    ["Fees", [["iFees", "₹", "Individual fees", "Fees"]]],
     ["Reports", [["iReports", "▥", "Individual reports", "Reports"]]]
   ]},
   books: { label: "Academy books", sub: "Shared workspace", home: "overview", nav: [
     ["Overview", [["overview", "◱", "Academy overview", "Dashboard"]]],
-    ["People", [["students", "☺", "Students", "Students"], ["teachers", "✎", "Teachers", "Teachers"], ["staff", "◉", "Other staff", "Staff"]]],
-    ["Money in", [["payments", "◈", "All payments", "Payments"], ["income", "↑", "Other income", "Income"]]],
-    ["Money out", [["expenses", "↓", "Expenses", "Expenses"], ["tpay", "◇", "Teacher pay", "Teacher pay"]]],
-    ["Books", [["accounts", "▦", "Accounts", "Accounts"], ["ledger", "☰", "Ledger", "Ledger"],
-      ["reports", "▥", "Reports", "Reports"]]],
+    ["People", [["students", "☺", "Students", "Students"], ["teachers", "✎", "Teachers", "Teachers"]]],
+    ["Money", [["tpay", "◇", "Teacher pay", "Teacher pay"], ["payments", "◈", "Money", "Money"]]],
+    ["Books", [["reports", "▥", "Reports", "Reports"]]],
     ["System", [["settings", "⚙", "Settings", "Settings"]]]
   ]}
 };
+/* v9: related pages share one menu item and switch with tabs at the top of the page.
+   Key = the page in the menu; every tab page can still be opened on its own with go(page). */
+const NAV_GROUPS = {
+  batches:  { label: "Classes",  tabs: [["batches", "Classes"], ["subclasses", "Sub-classes"]] },
+  bFees:    { label: "Fees",     tabs: [["bFees", "Fees"], ["bDues", "Dues"]] },
+  plans:    { label: "Plans",    tabs: [["plans", "Class plans"], ["classes", "Class log"]] },
+  iFees:    { label: "Fees",     tabs: [["iFees", "Fees"], ["iDues", "Dues"]] },
+  teachers: { label: "Teachers", tabs: [["teachers", "Teachers"], ["staff", "Other staff"]] },
+  payments: { label: "Money",    tabs: [["payments", "Fees received"], ["income", "Other income"], ["expenses", "Expenses"],
+                                        ["accounts", "Accounts"], ["ledger", "Ledger"]] }
+};
+const NAV_OF = {};   /* tab page -> the page in the menu */
+Object.keys(NAV_GROUPS).forEach(k => NAV_GROUPS[k].tabs.forEach(t => NAV_OF[t[0]] = k));
+/* a menu item that is only shown when it has something in it */
+const NAV_HIDE = { iRev: () => State.page !== "iRev" && typeof revCount === "function" && !revCount() };
 const PAGE_WS = {}; /* page -> workspace */
 Object.keys(WS).forEach(ws => WS[ws].nav.forEach(g => g[1].forEach(item => PAGE_WS[item[0]] = ws)));
+Object.keys(NAV_OF).forEach(p => { PAGE_WS[p] = PAGE_WS[NAV_OF[p]]; });
 PAGE_WS.profile = "books";
+PAGE_WS.tprofile = "books";
 
 const PAGE_SUB = {
   staff: "Admin, counsellors, editors and other staff on a monthly salary plus incentive.",
@@ -466,7 +501,8 @@ const PAGE_SUB = {
   ledger: "Built automatically from what you record.",
   reports: "Filter by stream, print or export.",
   settings: "Academy details, categories, backup.",
-  profile: "Everything about one student, both streams."
+  profile: "Everything about one student, both streams.",
+  tprofile: "Everything about one teacher — students, this month's pay and every payment."
 };
 
 const State = {
@@ -491,6 +527,8 @@ const State = {
   ledger:   { q: "", type: "", account: "", source: "", from: "", to: "" },
   reports:  { which: "pnl", preset: "month", from: "", to: "", source: "", studentId: "" },
   profile:  { studentId: "", tab: "fees" },
+  tprofile: { teacherId: "", tab: "students", from: "" },
+  tpayq:    { q: "" },
   cal:      { month: currentMonth() }
 };
 
@@ -503,11 +541,28 @@ function switchWS(ws){
 }
 function buildNav(){
   const ws = WS[State.ws];
-  $("#navList").innerHTML = ws.nav.reduce((a, g) => a.concat(g[1]), []).map(function(it){
-    const badgeId = it[0] === "bDues" ? "bDueBadge" : it[0] === "iDues" ? "iDueBadge" : "";
-    return '<button data-page="' + it[0] + '">' + esc(it[3] || it[2]) +
+  const lead = NAV_OF[State.page] || State.page;
+  $("#navList").innerHTML = ws.nav.reduce((a, g) => a.concat(g[1]), []).filter(it => !(NAV_HIDE[it[0]] && NAV_HIDE[it[0]]())).map(function(it){
+    const badgeId = (it[0] === "bDues" || it[0] === "bFees") ? "bDueBadge" : (it[0] === "iDues" || it[0] === "iFees") ? "iDueBadge" : "";
+    return '<button data-page="' + it[0] + '"' + (it[0] === lead ? ' class="is-on"' : "") + '>' + esc(it[3] || it[2]) +
       (badgeId ? '<span class="nb" id="' + badgeId + '">0</span>' : "") + '</button>';
   }).join("");
+}
+/* v9: the tab row for pages that share a menu item */
+function subTabs(page){
+  const lead = NAV_OF[page], grp = lead ? NAV_GROUPS[lead] : null;
+  if (!grp || grp.tabs.length < 2) return "";
+  return '<nav class="subtabs no-print" role="tablist" aria-label="' + esc(grp.label) + '">' + grp.tabs.map(t =>
+    '<button type="button" role="tab" class="st' + (t[0] === page ? " is-on" : "") + '" aria-selected="' + (t[0] === page) + '" ' +
+    'data-act="goto" data-page="' + t[0] + '">' + esc(t[1]) + '</button>').join("") + '</nav>';
+}
+function pageTitle(page){
+  if (page === "profile") return "Student profile";
+  if (page === "tprofile") return "Teacher profile";
+  const lead = NAV_OF[page] || page, grp = NAV_GROUPS[lead];
+  if (grp) return grp.label;
+  const nav = WS[State.ws].nav.reduce((a, g) => a.concat(g[1]), []).find(x => x[0] === lead);
+  return nav ? nav[2] : page;
 }
 function go(page){
   const ws = PAGE_WS[page];
@@ -515,21 +570,21 @@ function go(page){
     State.ws = ws;
     document.body.setAttribute("data-ws", ws);
     $$(".ws-btn").forEach(b => b.classList.toggle("is-on", b.dataset.wsGo === ws));
-    buildNav();
   }
   State.page = page;
-  $$("#navList button").forEach(b => b.classList.toggle("is-on", b.dataset.page === page));
-  const nav = (WS[State.ws].nav.reduce((a, g) => a.concat(g[1]), []).find(x => x[0] === page));
-  $("#pageTitle").textContent = nav ? nav[2] : (page === "profile" ? "Student profile" : page);
+  buildNav();
+  const title = pageTitle(page), lead = NAV_OF[page], grp = lead ? NAV_GROUPS[lead] : null;
+  const tab = grp ? grp.tabs.find(t => t[0] === page) : null;
+  $("#pageTitle").textContent = title;
   $("#pageSub").textContent = PAGE_SUB[page] || "";
-  $("#crumb").textContent = WS[State.ws].label + "  /  " + (nav ? nav[2] : "Student profile");
+  $("#crumb").textContent = WS[State.ws].label + "  /  " + title + (tab && grp.tabs.length > 1 ? "  /  " + tab[1] : "");
   $("#headActs").innerHTML = HEAD_ACTS[page] || "";
   render();
   window.scrollTo({ top: 0 });
 }
 function render(){
   const fn = Pages[State.page];
-  $("#view").innerHTML = fn ? fn() : '<div class="empty"><h4>This part did not load</h4>' +
+  $("#view").innerHTML = fn ? subTabs(State.page) + fn() : '<div class="empty"><h4>This part did not load</h4>' +
     '<p>The page file did not reach the browser. Pull down to reload — if it keeps happening, the upload is incomplete.</p>' +
     '<button class="btn btn-primary" onclick="location.reload(true)">Reload</button></div>';
   chrome();
@@ -548,19 +603,35 @@ function chrome(){
   else { mk.style.backgroundImage = ""; mk.textContent = (s.academyName || "MQ").slice(0, 2).toUpperCase(); }
 }
 function closeDrawer(){ /* top navigation — nothing to close */ }
+/* v9: page buttons live in the page's own toolbar — the header no longer repeats them */
 const HEAD_ACTS = {
-  overview: '<button class="btn" data-act="print">Export view</button>' +
-            '<button class="btn btn-primary" data-act="build-both">Calculate this month</button>',
-  bFees:    '<button class="btn btn-primary" data-act="next-month">Open next month</button>',
-  iFees:    '<button class="btn btn-primary" data-act="next-month">Open next month</button>',
-  attendance: '<button class="btn" data-act="holidays">Holidays</button>' +
-              '<button class="btn btn-primary" data-act="att-range">Mark a date range</button>',
-  students: '<button class="btn btn-primary" data-act="student-new">+ Add student</button>',
-  teachers: '<button class="btn btn-primary" data-act="teacher-new">+ Add teacher</button>',
-  batches:  '<button class="btn btn-primary" data-act="batch-new">+ Create class</button>',
-  plans:    '<button class="btn btn-primary" data-act="plan-new">+ New class plan</button>',
-  reports:  '<button class="btn" data-act="print">Print</button><button class="btn btn-primary" data-act="rep-csv">Export CSV</button>'
+  attendance: '<button class="btn" data-act="holidays">Holidays</button>'
 };
+
+/* ---- v9: the ⋯ menu — secondary actions out of the way. items: [action, label, extra attributes, "danger"] ---- */
+function moreMenu(items, label){
+  items = (items || []).filter(Boolean);
+  if (!items.length) return "";
+  return '<div class="mm no-print"><button type="button" class="btn mm-btn" aria-haspopup="menu" aria-expanded="false" title="More">' +
+    esc(label || "⋯") + '</button><div class="mm-pop" role="menu" hidden>' +
+    items.map(a => '<button type="button" role="menuitem" class="mm-i' + (a[3] ? " " + a[3] : "") + '" data-act="' + a[0] + '"' + (a[2] || "") + '>' +
+      esc(a[1]) + '</button>').join("") + '</div></div>';
+}
+function mmCloseAll(except){
+  $$(".mm-pop").forEach(function(p){ if (p === except) return; p.hidden = true;
+    const b = p.parentNode.querySelector(".mm-btn"); if (b) b.setAttribute("aria-expanded", "false"); });
+}
+document.addEventListener("click", function(e){
+  const b = e.target.closest(".mm-btn");
+  if (b) {
+    const pop = b.parentNode.querySelector(".mm-pop"), open = pop.hidden;
+    mmCloseAll(pop); pop.hidden = !open; b.setAttribute("aria-expanded", String(open));
+    e.stopPropagation(); return;
+  }
+  if (!e.target.closest(".mm-pop")) mmCloseAll(null);
+  else if (e.target.closest(".mm-i")) setTimeout(() => mmCloseAll(null), 0);
+}, true);
+document.addEventListener("keydown", e => { if (e.key === "Escape") mmCloseAll(null); });
 
 /* ---- form helpers ---- */
 function optList(values, selected, ph){
@@ -690,17 +761,11 @@ function feesPage(source, key, buildAct){
   });
   const s = Logic.summarize(all);
   return '' +
-  (source === "individual"
-    ? (Logic.prepaid()
-      ? '<div class="note"><b>Prepaid.</b> The month is billed up front on the classes the timetable plans, with holidays taken out. ' +
-        'At the end of the month press <b>Reconcile</b> — classes that did not happen come back as a credit on the next month, ' +
-        'and extra classes are added on. The month just closed is locked, never rewritten.</div>'
-      : '<div class="note">Class-based fees grow as classes are logged, so this month keeps changing until it ends. ' +
-        'Press <b>Calculate month</b> after logging classes, and lock a month from <b>Adjust</b> once it is final.</div>')
-    : (Logic.prepaid()
-      ? '<div class="note"><b>Prepaid.</b> Batch fees for ' + esc(monthLabel(m)) + ' fall due ' +
-        esc(fmtDate(Logic.feeDueDate(m, Settings().defaultDueDay))) + ' — before the month starts. ' +
-        'Use <b>Open next month</b> to raise the next month early so parents can pay in advance.</div>' : "")) +
+  /* v9: one short line instead of a paragraph */
+  '<p class="tagline no-print" style="margin:0 0 10px">' + (Logic.prepaid()
+    ? "Prepaid — each month is due before it starts, on the student's own day." +
+      (source === "individual" ? " After a month ends, Reconcile it from ⋯." : "")
+    : "Fees follow the classes logged; this month keeps changing until it ends.") + '</p>' +
   '<div class="toolbar no-print">' +
     field("Search", '<input class="input" data-fset="' + key + '.q" value="' + esc(f.q) + '" placeholder="Student name or ID">', "grow") +
     field("Status", sel("s", optList(["Paid","Partial","Upcoming","Due Today","Overdue","Waived","Nil"], f.status, "All statuses"), 'data-fset="' + key + '.status"')) +
@@ -708,11 +773,9 @@ function feesPage(source, key, buildAct){
                         : field("Teacher", sel("t", teacherOpts(f.teacher), 'data-fset="' + key + '.teacher"'))) +
     '<div class="push btn-row">' +
       '<button class="btn btn-dark" data-act="' + buildAct + '">Calculate month</button>' +
-      '<button class="btn" data-act="next-month">Open next month</button>' +
-      (source === "individual" && Logic.prepaid() ? '<button class="btn" data-act="reconcile">Reconcile ' +
-        esc(monthShort(m)) + '</button>' : "") +
-      '<button class="btn" data-act="fees-csv" data-src="' + source + '">CSV</button>' +
-      '<button class="btn" data-act="print">Print</button>' +
+      moreMenu([["next-month", "Open next month"],
+        source === "individual" && Logic.prepaid() ? ["reconcile", "Reconcile " + monthShort(m) + " (close the month)"] : null,
+        ["fees-csv", "Download CSV", ' data-src="' + source + '"'], ["print", "Print"]]) +
     '</div>' +
   '</div>' +
   feeSummaryCards(s) +
@@ -751,7 +814,7 @@ function duesPage(source, key){
     field("Search", '<input class="input" data-fset="' + key + '.q" value="' + esc(d.q) + '" placeholder="Student name, ID or phone">', "grow") +
     (source === "batch" ? field("Batch", sel("b", batchOpts(d.batch), 'data-fset="' + key + '.batch"'))
                         : field("Teacher", sel("t", teacherOpts(d.teacher), 'data-fset="' + key + '.teacher"'))) +
-    '<div class="push btn-row"><button class="btn" data-act="dues-csv" data-src="' + source + '">CSV</button></div>' +
+    '<div class="push btn-row">' + moreMenu([["dues-csv", "Download CSV", ' data-src="' + source + '"'], ["print", "Print"]]) + '</div>' +
   '</div>' +
   '<div class="chips no-print" style="margin-bottom:12px">' +
     chip("all", "All outstanding") + chip("overdue", "Overdue") + chip("today", "Due today") +
