@@ -1,5 +1,8 @@
 "use strict";
-/* Academic Service — core.v7.js. v7: several people can work at once — new students, teachers and plans take their number from the database (claim), Supa.refresh merges other devices' changes, and an attendance-admin mode (window.MQ_ADMIN) loads only what the admin link needs. (v6: paged loading, fixed mark IDs.) */
+/* Academic Service — core.v8.js. v8: a save made while a load from Supabase is still on its way is no longer
+   overwritten by the older copy the load brings back (pullAll on opening, refresh on the attendance sheet) —
+   e.g. a class plan switched to Stopped jumped back to Active. getFees / feeViews now filter by planId (it was ignored).
+   (v7: several people can work at once — new students, teachers and plans take their number from the database (claim), Supa.refresh merges other devices' changes, and an attendance-admin mode (window.MQ_ADMIN) loads only what the admin link needs. (v6: paged loading, fixed mark IDs.) */
 /* ==========================================================================
    ManzilulQuran — Academy Manager (single file)
 
@@ -85,6 +88,16 @@ function persist(){
   Storage.save(DB);
 }
 function Settings(){ return DB.settings || {}; }
+/* this device's records as text, collection by collection — compared after a load to see what changed meanwhile */
+function supaSnap(colls){
+  const s = {};
+  colls.forEach(function(c){
+    if (c === "settings") return;
+    const m = s[c] = {};
+    (DB[c] || []).forEach(r => { if (r && r.id) m[String(r.id)] = JSON.stringify(r); });
+  });
+  return s;
+}
 
 /* ==========================================================================
    Supabase — the primary live database (the "bank").
@@ -144,6 +157,16 @@ const Supa = {
     if (!this.on() || (!this.st.ready && !this.init())) return { ok: false, changed: 0 };
     if (SupaTrack.busy || !SupaTrack.base) return { ok: false, changed: 0 };
     let changed = 0;
+    /* v8: what was waiting to send when the read began, and this device's copy at that moment. The read can come back
+       older than a save that finished while it was on its way (the save marks the record as sent, but the rows read
+       still hold the old version) — anything pending at the start, or changed since, keeps this device's copy. */
+    const snap0 = supaSnap(colls), pend0 = {};
+    colls.forEach(function(c){
+      if (c === "settings") return;
+      const base = SupaTrack.base[c] || {}, s = snap0[c] || {}, p = pend0[c] = {};
+      Object.keys(s).forEach(id => { if (base[id] !== s[id]) p[id] = 1; });
+      Object.keys(base).forEach(id => { if (s[id] === undefined) p[id] = 1; });
+    });
     try {
       const got = await Promise.all(colls.map(c => this.selectAll(SUPA_TABLE[c])));
       if (SupaTrack.busy) return { ok: false, changed: 0 };
@@ -156,7 +179,10 @@ const Supa = {
         }
         const base = SupaTrack.base[c] = SupaTrack.base[c] || {};
         const local = {}; (DB[c] || []).forEach(r => { if (r && r.id) local[String(r.id)] = r; });
-        const pending = id => (local[id] && base[id] !== JSON.stringify(local[id])) || (!local[id] && base[id] !== undefined) || Supa.claiming[c + "|" + id];
+        const s0 = snap0[c] || {}, p0 = pend0[c] || {};
+        const pending = id => p0[id] ||
+          (local[id] ? s0[id] !== JSON.stringify(local[id]) : s0[id] !== undefined) ||
+          (local[id] && base[id] !== JSON.stringify(local[id])) || (!local[id] && base[id] !== undefined) || Supa.claiming[c + "|" + id];
         const next = [], seen = {};
         rows.forEach(function(r){
           const id = String(r.id); seen[id] = true;
@@ -223,6 +249,9 @@ const Supa = {
   async pullAll(){
     if (!this.st.ready && !this.init()) return { ok:false, error:"Supabase not configured" };
     this.st.busy = true; this.paint("busy", "loading from Supabase…");
+    /* v8: this device's copy as the load starts — anything saved, added or removed while the tables are on their way
+       is kept as it is here (and sent), instead of being replaced by the older rows the load brings back */
+    const before = supaSnap(SUPA_COLLS), kept = {};
     try {
       /* all tables at once (was one after another); applied only when every table arrived */
       const res = await Promise.all(SUPA_COLLS.map(c => this.selectAll(SUPA_TABLE[c])
@@ -235,11 +264,27 @@ const Supa = {
           (data || []).forEach(r => { if (!r.deleted) patch[r.id] = r.data && r.data.value !== undefined ? r.data.value : r.data; });
           DB.settings = Object.assign({}, DB.settings, patch);
         } else {
-          DB[c] = (data || []).filter(r => !r.deleted).map(r => Object.assign({ id: r.id }, r.data));
+          const server = (data || []).filter(r => !r.deleted).map(r => Object.assign({ id: r.id }, r.data));
+          const b = before[c] || {}, now = {}, keep = {};
+          (DB[c] || []).forEach(r => { if (r && r.id) now[String(r.id)] = r; });
+          Object.keys(now).forEach(id => { if (b[id] !== JSON.stringify(now[id])) keep[id] = now[id]; });
+          Object.keys(b).forEach(id => { if (!now[id]) keep[id] = null; });
+          const ids = Object.keys(keep);
+          if (!ids.length) { DB[c] = server; return; }
+          const srv = {}; server.forEach(r => srv[String(r.id)] = JSON.stringify(r));
+          DB[c] = server.filter(r => keep[String(r.id)] === undefined).concat(ids.filter(id => keep[id]).map(id => keep[id]));
+          kept[c] = { ids: ids, srv: srv };
         }
       });
       Cache.clear(); Storage.save(DB);
       SupaTrack.reset();
+      /* the kept records are marked against what the database holds, so the tracker sends them */
+      let nKept = 0;
+      Object.keys(kept).forEach(function(c){
+        const base = SupaTrack.base[c] = SupaTrack.base[c] || {};
+        kept[c].ids.forEach(id => { nKept++; if (kept[c].srv[id] !== undefined) base[id] = kept[c].srv[id]; else delete base[id]; });
+      });
+      if (nKept) SupaTrack.schedule();
       this.st.at = Date.now(); this.paint("ok", "loaded from Supabase");
       return { ok:true };
     } catch (e) {
@@ -742,6 +787,7 @@ const DataService = {
     if (f.studentId) r = r.filter(x => x.studentId === f.studentId);
     if (f.batchId)   r = r.filter(x => x.batchId === f.batchId);
     if (f.teacherId) r = r.filter(x => x.teacherId === f.teacherId);
+    if (f.planId)    r = r.filter(x => x.planId === f.planId);   /* v8: was ignored, so a plan's fees meant every fee */
     return r;
   },
   getFee(id){ return DB.fees.find(f => f.id === id) || null; },
