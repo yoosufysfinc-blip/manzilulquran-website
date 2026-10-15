@@ -1,5 +1,5 @@
 "use strict";
-/* Academic Service — ws-individual.v4.js. v4: classes are marked on the Attendance page — the old Record class / Log a range buttons now open it; the class log is the history view. (v3: plan sorting.) */
+/* Academic Service — ws-individual.v5.js. v5: a plan opens its student or its teacher in one tap. (v4: classes are marked on the Attendance page — the old Record class / Log a range buttons now open it; the class log is the history view. (v3: plan sorting.) */
 /* ==========================================================================
    INDIVIDUAL WORKSPACE
    ========================================================================== */
@@ -108,8 +108,9 @@ Pages.plans = function(){
         [monthShort(m) + " balance", p.balance ? '<span class="out">' + money(p.balance) + '</span>' : "—"],
         p.notes ? ["Notes", esc(p.notes)] : null
       ]) + acts('<button class="btn btn-sm" data-act="plan-edit" data-id="' + p.id + '">Edit plan</button>' +
-        '<button class="btn btn-sm" data-act="goto" data-page="iAtt">Attendance</button>' +
-        '<button class="btn btn-sm" data-act="profile-open" data-id="' + p.studentId + '">Open student</button>'),
+        '<button class="btn btn-sm" data-act="profile-open" data-id="' + p.studentId + '">Student</button>' +
+        (p.teacherId ? '<button class="btn btn-sm" data-act="teacher-open" data-id="' + p.teacherId + '">Teacher</button>' : "") +
+        '<button class="btn btn-sm" data-act="goto" data-page="iAtt">Attendance</button>'),
       sorts: [{ key: "name", label: "Student name A–Z", val: p => p.studentName },
               { key: "sid", label: "Student ID", val: p => p.studentId },
               { key: "startNew", label: "Started — newest first", val: p => p.startDate || "", desc: true },
