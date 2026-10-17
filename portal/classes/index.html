@@ -1361,7 +1361,7 @@ function renderBatches(){
         <div class="b-num"><b>${b.students}</b><span>on roster</span></div>
         <div class="b-num${b.allowed ? ' good' : ''}"><b>${b.allowed}</b><span>paid</span></div>
         <div class="b-num${unpaid > 0 ? ' warn' : ''}"><b>${unpaid}</b><span>unpaid</span></div>
-        <div class="b-num"><b>${b.calendars}</b><span>calendars</span></div>
+        <div class="b-num"><b>${Array.isArray(b.calendars) ? b.calendars.length : (b.calendars || 0)}</b><span>calendars</span></div>
         <div class="b-num"><b>${b.online}</b><span>signed in</span></div>
       </div>
       <div class="b-btns">
