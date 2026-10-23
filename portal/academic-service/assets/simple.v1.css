@@ -1,0 +1,74 @@
+/* Academic Service — simple.v1.css (loaded after ux.v1.css). Simple mode: the short student / class / salary forms
+   (fields close together, two to a row even on a phone), the Class choice (Arrange later · Individual · Batch),
+   day toggles, the Due date page (three figures on one row, the row buttons), and the "No teacher" / "Class pending"
+   marks. Phone first; reduced motion respected. */
+
+/* ---------- short forms ---------- */
+.form-grid.sf{ gap:10px 12px; }
+.sf .field{ gap:4px; }
+.sf .field>label{ font-size:10px; letter-spacing:.08em; }
+.modal .sf .input,.modal .sf .select{ padding-top:8px; padding-bottom:8px; }
+.sf-more{ margin-top:12px; border-top:1px dashed var(--line); padding-top:8px; }
+.sf-more>summary{ cursor:pointer; font-size:12.6px; font-weight:700; color:var(--muted); list-style:none; padding:6px 0;
+  display:flex; align-items:center; gap:6px; -webkit-tap-highlight-color:transparent; }
+.sf-more>summary::-webkit-details-marker{ display:none; }
+.sf-more>summary::before{ content:"+"; display:inline-flex; width:18px; height:18px; align-items:center; justify-content:center;
+  border-radius:6px; background:var(--card-2); border:1px solid var(--line); font-size:13px; line-height:1; transition:transform .25s var(--ux-spring, ease); }
+.sf-more[open]>summary::before{ content:"−"; }
+.sf-more[open]>.form-grid{ margin-top:6px; animation:sfIn .28s var(--ux-ease, ease) both; }
+.sf-check{ display:flex; gap:8px; align-items:center; font-size:13px; color:var(--text); cursor:pointer; padding:4px 0; }
+.sf-check input{ width:17px; height:17px; accent-color:var(--pri); flex:none; }
+.sf-hint{ margin:10px 0 0; }
+@keyframes sfIn{ from{ opacity:0; transform:translateY(-4px) } to{ opacity:1; transform:none } }
+
+/* ---------- the Class choice ---------- */
+.cls-box{ margin-top:14px; padding:12px; border:1px solid var(--line); border-radius:14px; background:var(--card-2); }
+.cls-hd{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+.cls-l{ font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted-2); }
+.seg{ display:inline-flex; gap:3px; padding:3px; border-radius:999px; background:#fff; border:1px solid var(--line); flex-wrap:nowrap; max-width:100%; }
+.seg-o{ position:relative; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.seg-o input{ position:absolute; opacity:0; pointer-events:none; }
+.seg-o span{ display:block; padding:7px 13px; border-radius:999px; font-size:13px; font-weight:600; color:var(--muted); white-space:nowrap;
+  transition:background .22s var(--ux-ease, ease), color .18s, transform .15s var(--ux-spring, ease); }
+.seg-o input:checked+span{ background:var(--pri); color:#fff; box-shadow:0 3px 10px rgba(0,0,0,.12); animation:segIn .32s var(--ux-spring, ease) both; }
+.seg-o input:focus-visible+span{ outline:2px solid var(--pri); outline-offset:2px; }
+.seg-o:active span{ transform:scale(.95); }
+@keyframes segIn{ from{ transform:scale(.9) } to{ transform:none } }
+.cls-sec[hidden],.cls-first[hidden]{ display:none !important; }
+.cls-sec:not([hidden]){ animation:sfIn .26s var(--ux-ease, ease) both; }
+.cls-first{ margin-top:8px; }
+
+/* ---------- day toggles ---------- */
+.daychips{ display:flex; gap:5px; flex-wrap:wrap; }
+.dchip{ position:relative; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.dchip input{ position:absolute; opacity:0; pointer-events:none; }
+.dchip span{ display:inline-flex; align-items:center; justify-content:center; min-width:42px; height:32px; padding:0 8px; border-radius:10px;
+  border:1px solid var(--line); background:#fff; font-size:12.4px; font-weight:600; color:var(--muted);
+  transition:background .18s, color .18s, border-color .18s, transform .14s var(--ux-spring, ease); }
+.dchip input:checked+span{ background:var(--pri); border-color:var(--pri); color:#fff; }
+.dchip input:focus-visible+span{ outline:2px solid var(--pri); outline-offset:2px; }
+.dchip:active span{ transform:scale(.93); }
+
+/* ---------- Due date ---------- */
+.due-acts{ display:flex; gap:7px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+.due-kpis{ grid-template-columns:repeat(3,minmax(0,1fr)); margin-bottom:12px; }
+.note.warn-note{ border-left-color:var(--warn); }
+.lrow.row-off{ opacity:.6; }
+
+@media (max-width:680px){
+  /* two to a row still — a long field takes the whole row */
+  .modal .form-grid.sf{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .sf .sf-wide,.sf .pickwrap,.sf .span2{ grid-column:1/-1; }
+  .cls-box{ padding:10px; margin-left:-2px; margin-right:-2px; }
+  .seg{ width:100%; } .seg-o{ flex:1 1 0; } .seg-o span{ text-align:center; padding:8px 6px; font-size:12.6px; }
+  .dchip span{ min-width:0; width:100%; padding:0; }
+  .daychips{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; }
+  .due-kpis{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+  .due-kpis .kpi{ padding:10px 10px; }
+  .due-kpis .kpi-v{ font-size:18px; }
+  .due-kpis .kpi-m{ font-size:10.6px; }
+  .due-acts .btn{ flex:1 1 auto; }
+}
+@media (prefers-reduced-motion:reduce){
+  .sf-more[open]>.form-grid,.cls-sec:not([hidden]),.seg-o input:checked+span{ animation:none !important; }
+}
