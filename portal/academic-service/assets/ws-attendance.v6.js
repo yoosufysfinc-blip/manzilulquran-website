@@ -1,5 +1,6 @@
 "use strict";
-/* Academic Service — ws-attendance.v5.js. v5 (simple mode): attendance is a record only — no fee or salary is worked
+/* Academic Service — ws-attendance.v6.js. v6: ⋯ → Sort rows by Sheet order (each class's order number, as in the old
+   attendance sheet), Class time or Teacher; dragging a row still moves it by hand. (v5 (simple mode): attendance is a record only — no fee or salary is worked
    out from it, so the notes about payroll, reconciliation and recalculating are gone. (v4:) a quieter sheet.
      · one clean top bar: tap the month to jump, a save dot, ⋯ — the month tabs, the counts line and the refresh button are gone
      · the marks are one compact control; teacher and find sit together; three totals (Present, Absent, %) instead of seven;
@@ -163,7 +164,15 @@ function attPossible(pl, ds){
   return attNoDays(pl) || (pl.days || []).indexOf(DOW[parseYMD(ds).getDay()]) >= 0;
 }
 /* rows follow the order you dragged them into (kept on this device); new plans join by class time */
+function attSortBy(){ return attPref("sortBy") || "sheet"; }
+function attTeacherName(pl){ const t = DataService.getTeacher(pl.teacherId); return t ? t.name : "~"; }
 function attOrdered(plans){
+  const by = attSortBy(), tm = p => String(p.time || "99:99");
+  plans = plans.slice().sort(function(a, b){
+    if (by === "sheet") { const x = (+a.order || 9999) - (+b.order || 9999); if (x) return x; }
+    if (by === "teacher") { const x = attTeacherName(a).localeCompare(attTeacherName(b)); if (x) return x; }
+    return tm(a).localeCompare(tm(b)) || String((DataService.getStudent(a.studentId) || {}).name || "").localeCompare(String((DataService.getStudent(b.studentId) || {}).name || ""));
+  });
   const order = attPref("order") || [];
   if (!order.length) return plans;
   const pos = {}; order.forEach((id, i) => pos[id] = i);
@@ -691,7 +700,8 @@ function attMenu(){
     '<div class="ax-mh">Reports</div>' +
     mi("ax-rep-student", "Student report…") + mi("ax-rep-teacher", "Teacher report…") + mi("ax-rep-results", "Exam and test results") +
     '<div class="ax-msep"></div><div class="ax-mh">View</div>' +
-    mi("ax-sort", "Sort rows by class time") +
+    '<div class="ax-mrow"><span>Sort</span>' + seg([["ax-sort", "sheet", "Sheet", attSortBy() === "sheet"], ["ax-sort", "time", "Time", attSortBy() === "time"],
+      ["ax-sort", "teacher", "Teacher", attSortBy() === "teacher"]]) + '</div>' +
     '<div class="ax-mrow"><span>Zoom</span>' + seg([["ax-zoom", "-1", "−", false, "Zoom out"], ["ax-zoom", "0", Math.round(z * 100) + "%", false, "Zoom 100%"], ["ax-zoom", "1", "+", false, "Zoom in"]]) + '</div>' +
     (admin ? "" : '<div class="ax-mrow"><span>Theme</span>' + seg([["ax-theme", "auto", "Auto", th === "auto"], ["ax-theme", "light", "Light", th === "light"], ["ax-theme", "dark", "Dark", th === "dark"]]) + '</div>') +
     mi("ax-refresh", "Refresh now") +
@@ -1186,7 +1196,7 @@ Object.assign(Actions, {
     render();
   },
   "ax-shrink": () => { const C = attCols(); State.iatt.shrink = !C.shrink; render(); },
-  "ax-sort": () => { attPref("order", []); State.iatt.menu = false; toast("Rows sorted by class time", "ok"); render(); },
+  "ax-sort": (by) => { attPref("sortBy", by || "sheet"); attPref("order", []); toast("Rows sorted by " + ({ sheet: "sheet order", time: "class time", teacher: "teacher" }[by] || "sheet order"), "ok"); render(); },
   "ax-zoom": (d) => { const z = +d === 0 ? 1 : Math.max(0.7, Math.min(1.6, Math.round((attZoom() + (+d) * 0.1) * 100) / 100)); attPref("zoom", z); render(); },
   "ax-theme": (t) => { attPref("theme", t); render(); },
   "ax-nodays": () => { State.iatt.onlyNoDays = !State.iatt.onlyNoDays; render(); },
