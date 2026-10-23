@@ -1,5 +1,7 @@
 "use strict";
-/* Academic Service — logic.v9.js. v9 (simple mode): one fixed monthly fee per class. Fees never come from attendance —
+/* Academic Service — logic.v10.js. v10: the fee month is the month it is paid in — a student whose day is the 23rd
+   pays on 23 October for October (the 23 Oct – 22 Nov cycle), and a new student pays for the month they join.
+   v9 (simple mode): one fixed monthly fee per class. Fees never come from attendance —
    the month's due list is made with one button (buildIndMonth / buildBatchMonth) and every row can be changed by hand.
    Teacher salary is not calculated any more: salaries are typed in under Money → Teacher salary.
    Attendance (class log, batch attendance, the sheet) is a plain record. */
@@ -75,12 +77,12 @@ const Logic = {
   prepaid(){ return (Settings().billingMode || "prepaid") === "prepaid"; },
   /* Prepaid: the month is due BEFORE it starts. Postpaid: due inside the month.
      Prepaid has two ways of fixing the date:
-       "studentDay" (default) — each student's own day in the month before. A student who
-         joined on the 22nd pays on 22 October for November. This is how the academy works.
+       "studentDay" (default) — each student's own day in the SAME month (v10). A student who
+         joined on the 22nd pays on 22 October for October (the cycle 22 Oct – 21 Nov). This is how the academy works.
        "advance" — the same date for everyone, a set number of days before the month starts. */
   feeDueDate(month, dueDay){
     if (!Logic.prepaid()) return dueDateFor(month, dueDay);
-    if ((Settings().prepaidDue || "studentDay") === "studentDay") return dueDateFor(addMonths(month, -1), dueDay);
+    if ((Settings().prepaidDue || "studentDay") === "studentDay") return dueDateFor(month, dueDay);
     const d = parseYMD(monthStart(month));
     d.setDate(d.getDate() - (parseInt(Settings().advanceDays, 10) || 0));
     return ymd(d);
@@ -188,10 +190,10 @@ const Logic = {
     const b = DataService.getBatch(en.batchId), sc = en.subClassId ? DataService.getSubclass(en.subClassId) : null;
     return round2(+en.monthlyFee || (sc ? +sc.monthlyFee : 0) || (b ? +b.monthlyFee : 0) || 0);
   },
-  /* prepaid on the student's own day: a month that fell due before the class started is not theirs to pay */
+  /* the student's own day: a month before the class started is not theirs to pay */
   dueBeforeStart(month, dueDay, start){
     return !!(start && Logic.prepaid() && (Settings().prepaidDue || "studentDay") === "studentDay" &&
-      Logic.feeDueDate(month, dueDay) < start);
+      month < String(start).slice(0, 7));
   },
   buildIndMonth(month, opts){
     opts = opts || {};
@@ -264,11 +266,9 @@ const Logic = {
       .filter(Boolean).forEach(r => { z.created += r.created; z.skipped += r.skipped; z.held += r.held; });
     return z;
   },
-  /* the first fee of a new class: the month that starts on the joining day (prepaid on the student's own day:
-     joining on 23 October pays then for November, due 23 October) */
+  /* the first fee of a new class: the month they join in (joining on 23 October pays then for October, due 23 October) */
   firstMonth(start){
-    start = String(start || today());
-    return Logic.prepaid() && (Settings().prepaidDue || "studentDay") === "studentDay" ? addMonths(start.slice(0, 7), 1) : start.slice(0, 7);
+    return String(start || today()).slice(0, 7);
   },
 
   /* ---- what the Due date page shows: paid or pending, nothing in between to learn ---- */
