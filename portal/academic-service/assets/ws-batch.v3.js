@@ -1,70 +1,17 @@
 "use strict";
-/* Academic Service — ws-batch.v2.js. v2: enrolment fee method (fixed / manual). */
+/* Academic Service — ws-batch.v3.js. v3 (simple mode): a batch or sub-class with no teacher is marked "No teacher";
+   enrolments have one fixed monthly fee; sub-classes no longer show teacher pay; the Fees page is the Due date page.
+   The dashboard lives in dash.v2.js. (v2: enrolment fee method (fixed / manual).) */
 /* ==========================================================================
    BATCH WORKSPACE
    ========================================================================== */
-Pages.bDash = function(){
-  const m = State.month;
-  const views = Logic.feeViews({ month: m, source: "batch" });
-  const s = Logic.summarize(views);
-  const batches = DataService.getBatches().filter(b => b.status === "Active");
-  const students = {}; batches.forEach(b => Logic.rosterOf(b.id).forEach(x => students[x.id] = true));
-  const att = Logic.attStats(DataService.getAttendance({ month: m }));
-  const trend = [];
-  for (let i = 5; i >= 0; i--) {
-    const mm = addMonths(m, -i);
-    const t = Logic.summarize(Logic.feeViews({ month: mm, source: "batch" }));
-    trend.push({ label: monthShort(mm), expected: t.net, collected: t.paid });
-  }
-  const byBatch = batches.map(function(b){
-    const t = Logic.summarize(views.filter(v => v.batchId === b.id));
-    return { label: b.name, value: t.paid, text: money(t.paid) + " / " + money(t.net),
-      color: t.collectionPct >= 80 ? "var(--ok)" : t.collectionPct >= 50 ? "var(--acc)" : "var(--bad)" };
-  }).sort((a, b) => b.value - a.value);
-
-  return '' +
-  '<div class="qbar no-print">' +
-    '<button class="qbtn" data-act="att-quick"><span class="qi">✓</span> Mark attendance</button>' +
-    '<button class="qbtn" data-act="batch-fees-build"><span class="qi">₹</span> Calculate ' + esc(monthShort(m)) + ' fees</button>' +
-    '<button class="qbtn" data-act="student-new"><span class="qi">＋</span> Add student</button>' +
-    '<button class="qbtn" data-act="batch-new"><span class="qi">▤</span> Add batch</button>' +
-  '</div>' +
-  '<div class="kpi-grid">' +
-    kpi("Batch students", num(Object.keys(students).length), num(batches.length) + " active batches") +
-    kpi("Expected", money(s.net), num(s.count) + " fee records", "a-acc") +
-    kpi("Collected", money(s.paid), s.collectionPct + "% of expected", "a-ok") +
-    kpi("Pending", money(s.balance), num(s.count - s.paidN) + " open", "a-warn") +
-    kpi("Overdue", money(s.overdueAmt), num(s.overdueN) + " past due", "a-bad") +
-    kpi("Attendance", att.pct + "%", num(att.total) + " marks this month") +
-  '</div>' +
-  '<div class="section-title">Charts</div>' +
-  '<div class="chart-grid">' +
-    '<div class="card chart-box"><h3 style="font-size:14px;padding:2px 2px 4px">Batch fee collection</h3>' +
-      legend([{ label: "Expected", color: "#C9D8D3" }, { label: "Collected", color: "#0E6E5E" }]) +
-      chartGrouped(trend, [{ key: "expected", label: "Expected", color: "#C9D8D3" },
-                           { key: "collected", label: "Collected", color: "#0E6E5E" }]) + '</div>' +
-    '<div class="card chart-box"><h3 style="font-size:14px;padding:2px 2px 4px">Paid vs pending</h3>' +
-      chartDonut([{ label: "Collected", value: s.paid, color: "#0C7A4E" },
-                  { label: "Pending", value: Math.max(0, s.balance - s.overdueAmt), color: "#B9C8C3" },
-                  { label: "Overdue", value: s.overdueAmt, color: "#BE3A2B" }], s.collectionPct + "%", "collected") +
-      legend([{ label: "Collected", color: "#0C7A4E" }, { label: "Pending", color: "#B9C8C3" }, { label: "Overdue", color: "#BE3A2B" }]) + '</div>' +
-    '<div class="card chart-box"><h3 style="font-size:14px;padding:2px 2px 8px">Batch-wise collection</h3>' + chartHBars(byBatch) + '</div>' +
-    '<div class="card chart-box"><h3 style="font-size:14px;padding:2px 2px 4px">Attendance</h3>' +
-      chartDonut([{ label: "Present", value: att.Present, color: "#0C7A4E" }, { label: "Absent", value: att.Absent, color: "#BE3A2B" },
-                  { label: "Leave", value: att.Leave, color: "#C08A2E" }, { label: "Excused", value: att.Excused, color: "#37648F" }],
-                 att.pct + "%", num(att.total) + " marks") +
-      legend([{ label: "Present " + att.Present, color: "#0C7A4E" }, { label: "Absent " + att.Absent, color: "#BE3A2B" },
-              { label: "Leave " + att.Leave, color: "#C08A2E" }, { label: "Excused " + att.Excused, color: "#37648F" }]) + '</div>' +
-  '</div>';
-};
-
 Pages.batches = function(){
   const f = State.batches, q = f.q.toLowerCase().trim(), m = State.month;
   const rows = DataService.getBatches().map(function(b){
     const t = DataService.getTeacher(b.teacherId);
     const s = Logic.summarize(Logic.feeViews({ month: m, source: "batch", batchId: b.id }));
     const att = Logic.attStats(DataService.getAttendance({ month: m, batchId: b.id }));
-    return Object.assign({}, b, { teacherName: t ? t.name : "—", filled: Logic.rosterOf(b.id).length, sum: s, att: att });
+    return Object.assign({}, b, { teacherName: t ? t.name : "", filled: Logic.rosterOf(b.id).length, sum: s, att: att });
   }).filter(function(b){
     if (f.status && b.status !== f.status) return false;
     if (f.course && b.course !== f.course) return false;
@@ -84,14 +31,15 @@ Pages.batches = function(){
     renderList("batches", rows, {
       key: b => b.id, head: ["Batch", "Collected"],
       title: b => esc(b.name) + " " + idchip(b.id),
-      sub: b => esc(b.course + " · " + b.teacherName + " · " + b.filled + "/" + (b.maxStudents || "—") + " students"),
+      sub: b => esc([b.course, b.teacherName || "no teacher", b.filled + "/" + (b.maxStudents || "—") + " students"].filter(Boolean).join(" · ")),
       amount: b => money(b.sum.paid) + '<small>of ' + money(b.sum.net) + '</small>',
-      badge: b => badge(b.status),
+      badge: b => b.status === "Active" && !b.teacherName ? badge("No teacher") : badge(b.status),
+      rowClass: b => b.status === "Active" && !b.teacherName ? "row-warn" : "",
       detail: b => dl([
         ["Batch ID", idchip(b.id)], ["Course", esc(b.course)], ["Level", esc(b.level || "—")],
-        ["Teacher", esc(b.teacherName)], ["Class days", esc((b.days || []).join(", ") || "—")],
+        ["Teacher", b.teacherName ? esc(b.teacherName) : badge("No teacher")], ["Class days", esc((b.days || []).join(", ") || "—")],
         ["Timing", esc((b.startTime || "—") + " – " + (b.endTime || "—")) + " · " + esc(b.duration || 0) + " min"],
-        ["Monthly fee", money(b.monthlyFee)], ["Admission fee", money(b.admissionFee)],
+        ["Monthly fee", money(b.monthlyFee)],
         ["Seats", b.filled + " / " + (b.maxStudents || "—")], ["Started", fmtDate(b.startDate)],
         ["Status", badge(b.status)],
         [monthShort(State.month) + " expected", money(b.sum.net)],
@@ -125,43 +73,38 @@ Pages.subclasses = function(){
     const att = Logic.attStats(DataService.getAttendance({ month: m, subClassId: sc.id }));
     const fees = Logic.summarize(Logic.feeViews({ month: m, source: "batch", batchId: sc.batchId })
       .filter(v => (v.subClassId || "") === sc.id));
-    const pv = t ? Logic.payrollView(t, m) : null;
-    const line = pv ? (pv.groups || []).find(g => g.subClassId === sc.id) : null;
-    return Object.assign({}, sc, { batchName: b ? b.name : sc.batchId, teacherName: t ? t.name : "—",
-      students: roster.length, roster: roster, att: att, fees: fees, pay: line });
+    return Object.assign({}, sc, { batchName: b ? b.name : sc.batchId, teacherName: t ? t.name : "",
+      students: roster.length, roster: roster, att: att, fees: fees });
   });
   const noSub = DataService.getBatches().filter(b => b.status === "Active" && !DataService.getSubclasses({ batchId: b.id }).length);
 
   return '' +
   '<div class="note">A sub-class is a smaller group inside a batch — Group A / Group B, boys / girls, or a level split. ' +
-  'Each one keeps its own teacher, timing, roster and fee, and the teacher is paid separately for it.</div>' +
+  'Each one keeps its own teacher, timing, roster and fee.</div>' +
   '<div class="kpi-grid" style="margin-bottom:14px">' +
     kpi("Sub-classes", num(rows.length), num(new Set(rows.map(r => r.batchId)).size) + " parent batches") +
     kpi("Students grouped", num(rows.reduce((a, r) => a + r.students, 0))) +
-    kpi("Teacher cost this month", money(rows.reduce((a, r) => a + (r.pay ? r.pay.amount : 0), 0)), esc(monthShort(m)), "a-acc") +
     kpi("Batches not split", num(noSub.length), "running as one group") +
   '</div>' +
   '<div class="toolbar no-print"><div class="push btn-row">' +
-    '<button class="btn" data-act="sub-csv">CSV</button>' +
-    '<button class="btn btn-primary" data-act="sub-new">+ New sub-class</button></div></div>' +
+    '<button class="btn btn-primary" data-act="sub-new">+ New sub-class</button>' + moreMenu([["sub-csv", "Download CSV"]]) + '</div></div>' +
   '<div class="card"><div class="card-bd tight">' +
     renderList("subclasses", rows, {
-      key: r => r.id, head: ["Sub-class", "Teacher pay"],
+      key: r => r.id, head: ["Sub-class", "Students"],
       title: r => esc(r.name) + " " + idchip(r.id),
-      sub: r => esc(r.batchName + " · " + r.teacherName + " · " + (r.days || []).join(", ") + " · " + r.students + " students"),
-      amount: r => (r.pay ? money(r.pay.amount) : "—") + '<small>' + r.att.pct + '% attendance</small>',
-      badge: r => badge(r.status || "Active"),
+      sub: r => esc([r.batchName, r.teacherName || "no teacher", (r.days || []).join(", ")].filter(Boolean).join(" · ")),
+      amount: r => r.students + '<small>' + r.att.pct + '% attendance</small>',
+      badge: r => (r.status || "Active") === "Active" && !r.teacherName ? badge("No teacher") : badge(r.status || "Active"),
+      rowClass: r => (r.status || "Active") === "Active" && !r.teacherName ? "row-warn" : "",
       detail: r => dl([
         ["Sub-class", idchip(r.id)], ["Parent batch", esc(r.batchName) + " " + idchip(r.batchId)],
-        ["Teacher", esc(r.teacherName)], ["Class days", esc((r.days || []).join(", ") || "—")],
+        ["Teacher", r.teacherName ? esc(r.teacherName) : badge("No teacher")], ["Class days", esc((r.days || []).join(", ") || "—")],
         ["Timing", esc((r.startTime || "—") + " – " + (r.endTime || "—"))],
         ["Students", r.students + (r.capacity ? " / " + r.capacity : "")],
         ["Monthly fee", r.monthlyFee ? money(r.monthlyFee) : "same as batch"],
         [monthShort(m) + " expected", money(r.fees.net)],
         [monthShort(m) + " collected", '<span class="in">' + money(r.fees.paid) + '</span>'],
         ["Attendance", r.att.pct + "% of " + num(r.att.total) + " marks"],
-        ["Sessions held", r.pay ? r.pay.sessions : 0],
-        ["Teacher pay this month", r.pay ? money(r.pay.amount) + " · " + r.pay.basis : "—"],
         r.notes ? ["Notes", esc(r.notes)] : null
       ]) +
       '<div class="sub-hd">Students in this group</div>' +
@@ -173,10 +116,9 @@ Pages.subclasses = function(){
         '<button class="btn btn-sm" data-act="att-open" data-id="' + r.batchId + '" data-sub="' + r.id + '">Mark attendance</button>' +
         '<button class="btn btn-sm btn-primary" data-act="link-new" data-id="' + r.batchId + '" data-sub="' + r.id + '">Teacher link</button>'),
       sorts: [{ key: "batch", label: "Batch", val: r => r.batchName + r.name },
-              { key: "pay", label: "Highest teacher pay", val: r => r.pay ? r.pay.amount : 0, desc: true },
               { key: "att", label: "Lowest attendance", val: r => r.att.pct }],
       emptyTitle: "No sub-classes yet",
-      emptyText: "Split a large batch into smaller groups so each teacher has their own roster and pay.",
+      emptyText: "Split a large batch into smaller groups so each teacher has their own roster.",
       emptyAction: '<button class="btn btn-primary" data-act="sub-new">+ New sub-class</button>'
     }) +
   '</div></div>';
@@ -188,7 +130,7 @@ function subForm(x){
     field("Sub-class ID", '<input class="input mono" name="id" value="' + esc(x.id || "") + '" readonly placeholder="Generated automatically">') +
     field("Name", '<input class="input" name="name" required placeholder="Group A / Boys / Level 2" value="' + esc(x.name || "") + '">') +
     field("Parent batch", sel("batchId", batchOpts(x.batchId, "Select batch", false))) +
-    field("Teacher", sel("teacherId", teacherOpts(x.teacherId, "Select teacher"))) +
+    field("Teacher (optional)", sel("teacherId", teacherOpts(x.teacherId, "No teacher yet"))) +
     '<div class="field span2"><label>Class days</label><div>' + dayBoxes(x.days) + '</div></div>' +
     field("Start time", '<input class="input" type="time" name="startTime" value="' + esc(x.startTime || "") + '">') +
     field("End time", '<input class="input" type="time" name="endTime" value="' + esc(x.endTime || "") + '">') +
@@ -226,7 +168,7 @@ Pages.enrol = function(){
       title: e => esc(e.studentName) + " " + idchip(e.studentId),
       sub: e => esc(e.batchName + (e.subClassId ? " · " + ((DataService.getSubclass(e.subClassId) || {}).name || e.subClassId) : "") +
         " · joined " + fmtDate(e.joiningDate) + (e.leavingDate ? " · left " + fmtDate(e.leavingDate) : "")),
-      amount: e => (e.feeMode === "manual" ? "Manual" : money(e.monthlyFee)) + '<small>due day ' + esc(e.dueDay) + '</small>',
+      amount: e => money(Logic.enrolFee(e)) + '<small>due day ' + esc(e.dueDay) + '</small>',
       badge: e => badge(e.status),
       detail: e => dl([
         ["Enrolment", idchip(e.id)], ["Student", esc(e.studentName) + " " + idchip(e.studentId)],
@@ -234,12 +176,11 @@ Pages.enrol = function(){
         ["Sub-class", e.subClassId ? esc((DataService.getSubclass(e.subClassId) || {}).name || e.subClassId) : "—"],
         ["Course", esc(e.course)], ["Teacher", esc(e.teacherName)],
         ["Joined", fmtDate(e.joiningDate)], ["Left", e.leavingDate ? fmtDate(e.leavingDate) : "—"],
-        ["Fee method", e.feeMode === "manual" ? "Manual each month" : "Fixed monthly fee"],
-        ["Monthly fee", e.feeMode === "manual" ? "—" : money(e.monthlyFee)], ["Due day", esc(e.dueDay)], ["Status", badge(e.status)],
+        ["Monthly fee", money(Logic.enrolFee(e))], ["Due day", esc(e.dueDay)], ["Status", badge(e.status)],
         e.reason ? ["Reason", esc(e.reason)] : null, e.notes ? ["Notes", esc(e.notes)] : null
       ]) + acts(
         (e.status === "Active" ? '<button class="btn btn-sm" data-act="student-assign" data-id="' + e.studentId + '">Move to another batch</button>' +
-          '<button class="btn btn-sm" data-act="enrol-feemode" data-id="' + e.id + '">Fee method</button>' +
+          '<button class="btn btn-sm" data-act="enrol-fee" data-id="' + e.id + '">Fee</button>' +
           '<button class="btn btn-sm btn-danger" data-act="enrol-close" data-id="' + e.id + '">Close enrolment</button>' : "") +
         '<button class="btn btn-sm" data-act="profile-open" data-id="' + e.studentId + '">Open student</button>'),
       sorts: [{ key: "id", label: "Newest first", val: e => e.id, desc: true },
@@ -375,54 +316,4 @@ Pages.attendance = function(){
     }).join("") + '</div></div><div class="card-bd tight">' + report + '</div></div>';
 };
 
-Pages.bFees = function(){ return feesPage("batch", "bFees", "batch-fees-build"); };
-Pages.bDues = function(){ return duesPage("batch", "bDues"); };
-
-Pages.bReports = function(){
-  const m = State.month;
-  const views = Logic.feeViews({ month: m, source: "batch" }).map(withBasis);
-  const rows = DataService.getBatches().map(function(b){
-    const v = views.filter(x => x.batchId === b.id);
-    const s = Logic.summarize(v);
-    const att = Logic.attStats(DataService.getAttendance({ month: m, batchId: b.id }));
-    const t = DataService.getTeacher(b.teacherId);
-    return { id: b.id, name: b.name, teacher: t ? t.name : "—", course: b.course, students: Logic.rosterOf(b.id).length,
-      s: s, att: att, views: v };
-  }).filter(r => r.students > 0 || r.s.count > 0);
-  const tot = Logic.summarize(views);
-
-  return '' +
-  '<div class="toolbar no-print"><div class="push btn-row">' +
-    '<button class="btn" data-act="brep-csv">Export CSV</button>' +
-    '<button class="btn" data-act="print">Print</button></div></div>' +
-  '<h2 style="font-size:18px">Batch report — ' + esc(monthLabel(m)) + '</h2>' +
-  '<p class="tagline">' + esc(Settings().academyName) + ' · generated ' + esc(fmtDate(today())) + '</p>' +
-  '<div class="kpi-grid" style="margin-bottom:12px">' +
-    kpi("Batches", num(rows.length)) + kpi("Students", num(tot.studentCount)) +
-    kpi("Expected", money(tot.net), "", "a-acc") + kpi("Collected", money(tot.paid), tot.collectionPct + "%", "a-ok") +
-    kpi("Pending", money(tot.balance), "", "a-warn") +
-  '</div>' +
-  '<div class="card"><div class="card-bd tight">' +
-    renderList("bRep", rows, {
-      key: r => r.id, head: ["Batch", "Collected"],
-      title: r => esc(r.name) + " " + idchip(r.id),
-      sub: r => esc(r.course + " · " + r.teacher + " · " + r.students + " students"),
-      amount: r => money(r.s.paid) + '<small>of ' + money(r.s.net) + '</small>',
-      badge: r => badge(r.s.collectionPct >= 80 ? "Paid" : r.s.collectionPct >= 50 ? "Partial" : "Overdue", FEE_BADGE),
-      detail: r => dl([["Teacher", esc(r.teacher)], ["Students", r.students], ["Expected", money(r.s.net)],
-        ["Collected", '<span class="in">' + money(r.s.paid) + '</span>'],
-        ["Pending", r.s.balance ? '<span class="out">' + money(r.s.balance) + '</span>' : "—"],
-        ["Collection", r.s.collectionPct + "%"], ["Attendance", r.att.pct + "% of " + num(r.att.total) + " marks"],
-        ["Paid / partial / overdue", r.s.paidN + " / " + r.s.partialN + " / " + r.s.overdueN]]) +
-        '<div class="sub-hd">Students</div>' +
-        (r.views.length ? r.views.map(v => '<div class="minirow"><span>' + esc(v.studentName) + ' · ' + v.status +
-          '</span><b>' + money(v.paidAmount) + " / " + money(v.netFee) + '</b></div>').join("")
-          : '<div class="minirow"><span>No fee records this month</span><b>—</b></div>'),
-      sorts: [{ key: "pend", label: "Most pending first", val: r => r.s.balance, desc: true },
-              { key: "coll", label: "Most collected first", val: r => r.s.paid, desc: true },
-              { key: "name", label: "Batch name", val: r => r.name }],
-      emptyTitle: "No batch data for " + monthLabel(m), emptyText: "Calculate the month on the batch fees page."
-    }) +
-  '</div></div>';
-};
-
+Pages.bFees = function(){ return duePage("batch", "bFees"); };
