@@ -1,5 +1,9 @@
 "use strict";
-/* Academic Service — ui.v9.js. v9: a calmer layout — fewer menu items (related pages sit together as tabs: Money, Teachers,
+/* Academic Service — ui.v10.js. v10 (simple mode): one Due date page per stream (and one for both under Academy books)
+   instead of Fees + Dues — every student of the month, Total collection / Paid / Pending at the top, a button that makes
+   the month's list, and Mark paid · Share fee · Edit amount on each row. Teacher pay is gone from the menu; Money has a
+   Teacher salary tab for salaries typed in by hand. A window form reads radio buttons correctly.
+   (v9: a calmer layout — fewer menu items (related pages sit together as tabs: Money, Teachers,
    Plans, Fees, Classes), Review shows only when something waits, the Full view buttons are gone, a list row can open a
    profile instead of folding open, secondary buttons go under a ⋯ menu, windows close with a short animation, and the
    duplicate page buttons (the same + Add in the header and the toolbar) are removed.
@@ -55,6 +59,7 @@ function openModal(o){
     const d = {};
     Array.from(form.elements).forEach(function(el){
       if (!el.name) return;
+      if (el.type === "radio") { if (el.checked) d[el.name] = el.value; return; }
       d[el.name] = el.type === "checkbox" ? el.checked : el.value;
     });
     if (modalSubmit(d, form) !== false) closeModal();
@@ -87,13 +92,14 @@ function confirmAction(o){
 }
 
 const FEE_BADGE = { "Paid":"b-ok","Partial":"b-warn","Overdue":"b-bad","Due Today":"b-warn","Upcoming":"b-info",
-  "Waived":"b-idle","Nil":"b-idle","Pending":"b-bad","Needs amount":"b-warn","Not paid yet":"b-warn","Nothing due":"b-idle" };
+  "Waived":"b-idle","Nil":"b-idle","Pending":"b-warn","Needs amount":"b-warn","Not paid yet":"b-warn","Nothing due":"b-idle",
+  "Part paid":"b-warn","Fee not set":"b-bad" };
 const GEN_BADGE = { "Active":"b-ok","Inactive":"b-idle","Suspended":"b-bad","Completed":"b-ok","Left":"b-idle",
   "Stopped":"b-idle","Upcoming":"b-acc","Transferred":"b-info","Present":"b-ok","Absent":"b-bad","Leave":"b-warn",
   "Excused":"b-info","Cancelled":"b-idle","Student Absent":"b-bad","Teacher Absent":"b-warn","Rescheduled":"b-info",
   "Cash":"b-ok","Bank":"b-info","UPI":"b-acc","Other":"b-idle","Student Payment":"b-ok","Other Income":"b-ok",
   "Expense":"b-bad","Teacher Payment":"b-bad","Refund":"b-warn","Transfer":"b-info","Teacher Advance":"b-warn",
-  "Teacher Bonus":"b-acc" };
+  "Teacher Bonus":"b-acc", "No teacher":"b-warn", "Class pending":"b-warn" };
 function badge(t, map){ return '<span class="badge ' + ((map || GEN_BADGE)[t] || "b-idle") + '">' + esc(t) + '</span>'; }
 function feeBadge(s){ return badge(s, FEE_BADGE); }
 function idchip(id){ return '<span class="idchip">' + esc(id) + '</span>'; }
@@ -382,7 +388,7 @@ function defaultSettings(){
     academyName: "ManzilulQuran", academyTagline: "E-learning Academy", logo: "",
     website: "manzilulquran.in", email: "info@manzilulquran.in",
     contactPhone: "7025070415", whatsappNumber: "9995360416",
-    currency: "₹", countryCode: "91", defaultDueDay: 5, defaultFeeMethod: "perClass",
+    currency: "₹", countryCode: "91", defaultDueDay: 5,
     billingMode: "prepaid", advanceDays: 5,
     supabaseUrl: "https://uuwboujrotmmpofjynhz.supabase.co", supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2JvdWpyb3RtbXBvZmp5bmh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Mjk4OTQsImV4cCI6MjEwMjAwNTg5NH0.z0_G7oKlmGILPr8zzOOQEgtUDrT8rNQLjrV9GQQdA9U", supabaseOn: true,
     teacherLinkBase: "https://manzilulquran.in/attendance/", apiUrl: "https://script.google.com/macros/s/AKfycbzuGmaPn2PQGyS_64RQFF8rY2ZRhb37HTFFjRuvfVEsGn8DB8O8AZsnEbvPdrOSCMuo/exec", syncKey: "mq-7f3a91c4e85b426d9a0c", syncOn: true, syncEvery: 3,
@@ -436,19 +442,18 @@ const WS = {
     ["Overview", [["bDash", "◱", "Batch dashboard", "Dashboard"]]],
     ["Manage", [["batches", "▤", "Courses & classes", "Classes"], ["enrol", "⇄", "Enrolment", "Enrolment"],
       ["attendance", "✓", "Attendance", "Attendance"]]],
-    ["Fees", [["bFees", "₹", "Batch fees", "Fees"]]],
-    ["Reports", [["bReports", "▥", "Batch reports", "Reports"]]]
+    ["Fees", [["bFees", "₹", "Due date", "Due date"]]]
   ]},
   ind: { label: "Individual classes", sub: "Individual workspace", home: "iDash", nav: [
     ["Overview", [["iDash", "◱", "Individual dashboard", "Dashboard"]]],
-    ["Manage", [["plans", "☺", "Class plans", "Plans"]]],
-    ["Fees", [["iFees", "₹", "Individual fees", "Fees"]]],
-    ["Reports", [["iReports", "▥", "Individual reports", "Reports"]]]
+    ["Manage", [["plans", "☺", "Classes", "Classes"]]],
+    ["Fees", [["iFees", "₹", "Due date", "Due date"]]]
   ]},
   books: { label: "Academy books", sub: "Shared workspace", home: "overview", nav: [
     ["Overview", [["overview", "◱", "Academy overview", "Dashboard"]]],
     ["People", [["students", "☺", "Students", "Students"], ["teachers", "✎", "Teachers", "Teachers"]]],
-    ["Money", [["tpay", "◇", "Teacher pay", "Teacher pay"], ["payments", "◈", "Money", "Money"]]],
+    ["Fees", [["dues", "₹", "Due date", "Due date"]]],
+    ["Money", [["payments", "◈", "Money", "Money"]]],
     ["Books", [["reports", "▥", "Reports", "Reports"]]],
     ["System", [["settings", "⚙", "Settings", "Settings"]]]
   ]}
@@ -457,13 +462,13 @@ const WS = {
    Key = the page in the menu; every tab page can still be opened on its own with go(page). */
 const NAV_GROUPS = {
   batches:  { label: "Classes",  tabs: [["batches", "Classes"], ["subclasses", "Sub-classes"]] },
-  bFees:    { label: "Fees",     tabs: [["bFees", "Fees"], ["bDues", "Dues"]] },
-  plans:    { label: "Plans",    tabs: [["plans", "Class plans"], ["classes", "Class log"]] },
-  iFees:    { label: "Fees",     tabs: [["iFees", "Fees"], ["iDues", "Dues"]] },
+  plans:    { label: "Classes",  tabs: [["plans", "Classes"], ["classes", "Class log"]] },
   teachers: { label: "Teachers", tabs: [["teachers", "Teachers"], ["staff", "Other staff"]] },
-  payments: { label: "Money",    tabs: [["payments", "Fees received"], ["income", "Other income"], ["expenses", "Expenses"],
-                                        ["accounts", "Accounts"], ["ledger", "Ledger"]] }
+  payments: { label: "Money",    tabs: [["payments", "Fees received"], ["tsalary", "Teacher salary"], ["income", "Other income"],
+                                        ["expenses", "Expenses"], ["accounts", "Accounts"], ["ledger", "Ledger"]] }
 };
+/* v10: old page names that now open the page that replaced them */
+const PAGE_ALIAS = { bDues: "bFees", iDues: "iFees", tpay: "tsalary", bReports: "bFees", iReports: "iFees" };
 const NAV_OF = {};   /* tab page -> the page in the menu */
 Object.keys(NAV_GROUPS).forEach(k => NAV_GROUPS[k].tabs.forEach(t => NAV_OF[t[0]] = k));
 /* a menu item that is only shown when it has something in it */
@@ -475,34 +480,31 @@ PAGE_WS.profile = "books";
 PAGE_WS.tprofile = "books";
 
 const PAGE_SUB = {
-  staff: "Admin, counsellors, editors and other staff on a monthly salary plus incentive.",
-  bDash: "Batch collection, attendance and dues for the selected month.",
+  staff: "Admin, counsellors, editors and other staff.",
+  bDash: "Batch collection and attendance for the selected month.",
   batches: "One central register of every batch and course.",
-  subclasses: "Split a big batch into smaller groups, each with its own teacher, timing and pay.",
+  subclasses: "Split a big batch into smaller groups, each with its own teacher and timing.",
   enrol: "Batch history is added to, never overwritten.",
-  attendance: "Pick a date and batch, mark the roster, save.",
-  bFees: "One record per enrolment per month. Tap a row for the detail.",
-  bDues: "Who to follow up with, latest first.",
-  bReports: "Batch-wise and monthly collection.",
-  iDash: "Individual classes, fees earned and dues.",
-  plans: "Each student's own schedule, fee method and rate.",
-  classes: "Record a class once — the fee follows from it.",
-  iFees: "Calculated from the class log. Tap a row for the working.",
-  iDues: "Individual class dues, latest first.",
-  iReports: "Per student and per teacher.",
+  attendance: "Pick a date and batch, mark the roster, save. A record only — fees do not change.",
+  bFees: "Every batch student of the month — who has paid and who is pending.",
+  iDash: "Individual classes and this month's collection.",
+  plans: "Each student's class: course, teacher, days and fixed monthly fee.",
+  classes: "Every attendance mark saved for individual classes.",
+  iFees: "Every individual student of the month — who has paid and who is pending.",
+  dues: "Every student of the month, both streams — who has paid and who is pending.",
   overview: "Both streams together — one income, one expense, one profit.",
   students: "One registry. A student can be in a batch, in individual classes, or both.",
-  teachers: "One registry, paid for both streams from one payslip.",
-  payments: "Every payment from both streams, in one ledger.",
+  teachers: "Teachers and the students they teach.",
+  payments: "Every fee payment from both streams.",
+  tsalary: "Salaries paid to teachers and staff, entered by hand.",
   income: "Anything earned outside class fees.",
   expenses: "Running costs, paid from a chosen account.",
-  tpay: "Batch pay and individual pay, added up per teacher.",
   accounts: "Cash, Bank and UPI, and transfers between them.",
   ledger: "Built automatically from what you record.",
   reports: "Filter by stream, print or export.",
-  settings: "Academy details, categories, backup.",
+  settings: "Academy details, lists, backup.",
   profile: "Everything about one student, both streams.",
-  tprofile: "Everything about one teacher — students, this month's pay and every payment."
+  tprofile: "Everything about one teacher — students and salary paid."
 };
 
 const State = {
@@ -510,25 +512,22 @@ const State = {
   batches:  { q: "", status: "", course: "", teacher: "" },
   enrol:    { q: "", status: "", batch: "" },
   att:      { date: today(), batchId: "", subClassId: "", marks: null, tab: "history" },
-  bFees:    { q: "", status: "", batch: "" },
-  bDues:    { quick: "all", q: "", batch: "" },
-  bRep:     { batchId: "" },
+  bFees:    { q: "", quick: "all" },
   plans:    { q: "", status: "Active", teacher: "" },
   classes:  { q: "", student: "", teacher: "", status: "", month: "" },
-  iFees:    { q: "", status: "", teacher: "" },
-  iDues:    { quick: "all", q: "", teacher: "" },
-  students: { q: "", status: "Active", stream: "" },
+  iFees:    { q: "", quick: "all" },
+  dues:     { q: "", quick: "all" },
+  students: { q: "", status: "Active", stream: "", cls: "" },
   teachers: { q: "" },
   staff:    { q: "" },
   pays:     { q: "", month: "", account: "", source: "" },
   income:   { q: "", month: "", category: "" },
   expenses: { q: "", month: "", category: "" },
-  tpay:     { month: "" },
+  tsal:     { q: "", month: "" },
   ledger:   { q: "", type: "", account: "", source: "", from: "", to: "" },
   reports:  { which: "pnl", preset: "month", from: "", to: "", source: "", studentId: "" },
   profile:  { studentId: "", tab: "fees" },
   tprofile: { teacherId: "", tab: "students", from: "" },
-  tpayq:    { q: "" },
   cal:      { month: currentMonth() }
 };
 
@@ -543,7 +542,7 @@ function buildNav(){
   const ws = WS[State.ws];
   const lead = NAV_OF[State.page] || State.page;
   $("#navList").innerHTML = ws.nav.reduce((a, g) => a.concat(g[1]), []).filter(it => !(NAV_HIDE[it[0]] && NAV_HIDE[it[0]]())).map(function(it){
-    const badgeId = (it[0] === "bDues" || it[0] === "bFees") ? "bDueBadge" : (it[0] === "iDues" || it[0] === "iFees") ? "iDueBadge" : "";
+    const badgeId = it[0] === "bFees" ? "bDueBadge" : it[0] === "iFees" ? "iDueBadge" : it[0] === "dues" ? "aDueBadge" : "";
     return '<button data-page="' + it[0] + '"' + (it[0] === lead ? ' class="is-on"' : "") + '>' + esc(it[3] || it[2]) +
       (badgeId ? '<span class="nb" id="' + badgeId + '">0</span>' : "") + '</button>';
   }).join("");
@@ -565,6 +564,7 @@ function pageTitle(page){
   return nav ? nav[2] : page;
 }
 function go(page){
+  page = PAGE_ALIAS[page] || page;
   const ws = PAGE_WS[page];
   if (ws && ws !== State.ws) {
     State.ws = ws;
@@ -591,10 +591,10 @@ function render(){
   restoreFocus();
 }
 function chrome(){
-  const bd = Logic.feeViews({ month: State.month, source: "batch" }).filter(v => v.balance > 0).length;
-  const idn = Logic.feeViews({ month: State.month, source: "individual" }).filter(v => v.balance > 0).length;
+  const owe = Logic.feeViews({ month: State.month }).filter(v => v.balance > 0 && !v.waived);
+  const bd = owe.filter(v => v.source === "batch").length, idn = owe.length - bd;
   const set = function(id, n){ const el = $("#" + id); if (el) { el.textContent = n; el.style.display = n ? "" : "none"; } };
-  set("bDueBadge", bd); set("iDueBadge", idn);
+  set("bDueBadge", bd); set("iDueBadge", idn); set("aDueBadge", owe.length);
   const s = Settings();
   $("#brandName").textContent = s.academyName || "ManzilulQuran";
   $("#brandSub").textContent = s.academyTagline || "Learn Quran";
@@ -669,165 +669,109 @@ function search(hay, q){ return !q || hay.toLowerCase().indexOf(q) >= 0; }
 const Pages = {};
 
 /* ==========================================================================
-   SHARED BUILDERS — fee list + dues list work for either stream
+   DUE DATE — one page for a month's fees (v10): every student, paid or pending
    ========================================================================== */
-function feeDetail(v){
-  const pays = v.payments.slice().sort((a, b) => a.date < b.date ? 1 : -1);
-  return dl([
-    ["Fee record", idchip(v.id)],
-    ["Stream", streamChip(v.source)],
-    ["Month", monthLabel(v.month)],
-    ["Student", esc(v.studentName) + " " + idchip(v.studentId)],
-    ["Teacher", esc(v.teacherName)],
-    v.source === "batch" ? ["Batch", esc(v.batchName || "—")] : ["Fee method", esc(Logic.methodLabel(v.feeType))],
-    v.source === "individual" ? ["Worked out from", esc(v.basisText || "—")] : ["Monthly fee", money(v.rate)],
-    v.source === "individual" && v.billing === "prepaid"
-      ? ["Billed in advance for", (v.plannedUnits || 0) + " planned classes" +
-          (v.plannedHolidays ? " (" + v.plannedHolidays + " holidays skipped)" : "")] : null,
-    v.reconciled ? ["Actually held", (v.actualUnits || 0) + " classes · " + money(v.actualGross)] : null,
-    ["Gross fee", money(v.gross)],
-    ["Discount", v.discount ? "− " + money(v.discount) : "—"],
-    v.carry ? ["Carried forward", (v.carry < 0 ? "− " + money(-v.carry) + " credit" : "+ " + money(v.carry))] : null,
-    ["Net fee", '<b>' + money(v.netFee) + '</b>'],
-    ["Paid", '<span class="in">' + money(v.paidAmount) + '</span>'],
-    ["Balance", v.balance > 0 ? '<span class="out">' + money(v.balance) + '</span>' : '<span class="in">Settled</span>'],
-    v.credit ? ["Paid in excess", '<span class="in">' + money(v.credit) + '</span>'] : null,
-    ["Due date", fmtDate(v.dueDate)],
-    v.daysOverdue ? ["Days overdue", '<span class="out">' + v.daysOverdue + ' days</span>'] : null,
-    ["Status", feeBadge(v.status)],
-    v.override ? ["Amount", 'Typed in for this month' + (v.autoGross !== undefined && v.autoGross !== null ? ' (calculated was ' + money(v.autoGross) + ')' : '')] : null,
-    v.status === "Needs amount" ? ["Action", '<span class="out">Enter this month\'s amount with Adjust</span>'] : null,
-    v.locked ? ["Locked", "Yes — recalculation skips this month"] : null,
-    v.remarks ? ["Remarks", esc(v.remarks)] : null
-  ]) +
-  '<div class="sub-hd">Payments against this month</div>' +
-  (pays.length ? pays.map(p => '<div class="minirow"><span>' + fmtDate(p.date) + ' · ' + esc(p.account) +
-      ' · ' + esc(p.id) + (p.txnId ? ' · ' + esc(p.txnId) : "") + '</span><b class="in">' + money(p.amount) + '</b></div>').join("")
-    : '<div class="minirow"><span>No payment received yet</span><b>—</b></div>') +
-  acts(
-    (v.balance > 0 ? '<button class="btn btn-sm btn-primary" data-act="pay-new" data-id="' + v.id + '">Take payment</button>' +
-      '<button class="btn btn-sm btn-wa" data-act="wa-remind" data-id="' + v.id + '">WhatsApp</button>' : "") +
-    '<button class="btn btn-sm" data-act="fee-edit" data-id="' + v.id + '">Adjust</button>' +
-    '<button class="btn btn-sm" data-act="profile-open" data-id="' + v.studentId + '">Open student</button>');
-}
+/* what a fee row is "for": the course of an individual class, or the batch */
 function withBasis(v){
-  if (v.source === "individual") {
-    const st = Logic.classStats(DataService.getClasses({ planId: v.planId, month: v.month }));
-    const fx = Logic.ruleExtra(v, "fee");
-    v.basisText = v.feeType === "manual" ? "typed in each month" : Logic.feeBasis(v.feeType, st, fx) + " @ " + money(v.rate);
-    v.shortBasis = Logic.feeBasis(v.feeType, st, fx);
-    if (v.override) { v.basisText += " · amount typed in"; v.shortBasis += " · typed in"; }
-  } else v.shortBasis = v.batchName || "Batch";
+  v.shortBasis = v.source === "batch" ? (v.batchName || "Batch") : (v.course || "Individual class");
+  v.basisText = v.shortBasis;
   return v;
 }
+function dueIsPaid(v){ return Logic.dueStatus(v) === "Paid"; }
+function dueIsPending(v){ const s = Logic.dueStatus(v); return s === "Pending" || s === "Part paid" || s === "Fee not set"; }
+function dueTeacher(v){
+  return v.teacherId && DataService.getTeacher(v.teacherId) ? esc(v.teacherName) : '<span class="badge b-warn">No teacher</span>';
+}
+function dueDetail(v){
+  const st = Logic.dueStatus(v), pays = v.payments || [];
+  return dl([
+    ["Month", esc(monthLabel(v.month))],
+    ["Class", streamChip(v.source) + " " + esc(v.shortBasis || (v.source === "batch" ? v.batchName : v.course) || "—")],
+    ["Teacher", dueTeacher(v)],
+    ["Fee", st === "Fee not set" ? '<span class="out">Not set yet</span>' : '<b>' + money(v.netFee) + '</b>'],
+    ["Paid", '<span class="in">' + money(v.paidAmount) + '</span>'],
+    v.balance > 0 ? ["Pending", '<span class="out">' + money(v.balance) + '</span>'] : null,
+    ["Due date", esc(fmtDate(v.dueDate)) + (v.daysOverdue && v.balance > 0 ? ' · <span class="out">' + v.daysOverdue + ' days late</span>' : "")],
+    ["Status", feeBadge(st)],
+    v.remarks ? ["Note", esc(v.remarks)] : null
+  ]) +
+  (pays.length ? '<div class="sub-hd">Payments</div>' + pays.map(p => '<div class="minirow"><span>' + esc(fmtDate(p.date)) + ' · ' + esc(p.account || "") +
+      ' · ' + esc(p.id) + '</span><b class="in">' + money(p.amount) + '</b></div>').join("") : "") +
+  '<div class="due-acts no-print">' +
+    (st !== "Paid" && st !== "Waived" && st !== "Nothing due" ? '<button class="btn btn-sm btn-primary" data-act="due-paid" data-id="' + esc(v.id) + '">✓ Mark paid</button>' : "") +
+    '<button class="btn btn-sm btn-wa" data-act="due-share" data-id="' + esc(v.id) + '">' + (st === "Paid" ? "Share receipt" : "Share fee") + '</button>' +
+    '<button class="btn btn-sm" data-act="due-edit" data-id="' + esc(v.id) + '">Edit amount</button>' +
+    moreMenu([pays.length ? ["due-unpay", "Mark as not paid", ' data-id="' + esc(v.id) + '"', "danger"] : null,
+      v.waived ? ["due-unwaive", "Put back on the list", ' data-id="' + esc(v.id) + '"'] : (pays.length ? null : ["due-waive", "Waive this month (nothing to pay)", ' data-id="' + esc(v.id) + '"']),
+      pays.length ? ["receipt", "Receipt", ' data-id="' + esc(pays[0].id) + '"'] : null,
+      ["profile-open", "Open student", ' data-id="' + esc(v.studentId) + '"']]) +
+  '</div>';
+}
+/* one list of fee rows — the Due date page, a student's profile and the reports all use it */
 function feeRowList(lid, views, extra){
   return renderList(lid, views, Object.assign({
     key: v => v.id,
     title: v => esc(v.studentName) + ' <span class="idchip">' + esc(v.studentId) + '</span>',
-    sub: v => esc(v.shortBasis + " · due " + fmtDate(v.dueDate) + (v.daysOverdue ? " · " + v.daysOverdue + "d late" : "")),
-    amount: v => money(v.balance > 0 ? v.balance : v.netFee) +
-      '<small>' + (v.balance > 0 ? "balance of " + money(v.netFee) : "paid in full") + '</small>',
-    badge: v => feeBadge(v.status),
-    rowClass: v => v.daysOverdue > 0 && v.balance > 0 ? "row-bad" : (v.balance <= 0 && v.netFee > 0 ? "row-ok" : ""),
-    detail: feeDetail,
-    head: ["Student", "Balance"],
+    sub: v => esc([v.shortBasis, v.teacherId && DataService.getTeacher(v.teacherId) ? v.teacherName : "no teacher",
+      (lid.indexOf("pf") === 0 || lid.indexOf("rep") === 0 ? monthShort(v.month) + " · " : "") + "due " + fmtDate(v.dueDate) +
+      (v.daysOverdue && v.balance > 0 ? " · " + v.daysOverdue + "d late" : "")].filter(Boolean).join(" · ")),
+    amount: v => { const st = Logic.dueStatus(v);
+      if (st === "Fee not set") return '—<small>fee not set</small>';
+      if (st === "Part paid") return money(v.balance) + '<small>of ' + money(v.netFee) + '</small>';
+      return money(v.netFee) + '<small>' + (st === "Paid" ? "paid" : st === "Waived" ? "waived" : "fee") + '</small>'; },
+    badge: v => feeBadge(Logic.dueStatus(v)),
+    rowClass: v => { const st = Logic.dueStatus(v);
+      return st === "Paid" ? "row-ok" : st === "Fee not set" ? "row-warn" : (st === "Pending" || st === "Part paid") && v.daysOverdue > 0 ? "row-bad" : ""; },
+    detail: dueDetail,
+    head: ["Student", "Fee"],
     sorts: [
-      { key: "late", label: "Most overdue first", val: v => v.daysOverdue * 1000 + v.balance, desc: true },
-      { key: "bal", label: "Largest balance first", val: v => v.balance, desc: true },
+      { key: "todo", label: "Pending first", val: v => (dueIsPending(v) ? "0" : dueIsPaid(v) ? "2" : "1") + (v.dueDate || "") + v.studentName },
       { key: "name", label: "Student name", val: v => v.studentName },
-      { key: "due", label: "Due date", val: v => v.dueDate }
+      { key: "due", label: "Due date", val: v => v.dueDate },
+      { key: "amt", label: "Largest fee first", val: v => v.netFee, desc: true }
     ]
   }, extra || {}));
 }
-function feeSummaryCards(s){
-  return '<div class="kpi-grid">' +
-    kpi("Gross", money(s.gross)) +
-    kpi("Discount", money(s.discount)) +
-    (s.carry ? kpi("Carried forward", money(s.carry), s.carry < 0 ? "credit from last month" : "extra from last month") : "") +
-    kpi("Net fee", money(s.net), num(s.count) + " records", "a-acc") +
-    kpi("Collected", money(s.paid), s.collectionPct + "% of net", "a-ok") +
-    kpi("Balance", money(s.balance), num(s.overdueN) + " overdue", "a-warn") +
-  '</div>';
-}
-
-function feesPage(source, key, buildAct){
-  const f = State[key], m = State.month, q = f.q.toLowerCase().trim();
-  const all = Logic.feeViews({ month: m, source: source }).map(withBasis);
-  const views = all.filter(function(v){
-    if (f.status && v.status !== f.status) return false;
-    if (f.batch && v.batchId !== f.batch) return false;
-    if (f.teacher && v.teacherId !== f.teacher) return false;
-    return search(v.id + " " + v.studentId + " " + v.studentName + " " + v.phone + " " + v.shortBasis, q);
-  });
-  const s = Logic.summarize(all);
-  return '' +
-  /* v9: one short line instead of a paragraph */
-  '<p class="tagline no-print" style="margin:0 0 10px">' + (Logic.prepaid()
-    ? "Prepaid — each month is due before it starts, on the student's own day." +
-      (source === "individual" ? " After a month ends, Reconcile it from ⋯." : "")
-    : "Fees follow the classes logged; this month keeps changing until it ends.") + '</p>' +
-  '<div class="toolbar no-print">' +
-    field("Search", '<input class="input" data-fset="' + key + '.q" value="' + esc(f.q) + '" placeholder="Student name or ID">', "grow") +
-    field("Status", sel("s", optList(["Paid","Partial","Upcoming","Due Today","Overdue","Waived","Nil"], f.status, "All statuses"), 'data-fset="' + key + '.status"')) +
-    (source === "batch" ? field("Batch", sel("b", batchOpts(f.batch), 'data-fset="' + key + '.batch"'))
-                        : field("Teacher", sel("t", teacherOpts(f.teacher), 'data-fset="' + key + '.teacher"'))) +
-    '<div class="push btn-row">' +
-      '<button class="btn btn-dark" data-act="' + buildAct + '">Calculate month</button>' +
-      moreMenu([["next-month", "Open next month"],
-        source === "individual" && Logic.prepaid() ? ["reconcile", "Reconcile " + monthShort(m) + " (close the month)"] : null,
-        ["fees-csv", "Download CSV", ' data-src="' + source + '"'], ["print", "Print"]]) +
-    '</div>' +
-  '</div>' +
-  feeSummaryCards(s) +
-  '<div class="section-title">' + esc(monthLabel(m)) + ' · tap a row for the full record</div>' +
-  '<div class="card"><div class="card-bd tight">' +
-    feeRowList(key, views, {
-      emptyTitle: "No fees for " + monthLabel(m),
-      emptyText: source === "batch"
-        ? "Calculate the month to create one record per active enrolment. Existing records are never duplicated."
-        : "Calculate the month to work out every active plan from its class log.",
-      emptyAction: '<button class="btn btn-primary" data-act="' + buildAct + '">Calculate month</button>'
-    }) +
-  '</div></div>';
-}
-
-function duesPage(source, key){
-  const d = State[key], m = State.month, q = d.q.toLowerCase().trim();
-  const all = Logic.feeViews({ month: m, source: source }).map(withBasis);
-  const tests = {
-    all: v => v.balance > 0, overdue: v => v.balance > 0 && v.daysOverdue > 0,
-    today: v => v.status === "Due Today", upcoming: v => v.status === "Upcoming",
-    partial: v => v.status === "Partial", paid: v => v.status === "Paid"
-  };
-  const counts = {}; Object.keys(tests).forEach(k => counts[k] = all.filter(tests[k]).length);
-  const views = all.filter(tests[d.quick] || tests.all).filter(function(v){
-    if (d.batch && v.batchId !== d.batch) return false;
-    if (d.teacher && v.teacherId !== d.teacher) return false;
-    return search(v.studentId + " " + v.studentName + " " + v.phone, q);
-  });
-  const outstanding = views.reduce((s, v) => s + v.balance, 0);
-  const chip = (k, l) => '<button class="chip ' + (d.quick === k ? "is-on" : "") + '" data-act="dues-quick" data-key="' + key +
-    '" data-q="' + k + '">' + l + '<span class="ct">' + counts[k] + '</span></button>';
-
+/* source: "individual" | "batch" | "" (both) */
+function duePage(source, key){
+  const f = State[key] || (State[key] = { q: "", quick: "all" });
+  const m = State.month, q = String(f.q || "").toLowerCase().trim();
+  const all = Logic.feeViews(source ? { month: m, source: source } : { month: m }).map(withBasis);
+  const live = all.filter(v => !v.waived);
+  const paid = live.filter(dueIsPaid), pend = live.filter(dueIsPending);
+  const collected = round2(live.reduce((a, v) => a + v.paidAmount, 0));
+  const expected = round2(live.reduce((a, v) => a + v.netFee, 0));
+  const toCollect = round2(pend.reduce((a, v) => a + v.balance, 0));
+  const missing = Logic.buildMonth(m, source, { dry: true }).created;
+  const tests = { all: () => true, pending: dueIsPending, paid: dueIsPaid };
+  const views = all.filter(tests[f.quick] || tests.all).filter(v =>
+    search(v.studentId + " " + v.studentName + " " + v.phone + " " + v.whatsapp + " " + v.shortBasis + " " + v.teacherName, q));
+  const chip = (k, l, n) => '<button class="chip ' + (f.quick === k ? "is-on" : "") + '" data-act="dues-quick" data-key="' + key +
+    '" data-q="' + k + '">' + l + '<span class="ct">' + n + '</span></button>';
+  const build = '<button class="btn btn-primary" data-act="due-build" data-src="' + source + '">' +
+    (all.length ? "+ Add " + missing + " to the list" : "Create " + esc(monthLabel(m)) + " list") + '</button>';
   return '' +
   '<div class="toolbar no-print">' +
-    field("Search", '<input class="input" data-fset="' + key + '.q" value="' + esc(d.q) + '" placeholder="Student name, ID or phone">', "grow") +
-    (source === "batch" ? field("Batch", sel("b", batchOpts(d.batch), 'data-fset="' + key + '.batch"'))
-                        : field("Teacher", sel("t", teacherOpts(d.teacher), 'data-fset="' + key + '.teacher"'))) +
-    '<div class="push btn-row">' + moreMenu([["dues-csv", "Download CSV", ' data-src="' + source + '"'], ["print", "Print"]]) + '</div>' +
+    field("Search", '<input class="input" data-fset="' + key + '.q" value="' + esc(f.q || "") + '" placeholder="Student, phone, course or teacher">', "grow") +
+    '<div class="push btn-row">' + (!all.length || missing ? build : "") +
+      moreMenu([["dues-csv", "Download CSV", ' data-src="' + source + '"'], ["print", "Print"]]) + '</div>' +
   '</div>' +
-  '<div class="chips no-print" style="margin-bottom:12px">' +
-    chip("all", "All outstanding") + chip("overdue", "Overdue") + chip("today", "Due today") +
-    chip("upcoming", "Upcoming") + chip("partial", "Part paid") + chip("paid", "Settled") + '</div>' +
-  '<div class="kpi-grid" style="margin-bottom:12px">' +
-    kpi("Students to follow up", num(views.length)) +
-    kpi("Outstanding", money(outstanding), esc(monthLabel(m)), "a-warn") +
-    kpi("Overdue amount", money(all.filter(v => v.daysOverdue > 0).reduce((s, v) => s + v.balance, 0)), "", "a-bad") +
+  '<div class="kpi-grid due-kpis">' +
+    kpi("Total collection", money(collected), expected ? "of " + money(expected) + " · " + pct(collected, expected) + "%" : esc(monthLabel(m)), "a-ok") +
+    kpi("Paid", num(paid.length), paid.length === 1 ? "student" : "students", "a-ok") +
+    kpi("Pending", num(pend.length), toCollect ? money(toCollect) + " to collect" : "nothing to collect", pend.length ? "a-warn" : "") +
   '</div>' +
+  (all.length && missing ? '<div class="note no-print">' + missing + ' class' + (missing > 1 ? "es are" : " is") + ' not on the ' + esc(monthLabel(m)) +
+    ' list yet (added after it was made). <button type="button" class="btn btn-sm btn-primary" data-act="due-build" data-src="' + source + '">Add ' +
+    (missing > 1 ? "them" : "it") + '</button></div>' : "") +
+  (all.length ? '<div class="chips no-print" style="margin-bottom:12px">' +
+    chip("all", "All", all.length) + chip("pending", "Pending", pend.length) + chip("paid", "Paid", paid.length) + '</div>' : "") +
   '<div class="card"><div class="card-bd tight">' +
     feeRowList(key + "L", views, {
-      emptyTitle: "Nothing to chase here",
-      emptyText: "No records match this filter for " + monthLabel(m) + "."
+      emptyTitle: all.length ? "Nobody here" : "No list for " + monthLabel(m) + " yet",
+      emptyText: all.length ? "Nothing matches this filter." :
+        "Create the list: every active class is added once, with its fixed monthly fee. You can change any amount afterwards.",
+      emptyAction: all.length ? "" : build
     }) +
   '</div></div>';
 }
