@@ -1,5 +1,6 @@
 "use strict";
-/* Academic Service — ws-attendance.v4.js. v4: a quieter sheet.
+/* Academic Service — ws-attendance.v5.js. v5 (simple mode): attendance is a record only — no fee or salary is worked
+   out from it, so the notes about payroll, reconciliation and recalculating are gone. (v4:) a quieter sheet.
      · one clean top bar: tap the month to jump, a save dot, ⋯ — the month tabs, the counts line and the refresh button are gone
      · the marks are one compact control; teacher and find sit together; three totals (Present, Absent, %) instead of seven;
        a paid fee is a quiet dot, a fee that needs action is a word
@@ -18,7 +19,7 @@
   const manage = WS.ind.nav.find(g => g[0] === "Manage");
   if (manage && !manage[1].some(x => x[0] === "iAtt")) manage[1].unshift(["iAtt", "▦", "Attendance", "Attendance"]);
   PAGE_WS.iAtt = "ind";
-  PAGE_SUB.iAtt = "Mark each class day. Marks go straight into the class log — fees, reconciliation and teacher pay read them.";
+  PAGE_SUB.iAtt = "Mark each class day. A record only — fees and salaries do not change.";
   HEAD_ACTS.iAtt = "";
 })();
 function attActor(){ return window.ATT_ACTOR || { name: Settings().markerName || "Academic Service", via: "academic-service" }; }
@@ -63,7 +64,7 @@ function attCanEdit(month){
   if (window.MQ_ADMIN) { toast(monthLabel(month) + " is closed by the office — ask them to change it", "warn", 4500); return false; }
   if (State.iatt.open[month]) return true;
   confirmAction({ title: monthLabel(month) + " is closed",
-    note: "Payroll and reconciliation for this month may already be done. If you change a mark, recalculate the month and check Teacher pay afterwards.",
+    note: "This month was closed for attendance. Changing a mark only changes the record.",
     message: "Allow changes to " + monthLabel(month) + " for this visit?", submitText: "Allow changes",
     onConfirm: function(){ State.iatt.open[month] = true; toast("Changes allowed for " + monthLabel(month) + " until you reload", "warn", 4200); } });
   return false;
@@ -924,14 +925,14 @@ const ATT_LIVE = { busy: false, at: 0 };
 function attRedraw(){ render(); }
 async function attPull(force){
   if (ATT_LIVE.busy || typeof Supa === "undefined" || !Supa.on() || !Supa.refresh) return { changed: 0 };
-  const live = window.MQ_ADMIN || State.page === "iAtt" || State.page === "tpay";
+  const live = window.MQ_ADMIN || State.page === "iAtt";
   if (!force && (!live || document.hidden)) return { changed: 0 };
   ATT_LIVE.busy = true;
   try {
     const colls = ["classes", "plans", "students", "teachers", "holidays"].concat(window.MQ_ADMIN ? ["settings"] : []);
     const r = await Supa.refresh(colls);
     ATT_LIVE.at = Date.now();
-    if (r.changed && !$("#mScrim") && !ATT_DRAG.brush && !ATT_DRAG.row && (State.page === "iAtt" || State.page === "tpay")) attRedraw();
+    if (r.changed && !$("#mScrim") && !ATT_DRAG.brush && !ATT_DRAG.row && State.page === "iAtt") attRedraw();
     if (window.MQ_ADMIN && typeof attAdminCheck === "function") attAdminCheck();
     return r;
   } finally { ATT_LIVE.busy = false; }
@@ -1287,7 +1288,7 @@ Object.assign(Actions, {
     const m = State.month, um = Logic.unmarked(m).count;
     confirmAction({ title: "Close " + monthLabel(m), danger: um > 0,
       note: (um ? "⚠ " + um + " class days in " + monthLabel(m) + " still have no mark. " : "") +
-        "Closing marks the month as finished: changing a mark afterwards asks for confirmation first. Do it after payroll and reconciliation.",
+        "Closing marks the month as finished: changing a mark afterwards asks for confirmation first.",
       message: "Close " + monthLabel(m) + " for attendance?", submitText: "Close the month",
       onConfirm: function(){ const cur = Settings().attLockedThrough || ""; if (m > cur) DataService.saveSettings({ attLockedThrough: m }); toast(monthLabel(m) + " closed", "ok"); render(); } });
   },
@@ -1295,7 +1296,7 @@ Object.assign(Actions, {
     State.iatt.menu = false;
     const m = State.month;
     confirmAction({ title: "Reopen " + monthLabel(m),
-      note: "This also reopens every later closed month. Recalculate fees and check Teacher pay after any change.",
+      note: "This also reopens every later closed month.",
       message: "Reopen " + monthLabel(m) + "?", submitText: "Reopen",
       onConfirm: function(){ DataService.saveSettings({ attLockedThrough: addMonths(m, -1) }); toast(monthLabel(m) + " reopened", "ok"); render(); } });
   },
