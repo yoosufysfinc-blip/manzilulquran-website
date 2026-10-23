@@ -1,5 +1,9 @@
 "use strict";
-/* Academic Service — core.v9.js. v9: other income and expenses can be removed when entered by mistake (kept as
+/* Academic Service — core.v10.js. v10 (simple mode): a student and their classes can no longer disagree — when a
+   student is saved as anything but Active (Left, Inactive, Completed, Suspended), every class still running for them is
+   closed (class plan → Stopped, batch enrolment → Left) on that day; arranging an Active class for a student who is not
+   Active makes the student Active again. Teacher pay adjustments are gone (salary is entered by hand).
+   (v9: other income and expenses can be removed when entered by mistake (kept as
    "voided" with a reason, left out of every total, the ledger and reports — like payments). (v8: a save made while a load from Supabase is still on its way is no longer
    overwritten by the older copy the load brings back (pullAll on opening, refresh on the attendance sheet) —
    e.g. a class plan switched to Stopped jumped back to Active. getFees / feeViews now filter by planId (it was ignored).
@@ -670,7 +674,39 @@ const DataService = {
   /* --- shared people --- */
   getStudents(){ return DB.students.slice(); },
   getStudent(id){ return DB.students.find(s => s.id === id) || null; },
-  saveStudent(s){ return upsert("students", s, "MQ", 4, 4150); },
+  saveStudent(s){
+    const id = upsert("students", s, "MQ", 4, 4150);
+    const st = DataService.getStudent(id);
+    if (st && (st.status || "Active") !== "Active") DataService.closeClassesOf(id, st.status);
+    return id;
+  },
+  /* v10: a student who is not Active has no class running — close what is still open (kept in history) */
+  closeClassesOf(studentId, why){
+    const d = today(), reason = "Student " + String(why || "inactive").toLowerCase();
+    let n = 0;
+    DB.plans.filter(p => p.studentId === studentId && p.status === "Active").forEach(function(p){
+      upsert("plans", { id: p.id, status: "Stopped", endDate: p.endDate && p.endDate <= d ? p.endDate : d, stopReason: reason }, "IPL", 4); n++;
+    });
+    DB.enrollments.filter(e => e.studentId === studentId && e.status === "Active").forEach(function(e){
+      upsert("enrollments", { id: e.id, status: why === "Completed" ? "Completed" : "Left", leavingDate: d, reason: reason }, "ENR"); n++;
+    });
+    return n;
+  },
+  /* v10: a class that is (re)started for a student who is not Active makes the student Active again */
+  wakeStudent(studentId){
+    const st = DataService.getStudent(studentId);
+    if (st && (st.status || "Active") !== "Active") { upsert("students", { id: studentId, status: "Active" }, "MQ", 4, 4150); return true; }
+    return false;
+  },
+  /* existing records that disagree (a class still Active for a student who left) — fixed with one tap */
+  statusConflicts(){
+    const off = {};
+    DB.students.forEach(s => { if ((s.status || "Active") !== "Active") off[s.id] = s; });
+    const ids = {};
+    DB.plans.forEach(p => { if (p.status === "Active" && off[p.studentId]) ids[p.studentId] = true; });
+    DB.enrollments.forEach(e => { if (e.status === "Active" && off[e.studentId]) ids[e.studentId] = true; });
+    return Object.keys(ids).map(id => off[id]);
+  },
   getTeachers(){ return DB.teachers.slice(); },
   getTeacher(id){ return DB.teachers.find(t => t.id === id) || null; },
   saveTeacher(t){ return upsert("teachers", t, "MQ", 4, 8086); },
@@ -701,7 +737,13 @@ const DataService = {
     return r;
   },
   getActiveEnrollment(studentId){ return DB.enrollments.find(e => e.studentId === studentId && e.status === "Active") || null; },
-  saveEnrollment(e){ return upsert("enrollments", e, "ENR"); },
+  saveEnrollment(e){
+    const was = e.id ? DB.enrollments.find(x => x.id === e.id) : null;
+    const id = upsert("enrollments", e, "ENR");
+    const now = DB.enrollments.find(x => x.id === id);
+    if (now && now.status === "Active" && (!was || was.status !== "Active")) DataService.wakeStudent(now.studentId);
+    return id;
+  },
   closeEnrollment(id, status, date, reason){
     const e = DB.enrollments.find(x => x.id === id); if (!e) return false;
     e.status = status || "Left"; e.leavingDate = date || today(); e.reason = reason || "";
@@ -755,7 +797,13 @@ const DataService = {
   },
   getPlan(id){ return DB.plans.find(p => p.id === id) || null; },
   getActivePlan(studentId){ return DB.plans.find(p => p.studentId === studentId && p.status === "Active") || null; },
-  savePlan(p){ return upsert("plans", p, "IPL", 4); },
+  savePlan(p){
+    const was = p.id ? DB.plans.find(x => x.id === p.id) : null;
+    const id = upsert("plans", p, "IPL", 4);
+    const now = DB.plans.find(x => x.id === id);
+    if (now && now.status === "Active" && (!was || was.status !== "Active")) DataService.wakeStudent(now.studentId);
+    return id;
+  },
   /* note-only marks (status "Note") never reach fees or pay: only the attendance sheet asks for them */
   getClasses(f){
     let r = DB.classes.filter(c => c.status !== "Note" || (f && f.notes));
@@ -845,25 +893,10 @@ const DataService = {
     const p = DB.teacherPayments.find(x => x.id === id); if (!p || p.voided) return null;
     p.voided = true; p.voidReason = reason || ""; p.voidAt = new Date().toISOString(); persist(); return p;
   },
-  getAdjust(teacherId, month){ return DB.teacherAdjust.find(a => a.teacherId === teacherId && a.month === month) || null; },
-  saveAdjust(a){
-    const f = DB.teacherAdjust.find(x => x.teacherId === a.teacherId && x.month === a.month);
-    if (f) Object.assign(f, a); else { a.id = uid("TADJ", DB.teacherAdjust); DB.teacherAdjust.push(a); }
-    persist();
-  },
   /* --- holidays --- */
   getHolidays(){ return (DB.holidays || []).slice().sort((a, b) => a.from < b.from ? -1 : 1); },
   saveHoliday(h){ return upsert("holidays", h, "HOL"); },
   deleteHoliday(id){ DB.holidays = (DB.holidays || []).filter(h => h.id !== id); persist(); },
-
-  /* --- prepaid carry-forward adjustments --- */
-  getAdjustments(f){
-    let r = (DB.adjustments || []).slice();
-    if (!f) return r;
-    if (f.planId) r = r.filter(a => a.planId === f.planId);
-    if (f.pending) r = r.filter(a => !a.appliedFeeId);
-    return r;
-  },
 
   getAccounts(){ return DB.accounts.slice(); },
   saveAccount(a){ const i = DB.accounts.findIndex(x => x.id === a.id);
