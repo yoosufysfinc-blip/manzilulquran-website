@@ -1,349 +1,47 @@
 "use strict";
-/* Academic Service — ws-books.v14.js. v14: student, teacher, staff and Teacher pay rows open the person's profile;
-   a teacher profile page (students, this month's pay, every payment); the student profile lists the class plans with
-   Edit; Teacher pay has a search and Pay all; teachers who have not been paid for the month say so; Remove (entered by
-   mistake) on payments, teacher payments, other income and expenses; CSV / Print under ⋯. (v13: Teacher pay warns about unmarked class days; the substitute rate shows on the teacher. (v12: Salary report button on Teacher pay.) */
-/* v14: what a teacher's month says in a list — earned and still to pay, what was paid, or that nothing is paid yet */
-function payStatus(pv, works){
-  if (pv.payable > 0) return pv.paid <= 0 ? "Not paid yet" : pv.balance > 0 ? "Partial" : "Paid";
-  if (pv.paid > 0) return "Paid";
-  return works ? "Not paid yet" : "Nothing due";
-}
-function payAmountHtml(pv){
-  if (pv.payable > 0) return money(pv.payable) + '<small>' + (pv.balance > 0 ? money(pv.balance) + " to pay" : "all paid") + '</small>';
-  if (pv.paid > 0) return money(pv.paid) + '<small>paid</small>';
-  return '—';
-}
-/* one line per individual student on a teacher's month — rule, amount and an Override button */
-/* The student-wise salary table: every student the teacher taught this month, their own
-   attendance, their own base, and the additions and deductions entered against them. */
-function payLinesHtml(pv){
-  const L = (pv && pv.indLines) || [];
-  if (!L.length) return "";
-  const cell = (v, cls) => '<td class="num' + (cls ? " " + cls : "") + '">' + v + '</td>';
-  const body = L.map(function(x){
-    const amt = x.needsAmount ? '<span class="badge b-warn">Needs amount</span>' : money(x.amount);
-    return '<tr>' +
-      '<td><b>' + esc(x.studentName) + '</b>' +
-        '<small>' + esc([x.course, x.time ? time12(x.time) : "", x.perWeek ? x.perWeek + "/week" : ""].filter(Boolean).join(" · ")) + '</small>' +
-        '<small>' + esc(x.basis) + (x.note ? " · " + esc(x.note) : "") + '</small></td>' +
-      cell(x.planned) + cell(x.taken) +
-      cell((x.studentAbsent + x.studentLeave) || "—") +
-      cell((x.teacherAbsent + x.substitute) || "—") +
-      cell('<b>' + x.counted + '</b>') +
-      cell(money(x.base)) +
-      cell(x.add ? '<span class="pos">+' + money(x.add) + '</span>' : "—") +
-      cell(x.deduct ? '<span class="neg">−' + money(x.deduct) + '</span>' : "—") +
-      cell('<b>' + amt + '</b>') +
-      '<td class="num"><button class="btn btn-sm" data-act="tline-edit" data-id="' +
-        esc(pv.teacherId + "|" + x.planId) + '">Edit</button></td></tr>';
-  }).join("");
-  const sum = k => L.reduce((a, x) => a + (+x[k] || 0), 0);
-  return '<div class="sub-hd">Student-wise salary · ' + L.length + (L.length === 1 ? " student" : " students") + '</div>' +
-    '<div class="tblwrap"><table class="paytbl"><thead><tr>' +
-      '<th>Student</th><th class="num">Plan</th><th class="num">Taken</th><th class="num">Stu. abs/leave</th>' +
-      '<th class="num">Tchr leave</th><th class="num">Counted</th><th class="num">Base</th>' +
-      '<th class="num">Add</th><th class="num">Deduct</th><th class="num">Payable</th><th></th>' +
-    '</tr></thead><tbody>' + body + '</tbody><tfoot><tr>' +
-      '<td><b>Total</b></td>' + cell(sum("planned")) + cell(sum("taken")) +
-      cell(sum("studentAbsent") + sum("studentLeave")) + cell(sum("teacherAbsent") + sum("substitute")) +
-      cell('<b>' + sum("counted") + '</b>') + cell(money(sum("base"))) +
-      cell(sum("add") ? "+" + money(sum("add")) : "—") + cell(sum("deduct") ? "−" + money(sum("deduct")) : "—") +
-      cell('<b>' + money(sum("amount")) + '</b>') + '<td></td>' +
-    '</tr></tfoot></table></div>';
-}
+/* Academic Service — ws-books.v15.js. v15 (simple mode): no teacher pay is worked out any more — Teachers and Other staff
+   list who they teach and what salary was entered; Money → Teacher salary is where salaries are typed in by hand; a
+   student with no class arranged shows "Class pending", a class with no teacher shows "No teacher"; the Due date page for
+   both streams; Settings keeps only what is still used. The dashboard lives in dash.v2.js.
+   (v14: profiles for students and teachers, Remove for mistaken entries, CSV / Print under ⋯.) */
 /* ==========================================================================
    BOOKS WORKSPACE
    ========================================================================== */
-Pages.overview = function(){
-  const m = State.month, t = today();
-  const led = Logic.ledger();
-  const pl = Logic.pnl(monthStart(m), monthEnd(m));
-  const bs = Logic.summarize(Logic.feeViews({ month: m, source: "batch" }));
-  const is = Logic.summarize(Logic.feeViews({ month: m, source: "individual" }));
-  const all = Logic.summarize(Logic.feeViews({ month: m }));
-  const bal = Logic.accountBalances();
-  const payroll = Logic.payrollMonth(m);
-  const payPending = payroll.reduce((x, p) => x + Math.max(0, p.balance), 0);
-  const todayIn = led.filter(r => r.date === t && !r.transfer).reduce((x, r) => x + r.inAmt, 0);
-  const todayOut = led.filter(r => r.date === t && !r.transfer).reduce((x, r) => x + r.outAmt, 0);
-  const att = Logic.attStats(DataService.getAttendance({ month: m }));
-  const cls = Logic.classStats(DataService.getClasses({ month: m }));
-  const students = DataService.getStudents().filter(x => x.status === "Active");
-  const advance = DataService.getPayments().filter(x => x.date < monthStart(x.month))
-    .reduce((x, p) => x + (+p.amount || 0), 0);
-
-  /* who joined this month, who still has no plan, who is on hold — the dashboard is not only money */
-  const monthS = monthStart(m), monthE = monthEnd(m);
-  const joinedThis = students.filter(x => x.joiningDate && x.joiningDate >= monthS && x.joiningDate <= monthE);
-  const holdIds = {};
-  DataService.getHolds ? (DataService.getHolds() || []).forEach(h => { if (m >= (h.from || "") && m <= (h.to || "9999-99")) holdIds[h.studentId] = true; }) : null;
-  const viewsThis = Logic.feeViews({ month: m });
-  const peopleRows = students.map(function(x){
-    const pl2 = DataService.getPlans({ studentId: x.id }).filter(p => p.status === "Active")[0];
-    const te = pl2 ? DataService.getTeacher(pl2.teacherId) : null;
-    const v = viewsThis.filter(z => z.studentId === x.id);
-    const owing = v.reduce((a, z) => a + z.balance, 0);
-    const isNew = joinedThis.indexOf(x) >= 0;
-    const tag = isNew ? "New" : holdIds[x.id] ? "On hold" : !pl2 ? "No plan" : owing > 0 ? "Owing" : "";
-    return { id: x.id, name: x.name, phone: x.whatsapp || x.phone, joiningDate: x.joiningDate,
-      course: pl2 ? pl2.course : "", teacher: te ? te.name : "", fee: pl2 ? +pl2.rate || 0 : 0,
-      dueDay: pl2 ? pl2.dueDay : "", tag: tag,
-      feeStatus: v.length ? v.map(z => z.status).join(", ") : "no fee raised",
-      paidEver: DataService.getPayments({ studentId: x.id }).reduce((a, p) => a + (+p.amount || 0), 0),
-      line: [isNew ? "joined " + fmtDate(x.joiningDate) : "", pl2 ? pl2.course : "no class plan",
-        te ? te.name : ""].filter(Boolean).join(" · "),
-      rank: (isNew ? 0 : !pl2 ? 1 : owing > 0 ? 2 : 3) };
-  }).sort((a, b) => a.rank - b.rank || String(a.name).localeCompare(String(b.name)));
-
-  /* six month trend + a 30 day collection heat strip */
-  const trend = [];
-  for (let i = 5; i >= 0; i--) {
-    const mm = addMonths(m, -i), p = Logic.pnl(monthStart(mm), monthEnd(mm));
-    trend.push({ label: monthShort(mm), income: p.netIncome, expense: p.expense, profit: p.profit,
-      batch: p.batchFee, ind: p.indFee });
-  }
-  const heat = [];
-  for (let i = 29; i >= 0; i--) {
-    const d = ymd(new Date(Date.now() - i * 86400000));
-    heat.push({ d: d, v: led.filter(r => r.date === d && r.inAmt && !r.transfer).reduce((x, r) => x + r.inAmt, 0) });
-  }
-
-  /* colour-coded league tables */
-  const byBatch = DataService.getBatches().filter(x => x.status === "Active").map(function(b){
-    const g = Logic.summarize(Logic.feeViews({ month: m, source: "batch", batchId: b.id }));
-    return { label: b.name, value: g.paid, text: money(g.paid) + " of " + money(g.net),
-      color: g.collectionPct >= 80 ? "#2F7D4F" : g.collectionPct >= 50 ? "#C07C1E" : "#B2402F" };
-  }).sort((x, y) => y.value - x.value).slice(0, 6);
-  const expCats = Object.keys(pl.byCategory).map(k => ({ label: k, value: pl.byCategory[k], color: "#B2402F" }))
-    .sort((x, y) => y.value - x.value).slice(0, 6);
-  /* per-class collection, per-group attendance and who to chase — detail, not decoration */
-  const byBatchRows = DataService.getBatches().filter(x => x.status === "Active").map(function(b){
-    const g = Logic.summarize(Logic.feeViews({ month: m, source: "batch", batchId: b.id }));
-    const te = DataService.getTeacher(b.teacherId);
-    return { name: b.name, teacher: te ? te.name : "—", students: Logic.rosterOf(b.id).length,
-      paid: g.paid, net: g.net, pctv: g.collectionPct };
-  }).sort((x, y) => y.net - x.net).slice(0, 6);
-  const attByGroup = (function(){
-    const rows = [], seen = {};
-    DataService.getSubclasses().forEach(function(sc){
-      const list = DataService.getAttendance({ month: m, subClassId: sc.id });
-      if (!list.length) return;
-      const st = Logic.attStats(list), b = DataService.getBatch(sc.batchId);
-      const days = {}; list.forEach(x => days[x.date] = true);
-      seen[sc.batchId] = true;
-      rows.push({ label: (b ? b.name + " · " : "") + sc.name, pct: st.pct, total: st.total,
-        absent: st.Absent, sessions: Object.keys(days).length });
-    });
-    DataService.getBatches().forEach(function(b){
-      if (DataService.getSubclasses({ batchId: b.id }).length) return;
-      const list = DataService.getAttendance({ month: m, batchId: b.id });
-      if (!list.length) return;
-      const st = Logic.attStats(list), days = {};
-      list.forEach(x => days[x.date] = true);
-      rows.push({ label: b.name, pct: st.pct, total: st.total, absent: st.Absent, sessions: Object.keys(days).length });
-    });
-    return rows.sort((x, y) => x.pct - y.pct).slice(0, 6);
-  })();
-  const watch = Logic.feeViews({ month: m }).filter(v => v.balance > 0)
-    .sort((x, y) => (y.daysOverdue - x.daysOverdue) || (y.balance - x.balance)).slice(0, 6);
-  const teacherCost = payroll.map(p => ({ label: p.teacherName, value: p.payable,
-    text: money(p.payable), color: "#8A6A2A" })).sort((x, y) => y.value - x.value);
-  const topDebt = Logic.feeViews({ month: m }).filter(v => v.balance > 0)
-    .sort((x, y) => y.balance - x.balance).slice(0, 6);
-
-  return '' +
-  '<div class="qbar no-print">' +
-    '<button class="qbtn" data-act="pay-new"><span class="qi">₹</span> Record payment</button>' +
-    '<button class="qbtn" data-act="next-month"><span class="qi">▸</span> Open next month</button>' +
-    '<button class="qbtn" data-act="link-new"><span class="qi">⇗</span> Teacher attendance link</button>' +
-    '<button class="qbtn" data-act="att-import"><span class="qi">⇩</span> Import teacher code</button>' +
-    '<button class="qbtn" data-act="exp-new"><span class="qi">↓</span> Add expense</button>' +
-    '<button class="qbtn" data-act="tpay-new"><span class="qi">◇</span> Pay teacher</button>' +
-  '</div>' +
-
-  /* ---- hero: the one number that matters, plus the split behind it ---- */
-  '<div class="hero">' +
-    '<div class="hero-main">' +
-      '<div class="lab">Net profit · ' + esc(monthLabel(m)) + '</div>' +
-      '<div class="big">' + money(pl.profit) + '</div>' +
-      '<div class="sub">' + money(pl.netIncome) + ' came in, ' + money(pl.expense) + ' went out · ' +
-        pct(pl.profit, pl.netIncome) + '% margin</div>' +
-      '<div class="hero-split">' +
-        '<div><div class="n">' + money(pl.batchFee) + '</div><div class="l">Batch fees</div></div>' +
-        '<div><div class="n">' + money(pl.indFee) + '</div><div class="l">Individual fees</div></div>' +
-        '<div><div class="n">' + money(pl.netIncome - pl.batchFee - pl.indFee) + '</div><div class="l">Other income</div></div>' +
-        '<div><div class="n">' + money(todayIn - todayOut) + '</div><div class="l">Net today</div></div>' +
-      '</div>' +
-      '<div style="margin-top:18px"><div class="lab" style="margin-bottom:7px">Collection · last 30 days</div>' +
-        heatStrip(heat) + '</div>' +
-    '</div>' +
-    '<div class="card"><div class="card-bd">' +
-      '<div class="ring-wrap">' + ring(all.collectionPct, "#2F7D4F", all.collectionPct + "%", "COLLECTED") +
-        '<div style="flex:1 1 150px">' +
-          '<div class="stat-line"><span>Expected this month</span><b>' + money(all.net) + '</b></div>' +
-          '<div class="stat-line"><span>Collected</span><b style="color:var(--ok)">' + money(all.paid) + '</b></div>' +
-          '<div class="stat-line"><span>Still to come</span><b style="color:var(--bad)">' + money(all.balance) + '</b></div>' +
-          '<div class="stat-line"><span>Paid in advance</span><b>' + money(advance) + '</b></div>' +
-        '</div>' +
-      '</div>' +
-      '<div style="height:14px"></div>' +
-      accountRail(bal) +
-      '<div style="height:12px"></div>' + accountCards(bal) +
-    '</div></div>' +
-  '</div>' +
-
-  /* ---- headline tiles ---- */
-  '<div class="kpi-grid">' +
-    kpi("Active students", num(students.length),
-      num(DataService.getBatches().filter(x => x.status === "Active").length) + " classes · " +
-      num(DataService.getSubclasses().length) + " sub-classes") +
-    kpi("Attendance", att.pct + '<span class="u">%</span>', num(att.total) + " marks in " + monthShort(m),
-      att.pct >= 85 ? "a-ok" : att.pct >= 70 ? "a-warn" : "a-bad") +
-    kpi("Individual classes", num(cls.completed), num(cls.total) + " logged · " + round2(cls.minutes / 60) + " h") +
-    kpi("Receivable", money(all.balance), num(all.count - all.paidN) + " students owing", "a-warn") +
-    kpi("Overdue", money(all.overdueAmt), num(all.overdueN) + " past the due date", "a-bad") +
-    kpi("Payable to teachers", money(payPending), esc(monthLabel(m)), "a-acc") +
-    kpi("New students", num(joinedThis.length), "joined in " + monthShort(m), joinedThis.length ? "a-ok" : "") +
-  '</div>' +
-
-  /* ---- who joined, who has no plan, who is on hold ---- */
-  '<div class="section-title">Students</div>' +
-  '<div class="card"><div class="card-bd tight">' +
-    renderList("dashStudents", peopleRows, {
-      key: r => r.id, head: ["Student", "Monthly fee"],
-      title: r => esc(r.name) + " " + idchip(r.id),
-      sub: r => esc(r.line),
-      amount: r => r.fee ? money(r.fee) : "—",
-      badge: r => badge(r.tag, { "New": "b-ok", "No plan": "b-warn", "On hold": "b-idle", "Owing": "b-bad" }),
-      detail: r => dl([
-        ["Student ID", idchip(r.id)], ["Joined", esc(fmtDate(r.joiningDate) || "—")],
-        ["Course", esc(r.course || "—")], ["Teacher", esc(r.teacher || "—")],
-        ["Monthly fee", r.fee ? money(r.fee) : "—"], ["Due day", esc(r.dueDay || "—")],
-        [monthShort(m) + " status", esc(r.feeStatus)], ["Paid so far", money(r.paidEver)],
-        ["Phone", '<span class="mono">' + esc(r.phone || "—") + '</span>']
-      ]) + acts('<button class="btn btn-sm" data-act="profile-open" data-id="' + r.id + '">Open profile</button>'),
-      emptyTitle: "No students to show",
-      pageSize: 12
-    }) +
-  '</div></div>' +
-
-  /* ---- colour infographics ---- */
-  '<div class="section-title">This month in detail</div>' +
-  '<div class="chart-grid">' +
-    '<div class="card chart-box"><h3>Where the money came from</h3>' +
-      splitBar([{ label: "Batch", value: pl.batchFee, color: "#1E7A52" },
-                { label: "Individual", value: pl.indFee, color: "#137C6E" },
-                { label: "Other", value: Math.max(0, pl.netIncome - pl.batchFee - pl.indFee), color: "#8FD3AE" }]) +
-      '<div style="height:6px"></div>' +
-      detailRow({ title: "Income", sub: "six month trend", spark: spark(trend.map(x => x.income), "#1E7A52"),
-        value: money(pl.netIncome), meta: pct(pl.netIncome, Math.max(...trend.map(x => x.income))) + "% of best month" }) +
-      detailRow({ title: "Expense", sub: "six month trend", spark: spark(trend.map(x => x.expense), "#B2402F"),
-        value: money(pl.expense), meta: pct(pl.expense, pl.netIncome) + "% of income" }) +
-      detailRow({ title: "Profit", sub: "six month trend", spark: spark(trend.map(x => x.profit), "#137C6E"),
-        value: money(pl.profit), meta: pct(pl.profit, pl.netIncome) + "% margin" }) +
-    '</div>' +
-
-    '<div class="card chart-box"><h3>Fee collection</h3>' +
-      splitBar([{ label: "Collected", value: all.paid, color: "#1E7A52" },
-                { label: "Still due", value: Math.max(0, all.balance - all.overdueAmt), color: "#C07C1E" },
-                { label: "Overdue", value: all.overdueAmt, color: "#B2402F" }]) +
-      '<div style="height:6px"></div>' +
-      detailRow({ title: "Batch stream", sub: num(bs.count) + " records · " + num(bs.paidN) + " settled",
-        spark: spark(trend.map(x => x.batch), "#1E7A52"), value: money(bs.paid), meta: "of " + money(bs.net),
-        pct: bs.collectionPct, color: "#1E7A52" }) +
-      detailRow({ title: "Individual stream", sub: num(is.count) + " records · " + num(is.paidN) + " settled",
-        spark: spark(trend.map(x => x.ind), "#137C6E"), value: money(is.paid), meta: "of " + money(is.net),
-        pct: is.collectionPct, color: "#137C6E" }) +
-      detailRow({ title: "Paid before the month began", sub: "prepaid advantage",
-        value: money(advance), meta: pct(advance, all.paid) + "% of what came in" }) +
-    '</div>' +
-
-    '<div class="card chart-box"><h3>Attendance</h3>' +
-      splitBar([{ label: "Present", value: att.Present, color: "#1E7A52", text: num(att.Present) },
-                { label: "Absent", value: att.Absent, color: "#B2402F", text: num(att.Absent) },
-                { label: "Leave", value: att.Leave, color: "#C07C1E", text: num(att.Leave) },
-                { label: "Excused", value: att.Excused, color: "#35638C", text: num(att.Excused) }]) +
-      '<div style="height:6px"></div>' +
-      (attByGroup.length ? attByGroup.map(g => detailRow({ title: esc(g.label),
-          sub: g.sessions + " sessions · " + num(g.total) + " marks",
-          value: g.pct + "%", meta: g.absent + " absent", pct: g.pct,
-          color: g.pct >= 85 ? "#1E7A52" : g.pct >= 70 ? "#C07C1E" : "#B2402F" })).join("")
-        : '<div class="empty" style="padding:18px">Nothing marked yet this month.</div>') +
-    '</div>' +
-
-    '<div class="card chart-box"><h3>Class collection</h3>' +
-      (byBatchRows.length ? byBatchRows.map(r => detailRow({ title: esc(r.name),
-          sub: r.students + " students · " + esc(r.teacher),
-          value: money(r.paid), meta: "of " + money(r.net), pct: r.pctv,
-          color: r.pctv >= 80 ? "#1E7A52" : r.pctv >= 50 ? "#C07C1E" : "#B2402F" })).join("")
-        : '<div class="empty" style="padding:18px">No batch fees yet.</div>') +
-    '</div>' +
-
-    '<div class="card chart-box"><h3>Teacher cost</h3>' +
-      (payroll.length ? payroll.slice().sort((x, y) => y.payable - x.payable).map(pp => detailRow({
-          title: esc(pp.teacherName),
-          sub: (pp.groups || []).length + " group(s) · " + pp.sessions + " sessions · " +
-            round2(pp.classStats.minutes / 60) + " h individual",
-          value: money(pp.payable), meta: pp.balance > 0 ? money(pp.balance) + " unpaid" : "settled",
-          pct: pct(pp.paid, pp.payable), color: pp.balance > 0 ? "#C07C1E" : "#1E7A52" })).join("")
-        : '<div class="empty" style="padding:18px">No teachers yet.</div>') +
-    '</div>' +
-
-    '<div class="card chart-box"><h3>Watchlist</h3>' +
-      (watch.length ? watch.map(v => detailRow({ title: esc(v.studentName),
-          sub: (v.source === "batch" ? "Batch" : "Individual") + " · " + esc(monthShort(v.month)) +
-            (v.daysOverdue ? " · " + v.daysOverdue + " days late" : " · due " + fmtDate(v.dueDate)),
-          value: money(v.balance), meta: v.paidAmount ? money(v.paidAmount) + " paid" : "nothing paid",
-          pct: pct(v.paidAmount, v.netFee), color: v.daysOverdue ? "#B2402F" : "#C07C1E" })).join("")
-        : '<div class="empty" style="padding:18px">Nobody is behind. Alhamdulillah.</div>') +
-    '</div>' +
-  '</div>' +
-
-  '<div class="section-title">Streams side by side</div>' +
-  '<div class="grid-2">' +
-    ['batch|Batch classes|' + bs.net + '|' + bs.paid + '|' + bs.balance + '|' + bs.collectionPct + '|' + bs.count,
-     'ind|Individual classes|' + is.net + '|' + is.paid + '|' + is.balance + '|' + is.collectionPct + '|' + is.count]
-    .map(function(x){
-      const p = x.split("|");
-      const col = p[0] === "batch" ? "#2F6B4A" : "#2C5A80";
-      return '<div class="card"><div class="card-bd">' +
-        '<div class="spread"><h3 style="font-size:17px">' + p[1] + '</h3>' +
-          '<span class="tag" style="background:' + col + '18;color:' + col + '">' + p[6] + ' fee records</span></div>' +
-        '<div class="ring-wrap" style="margin-top:12px">' + ring(+p[5], col, p[5] + "%", "COLLECTED", 118) +
-          '<div style="flex:1 1 150px">' +
-            '<div class="stat-line"><span>Expected</span><b>' + money(+p[2]) + '</b></div>' +
-            '<div class="stat-line"><span>Collected</span><b style="color:var(--ok)">' + money(+p[3]) + '</b></div>' +
-            '<div class="stat-line"><span>Balance</span><b style="color:var(--bad)">' + money(+p[4]) + '</b></div>' +
-          '</div></div></div></div>';
-    }).join("") +
-  '</div>';
-};
+Pages.dues = function(){ return duePage("", "dues"); };
 
 Pages.students = function(){
   const f = State.students, q = f.q.toLowerCase().trim(), m = State.month;
+  const conflicts = DataService.statusConflicts ? DataService.statusConflicts() : [];
   const rows = DataService.getStudents().map(function(s){
-    const str = Logic.streamsOf(s.id);
-    const fees = Logic.feeViews({ studentId: s.id, month: m }).map(withBasis);
+    const str = Logic.streamsOf(s.id), ci = Logic.classInfo(s.id);
+    const fees = Logic.feeViews({ studentId: s.id, month: m });
     const due = Logic.feeViews({ studentId: s.id }).reduce((a, v) => a + v.balance, 0);
     const b = str.batch ? DataService.getBatch(str.batch.batchId) : null;
     const t = str.individual ? DataService.getTeacher(str.individual.teacherId) : (b ? DataService.getTeacher(b.teacherId) : null);
-    return Object.assign({}, s, { str: str, fees: fees, due: due, batch: b, teacher: t,
-      monthFee: fees.reduce((a, v) => a + v.netFee, 0) });
+    return Object.assign({}, s, { str: str, ci: ci, due: due, batch: b, teacher: t,
+      monthFee: fees.reduce((a, v) => a + v.netFee, 0),
+      pending: (s.status || "Active") === "Active" && ci.pending, noTeacher: (s.status || "Active") === "Active" && !ci.pending && ci.noTeacher });
   }).filter(function(s){
     if (f.status && s.status !== f.status) return false;
     if (f.stream === "batch" && !s.str.batch) return false;
     if (f.stream === "individual" && !s.str.individual) return false;
-    if (f.stream === "both" && !(s.str.batch && s.str.individual)) return false;
+    if (f.cls === "pending" && !s.pending) return false;
+    if (f.cls === "noteacher" && !s.noTeacher) return false;
     return search(s.id + " " + s.name + " " + s.phone + " " + s.whatsapp + " " + (s.guardian || ""), q);
   });
+  const nPend = DataService.getStudents().filter(s => (s.status || "Active") === "Active" && Logic.classInfo(s.id).pending).length;
 
   return '' +
+  (conflicts.length ? '<div class="note warn-note no-print">' + conflicts.length + ' student' + (conflicts.length > 1 ? "s are" : " is") +
+    ' not Active but still ha' + (conflicts.length > 1 ? "ve" : "s") + ' a running class (' + esc(conflicts.slice(0, 4).map(x => x.name).join(", ")) +
+    (conflicts.length > 4 ? "…" : "") + '). <button type="button" class="btn btn-sm btn-primary" data-act="status-fix">Close those classes</button></div>' : "") +
   '<div class="toolbar no-print">' +
     field("Search", '<input class="input" data-fset="students.q" value="' + esc(f.q) + '" placeholder="Name, ID, phone or WhatsApp">', "grow") +
     field("Status", sel("s", optList(Settings().studentStatuses, f.status, "All"), 'data-fset="students.status"')) +
-    field("Stream", sel("st", optList([{ value: "batch", label: "In a batch" }, { value: "individual", label: "Individual classes" },
-      { value: "both", label: "Both streams" }], f.stream, "All streams"), 'data-fset="students.stream"')) +
+    field("Class", sel("c", optList([{ value: "pending", label: "Class pending" + (nPend ? " (" + nPend + ")" : "") },
+      { value: "noteacher", label: "No teacher" }], f.cls, "All classes"), 'data-fset="students.cls"')) +
+    field("Stream", sel("st", optList([{ value: "batch", label: "In a batch" }, { value: "individual", label: "Individual classes" }],
+      f.stream, "All streams"), 'data-fset="students.stream"')) +
     '<div class="push btn-row">' +
       '<button class="btn btn-primary" data-act="student-new">+ Add student</button>' +
       moreMenu([["students-csv", "Download CSV"]]) +
@@ -353,175 +51,65 @@ Pages.students = function(){
     renderList("students", rows, {
       key: s => s.id, head: ["Student", monthShort(m) + " fee"], go: s => ({ act: "profile-open", id: s.id }),
       title: s => esc(s.name) + " " + idchip(s.id),
-      sub: s => [s.str.batch ? "Batch: " + (s.batch ? s.batch.name : s.str.batch.batchId) : null,
-                 s.str.individual ? "Individual: " + s.str.individual.course : null,
-                 (!s.str.batch && !s.str.individual) ? "No active class" : null].filter(Boolean).join(" · "),
-      amount: s => money(s.monthFee) + (s.due ? '<small class="out">' + money(s.due) + ' due</small>' : '<small>settled</small>'),
-      badge: s => (s.str.batch && s.str.individual) ? '<span class="badge b-acc">Both</span>' :
-                  s.str.batch ? streamChip("batch") : s.str.individual ? streamChip("individual") : badge(s.status),
-      rowClass: s => s.due > 0 ? "row-bad" : "",
-      detail: s => dl([
-        ["Student ID", idchip(s.id)], ["Guardian", esc(s.guardian || "—")],
-        ["Phone", '<span class="mono">' + esc(s.phone || "—") + '</span>'],
-        ["WhatsApp", '<span class="mono">' + esc(s.whatsapp || "—") + '</span>'],
-        ["Email", esc(s.email || "—")], ["Joined", fmtDate(s.joiningDate)], ["Status", badge(s.status)],
-        ["Batch", s.str.batch ? esc((s.batch ? s.batch.name : s.str.batch.batchId)) + " · " + money(s.str.batch.monthlyFee) : "—"],
-        ["Individual plan", s.str.individual ? esc(s.str.individual.course) + " · " + Logic.methodLabel(s.str.individual.feeType) +
-          " @ " + money(s.str.individual.rate) : "—"],
-        ["Teacher", esc(s.teacher ? s.teacher.name : "—")],
-        ["Outstanding (all months)", s.due ? '<span class="out">' + money(s.due) + '</span>' : '<span class="in">Nil</span>'],
-        s.address ? ["Address", esc(s.address)] : null, s.notes ? ["Notes", esc(s.notes)] : null
-      ]) +
-      (DataService.getHolds({ studentId: s.id }).length ? ('<div class="sub-hd">Holds / leave</div>' +
-        DataService.getHolds({ studentId: s.id }).map(h => '<div class="minirow"><span>⏸ ' + esc(h.from) + " → " + esc(h.to || "open") +
-          (h.reason ? " · " + esc(h.reason) : "") + '</span><b>' + (h.waiveFee ? "fee waived" : "fee kept") +
-          ' <button class="btn btn-sm" data-act="hold-del" data-id="' + h.id + '">✕</button></b></div>').join("")) : "") +
-      '<div class="sub-hd">' + esc(monthLabel(m)) + ' fees</div>' +
-      (s.fees.length ? s.fees.map(v => '<div class="minirow"><span>' + streamChip(v.source) + ' ' + esc(v.shortBasis) +
-          ' · ' + v.status + '</span><b>' + money(v.paidAmount) + " / " + money(v.netFee) + '</b></div>').join("")
-        : '<div class="minirow"><span>No fee record this month</span><b>—</b></div>') +
-      acts('<button class="btn btn-sm btn-primary" data-act="profile-open" data-id="' + s.id + '">Open profile</button>' +
-        '<button class="btn btn-sm" data-act="student-edit" data-id="' + s.id + '">Edit</button>' +
-        '<button class="btn btn-sm" data-act="student-assign" data-id="' + s.id + '">Batch</button>' +
-        '<button class="btn btn-sm" data-act="plan-new" data-id="' + s.id + '">Individual plan</button>' +
-        '<button class="btn btn-sm" data-act="hold-new" data-id="' + s.id + '">⏸ Hold / Leave</button>' +
-        (s.due > 0 ? '<button class="btn btn-sm btn-wa" data-act="wa-student" data-id="' + s.id + '">WhatsApp</button>' : "")),
+      sub: s => esc([s.str.batch ? (s.batch ? s.batch.name : s.str.batch.batchId) : null,
+                 s.str.individual ? (s.str.individual.course || "Individual class") : null,
+                 s.teacher ? s.teacher.name : null,
+                 s.pending ? "no class arranged yet" : null].filter(Boolean).join(" · ")),
+      amount: s => (s.monthFee ? money(s.monthFee) : "—") + (s.due ? '<small class="out">' + money(s.due) + ' due</small>' : '<small>settled</small>'),
+      badge: s => s.pending ? badge("Class pending") : s.noTeacher ? badge("No teacher") :
+                  (s.status || "Active") !== "Active" ? badge(s.status) :
+                  (s.str.batch && s.str.individual) ? '<span class="badge b-acc">Both</span>' :
+                  s.str.batch ? streamChip("batch") : streamChip("individual"),
+      rowClass: s => s.pending || s.noTeacher ? "row-warn" : s.due > 0 ? "row-bad" : "",
       sorts: [{ key: "name", label: "Name A–Z", val: s => s.name },
               { key: "nameZ", label: "Name Z–A", val: s => s.name, desc: true },
-              { key: "id", label: "Student ID (oldest first)", val: s => s.id },
-              { key: "idNew", label: "Student ID (newest first)", val: s => s.id, desc: true },
+              { key: "idNew", label: "Newest first", val: s => s.id, desc: true },
+              { key: "id", label: "Oldest first", val: s => s.id },
               { key: "joinNew", label: "Joined — newest first", val: s => s.joiningDate || "", desc: true },
-              { key: "joinOld", label: "Joined — oldest first", val: s => s.joiningDate || "" },
-              { key: "dobYoung", label: "Date of birth — youngest first", val: s => s.dob || "", desc: true },
-              { key: "dobOld", label: "Date of birth — oldest first", val: s => s.dob || "" },
               { key: "due", label: "Most outstanding first", val: s => s.due, desc: true }],
-      emptyTitle: "No students match", emptyText: "Change the filters, or register the student.",
+      emptyTitle: "No students match", emptyText: "Change the filters, or add the student.",
       emptyAction: '<button class="btn btn-primary" data-act="student-new">+ Add student</button>'
     }) +
   '</div></div>';
 };
 
-Pages.teachers = function(){
-  const q = State.teachers.q.toLowerCase().trim(), m = State.month;
-  const rows = DataService.getTeachers().filter(t => t.kind !== "staff").map(function(t){
-    const v = Logic.payrollView(t, m);
-    const batches = DataService.getBatches().filter(b => b.teacherId === t.id);
-    const plans = DataService.getPlans({ teacherId: t.id, status: "Active" });
-    return Object.assign({}, t, { pv: v, batches: batches, plans: plans });
-  }).filter(t => search(t.id + " " + t.name + " " + (t.phone || ""), q));
-
-  return '' +
-  '<div class="toolbar no-print">' +
-    field("Search", '<input class="input" data-fset="teachers.q" value="' + esc(State.teachers.q) + '" placeholder="Teacher name or ID">', "grow") +
-    '<div class="push"><button class="btn btn-primary" data-act="teacher-new">+ Add teacher</button></div>' +
-  '</div>' +
-  '<div class="card"><div class="card-bd tight">' +
-    renderList("teachers", rows, {
-      key: t => t.id, head: ["Teacher", monthShort(m) + " pay"], go: t => ({ act: "teacher-open", id: t.id }),
-      title: t => esc(t.name) + " " + idchip(t.id),
-      /* short enough for a phone: the rest is in the row details / full view */
-      sub: t => esc([t.plans.length ? t.plans.length + (t.plans.length === 1 ? " student" : " students") : "",
-        t.batches.length ? t.batches.length + (t.batches.length === 1 ? " batch" : " batches") : "",
-        t.indRateType ? Logic.indRateLabel(t.indRateType) : "no pay rule"].filter(Boolean).join(" · ")),
-      amount: t => payAmountHtml(t.pv),
-      badge: t => badge(payStatus(t.pv, t.plans.length + t.batches.length > 0), FEE_BADGE),
-      rowClass: t => payStatus(t.pv, t.plans.length + t.batches.length > 0) === "Not paid yet" ? "row-warn" : "",
-      detail: t => dl([
-        ["Teacher ID", idchip(t.id)], ["Phone", '<span class="mono">' + esc(t.phone || "—") + '</span>'],
-        ["WhatsApp", '<span class="mono">' + esc(t.whatsapp || "—") + '</span>'],
-        ["Joined", fmtDate(t.joiningDate)], ["Paid into", esc(t.payAccount || "—")], ["Status", badge(t.status)],
-        ["Individual pay", esc(Logic.indRateLabel(t.indRateType)) + (t.indRateType === "percent" ? " · " + t.indRate + "%" :
-          t.indRateType === "none" ? "" : " · " + money(t.indRate))],
-        ["Batch pay", esc(Logic.batchPayLabel(t.batchPayType)) + (t.batchPayType === "percent" ? " · " + t.batchRate + "%" :
-          t.batchPayType === "none" ? "" : " · " + money(t.batchRate))],
-        ["Substitute rate", +t.subRate > 0 ? money(t.subRate) + " per class" : '<span class="muted">Not set</span>']
-      ]) +
-      '<div class="sub-hd">' + esc(monthLabel(m)) + ' payslip</div>' +
-      '<div class="minirow"><span>Individual — ' + esc(t.pv.indBasis) + '</span><b>' + money(t.pv.indAmount) + '</b></div>' +
-      payLinesHtml(t.pv) +
-      (t.pv.groups || []).map(g => '<div class="minirow"><span>' + esc(g.label) +
-        (g.subClassId ? ' <span class="tag">sub</span>' : "") + ' — ' + esc(g.basis) + '</span><b>' + money(g.amount) + '</b></div>').join("") +
-      '<div class="minirow"><span>Batch total — ' + esc(t.pv.batchBasis) + '</span><b>' + money(t.pv.batchAmount) + '</b></div>' +
-      '<div class="minirow"><span>Bonus</span><b>' + money(t.pv.bonus) + '</b></div>' +
-      '<div class="minirow"><span>Deduction</span><b>− ' + money(t.pv.deduction) + '</b></div>' +
-      '<div class="minirow"><span>Net payable</span><b>' + money(t.pv.payable) + '</b></div>' +
-      '<div class="minirow"><span>Paid</span><b class="in">' + money(t.pv.paid) + '</b></div>' +
-      '<div class="minirow"><span>Balance</span><b class="' + (t.pv.balance > 0 ? "out" : "in") + '">' + money(t.pv.balance) + '</b></div>' +
-      acts('<button class="btn btn-sm" data-act="teacher-edit" data-id="' + t.id + '">Edit</button>' +
-        (t.pv.balance > 0 ? '<button class="btn btn-sm btn-primary" data-act="tpay-new" data-id="' + t.id + '">Pay ' + money(t.pv.balance) + '</button>' : "") +
-        '<button class="btn btn-sm" data-act="tadj-edit" data-id="' + t.id + '">Bonus / deduction</button>' +
-        '<button class="btn btn-sm btn-primary" data-act="salary-report" data-id="' + t.id + '">Salary report</button>' +
-        '<button class="btn btn-sm" data-act="tstatement" data-id="' + t.id + '">Statement</button>'),
-      sorts: [{ key: "name", label: "Name A–Z", val: t => t.name },
-              { key: "nameZ", label: "Name Z–A", val: t => t.name, desc: true },
-              { key: "id", label: "Teacher ID (oldest first)", val: t => t.id },
-              { key: "idNew", label: "Teacher ID (newest first)", val: t => t.id, desc: true },
-              { key: "joinNew", label: "Joined — newest first", val: t => t.joiningDate || "", desc: true },
-              { key: "joinOld", label: "Joined — oldest first", val: t => t.joiningDate || "" },
-              { key: "pay", label: "Highest payable first", val: t => t.pv.payable, desc: true },
-              { key: "bal", label: "Most unpaid first", val: t => t.pv.balance, desc: true }],
-      emptyTitle: "No teachers yet", emptyText: "Add a teacher and set how they are paid across the two streams.",
-      emptyAction: '<button class="btn btn-primary" data-act="teacher-new">+ Add teacher</button>'
-    }) +
-  '</div></div>';
-};
-
-/* ---- Dedicated OTHER STAFF page: monthly salary + incentive ---- */
-Pages.staff = function(){
-  const q = State.staff.q.toLowerCase().trim(), m = State.month;
-  const rows = DataService.getTeachers().filter(t => t.kind === "staff").map(function(t){
-    return Object.assign({}, t, { pv: Logic.payrollView(t, m) });
+/* salary paid to a teacher in a month (by "for month"), and in all */
+function salaryPaid(teacherId, month){
+  return round2(DataService.getTeacherPayments(month ? { teacherId: teacherId, month: month } : { teacherId: teacherId })
+    .reduce((a, p) => a + (+p.amount || 0), 0));
+}
+function peopleList(kind){
+  const key = kind === "staff" ? "staff" : "teachers", q = State[key].q.toLowerCase().trim(), m = State.month;
+  const rows = DataService.getTeachers().filter(t => kind === "staff" ? t.kind === "staff" : t.kind !== "staff").map(function(t){
+    return Object.assign({}, t, { plans: DataService.getPlans({ teacherId: t.id, status: "Active" }),
+      batches: DataService.getBatches().filter(b => b.teacherId === t.id && (b.status || "Active") === "Active"),
+      paid: salaryPaid(t.id, m) });
   }).filter(t => search(t.id + " " + t.name + " " + (t.phone || "") + " " + (t.role || ""), q));
-
-  const totPayable = rows.reduce((s, t) => s + t.pv.payable, 0);
-  const totPaid = rows.reduce((s, t) => s + t.pv.paid, 0);
-  const totBal = rows.reduce((s, t) => s + t.pv.balance, 0);
-
   return '' +
   '<div class="toolbar no-print">' +
-    field("Search", '<input class="input" data-fset="staff.q" value="' + esc(State.staff.q) + '" placeholder="Name, role or ID">', "grow") +
-    '<div class="push"><button class="btn btn-primary" data-act="staff-new">+ Add staff</button></div>' +
-  '</div>' +
-  '<div class="kpi-grid" style="margin-bottom:12px">' +
-    kpi("Staff", num(rows.length)) + kpi(monthShort(m) + " payable", money(totPayable)) +
-    kpi("Paid", money(totPaid), "", "a-ok") + kpi("Balance", money(totBal), "", totBal > 0 ? "a-warn" : "") +
+    field("Search", '<input class="input" data-fset="' + key + '.q" value="' + esc(State[key].q) + '" placeholder="Name' + (kind === "staff" ? ", role" : "") + ' or ID">', "grow") +
+    '<div class="push btn-row"><button class="btn btn-primary" data-act="' + (kind === "staff" ? "staff-new" : "teacher-new") + '">+ Add ' + (kind === "staff" ? "staff" : "teacher") + '</button>' +
+      '<button class="btn" data-act="tsal-new">+ Add salary</button></div>' +
   '</div>' +
   '<div class="card"><div class="card-bd tight">' +
-    renderList("staff", rows, {
-      key: t => t.id, head: ["Staff", monthShort(m) + " pay"], go: t => ({ act: "teacher-open", id: t.id }),
+    renderList(key, rows, {
+      key: t => t.id, head: [kind === "staff" ? "Staff" : "Teacher", monthShort(m) + " salary"], go: t => ({ act: "teacher-open", id: t.id }),
       title: t => esc(t.name) + " " + idchip(t.id),
-      sub: t => esc((t.role || "Staff") + " · monthly " + money(+t.monthlySalary || 0)),
-      amount: t => payAmountHtml(t.pv),
-      badge: t => badge(payStatus(t.pv, true), FEE_BADGE),
-      detail: t => dl([
-        ["Staff ID", idchip(t.id)], ["Role", '<b>' + esc(t.role || "—") + '</b>'],
-        ["Phone", '<span class="mono">' + esc(t.phone || "—") + '</span>'],
-        ["WhatsApp", '<span class="mono">' + esc(t.whatsapp || "—") + '</span>'],
-        ["Joined", fmtDate(t.joiningDate)], ["Paid into", esc(t.payAccount || "—")], ["Status", badge(t.status)],
-        ["Monthly salary", money(+t.monthlySalary || 0)]
-      ]) +
-      '<div class="sub-hd">' + esc(monthLabel(m)) + ' payslip</div>' +
-      '<div class="minirow"><span>Monthly salary</span><b>' + money(t.pv.monthlySalary || 0) + '</b></div>' +
-      '<div class="minirow"><span>Bonus</span><b>' + money(t.pv.bonus) + '</b></div>' +
-      '<div class="minirow"><span>Incentive</span><b>' + money(t.pv.incentive) + '</b></div>' +
-      '<div class="minirow"><span>Deduction</span><b>− ' + money(t.pv.deduction) + '</b></div>' +
-      '<div class="minirow"><span>Net payable</span><b>' + money(t.pv.payable) + '</b></div>' +
-      '<div class="minirow"><span>Paid</span><b class="in">' + money(t.pv.paid) + '</b></div>' +
-      '<div class="minirow"><span>Balance</span><b class="' + (t.pv.balance > 0 ? "out" : "in") + '">' + money(t.pv.balance) + '</b></div>' +
-      acts('<button class="btn btn-sm" data-act="teacher-edit" data-id="' + t.id + '">Edit</button>' +
-        (t.pv.balance > 0 ? '<button class="btn btn-sm btn-primary" data-act="tpay-new" data-id="' + t.id + '">Pay ' + money(t.pv.balance) + '</button>' : "") +
-        '<button class="btn btn-sm" data-act="tadj-edit" data-id="' + t.id + '">Bonus / incentive</button>' +
-        '<button class="btn btn-sm" data-act="tstatement" data-id="' + t.id + '">Statement</button>'),
+      sub: t => esc(kind === "staff" ? (t.role || "Staff") : [t.plans.length ? t.plans.length + (t.plans.length === 1 ? " student" : " students") : "no students",
+        t.batches.length ? t.batches.length + (t.batches.length === 1 ? " batch" : " batches") : ""].filter(Boolean).join(" · ")),
+      amount: t => t.paid ? money(t.paid) + '<small>paid</small>' : '—<small>nothing entered</small>',
+      badge: t => badge(t.status || "Active"),
       sorts: [{ key: "name", label: "Name A–Z", val: t => t.name },
-              { key: "id", label: "Staff ID", val: t => t.id },
-              { key: "joinNew", label: "Joined — newest first", val: t => t.joiningDate || "", desc: true },
-              { key: "role", label: "Role", val: t => t.role || "" },
-              { key: "pay", label: "Highest payable first", val: t => t.pv.payable, desc: true }],
-      emptyTitle: "No other staff yet", emptyText: "Add admin, counsellors, editors, digital marketers and others on a monthly salary.",
-      emptyAction: '<button class="btn btn-primary" data-act="staff-new">+ Add staff</button>'
+              { key: "idNew", label: "Newest first", val: t => t.id, desc: true },
+              { key: "students", label: "Most students first", val: t => t.plans.length + t.batches.length, desc: true },
+              { key: "paid", label: "Highest salary first", val: t => t.paid, desc: true }],
+      emptyTitle: kind === "staff" ? "No other staff yet" : "No teachers yet", emptyText: "",
+      emptyAction: '<button class="btn btn-primary" data-act="' + (kind === "staff" ? "staff-new" : "teacher-new") + '">+ Add ' + (kind === "staff" ? "staff" : "teacher") + '</button>'
     }) +
   '</div></div>';
-};
+}
+Pages.teachers = function(){ return peopleList("teacher"); };
+Pages.staff = function(){ return peopleList("staff"); };
 
 Pages.payments = function(){
   const p = State.pays, q = p.q.toLowerCase().trim();
@@ -667,7 +255,7 @@ Pages.expenses = function(){
   '<div class="grid-2" style="margin-bottom:12px">' +
     '<div class="kpi-grid">' +
       kpi("Expenses listed", money(total), num(rows.length) + " entries", "a-bad") +
-      kpi("Teacher payments", money(tp), "recorded separately") +
+      kpi("Teacher salary", money(tp), "under Teacher salary") +
       kpi("Total spent", money(total + tp), "", "a-acc") +
     '</div>' +
     '<div class="card chart-box"><h3 style="font-size:14px;padding:2px 2px 8px">By category</h3>' +
@@ -695,102 +283,51 @@ Pages.expenses = function(){
   voidedSection(DataService.getExpenses({ voided: true }).map(x => Object.assign({}, x, { who: x.description || x.category })), "expVoid");
 };
 
-/* individual pay is worked out from attendance marks — warn while class days in the month have none */
-function tpayUnmarkedNote(m){
-  if (typeof Logic.unmarked !== "function") return "";
-  const um = Logic.unmarked(m);
-  if (!um.count) return "";
-  const byT = {};
-  um.lines.forEach(l => { byT[l.teacherId] = (byT[l.teacherId] || 0) + l.dates.length; });
-  const names = Object.keys(byT).map(function(id){ const t = DataService.getTeacher(id); return (t ? t.name : id) + " " + byT[id]; });
-  return '<div class="note" style="border-color:#e0776b">⚠ <b>' + um.count + ' class day' + (um.count > 1 ? "s" : "") + ' in ' + esc(monthLabel(m)) +
-    ' have no attendance mark</b> — individual pay counts only marked classes. ' + esc(names.slice(0, 8).join(" · ")) + (names.length > 8 ? " …" : "") +
-    ' <button type="button" class="btn btn-sm" data-act="goto" data-page="iAtt">Open attendance</button></div>';
-}
-Pages.tpay = function(){
-  const m = State.tpay.month || State.month, q = String(State.tpayq.q || "").toLowerCase().trim();
-  const rows = Logic.payrollMonth(m).filter(p => search(p.teacherId + " " + p.teacherName + " " + (p.role || ""), q));
-  const unpaid = payAllRows(m);
-  const tot = rows.reduce(function(a, p){ a.payable += p.payable; a.paid += p.paid; a.bal += Math.max(0, p.balance);
-    a.ind += p.indAmount; a.bat += p.batchAmount; return a; }, { payable: 0, paid: 0, bal: 0, ind: 0, bat: 0 });
-  const history = DataService.getTeacherPayments({ month: m }).map(function(x){
+/* ---- Teacher salary: typed in by hand, one entry per payment ---- */
+Pages.tsalary = function(){
+  const f = State.tsal, q = String(f.q || "").toLowerCase().trim();
+  const m = f.month === "all" ? "" : (f.month || State.month);
+  const rows = DataService.getTeacherPayments(m ? { month: m } : undefined).map(function(x){
     const t = DataService.getTeacher(x.teacherId);
-    return Object.assign({}, x, { teacherName: t ? t.name : x.teacherId });
-  });
-
+    return Object.assign({}, x, { teacherName: t ? t.name : x.teacherId, role: t ? (t.kind === "staff" ? (t.role || "Staff") : "Teacher") : "" });
+  }).filter(x => search(x.id + " " + x.teacherName + " " + (x.remarks || "") + " " + (x.category || ""), q));
+  const total = round2(rows.reduce((a, x) => a + (+x.amount || 0), 0));
+  const people = new Set(rows.map(x => x.teacherId)).size;
   return '' +
-  tpayUnmarkedNote(m) +
   '<div class="toolbar no-print">' +
-    field("Search", '<input class="input" data-fset="tpayq.q" value="' + esc(State.tpayq.q || "") + '" placeholder="Teacher name or ID">', "grow") +
-    field("Month", sel("m", monthOpts(m, ""), 'data-fset="tpay.month"')) +
-    '<div class="push btn-row">' +
-      (unpaid.length ? '<button class="btn btn-primary" data-act="pay-all">Pay all · ' + unpaid.length + '</button>' : "") +
-      '<button class="btn' + (unpaid.length ? "" : " btn-primary") + '" data-act="tpay-new">+ Pay one teacher</button>' +
-      moreMenu([["tpay-csv", "Download CSV"], ["print", "Print"]]) + '</div>' +
+    field("Search", '<input class="input" data-fset="tsal.q" value="' + esc(f.q || "") + '" placeholder="Teacher, note or ID">', "grow") +
+    field("For month", sel("m", '<option value="all"' + (f.month === "all" ? " selected" : "") + '>All months</option>' + monthOpts(m || "", ""), 'data-fset="tsal.month"')) +
+    '<div class="push btn-row"><button class="btn btn-primary" data-act="tsal-new">+ Add salary</button>' +
+      moreMenu([["tsal-csv", "Download CSV"], ["print", "Print"]]) + '</div>' +
   '</div>' +
-  /* v14: the figures only when there is something in them */
-  (tot.payable > 0 || tot.paid > 0 ? '<div class="kpi-grid" style="margin-bottom:12px">' +
-    kpi("Earned", money(tot.payable)) + kpi("Paid", money(tot.paid), "", "a-ok") + kpi("Still to pay", money(tot.bal), "", "a-bad") +
-    (tot.bat > 0 ? kpi("From batch", money(tot.bat)) : "") +
-  '</div>' : "") +
+  '<div class="kpi-grid" style="margin-bottom:12px">' +
+    kpi("Salary paid", money(total), m ? esc(monthLabel(m)) : "all months", "a-bad") +
+    kpi("Entries", num(rows.length)) + kpi("People paid", num(people)) +
+  '</div>' +
   '<div class="card"><div class="card-bd tight">' +
-    renderList("tpayList", rows, {
-      key: p => p.teacherId, head: ["Teacher", "Pay"], go: p => ({ act: "teacher-open", id: p.teacherId }),
-      title: p => esc(p.teacherName) + " " + idchip(p.teacherId),
-      sub: p => esc(p.kind === "staff" ? (p.role || "Staff") + " · monthly " + money(p.monthlySalary || 0)
-        : [p.indBasis, p.batchAmount > 0 || (p.groups || []).length ? "batch " + money(p.batchAmount) : ""].filter(Boolean).join(" · ")),
-      amount: p => payAmountHtml(p),
-      badge: p => badge(payStatus(p, unpaid.some(u => u.teacherId === p.teacherId) || p.paid > 0), FEE_BADGE),
-      rowClass: p => p.balance > 0 ? "row-bad" : p.paid > 0 ? "row-ok" : "",
-      detail: p => '<div class="minirow"><span>Individual classes — ' + esc(p.indBasis) + '</span><b>' + money(p.indAmount) + '</b></div>' +
-        payLinesHtml(p) +
-        (p.groups && p.groups.length
-          ? '<div class="sub-hd">Batch groups taught</div>' + p.groups.map(g =>
-              '<div class="minirow"><span>' + esc(g.label) + (g.subClassId ? ' <span class="tag">sub-class</span>' : "") +
-              ' — ' + esc(g.basis) + '</span><b>' + money(g.amount) + '</b></div>').join("") +
-            '<div class="sub-hd">Summary</div>'
-          : "") +
-        '<div class="minirow"><span>Batch classes — ' + esc(p.batchBasis) + '</span><b>' + money(p.batchAmount) + '</b></div>' +
-        '<div class="minirow"><span>Gross</span><b>' + money(p.gross) + '</b></div>' +
-        '<div class="minirow"><span>Bonus</span><b>' + money(p.bonus) + '</b></div>' +
-        '<div class="minirow"><span>Deduction</span><b>− ' + money(p.deduction) + '</b></div>' +
-        '<div class="minirow"><span>Net payable</span><b>' + money(p.payable) + '</b></div>' +
-        '<div class="minirow"><span>Paid so far</span><b class="in">' + money(p.paid) + '</b></div>' +
-        '<div class="minirow"><span>Balance</span><b class="' + (p.balance > 0 ? "out" : "in") + '">' + money(p.balance) + '</b></div>' +
-        dl([["Individual classes completed", p.classStats.completed], ["Taught hours", round2(p.classStats.minutes / 60)],
-            ["Batch sessions held", p.sessions], ["Batch students", p.batchStudents],
-            p.remarks ? ["Remarks", esc(p.remarks)] : null]) +
-        acts((p.balance > 0 ? '<button class="btn btn-sm btn-primary" data-act="tpay-new" data-id="' + p.teacherId + '">Pay ' + money(p.balance) + '</button>' : "") +
-          '<button class="btn btn-sm" data-act="tadj-edit" data-id="' + p.teacherId + '">Bonus / deduction</button>' +
-          '<button class="btn btn-sm btn-primary" data-act="salary-report" data-id="' + p.teacherId + '">📄 Salary report (PDF)</button>' +
-          '<button class="btn btn-sm" data-act="tstatement" data-id="' + p.teacherId + '">Statement</button>'),
-      sorts: [{ key: "bal", label: "Most unpaid first", val: p => p.balance, desc: true },
-              { key: "pay", label: "Highest payable first", val: p => p.payable, desc: true },
-              { key: "name", label: "Teacher name", val: p => p.teacherName }],
-      emptyTitle: "No teachers yet", emptyText: "Add a teacher first."
-    }) +
-  '</div></div>' +
-  '<div class="section-title">Payments made in ' + esc(monthLabel(m)) + '</div>' +
-  '<div class="card"><div class="card-bd tight">' +
-    renderList("tpayHist", history, {
-      key: x => x.id,
-      title: x => esc(x.teacherName) + " · " + money(x.amount),
-      sub: x => fmtDate(x.date) + " · " + esc(x.category || "Teacher Payment") + " · " + esc(x.account) + " · " + esc(x.id),
+    renderList("tsal", rows, {
+      key: x => x.id, head: ["Paid to", "Amount"],
+      title: x => esc(x.teacherName) + " · " + esc(monthShort(x.month)),
+      sub: x => esc([fmtDate(x.date), x.account, x.category && x.category !== "Teacher Payment" ? x.category.replace("Teacher ", "") : "", x.remarks].filter(Boolean).join(" · ")),
       amount: x => '<span class="out">' + money(x.amount) + '</span>',
-      badge: x => badge(x.category || "Teacher Payment"),
-      detail: x => dl([["Payment", idchip(x.id)], ["Teacher", esc(x.teacherName) + " " + idchip(x.teacherId)],
-        ["For month", monthLabel(x.month)], ["Date", fmtDate(x.date)], ["Amount", money(x.amount)],
-        ["Paid from", badge(x.account)], ["Type", esc(x.category || "Teacher Payment")],
-        x.remarks ? ["Remarks", esc(x.remarks)] : null]) +
-        acts('<button class="btn btn-sm" data-act="teacher-open" data-id="' + x.teacherId + '">Open teacher</button>' +
+      badge: x => badge(x.role || "Teacher", { "Teacher": "b-info" }),
+      detail: x => dl([["Entry", idchip(x.id)], ["Paid to", esc(x.teacherName) + " " + idchip(x.teacherId)],
+        ["For month", monthLabel(x.month)], ["Date paid", fmtDate(x.date)], ["Amount", '<b>' + money(x.amount) + '</b>'],
+        ["Paid from", badge(x.account)], ["Type", esc(x.category || "Teacher Payment")], x.remarks ? ["Note", esc(x.remarks)] : null]) +
+        acts('<button class="btn btn-sm" data-act="tsal-edit" data-id="' + x.id + '">Edit</button>' +
+          '<button class="btn btn-sm" data-act="teacher-open" data-id="' + x.teacherId + '">Open teacher</button>' +
           '<button class="btn btn-sm btn-danger" data-act="tpay-void" data-id="' + x.id + '">Remove (entered by mistake)</button>'),
-      emptyTitle: "Nothing paid yet for " + monthLabel(m), emptyText: "Use Pay all or Pay one teacher above."
+      sorts: [{ key: "date", label: "Newest first", val: x => x.date + x.id, desc: true },
+              { key: "name", label: "Name", val: x => x.teacherName },
+              { key: "amt", label: "Largest first", val: x => +x.amount, desc: true }],
+      emptyTitle: "No salary entered" + (m ? " for " + monthLabel(m) : ""), emptyText: "Type in each salary as you pay it.",
+      emptyAction: '<button class="btn btn-primary" data-act="tsal-new">+ Add salary</button>'
     }) +
   '</div></div>' +
-  voidedSection(DataService.getTeacherPayments({ voided: true, month: m }).map(function(x){
+  voidedSection(DataService.getTeacherPayments(m ? { voided: true, month: m } : { voided: true }).map(function(x){
     const t = DataService.getTeacher(x.teacherId);
     return Object.assign({}, x, { who: t ? t.name : x.teacherId });
-  }), "tpayVoid");
+  }), "tsalVoid");
 };
 
 Pages.accounts = function(){
@@ -902,7 +439,7 @@ const REPORTS = [
   { id: "monthlyExpense", n: "05", label: "Monthly expense" },
   { id: "feeReport", n: "06", label: "Student fees" },
   { id: "pending", n: "07", label: "Pending fees (receivable)" },
-  { id: "payable", n: "08", label: "Teacher payments (payable)" },
+  { id: "salary", n: "08", label: "Teacher salary paid" },
   { id: "accounts", n: "09", label: "Account balances" },
   { id: "ledgerRep", n: "10", label: "Transaction ledger" },
   { id: "statement", n: "11", label: "Student statement" }
@@ -1012,25 +549,23 @@ function buildReport(){
                v.gross, v.discount, v.netFee, v.paidAmount, v.balance, v.dueDate, v.daysOverdue, v.status]) } };
   }
 
-  if (R.which === "payable") {
-    const rows = [];
-    allMonths().filter(m => m >= monthOf(rg.from) && m <= monthOf(rg.to))
-      .forEach(m => Logic.payrollMonth(m).forEach(p => { if (p.payable > 0 || p.paid > 0) rows.push(Object.assign({ id: p.teacherId + p.month }, p)); }));
-    return { title: "Teacher payments (payable)", sub: rg.label,
-      cards: [["Payable", money(rows.reduce((s, p) => s + p.payable, 0)), ""],
-              ["Paid", money(rows.reduce((s, p) => s + p.paid, 0)), "a-ok"],
-              ["Pending", money(rows.reduce((s, p) => s + Math.max(0, p.balance), 0)), "a-bad"]],
+  if (R.which === "salary") {
+    const by = {};
+    DataService.getTeacherPayments().filter(p => p.date >= rg.from && p.date <= rg.to).forEach(function(p){
+      const t = DataService.getTeacher(p.teacherId);
+      const k = p.teacherId; by[k] = by[k] || { id: k, name: t ? t.name : k, total: 0, n: 0, items: [] };
+      by[k].total += +p.amount || 0; by[k].n++; by[k].items.push(p);
+    });
+    const rows = Object.keys(by).map(k => by[k]).sort((a, b) => b.total - a.total);
+    return { title: "Teacher salary paid", sub: rg.label,
+      cards: [["Paid", money(rows.reduce((s, x) => s + x.total, 0)), "a-bad"], ["People", num(rows.length), ""],
+              ["Entries", num(rows.reduce((s, x) => s + x.n, 0)), ""]],
       rows: rows,
-      list: { key: p => p.id, title: p => esc(p.teacherName) + " · " + monthLabel(p.month),
-        sub: p => esc(p.indBasis + " + " + p.batchBasis),
-        amount: p => money(p.payable) + '<small>' + (p.balance > 0 ? money(p.balance) + " due" : "settled") + '</small>',
-        badge: p => badge(p.status, FEE_BADGE),
-        detail: p => dl([["Individual", money(p.indAmount)], ["Batch", money(p.batchAmount)], ["Gross", money(p.gross)],
-          ["Bonus", money(p.bonus)], ["Deduction", money(p.deduction)], ["Payable", money(p.payable)],
-          ["Paid", money(p.paid)], ["Balance", money(p.balance)], ["Status", badge(p.status, FEE_BADGE)]]) },
-      csv: { headers: ["Teacher ID","Teacher","Month","Individual","Batch","Gross","Bonus","Deduction","Payable","Paid","Balance","Status"],
-             rows: rows.map(p => [p.teacherId, p.teacherName, p.month, p.indAmount, p.batchAmount, p.gross, p.bonus,
-               p.deduction, p.payable, p.paid, p.balance, p.status]) } };
+      list: { key: x => x.id, title: x => esc(x.name), sub: x => x.n + " entr" + (x.n === 1 ? "y" : "ies"),
+        amount: x => '<span class="out">' + money(x.total) + '</span>',
+        detail: x => x.items.map(i => '<div class="minirow"><span>' + esc(fmtDate(i.date)) + ' · for ' + esc(monthLabel(i.month)) + ' · ' + esc(i.account || "") +
+          '</span><b class="out">' + money(i.amount) + '</b></div>').join("") },
+      csv: { headers: ["Teacher ID", "Teacher", "Entries", "Paid"], rows: rows.map(x => [x.id, x.name, x.n, round2(x.total)]) } };
   }
 
   if (R.which === "accounts") {
@@ -1057,6 +592,7 @@ function buildReport(){
     const fees = Logic.feeViews({ studentId: sid }).map(withBasis).sort((a, b) => a.month < b.month ? 1 : -1);
     const rows = [];
     fees.forEach(function(v){
+      if (v.waived) return;
       rows.push({ id: "f" + v.id, date: v.dueDate, kind: "Fee", source: v.source,
         desc: monthLabel(v.month) + " · " + v.shortBasis, charge: v.netFee, credit: 0 });
       v.payments.forEach(p => rows.push({ id: "p" + p.id, date: p.date, kind: "Payment", source: p.source,
@@ -1144,7 +680,7 @@ Pages.profile = function(){
 
   let body = "";
   if (p.tab === "fees") {
-    body = feeRowList("pfFees", fees, { emptyTitle: "No fee records", emptyText: "Calculate a month to create them." });
+    body = feeRowList("pfFees", fees, { emptyTitle: "No fees yet", emptyText: "A fee row appears when the month's list is made on Due date." });
   } else if (p.tab === "payments") {
     body = renderList("pfPays", DataService.getPayments({ studentId: s.id }), {
       key: x => x.id, title: x => monthLabel(x.month) + " · " + money(x.amount),
@@ -1166,7 +702,7 @@ Pages.profile = function(){
       detail: c => dl([["Class", idchip(c.id)], ["Date", fmtDate(c.date)], ["Status", badge(c.status)],
         ["Duration", c.duration ? c.duration + " min" : "—"], c.notes ? ["Notes", esc(c.notes)] : null]),
       sorts: [{ key: "date", label: "Newest first", val: c => c.date + c.id, desc: true }],
-      emptyTitle: "No individual classes", emptyText: "This student has no class plan yet." });
+      emptyTitle: "Nothing marked yet", emptyText: "Attendance marks for individual classes show here." });
   } else if (p.tab === "calendar") {
     body = '<div class="card-bd">' + studentCalendarBlock(s.id, State.cal.month, true) + '</div>';
   } else if (p.tab === "attendance") {
@@ -1187,33 +723,39 @@ Pages.profile = function(){
       title: x => x.kind === "Batch" ? ((DataService.getBatch(x.batchId) || {}).name || x.batchId) : esc(x.course),
       sub: x => (x.kind === "Batch" ? "Batch enrolment" : "Individual plan") + " · from " + fmtDate(x.joiningDate || x.startDate) +
         (x.leavingDate ? " to " + fmtDate(x.leavingDate) : ""),
-      amount: x => money(x.monthlyFee || x.rate), badge: x => badge(x.status),
+      amount: x => money(x.kind === "Batch" ? Logic.enrolFee(x) : x.rate), badge: x => badge(x.status),
       detail: x => x.kind === "Batch"
         ? dl([["Enrolment", idchip(x.id)], ["Batch", esc(x.batchId)], ["Joined", fmtDate(x.joiningDate)],
             ["Left", x.leavingDate ? fmtDate(x.leavingDate) : "—"], ["Monthly fee", money(x.monthlyFee)],
             ["Due day", esc(x.dueDay)], ["Status", badge(x.status)], x.reason ? ["Reason", esc(x.reason)] : null])
-        : dl([["Plan", idchip(x.id)], ["Course", esc(x.course)], ["Fee method", esc(Logic.methodLabel(x.feeType))],
-            ["Rate", money(x.rate)], ["Days", esc((x.days || []).join(", "))], ["Duration", esc(x.duration) + " min"],
-            ["Started", fmtDate(x.startDate)], ["Status", badge(x.status)]]),
+        : dl([["Class", idchip(x.id)], ["Course", esc(x.course)], ["Monthly fee", money(x.rate)],
+            ["Days", esc((x.days || []).join(", ") || "—")], ["Started", fmtDate(x.startDate)],
+            x.endDate ? ["Ended", fmtDate(x.endDate)] : null, ["Status", badge(x.status)], x.stopReason ? ["Why", esc(x.stopReason)] : null]),
       emptyTitle: "No history", emptyText: "" });
   }
 
   /* v14: the student's class plans, each with Edit — the place to change a fee, a teacher, days, or to stop a class */
   const plansAll = DataService.getPlans({ studentId: s.id }).slice().sort((a, b) => (a.status === "Active" ? 0 : 1) - (b.status === "Active" ? 0 : 1) || String(b.startDate || "").localeCompare(String(a.startDate || "")));
   const holds = DataService.getHolds({ studentId: s.id });
-  const classesCard = '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Classes</h3><span class="spacer"></span>' +
-      '<button type="button" class="btn btn-sm" data-act="plan-new" data-id="' + s.id + '">+ New class</button></div><div class="card-bd">' +
+  const ci = Logic.classInfo(s.id), active = (s.status || "Active") === "Active";
+  const classesCard = '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Classes</h3>' +
+      (active && ci.pending ? ' ' + badge("Class pending") : "") + '<span class="spacer"></span>' +
+      '<button type="button" class="btn btn-sm btn-primary" data-act="plan-new" data-id="' + s.id + '">+ Individual class</button>' +
+      '<button type="button" class="btn btn-sm" data-act="student-assign" data-id="' + s.id + '">' + (str.batch ? "Change batch" : "+ Batch") + '</button></div><div class="card-bd">' +
     (plansAll.length ? plansAll.map(function(x){
       const t = DataService.getTeacher(x.teacherId);
-      return '<div class="pf-plan' + (x.status === "Active" ? "" : " off") + '"><div class="pf-pm"><b>' + esc(x.course || "Class plan") + '</b> ' + badge(x.status) +
-        '<small>' + esc([t ? t.name : "no teacher", Logic.methodLabel(x.feeType) + " " + money(x.rate), (x.days || []).length ? x.days.join(" ") + (x.time ? " · " + time12(x.time) : "") : "",
+      return '<div class="pf-plan' + (x.status === "Active" ? "" : " off") + '"><div class="pf-pm"><b>' + esc(x.course || "Class") + '</b> ' +
+        (x.status === "Active" && !t ? badge("No teacher") : badge(x.status)) +
+        '<small>' + esc([t ? t.name : "no teacher yet", (+x.rate ? money(x.rate) + " a month" : "fee not set"), (x.days || []).length ? x.days.join(" ") + (x.time ? " · " + time12(x.time) : "") : "",
           x.status === "Active" ? "since " + fmtDate(x.startDate) : "ended " + fmtDate(x.endDate)].filter(Boolean).join(" · ")) + '</small></div>' +
         '<div class="btn-row">' + (t ? '<button type="button" class="btn btn-sm" data-act="teacher-open" data-id="' + esc(t.id) + '">Teacher</button>' : "") +
           '<button type="button" class="btn btn-sm btn-primary" data-act="plan-edit" data-id="' + esc(x.id) + '">Edit</button></div></div>';
-    }).join("") : '<p class="hint" style="margin:0">No class plan yet.</p>') +
-    (str.batch ? '<div class="pf-plan"><div class="pf-pm"><b>' + esc(batch ? batch.name : str.batch.batchId) + '</b> ' + streamChip("batch") +
-      '<small>' + esc("Batch · " + money(str.batch.monthlyFee) + " a month") + '</small></div>' +
-      '<div class="btn-row"><button type="button" class="btn btn-sm" data-act="student-assign" data-id="' + s.id + '">Change</button></div></div>' : "") +
+    }).join("") : "") +
+    (str.batch ? '<div class="pf-plan"><div class="pf-pm"><b>' + esc(batch ? batch.name : str.batch.batchId) + '</b> ' +
+      (batch && !batch.teacherId ? badge("No teacher") : streamChip("batch")) +
+      '<small>' + esc("Batch · " + money(Logic.enrolFee(str.batch)) + " a month · due day " + (str.batch.dueDay || "—")) + '</small></div>' +
+      '<div class="btn-row"><button type="button" class="btn btn-sm" data-act="enrol-fee" data-id="' + esc(str.batch.id) + '">Fee</button></div></div>' : "") +
+    (!plansAll.length && !str.batch ? '<p class="hint" style="margin:0">' + (active ? "No class arranged yet — add an individual class or put the student in a batch." : "No class.") + '</p>' : "") +
     (holds.length ? '<div class="sub-hd">Holds / leave</div>' + holds.map(h => '<div class="minirow"><span>⏸ ' + esc(h.from) + " → " + esc(h.to || "open") +
         (h.reason ? " · " + esc(h.reason) : "") + '</span><b>' + (h.waiveFee ? "fee waived" : "fee kept") +
         ' <button class="btn btn-sm" data-act="hold-del" data-id="' + h.id + '">✕</button></b></div>').join("") : "") +
@@ -1227,7 +769,7 @@ Pages.profile = function(){
     '<button class="btn" data-act="student-edit" data-id="' + s.id + '">Edit</button>' +
     moreMenu([dueAll > 0 ? null : ["pay-for", "Take a payment", ' data-id="' + s.id + '"'],
       ["hold-new", "⏸ Hold / leave", ' data-id="' + s.id + '"'],
-      ["student-assign", "Batch class", ' data-id="' + s.id + '"'],
+
       ["welcome", "Welcome letter", ' data-id="' + s.id + '"'],
       ["rep-statement", "Statement", ' data-id="' + s.id + '"'], ["print", "Print"]]) +
   '</div>' +
@@ -1239,9 +781,8 @@ Pages.profile = function(){
       '<dl class="deflist">' +
         [["Guardian", esc(s.guardian || "—")], ["Phone", '<span class="mono">' + esc(s.phone || "—") + '</span>'],
          ["WhatsApp", '<span class="mono">' + esc(s.whatsapp || "—") + '</span>'],
-         ["Batch", str.batch ? esc(batch ? batch.name : str.batch.batchId) + " · " + money(str.batch.monthlyFee) : "Not in a batch"],
-         ["Individual plan", str.individual ? esc(str.individual.course) + " · " + Logic.methodLabel(str.individual.feeType) +
-           " @ " + money(str.individual.rate) : "None"],
+         ["Batch", str.batch ? esc(batch ? batch.name : str.batch.batchId) + " · " + money(Logic.enrolFee(str.batch)) : "Not in a batch"],
+         ["Individual class", str.individual ? esc(str.individual.course || "Class") + " · " + money(str.individual.rate) + " a month" : "None"],
          ["Joined", fmtDate(s.joiningDate)], ["Address", esc(s.address || "—")]]
         .map(x => '<div><dt>' + esc(x[0]) + '</dt><dd>' + x[1] + '</dd></div>').join("") +
       '</dl></div>' +
@@ -1252,49 +793,24 @@ Pages.profile = function(){
       (cur.length ? "" : '<div class="kv"><span>No fee record</span><b>—</b></div>') +
       '<div class="kv"><span>Paid to date</span><b>' + money(paidAll) + '</b></div>' +
       '<div class="kv"><span>Outstanding</span><b class="' + (dueAll > 0 ? "out" : "in") + '">' + money(dueAll) + '</b></div>' +
-      '<div class="kv"><span>Individual classes</span><b>' + cs.completed + '</b></div>' +
-      '<div class="kv"><span>Batch attendance</span><b>' + att.pct + '%</b></div>' +
+      '<div class="kv"><span>Classes taken</span><b>' + cs.completed + '</b></div>' +
+      (att.total ? '<div class="kv"><span>Batch attendance</span><b>' + att.pct + '%</b></div>' : "") +
     '</div>' +
   '</div></div></div>' +
   classesCard +
   '<div class="card" style="margin-top:12px"><div class="card-hd" style="padding-bottom:0;border:0"><div class="tabs" style="width:100%">' +
-    ["fees|Fees", "payments|Payments", "calendar|Calendar", "classes|Individual classes",
-     "attendance|Batch attendance", "history|History"]
+    ["fees|Fees", "payments|Payments", "calendar|Attendance", "classes|Class log", "history|History"]
       .map(function(t){ const x = t.split("|");
         return '<button class="tab ' + (p.tab === x[0] ? "is-on" : "") + '" data-act="pf-tab" data-t="' + x[0] + '">' + x[1] + '</button>'; })
       .join("") + '</div></div><div class="card-bd tight">' + body + '</div></div>';
 };
 
-/* ---------------------------- TEACHER PROFILE (v14) ---------------------------- */
-/* Everything about one teacher in one place: who they teach, this month's pay worked out student by student,
-   and every payment made to them — with Pay, Edit, Bonus / deduction, Salary report and Statement close at hand. */
-function tpSlip(p){
-  if (p.kind === "staff") return '<div class="minirow"><span>Monthly salary</span><b>' + money(p.monthlySalary || 0) + '</b></div>' +
-    '<div class="minirow"><span>Bonus</span><b>' + money(p.bonus) + '</b></div>' +
-    '<div class="minirow"><span>Incentive</span><b>' + money(p.incentive) + '</b></div>' +
-    '<div class="minirow"><span>Deduction</span><b>− ' + money(p.deduction) + '</b></div>' +
-    '<div class="minirow"><span>Net payable</span><b>' + money(p.payable) + '</b></div>' +
-    '<div class="minirow"><span>Paid</span><b class="in">' + money(p.paid) + '</b></div>' +
-    '<div class="minirow"><span>Balance</span><b class="' + (p.balance > 0 ? "out" : "in") + '">' + money(p.balance) + '</b></div>';
-  return '<div class="minirow"><span>Individual classes — ' + esc(p.indBasis) + '</span><b>' + money(p.indAmount) + '</b></div>' +
-    payLinesHtml(p) +
-    (p.groups && p.groups.length ? '<div class="sub-hd">Batch groups taught</div>' + p.groups.map(g =>
-      '<div class="minirow"><span>' + esc(g.label) + (g.subClassId ? ' <span class="tag">sub-class</span>' : "") + ' — ' + esc(g.basis) + '</span><b>' + money(g.amount) + '</b></div>').join("") : "") +
-    '<div class="sub-hd">Summary</div>' +
-    '<div class="minirow"><span>Batch classes — ' + esc(p.batchBasis) + '</span><b>' + money(p.batchAmount) + '</b></div>' +
-    '<div class="minirow"><span>Bonus</span><b>' + money(p.bonus) + '</b></div>' +
-    '<div class="minirow"><span>Deduction</span><b>− ' + money(p.deduction) + '</b></div>' +
-    '<div class="minirow"><span>Net payable</span><b>' + money(p.payable) + '</b></div>' +
-    '<div class="minirow"><span>Paid</span><b class="in">' + money(p.paid) + '</b></div>' +
-    '<div class="minirow"><span>Balance</span><b class="' + (p.balance > 0 ? "out" : "in") + '">' + money(p.balance) + '</b></div>' +
-    dl([["Individual classes counted", p.classStats.completed], ["Taught hours", round2(p.classStats.minutes / 60)],
-        ["Batch sessions held", p.sessions], ["Batch students", p.batchStudents], p.remarks ? ["Remarks", esc(p.remarks)] : null]);
-}
+/* ---------------------------- TEACHER PROFILE ---------------------------- */
 Pages.tprofile = function(){
-  const P = State.tprofile, t = DataService.getTeacher(P.teacherId), m = State.tpay.month || State.month;
+  const P = State.tprofile, t = DataService.getTeacher(P.teacherId), m = State.month;
   if (!t) return '<div class="empty"><h4>Pick a teacher</h4><p>Open a teacher from the Teachers page.</p>' +
     '<button class="btn btn-primary" data-act="goto" data-page="teachers">Go to teachers</button></div>';
-  const staff = t.kind === "staff", pv = Logic.payrollView(t, m);
+  const staff = t.kind === "staff";
   const plans = DataService.getPlans({ teacherId: t.id }).slice().sort(function(a, b){
     const x = (a.status === "Active" ? 0 : 1) - (b.status === "Active" ? 0 : 1); if (x) return x;
     return String((DataService.getStudent(a.studentId) || {}).name || "").localeCompare(String((DataService.getStudent(b.studentId) || {}).name || ""));
@@ -1302,27 +818,21 @@ Pages.tprofile = function(){
   const active = plans.filter(x => x.status === "Active");
   const batches = DataService.getBatches().filter(b => b.teacherId === t.id && (b.status || "Active") === "Active");
   const pays = DataService.getTeacherPayments({ teacherId: t.id }).slice().sort((a, b) => a.date < b.date ? 1 : a.date > b.date ? -1 : 0);
-  const paidAll = pays.reduce((a, x) => a + (+x.amount || 0), 0);
-  const st = payStatus(pv, staff || active.length + batches.length > 0);
-  const rule = staff ? "Monthly salary " + money(+t.monthlySalary || 0)
-    : [t.indRateType ? Logic.indRateLabel(t.indRateType) + (t.indRateType === "percent" ? " " + (+t.indRate || 0) + "%" : t.indRateType === "none" || t.indRateType === "custom" ? "" : " " + money(t.indRate)) : "No pay rule",
-       +t.subRate > 0 ? "substitute " + money(t.subRate) : "", t.batchPayType && t.batchPayType !== "none" ? "batch: " + Logic.batchPayLabel(t.batchPayType) : ""].filter(Boolean).join(" · ");
-  const tab = P.tab || "students";
+  const tab = P.tab === "payments" ? "payments" : "students";
   let body = "";
-  if (tab === "pay") body = '<div class="card-bd">' + tpSlip(pv) + '</div>';
-  else if (tab === "payments") body = renderList("tpPays", pays, {
+  if (tab === "payments") body = renderList("tpPays", pays, {
       key: x => x.id, title: x => esc(monthLabel(x.month)) + " · " + money(x.amount),
-      sub: x => fmtDate(x.date) + " · " + esc(x.category || "Teacher Payment") + " · " + esc(x.account) + " · " + esc(x.id),
+      sub: x => esc([fmtDate(x.date), x.account, x.category && x.category !== "Teacher Payment" ? x.category : "", x.remarks].filter(Boolean).join(" · ")),
       amount: x => '<span class="out">' + money(x.amount) + '</span>',
-      detail: x => dl([["Payment", idchip(x.id)], ["For month", monthLabel(x.month)], ["Date", fmtDate(x.date)], ["Amount", money(x.amount)],
-          ["Paid from", badge(x.account)], ["Type", esc(x.category || "Teacher Payment")], x.remarks ? ["Remarks", esc(x.remarks)] : null]) +
-        acts('<button class="btn btn-sm btn-danger" data-act="tpay-void" data-id="' + x.id + '">Remove (entered by mistake)</button>'),
-      emptyTitle: "No payments yet", emptyText: "Payments to " + t.name + " show here." });
+      detail: x => dl([["Entry", idchip(x.id)], ["For month", monthLabel(x.month)], ["Date paid", fmtDate(x.date)], ["Amount", money(x.amount)],
+          ["Paid from", badge(x.account)], ["Type", esc(x.category || "Teacher Payment")], x.remarks ? ["Note", esc(x.remarks)] : null]) +
+        acts('<button class="btn btn-sm" data-act="tsal-edit" data-id="' + x.id + '">Edit</button>' +
+          '<button class="btn btn-sm btn-danger" data-act="tpay-void" data-id="' + x.id + '">Remove (entered by mistake)</button>'),
+      emptyTitle: "No salary entered yet", emptyText: "Salary paid to " + t.name + " shows here." });
   else body = '<div class="card-bd">' + (plans.length ? plans.map(function(x){
       const s2 = DataService.getStudent(x.studentId) || {};
       return '<div class="pf-plan' + (x.status === "Active" ? "" : " off") + '"><div class="pf-pm"><b>' + esc(s2.name || x.studentId) + '</b> ' + badge(x.status) +
-        '<small>' + esc([x.course, (x.days || []).length ? x.days.join(" ") : "", x.time ? time12(x.time) : "", x.duration ? x.duration + " min" : "",
-          "pay: " + (x.payType ? Logic.planPayLabel(x.payType) + (x.payType !== "manual" && x.payType !== "none" ? " " + (x.payType === "percent" ? (+x.payRate || 0) + "%" : money(x.payRate)) : "") : "teacher's default")]
+        '<small>' + esc([x.course, (x.days || []).length ? x.days.join(" ") : "", x.time ? time12(x.time) : "", x.duration ? x.duration + " min" : ""]
           .filter(Boolean).join(" · ")) + '</small></div>' +
         '<div class="btn-row"><button type="button" class="btn btn-sm" data-act="profile-open" data-id="' + esc(x.studentId) + '">Student</button>' +
           '<button type="button" class="btn btn-sm btn-primary" data-act="plan-edit" data-id="' + esc(x.id) + '">Edit</button></div></div>';
@@ -1333,11 +843,8 @@ Pages.tprofile = function(){
   return '' +
   '<div class="btn-row no-print pf-acts" style="margin-bottom:12px">' +
     '<button class="btn" data-act="tp-back">← Back</button>' +
-    '<button class="btn btn-primary" data-act="tpay-new" data-id="' + t.id + '">' + (pv.balance > 0 ? "Pay " + money(pv.balance) : "Pay") + '</button>' +
+    '<button class="btn btn-primary" data-act="tsal-new" data-id="' + t.id + '">+ Add salary</button>' +
     '<button class="btn" data-act="teacher-edit" data-id="' + t.id + '">Edit</button>' +
-    moreMenu([["tadj-edit", staff ? "Bonus / incentive" : "Bonus / deduction", ' data-id="' + t.id + '"'],
-      staff ? null : ["salary-report", "Salary report", ' data-id="' + t.id + '"'],
-      ["tstatement", "Statement (all months)", ' data-id="' + t.id + '"'], ["print", "Print"]]) +
   '</div>' +
   '<div class="card"><div class="card-bd"><div class="profile-hd">' +
     '<div class="avatar">' + esc(String(t.name || "?").slice(0, 1)) + '</div>' +
@@ -1345,21 +852,18 @@ Pages.tprofile = function(){
       '<div style="margin:4px 0 10px">' + idchip(t.id) + ' ' + badge(t.status || "Active") + ' <span class="tag">' + esc(staff ? (t.role || "Staff") : "Teacher") + '</span></div>' +
       '<dl class="deflist">' +
         [["Phone", '<span class="mono">' + esc(t.phone || "—") + '</span>'], ["WhatsApp", '<span class="mono">' + esc(t.whatsapp || "—") + '</span>'],
-         ["Joined", fmtDate(t.joiningDate)], ["Paid into", esc(t.payAccount || "—")], ["Pay", esc(rule)],
+         ["Joined", fmtDate(t.joiningDate)], ["Paid into", esc(t.payAccount || "—")],
          staff ? null : ["Students", active.length + " active" + (batches.length ? " · " + batches.length + " batch" + (batches.length > 1 ? "es" : "") : "")]]
         .filter(Boolean).map(x => '<div><dt>' + esc(x[0]) + '</dt><dd>' + x[1] + '</dd></div>').join("") +
       '</dl></div>' +
     '<div style="flex:0 0 210px;min-width:190px">' +
-      '<div class="section-title" style="margin:0 0 5px">' + esc(monthLabel(m)) + '</div>' +
-      '<div class="kv"><span>Earned</span><b>' + money(pv.payable) + '</b></div>' +
-      '<div class="kv"><span>Paid</span><b class="in">' + money(pv.paid) + '</b></div>' +
-      '<div class="kv"><span>Still to pay</span><b class="' + (pv.balance > 0 ? "out" : "") + '">' + money(Math.max(0, pv.balance)) + '</b></div>' +
-      '<div class="kv"><span>Status</span><b>' + badge(st, FEE_BADGE) + '</b></div>' +
-      '<div class="kv"><span>Paid to date</span><b>' + money(paidAll) + '</b></div>' +
+      '<div class="section-title" style="margin:0 0 5px">Salary</div>' +
+      '<div class="kv"><span>' + esc(monthLabel(m)) + '</span><b>' + money(salaryPaid(t.id, m)) + '</b></div>' +
+      '<div class="kv"><span>All months</span><b>' + money(salaryPaid(t.id)) + '</b></div>' +
     '</div>' +
   '</div></div></div>' +
   '<div class="card" style="margin-top:12px"><div class="card-hd" style="padding-bottom:0;border:0"><div class="tabs" style="width:100%">' +
-    [["students", staff ? "Work" : "Students"], ["pay", monthShort(m) + " pay"], ["payments", "Payments"]].map(x =>
+    [["students", staff ? "Work" : "Students"], ["payments", "Salary paid"]].map(x =>
       '<button class="tab ' + (tab === x[0] ? "is-on" : "") + '" data-act="tp-tab" data-t="' + x[0] + '">' + esc(x[1]) + '</button>').join("") +
   '</div></div><div class="card-bd tight">' + body + '</div></div>';
 };
@@ -1405,7 +909,6 @@ Pages.settings = function(){
       field("Currency symbol", '<input class="input" id="set_currency" value="' + esc(s.currency || "₹") + '">') +
       field("WhatsApp country code", '<input class="input mono" id="set_countryCode" value="' + esc(s.countryCode || "91") + '">') +
       field("Default due day", '<input class="input" type="number" min="1" max="28" id="set_defaultDueDay" value="' + esc(s.defaultDueDay || 5) + '">') +
-      field("Default fee method", '<select class="select" id="set_defaultFeeMethod">' + optList(FEE_METHODS, s.defaultFeeMethod) + '</select>') +
 
       '<div class="field span2"><label>Academy logo</label><input class="input" type="file" accept="image/*" id="set_logoFile">' +
         '<span class="hint">Shown in the header and on printed receipts.</span></div>' +
@@ -1453,42 +956,21 @@ Pages.settings = function(){
       '<button class="btn" data-act="sync-full">Send everything</button>' +
     '</div>' +
   '</div></div>' +
-  '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Billing</h3></div><div class="card-bd">' +
-    '<div class="note">In <b>prepaid</b> mode a month falls due before it starts, and individual classes are billed on the ' +
-    'planned timetable. Reconcile at month end and any difference moves to the next month.</div>' +
+  '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Fees</h3></div><div class="card-bd">' +
+    '<div class="note">Every class has one fixed monthly fee. A month is paid before it starts, on the student\'s own day — ' +
+    'someone who joined on the 22nd pays on 22 October for November. The list for a month is made with one button on Due date.</div>' +
     '<div class="form-grid">' +
-      field("Billing mode", '<select class="select" id="set_billingMode">' +
-        optList([{ value: "prepaid", label: "Prepaid — collect before the month" },
-                 { value: "postpaid", label: "Postpaid — bill after the classes" }], s.billingMode || "prepaid") + '</select>') +
-      field("Days before the month that fees fall due",
-        '<input class="input" type="number" min="0" max="31" id="set_advanceDays" value="' + esc(s.advanceDays || 0) + '">') +
       '<div class="field span2"><label>Welcome letter — terms &amp; conditions</label>' +
         '<textarea class="input" id="set_welcomeTerms" rows="5" placeholder="One line per term">' +
         esc(s.welcomeTerms || "") + '</textarea>' +
-        '<span class="hint">Printed under “Terms &amp; Conditions” in the welcome letter. Leave empty to use the standard four lines (rescheduling, leave notice, advance fee, Hifz concession).</span></div>' +
-      '<div class="field span2"><label>Class states that earn the teacher money</label>' +
-        '<div class="chips">' + CLASS_STATUSES.map(function(x){
-          const on = paidStatuses().indexOf(x.value) >= 0;
-          return '<label class="chip' + (on ? " on" : "") + '"><input type="checkbox" class="set_payStatus" value="' +
-            esc(x.value) + '"' + (on ? " checked" : "") + '> ' + esc(x.code) + ' ' + esc(x.label) + '</label>';
-        }).join("") + '</div>' +
-        '<span class="hint">Used for “classes counted” on the salary report. Default: class taken, student absent and student leave.</span></div>' +
-      field("Fixed monthly teacher pay", '<select class="input" id="set_monthlyPayOnlyIfTaught">' +
-        optList([{ value: "no", label: "Every month, whether they taught or not" },
-                 { value: "yes", label: "Only in a month where they taught" }],
-                s.monthlyPayOnlyIfTaught || "no") + '</select>') +
-      field("Prepaid due date", '<select class="input" id="set_prepaidDue">' +
-        optList([{ value: "studentDay", label: "Each student's own day, in the month before" },
-                 { value: "advance",    label: "Same day for everyone, X days before the month" }],
-                s.prepaidDue || "studentDay") + '</select>') +
-      '<div class="field span2"><span class="hint">With the student\'s own day, someone who joined on the 22nd pays on 22 October for November. The "days before" box is then ignored.</span></div>' +
+        '<span class="hint">Printed under “Terms &amp; Conditions” in the welcome letter. Leave empty to use the standard lines.</span></div>' +
     '</div>' +
     '<p class="hint" style="margin-top:8px">A ' + esc(monthLabel(addMonths(currentMonth(), 1))) +
-      ' fee would fall due on <b>' + esc(fmtDate(Logic.feeDueDate(addMonths(currentMonth(), 1), s.defaultDueDay))) + '</b>.</p>' +
+      ' fee with due day ' + esc(s.defaultDueDay || 5) + ' falls due on <b>' + esc(fmtDate(Logic.feeDueDate(addMonths(currentMonth(), 1), s.defaultDueDay))) + '</b>.</p>' +
     '<div class="btn-row" style="margin-top:12px"><button class="btn btn-primary" data-act="settings-save">Save settings</button></div>' +
   '</div></div>' +
   '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Course formats</h3></div><div class="card-bd">' +
-    '<div class="note">Prepare your standard course formats — course, class days and the monthly fee. When you create a batch or an individual plan you can pick one to fill the fields instantly, or still enter everything manually.</div>' +
+    '<div class="note">Standard course formats — course, class days and the monthly fee. Pick one when adding a batch or a class to fill the fields.</div>' +
     '<div class="tbl-wrap"><table><thead><tr><th>Format</th><th>Course</th><th>Stream</th><th>Days</th><th>Monthly fee</th><th></th></tr></thead><tbody>' +
     ((s.courseFormats || []).length ? (s.courseFormats || []).map(fm => '<tr>' +
       '<td><b>' + esc(fm.name) + '</b></td><td>' + esc(fm.course || "—") + '</td>' +
@@ -1500,10 +982,6 @@ Pages.settings = function(){
       : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">No formats yet.</td></tr>') +
     '</tbody></table></div>' +
     '<div class="btn-row" style="margin-top:12px"><button class="btn btn-primary" data-act="fmt-new">+ Add format</button></div>' +
-    '<div class="form-grid" style="margin-top:16px">' +
-      field("Default admission fee", '<input class="input" type="number" min="0" id="set_admissionFeeDefault" value="' + esc(s.admissionFeeDefault || 0) + '">') +
-    '</div>' +
-    '<div class="btn-row" style="margin-top:12px"><button class="btn btn-primary" data-act="settings-save">Save settings</button></div>' +
   '</div></div>' +
   '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Academy holds / breaks</h3></div><div class="card-bd">' +
     '<div class="note">Pause the whole academy for a period (Ramadan, annual break). You can waive fees for everyone during that time, or keep them. For a single student on leave, use the ⏸ Hold / Leave button beside them in Students.</div>' +
@@ -1517,7 +995,7 @@ Pages.settings = function(){
   '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Holidays</h3>' +
     '<span class="spacer"></span><button class="btn btn-sm btn-primary" data-act="hol-new">+ Add holiday</button></div>' +
     '<div class="card-bd">' +
-    '<p class="tagline">Range marking skips these days, and prepaid planning does not charge for them.</p>' +
+    '<p class="tagline">Attendance skips these days. Fees do not change.</p>' +
     (DataService.getHolidays().length ? DataService.getHolidays().map(h => '<span class="holchip">' +
       '<span><b>' + esc(h.name) + '</b> <span class="hd">' + esc(fmtDate(h.from) +
       (h.to && h.to !== h.from ? " – " + fmtDate(h.to) : "")) + '</span></span>' +
@@ -1527,12 +1005,6 @@ Pages.settings = function(){
   '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Lists</h3></div><div class="card-bd">' +
     listEditor("courses", "Courses") + listEditor("levels", "Levels") +
     listEditor("incomeCategories", "Income categories") + listEditor("expenseCategories", "Expense categories") +
-    '<div class="section-title">Built into the calculation engine</div>' +
-    '<p class="hint" style="margin-top:0">Fee methods: ' + FEE_METHODS.map(m => '<span class="badge b-acc" style="margin-right:4px">' +
-      esc(m.label) + '</span>').join("") + '<br><br>Teacher pay — individual: ' +
-      IND_RATE_TYPES.map(m => '<span class="badge b-info" style="margin-right:4px">' + esc(m.label) + '</span>').join("") +
-      '<br><br>Teacher pay — batch: ' + BATCH_PAY_TYPES.map(m => '<span class="badge stream-b" style="margin-right:4px">' +
-      esc(m.label) + '</span>').join("") + '</p>' +
   '</div></div>' +
   '<div class="card" style="margin-top:12px"><div class="card-hd"><h3>Data overview</h3></div><div class="card-bd">' +
     '<p class="tagline">A quick count of what is stored. Use the Data Sync &amp; Backup section at the top to import, export or back up.</p>' +
@@ -1540,7 +1012,7 @@ Pages.settings = function(){
       '<div>' + [["Students", DB.students.length], ["Teachers", DB.teachers.length], ["Batches", DB.batches.length],
         ["Enrolments", DB.enrollments.length], ["Attendance marks", DB.attendance.length]]
         .map(x => '<div class="kv"><span>' + x[0] + '</span><b>' + num(x[1]) + '</b></div>').join("") + '</div>' +
-      '<div>' + [["Class plans", DB.plans.length], ["Classes logged", DB.classes.length], ["Fee records", DB.fees.length],
+      '<div>' + [["Individual classes", DB.plans.length], ["Attendance marks (individual)", DB.classes.length], ["Fee records", DB.fees.length],
         ["Payments", DB.payments.length], ["Expenses", DB.expenses.length]]
         .map(x => '<div class="kv"><span>' + x[0] + '</span><b>' + num(x[1]) + '</b></div>').join("") + '</div>' +
     '</div>' +
