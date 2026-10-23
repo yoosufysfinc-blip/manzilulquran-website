@@ -1,27 +1,21 @@
 "use strict";
-/* Academic Service — forms-actions.v21.js. v21: a student's "Class plan" button opens the plan they already have (it
-   used to make a new, empty plan every time); a new plan needs a course and a fee and is always Active; a plan with no
-   fees, payments or attendance can be deleted; stopping a plan asks, month by month, whether to waive it, charge only
-   the classes held after the paid period, or keep it; changing a plan's teacher can move the marks saved from a chosen
-   date to the new teacher; teacher profile; Pay all (one form for every teacher's salary); Remove (entered by mistake)
-   for other income and expenses as well as payments.
-   (v20: a new class plan raises its first prepaid fee for the right month —
-   joining on 15 October and paying then is "November" (due 15 October), so November no longer falls due a second time on
-   the joining day. (v19: stopping a class plan offers to waive only the unpaid months after
-   its end date (an earlier month still owed stays owing) — and only that plan's months: v18 listed and waived every
-   unpaid fee in the academy, because the plan filter was ignored. Fees waived by that mistake can be restored from the
-   fees pages (Restore). The fee toasts say how many students were left out for a hold.
-   (v18: substitute rate on the teacher form, "taken by" on a class, Unmarked-day warning before reconciling, tables read in pages. */
+/* Academic Service — forms-actions.v22.js. v22 (simple mode): a short New student form that can arrange the class at the
+   same time (individual or batch) — or leave it Pending; the teacher of a class is optional; one fixed monthly fee per
+   class; the Due date page actions (Mark paid, Share fee with an editable amount, Edit amount, Mark as not paid, Waive);
+   salary typed in by hand (Add salary). Removed: fee methods, admission fees, teacher pay rules, payroll, Pay all,
+   bonus / deduction, salary report, reconcile, stop-a-class and teacher-change dialogs.
+   (v21: plan open/new/edit/delete, teacher profile, Remove for mistaken entries.) */
 /* ==========================================================================
    FORMS
    ========================================================================== */
+/* the class days as small toggles, close together (still named day_Mon … so readDays works) */
 function dayBoxes(days){
   days = days || [];
-  return ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d =>
-    '<label style="display:inline-flex;gap:6px;align-items:center;font-size:13px;margin-right:10px">' +
-    '<input type="checkbox" name="day_' + d + '"' + (days.indexOf(d) >= 0 ? " checked" : "") + '> ' + d + '</label>').join("");
+  return '<div class="daychips">' + ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d =>
+    '<label class="dchip"><input type="checkbox" name="day_' + d + '"' + (days.indexOf(d) >= 0 ? " checked" : "") + '><span>' + d + '</span></label>').join("") + '</div>';
 }
-function readDays(form){ return ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].filter(d => form.elements["day_" + d].checked); }
+function readDays(form){ return ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].filter(d => form.elements["day_" + d] && form.elements["day_" + d].checked); }
+function dayOf(date){ return Math.min(28, Math.max(1, parseInt(String(date || today()).slice(8, 10), 10) || 1)); }
 
 function ccOptions(sel){
   const list = [["91","🇮🇳 +91"],["971","🇦🇪 +971"],["966","🇸🇦 +966"],["974","🇶🇦 +974"],["965","🇰🇼 +965"],
@@ -39,24 +33,52 @@ function splitWA(num, cc){
   if (d.length >= 11) { const c = WA_CODES.find(x => d.indexOf(x) === 0 && d.length - x.length >= 7); if (c) return { cc: c, num: d.slice(c.length) }; }
   return { cc: Settings().countryCode || "91", num: d };
 }
+/* v22: a short form — the few things needed to start, close together. The rest is under "More details". */
 function studentForm(s, isNew){
   s = s || {};
-  const set = Settings();
-  return '<div class="form-grid">' +
-    field("Student ID", '<input class="input mono" name="id" value="' + esc(s.id || "") + '" readonly placeholder="Generated automatically">') +
-    field("Student name", '<input class="input" name="name" required value="' + esc(s.name || "") + '">') +
+  const set = Settings(), wa = splitWA(s.whatsapp, s.whatsappCC), join = s.joiningDate || today();
+  const more = !!(s.phone || s.email || s.dob || s.address || s.notes);
+  return '<div class="form-grid sf">' +
+    field("Student name *", '<input class="input" name="name" required value="' + esc(s.name || "") + '" autocomplete="off">', "sf-wide") +
+    field("WhatsApp", '<div class="ccrow"><select class="input ccsel" name="whatsappCC">' + ccOptions(wa.cc) + '</select>' +
+      '<input class="input mono" name="whatsapp" inputmode="tel" value="' + esc(wa.num) + '" placeholder="Number" style="flex:1"></div>', "sf-wide") +
     field("Parent / guardian", '<input class="input" name="guardian" value="' + esc(s.guardian || "") + '">') +
-    field("WhatsApp number", '<div class="ccrow"><select class="input ccsel" name="whatsappCC">' + ccOptions(splitWA(s.whatsapp, s.whatsappCC).cc) + '</select>' +
-      '<input class="input mono" name="whatsapp" value="' + esc(splitWA(s.whatsapp, s.whatsappCC).num) + '" placeholder="Number without country code" style="flex:1"></div>') +
-    field("Phone number", '<input class="input mono" name="phone" value="' + esc(s.phone || "") + '">') +
-    field("Email", '<input class="input" name="email" value="' + esc(s.email || "") + '">') +
-    field("Gender", sel("gender", optList(["Male", "Female"], s.gender, "Select"))) +
+    field("Gender", sel("gender", optList(["Male", "Female"], s.gender, "—"))) +
+    field("Joining date", '<input class="input" type="date" name="joiningDate" value="' + esc(join) + '"' + (isNew ? ' data-act="sf-join"' : "") + '>') +
+    (isNew ? "" : field("Status", sel("status", optList(set.studentStatuses, s.status || "Active")))) +
+  '</div>' +
+  (isNew ? classPicker(join) : "") +
+  '<details class="sf-more"' + (more ? " open" : "") + '><summary>More details</summary><div class="form-grid sf">' +
+    field("Phone", '<input class="input mono" name="phone" inputmode="tel" value="' + esc(s.phone || "") + '">') +
+    field("Email", '<input class="input" name="email" type="email" value="' + esc(s.email || "") + '">') +
     field("Date of birth", '<input class="input" type="date" name="dob" value="' + esc(s.dob || "") + '">') +
-    field("Joining date", '<input class="input" type="date" name="joiningDate" value="' + esc(s.joiningDate || today()) + '">') +
-    field("Status", sel("status", optList(set.studentStatuses, s.status || "Active"))) +
-    '<div class="field span2"><label>Address</label><input class="input" name="address" value="' + esc(s.address || "") + '"></div>' +
-    '<div class="field span2"><label>Notes</label><textarea class="textarea" name="notes">' + esc(s.notes || "") + '</textarea></div>' +
-    (isNew ? '<div class="field span2"><div class="note" style="margin:0">Add the student first. You can then put them in a batch, give them an individual class plan, or both — each is billed on its own fee record.</div></div>' : "") +
+    field("Address", '<input class="input" name="address" value="' + esc(s.address || "") + '">') +
+    '<div class="field span2"><label>Notes</label><input class="input" name="notes" value="' + esc(s.notes || "") + '"></div>' +
+  '</div></details>' +
+  (!isNew && (s.status || "Active") === "Active" ? '<p class="hint sf-hint">Setting the status to Left, Inactive or Completed also stops the student\'s classes.</p>' : "");
+}
+/* arrange the class while adding the student — or leave it for later (the class shows as Pending) */
+function classPicker(join){
+  const seg = (v, l, on) => '<label class="seg-o"><input type="radio" name="clsMode" value="' + v + '" data-act="cls-mode"' + (on ? " checked" : "") + '><span>' + l + '</span></label>';
+  return '<div class="cls-box">' +
+    '<div class="cls-hd"><span class="cls-l">Class</span><div class="seg" role="radiogroup" aria-label="Class">' +
+      seg("none", "Arrange later", true) + seg("ind", "Individual") + seg("batch", "Batch") + '</div></div>' +
+    '<div class="cls-sec" data-cls="none"><p class="hint" style="margin:0">Saved with the class marked <b>Pending</b> — arrange it any time from the student\'s profile.</p></div>' +
+    '<div class="cls-sec" data-cls="ind" hidden><div class="form-grid sf">' +
+      field("Course *", sel("course", courseOpts("", "Select course"))) +
+      pickBox("Teacher (optional)", "teacherId", "", pickTeachers(), "Type a name — or leave empty") +
+      '<div class="field span2"><label>Class days</label>' + dayBoxes([]) + '</div>' +
+      field("Time", '<input class="input" type="time" name="time" value="">') +
+      field("Minutes", '<input class="input" type="number" name="duration" min="0" value="30">') +
+      field("Monthly fee *", '<input class="input amt" type="number" name="rate" min="0" step="1" inputmode="numeric" placeholder="₹">') +
+      field("Due day", '<input class="input" type="number" name="dueDay" min="1" max="28" value="' + dayOf(join) + '">') +
+    '</div></div>' +
+    '<div class="cls-sec" data-cls="batch" hidden><div class="form-grid sf">' +
+      field("Batch *", sel("batchId", batchOpts("", "Select batch", true), 'data-act="sf-batch"'), "sf-wide") +
+      field("Monthly fee", '<input class="input amt" type="number" name="monthlyFee" min="0" step="1" inputmode="numeric" placeholder="Batch fee">') +
+      field("Due day", '<input class="input" type="number" name="bDueDay" min="1" max="28" value="' + dayOf(join) + '">') +
+    '</div></div>' +
+    '<label class="sf-check cls-first" hidden><input type="checkbox" name="firstFee" checked> Put the first fee on the due list now</label>' +
   '</div>';
 }
 function formatOpts(stream, selId){
@@ -77,7 +99,7 @@ function batchForm(b){
     field("Use a course format", '<select class="select" data-act="apply-format" data-formats="' + esc(formatDataAttr()) + '">' + formatOpts("batch", "") + '</select>') +
     field("Course", sel("course", courseOpts(b.course, "Select course"))) +
     field("Level", sel("level", optList(Settings().levels, b.level, "Select level"))) +
-    field("Teacher", sel("teacherId", teacherOpts(b.teacherId, "Select teacher"))) +
+    field("Teacher (optional)", sel("teacherId", teacherOpts(b.teacherId, "No teacher yet"))) +
     field("Status", sel("status", optList(Settings().batchStatuses, b.status || "Active"))) +
     '<div class="field span2"><label>Class days</label><div>' + dayBoxes(b.days) + '</div></div>' +
     field("Start time", '<input class="input" type="time" name="startTime" value="' + esc(b.startTime || "") + '">') +
@@ -85,52 +107,11 @@ function batchForm(b){
     field("Class duration (min)", '<input class="input" type="number" name="duration" min="0" value="' + esc(b.duration || 60) + '">') +
     field("Maximum students", '<input class="input" type="number" name="maxStudents" min="1" value="' + esc(b.maxStudents || 15) + '">') +
     field("Monthly fee", '<input class="input" type="number" name="monthlyFee" min="0" value="' + esc(b.monthlyFee || 0) + '">') +
-    field("Admission fee", '<input class="input" type="number" name="admissionFee" min="0" value="' + esc(b.admissionFee || 0) + '">') +
     field("Start date", '<input class="input" type="date" name="startDate" value="' + esc(b.startDate || today()) + '">') +
     field("End date", '<input class="input" type="date" name="endDate" value="' + esc(b.endDate || "") + '">') +
     '<div class="field span2"><label>Notes</label><textarea class="textarea" name="notes">' + esc(b.notes || "") + '</textarea></div>' +
   '</div>';
 }
-/* ---- rule fields: one select + only the number boxes that rule needs ---- */
-const RULE_NEEDS = { monthly: ["rate"], perClass: ["rate"], perDay: ["rate"], perHour: ["rate"], percent: ["rate"],
-  hybridH1: ["base", "rate"], hybridH2: ["base", "included", "rate"], hybridH3: ["rate", "min", "max"] };
-const RULE_RATE_LABEL = { monthly: "Monthly amount", perClass: "Rate per class", perDay: "Rate per day", perHour: "Rate per hour",
-  percent: "Percent (%)", hybridH1: "Rate per class", hybridH2: "Rate per extra class", hybridH3: "Rate per class" };
-const RULE_KEY_LABEL = { base: "Base amount", included: "Classes included in base", min: "Minimum (0 = none)", max: "Maximum (0 = none)" };
-const RULE_HINT = {
-  monthly: "Same amount every month.", perClass: "Completed classes × rate.", perDay: "Days a class happened × rate.",
-  perHour: "Taught hours × hourly rate.", percent: "A percentage of the fee.", custom: "Typed in each month under Bonus / deduction.",
-  hybridH1: "Base + every class × rate. e.g. ₹500 + 12 × ₹80 = ₹1,460.",
-  hybridH2: "Base covers the included classes; each extra class × rate. e.g. ₹1,500 for 12, 14 held → ₹1,740.",
-  hybridH3: "Classes × rate, never below the minimum or above the maximum.",
-  manual: "Nothing is calculated — the month shows “Needs amount” until you type it in.",
-  none: "Nothing is paid.", "": "Uses the teacher's own pay setting for this student." };
-/* g = group key, typeName = the select's field name, opts = option list, names = {rate, base, included, min, max} field names */
-function ruleBlock(g, label, typeName, opts, cur, names, obj){
-  const need = RULE_NEEDS[cur] || [];
-  let h = '<div class="field span2"><label>' + esc(label) + '</label>' +
-    sel(typeName, optList(opts, cur), 'data-act="rule-ui" data-id="' + g + '"') +
-    '<span class="hint" data-rh="' + g + '">' + esc(RULE_HINT[cur] || "") + '</span></div>';
-  ["rate", "base", "included", "min", "max"].forEach(function(k){
-    if (!names[k]) return;
-    const lab = k === "rate" ? (RULE_RATE_LABEL[cur] || "Rate") : RULE_KEY_LABEL[k];
-    h += '<div class="field rf" data-rg="' + g + '" data-rk="' + k + '"' + (need.indexOf(k) < 0 ? ' style="display:none"' : "") + '>' +
-      '<label>' + esc(lab) + '</label><input class="input" type="number" min="0" step="' + (k === "included" ? "1" : "0.01") +
-      '" name="' + names[k] + '" value="' + esc(+(obj || {})[names[k]] || 0) + '"></div>';
-  });
-  return h;
-}
-function ruleUI(form, g){
-  if (!form) return;
-  const s = form.querySelector('[data-act="rule-ui"][data-id="' + g + '"]'); if (!s) return;
-  const need = RULE_NEEDS[s.value] || [];
-  form.querySelectorAll('.rf[data-rg="' + g + '"]').forEach(function(el){
-    el.style.display = need.indexOf(el.dataset.rk) < 0 ? "none" : "";
-    if (el.dataset.rk === "rate") el.querySelector("label").textContent = RULE_RATE_LABEL[s.value] || "Rate";
-  });
-  const h = form.querySelector('[data-rh="' + g + '"]'); if (h) h.textContent = RULE_HINT[s.value] || "";
-}
-const RULE_NUM = ["feeBase", "feeIncluded", "feeMin", "feeMax", "payRate", "payBase", "payIncluded", "payMin", "payMax"];
 /* ---- type-to-find box ----
    A dropdown with 105 students is hopeless on a phone. This is a text box with the full
    list behind it: type a few letters of the name or the ID and pick from the suggestions. */
@@ -147,10 +128,11 @@ function pickBox(label, name, value, rows, placeholder){
 }
 /* the list under the box: whatever matches what has been typed so far */
 function pickRows(name){
-  return name === "teacherId" ? pickTeachers() : pickStudents();
+  return name === "teacherId" ? pickTeachers() : name === "payeeId" ? pickPayees() : pickStudents();
 }
 function pickExtra(name, r){
-  if (name === "teacherId") return Logic.indRateLabel(r.indRateType || "") || "";
+  if (name === "payeeId") return r.kind === "staff" ? (r.role || "Staff") : "Teacher";
+  if (name === "teacherId") return (r.status || "Active") === "Active" ? "" : "inactive";
   const pl = DataService.getPlans({ studentId: r.id }).filter(p => p.status === "Active")[0];
   return pl ? (pl.course || "") : (r.status === "Active" ? "no class plan" : "inactive");
 }
@@ -175,48 +157,39 @@ function pickRender(name, q){
 }
 function pickStudents(){ return DataService.getStudents().slice().sort((a, b) => String(a.name).localeCompare(String(b.name))); }
 function pickTeachers(){ return DataService.getTeachers().filter(t => t.kind !== "staff").slice().sort((a, b) => String(a.name).localeCompare(String(b.name))); }
+function pickPayees(){ return DataService.getTeachers().slice().sort((a, b) => ((a.status || "Active") === "Active" ? 0 : 1) - ((b.status || "Active") === "Active" ? 0 : 1) || String(a.name).localeCompare(String(b.name))); }
 
 function planUsed(id){
   return DB.fees.some(f => f.planId === id) || DB.classes.some(c => c.planId === id);
 }
+/* v22: one fixed monthly fee; the teacher can be left empty (the class is then marked "No teacher") */
 function planForm(p, presetStudent){
   p = p || {};
-  const set = Settings();
-  /* v21: a new plan for a student who already has one — offer to open that plan instead */
-  const have = !p.id && presetStudent ? DataService.getPlans({ studentId: presetStudent }).filter(x => x.status === "Active") : [];
-  return (have.length ? '<div class="note" style="border-color:#e0b25a"><b>Already has ' + (have.length > 1 ? have.length + " active plans" : "an active plan") + '.</b> ' +
-      'To change the fee, teacher, days or to stop the class, edit that plan — a new plan is only for a second, separate class.' +
+  const set = Settings(), sid = p.studentId || presetStudent || "", st = sid ? DataService.getStudent(sid) : null;
+  const have = !p.id && sid ? DataService.getPlans({ studentId: sid }).filter(x => x.status === "Active") : [];
+  return (have.length ? '<div class="note" style="border-color:#e0b25a"><b>Already has ' + (have.length > 1 ? have.length + " active classes" : "an active class") + '.</b> ' +
+      'To change the fee, teacher or days, or to stop it, edit that class — a new one is only for a second, separate class.' +
       '<div class="btn-row" style="margin-top:8px">' + have.map(x => '<button type="button" class="btn btn-sm btn-primary" data-act="plan-edit" data-id="' + esc(x.id) + '">Edit ' +
-        esc((x.course || "plan") + " · " + x.id) + '</button>').join("") + '</div></div>' : "") +
-    '<div class="form-grid">' +
-    field("Plan ID", '<input class="input mono" name="id" value="' + esc(p.id || "") + '" readonly placeholder="Generated automatically">') +
-    pickBox("Student", "studentId", p.studentId || presetStudent || "", pickStudents(), "Type a student name or ID") +
-    pickBox("Teacher", "teacherId", p.teacherId || "", pickTeachers(), "Type a teacher name or ID") +
-    field("Use a course format", '<select class="select" data-act="apply-format" data-formats="' + esc(formatDataAttr()) + '">' + formatOpts("individual", "") + '</select>') +
-    field("Course", sel("course", courseOpts(p.course, "Select course"))) +
-    '<div class="field span2"><label>Class days</label><div>' + dayBoxes(p.days) + '</div></div>' +
-    field("Class time", '<input class="input" type="time" name="time" value="' + esc(p.time || "18:00") + '">') +
-    field("Class duration (min)", '<input class="input" type="number" name="duration" min="0" value="' + esc(p.duration || 45) + '">') +
-    '<div class="field span2"><div class="sub-hd" style="margin:4px 0 0">Student fee</div></div>' +
-    ruleBlock("fee", "Fee method", "feeType", FEE_METHODS.map(m => ({ value: m.value, label: m.label + " — " + m.hint })),
-      p.feeType || set.defaultFeeMethod || "perClass",
-      { rate: "rate", base: "feeBase", included: "feeIncluded", min: "feeMin", max: "feeMax" }, p) +
-    field("Standing discount", '<input class="input" type="number" name="discount" min="0" value="' + esc(p.discount || 0) + '">') +
-    '<div class="field span2"><div class="sub-hd" style="margin:4px 0 0">Teacher pay for this student</div></div>' +
-    ruleBlock("pay", "Pay rule", "payType", PLAN_PAY_TYPES, p.payType || "",
-      { rate: "payRate", base: "payBase", included: "payIncluded", min: "payMin", max: "payMax" }, p) +
-    field("Fee due day", '<input class="input" type="number" name="dueDay" min="1" max="28" value="' + esc(p.dueDay || set.defaultDueDay || 5) + '">') +
-    (p.id ? field("Status", sel("status", optList(["Active", "Stopped"], p.status || "Active"))) : "") +
+        esc((x.course || "class") + " · " + x.id) + '</button>').join("") + '</div></div>' : "") +
+    '<div class="form-grid sf">' +
+    (p.id ? field("Student", '<input class="input" value="' + esc(st ? st.name + " · " + st.id : sid) + '" readonly>', "sf-wide") +
+            '<input type="hidden" name="studentId" value="' + esc(sid) + '">'
+          : pickBox("Student *", "studentId", sid, pickStudents(), "Type a student name or ID")) +
+    (p.id ? "" : field("Course format", '<select class="select" data-act="apply-format" data-formats="' + esc(formatDataAttr()) + '">' + formatOpts("individual", "") + '</select>')) +
+    field("Course *", sel("course", courseOpts(p.course, "Select course"))) +
+    pickBox("Teacher (optional)", "teacherId", p.teacherId || "", pickTeachers(), "Type a name — or leave empty") +
+    '<div class="field span2"><label>Class days</label>' + dayBoxes(p.days) + '</div>' +
+    field("Time", '<input class="input" type="time" name="time" value="' + esc(p.time || "") + '">') +
+    field("Minutes", '<input class="input" type="number" name="duration" min="0" value="' + esc(p.duration || 30) + '">') +
+    field("Monthly fee *", '<input class="input amt" type="number" name="rate" min="0" step="1" inputmode="numeric" value="' + esc(+p.rate ? p.rate : "") + '" placeholder="₹">') +
+    field("Due day", '<input class="input" type="number" name="dueDay" min="1" max="28" value="' + esc(p.dueDay || dayOf(p.startDate)) + '">') +
     field("Start date", '<input class="input" type="date" name="startDate" value="' + esc(p.startDate || today()) + '">') +
-    field("End date", '<input class="input" type="date" name="endDate" value="' + esc(p.endDate || "") + '">') +
-    (p.id ? "" :
-      field("Admission fee", '<input class="input" type="number" min="0" name="admissionFee" value="' + (set.admissionFeeDefault || 0) + '" placeholder="0 = none">') +
-      '<div class="field"><label>Options</label><label style="display:flex;gap:7px;align-items:center;padding-top:9px;font-size:13px"><input type="checkbox" name="waiveAdmission"> Waive admission fee</label></div>' +
-      '<div class="field span2"><label style="display:flex;gap:7px;align-items:center;font-size:13px"><input type="checkbox" name="raiseFirst" checked> Raise this month\'s fee now (prepaid) using the Rate above so I can collect it</label>' +
-      '<span class="hint">For prepaid collection at signup. Later months are billed normally from the class log.</span></div>') +
+    (p.id ? field("Status", sel("status", optList(["Active", "Stopped"], p.status || "Active"))) : "") +
+    (p.id ? field("End date", '<input class="input" type="date" name="endDate" value="' + esc(p.endDate || "") + '">') : "") +
     '<div class="field span2"><label>Notes</label><input class="input" name="notes" value="' + esc(p.notes || "") + '"></div>' +
+    (p.id ? "" : '<label class="sf-check span2"><input type="checkbox" name="firstFee" checked> Put the first fee on the due list now</label>') +
     (p.id && !planUsed(p.id) ? '<div class="field span2"><div class="btn-row"><button type="button" class="btn btn-sm btn-danger" data-act="plan-del" data-id="' +
-      esc(p.id) + '">Delete this plan</button><span class="hint">It has no fees, payments or attendance, so it can be removed completely.</span></div></div>' : "") +
+      esc(p.id) + '">Delete this class</button><span class="hint">It has no fees or attendance, so it can be removed completely.</span></div></div>' : "") +
   '</div>';
 }
 function classForm(c, presetPlan, presetStudent){
@@ -236,39 +209,25 @@ function classForm(c, presetPlan, presetStudent){
     field("Class status", sel("status", optList(CLASS_STATUSES.map(x => ({ value: x.value, label: x.code + "  " + x.label })), c.status || "Completed"))) +
     field("Taken by (substitute only)", sel("takenBy", teacherOpts(c.takenBy || "", "—"))) +
     '<div class="field span2"><label>Notes</label><input class="input" name="notes" value="' + esc(c.notes || "") + '"></div>' +
-    '<div class="field span2"><div class="note" style="margin:0">A <b>Completed</b> or <b>Substitute</b> class counts towards the <b>student fee</b>; a substitute class pays the teacher in <b>Taken by</b>. ' +
-      'For the <b>teacher</b>, the states that count are set in Settings — by default class taken, student absent and student leave.</div></div>' +
+    '<div class="field span2"><div class="note" style="margin:0">A mark is a record of what happened. It does not change any fee or salary.</div></div>' +
   '</div>';
 }
+/* v22: no pay rules — salary is typed in under Money → Teacher salary */
 function teacherForm(t){
   t = t || {};
-  return '<div class="form-grid">' +
-    field("Teacher ID", '<input class="input mono" name="id" value="' + esc(t.id || "") + '" readonly placeholder="Generated automatically">') +
-    field("Teacher name", '<input class="input" name="name" required value="' + esc(t.name || "") + '">') +
-    field("Phone", '<input class="input mono" name="phone" value="' + esc(t.phone || "") + '">') +
-    field("WhatsApp", '<div class="ccrow"><select class="input ccsel" name="whatsappCC">' + ccOptions(splitWA(t.whatsapp, t.whatsappCC).cc) + '</select>' +
-      '<input class="input mono" name="whatsapp" value="' + esc(splitWA(t.whatsapp, t.whatsappCC).num) + '" placeholder="Number only" style="flex:1"></div>') +
+  const wa = splitWA(t.whatsapp, t.whatsappCC), staff = t.kind === "staff";
+  return '<div class="form-grid sf">' +
+    field("Name *", '<input class="input" name="name" required value="' + esc(t.name || "") + '">', "sf-wide") +
+    field("WhatsApp", '<div class="ccrow"><select class="input ccsel" name="whatsappCC">' + ccOptions(wa.cc) + '</select>' +
+      '<input class="input mono" name="whatsapp" inputmode="tel" value="' + esc(wa.num) + '" placeholder="Number" style="flex:1"></div>', "sf-wide") +
+    field("Phone", '<input class="input mono" name="phone" inputmode="tel" value="' + esc(t.phone || "") + '">') +
     field("Joining date", '<input class="input" type="date" name="joiningDate" value="' + esc(t.joiningDate || today()) + '">') +
-    field("Paid into", sel("payAccount", accountOpts(t.payAccount || "Bank"))) +
-    field("Kind", sel("kind", optList([{value:"teacher",label:"Teacher"},{value:"staff",label:"Other staff"}], t.kind || "teacher"), 'data-act="kind-toggle"')) +
-    field("Role", '<input class="input" name="role" list="roleList" value="' + esc(t.role || "") + '" placeholder="Admin, Counsellor, Editor, Digital Marketer…">') +
+    field("Kind", sel("kind", optList([{ value: "teacher", label: "Teacher" }, { value: "staff", label: "Other staff" }], t.kind || "teacher"), 'data-act="kind-toggle"')) +
+    '<div class="field staff-only"' + (staff ? "" : ' style="display:none"') + '><label>Role</label><input class="input" name="role" list="roleList" value="' + esc(t.role || "") + '" placeholder="Admin, Counsellor, Editor…"></div>' +
     '<datalist id="roleList"><option>Admin</option><option>Counsellor</option><option>Editor</option><option>Digital Marketer</option><option>Coordinator</option><option>Accountant</option><option>Receptionist</option><option>Support</option></datalist>' +
-    '<div class="field span2 staff-only"' + (t.kind === "staff" ? "" : ' style="display:none"') + '><div class="note" style="margin:0">Other staff are paid a fixed monthly salary plus optional incentive. Set the salary below; leave the class-pay rates alone.</div></div>' +
-    '<div class="field staff-only"' + (t.kind === "staff" ? "" : ' style="display:none"') + '><label>Monthly salary</label><input class="input" type="number" name="monthlySalary" min="0" step="0.01" value="' + esc(t.monthlySalary || 0) + '"></div>' +
-    '<div class="field staff-only"' + (t.kind === "staff" ? "" : ' style="display:none"') + '></div>' +
-    '<div class="teacher-only"' + (t.kind === "staff" ? ' style="display:none"' : "") + ' style="display:contents">' +
-    '<div class="field span2"><div class="note" style="margin:0">A teacher can teach in both streams. Set how they are paid for each — the two amounts are added into one monthly payable.</div></div>' +
-    ruleBlock("ind", "Individual class pay (default for all their students)", "indRateType", IND_RATE_TYPES, t.indRateType || "perClass",
-      { rate: "indRate", base: "indBase", included: "indIncluded", min: "indMin", max: "indMax" }, t) +
-    '<div class="field span2"><span class="hint">A different rule for one student can be set on that student\'s class plan.</span></div>' +
-    field("Substitute rate (per class)", '<input class="input" type="number" name="subRate" min="0" step="0.01" value="' + esc(t.subRate || "") + '" placeholder="Not set">') +
-    '<div class="field"><span class="hint" style="display:block;padding-top:26px">Paid for each class this teacher takes for someone else (mark Sub). Left empty, Teacher pay asks for the amount.</span></div>' +
-    field("Batch class pay", sel("batchPayType", optList(BATCH_PAY_TYPES, t.batchPayType || "none"))) +
-    field("Batch rate", '<input class="input" type="number" name="batchRate" min="0" step="0.01" value="' + esc(t.batchRate || 0) + '">') +
-    '</div>' +
+    field("Salary paid into", sel("payAccount", accountOpts(t.payAccount || "Bank"))) +
     field("Status", sel("status", optList(["Active", "Inactive"], t.status || "Active"))) +
-    '<div></div>' +
-    '<div class="field span2"><label>Notes</label><textarea class="textarea" name="notes">' + esc(t.notes || "") + '</textarea></div>' +
+    '<div class="field span2"><label>Notes</label><input class="input" name="notes" value="' + esc(t.notes || "") + '"></div>' +
   '</div>';
 }
 function incomeForm(x){
@@ -427,55 +386,49 @@ const Actions = {
   "profile-open": (id) => { closeModal(true); State.profile.studentId = id; State.profile.tab = "fees"; go("profile"); },
 
   /* ---------------- students ---------------- */
-  "student-new": () => openModal({ title: "Add student", wide: true, body: studentForm({}, true), submitText: "Save student",
-    onSubmit: function(d){
-      if (!d.name) { toast("Student name is needed", "bad"); return false; }
-      delete d.id; joinCC(d);
-      const id = DataService.saveStudent(d);
-      toast("Student " + id + " added", "ok"); celebrate("🎓"); render();
-    } }),
-  "student-edit": (id) => openModal({ title: "Edit " + id, wide: true, body: studentForm(DataService.getStudent(id)), submitText: "Save changes",
-    onSubmit: function(d){ d.id = id; joinCC(d); DataService.saveStudent(d); toast("Student updated", "ok"); render(); } }),
   "student-assign": (id) => {
     const s = DataService.getStudent(id), cur = DataService.getActiveEnrollment(id);
     openModal({
       title: (cur ? "Move batch — " : "Put in a batch — ") + s.name,
-      body: (cur ? '<div class="note">Currently in ' + esc(cur.batchId) + ' since ' + esc(fmtDate(cur.joiningDate)) +
-          '. That enrolment is closed as <b>Transferred</b> and kept; a new one starts on the date below.</div>' : "") +
-        '<div class="form-grid">' +
-        field("Batch", sel("batchId", batchOpts(cur ? cur.batchId : "", "Select batch", false), 'data-act="enrol-batch"')) +
+      body: (cur ? '<div class="note">Now in ' + esc((DataService.getBatch(cur.batchId) || {}).name || cur.batchId) + ' since ' + esc(fmtDate(cur.joiningDate)) +
+          '. That enrolment is closed as <b>Transferred</b> and kept; the new one starts on the date below.</div>' : "") +
+        '<div class="form-grid sf">' +
+        field("Batch *", sel("batchId", batchOpts(cur ? cur.batchId : "", "Select batch", true), 'data-act="enrol-batch"')) +
         '<div class="field"><label>Sub-class</label><select class="select" name="subClassId">' +
           optList(DataService.getSubclasses({ batchId: cur ? cur.batchId : "" }).map(x => ({ value: x.id, label: x.name })),
             cur ? cur.subClassId : "", "Whole batch") + '</select></div>' +
-        field("Effective date", '<input class="input" type="date" name="date" value="' + today() + '">') +
-        field("Fee method", sel("feeMode", optList(ENROL_FEE_MODES, cur ? (cur.feeMode || "") : ""))) +
-        field("Monthly fee", '<input class="input" type="number" name="monthlyFee" placeholder="Blank = batch fee">') +
-        field("Due day", '<input class="input" type="number" name="dueDay" min="1" max="28" value="' +
-          esc(cur ? cur.dueDay : (Settings().defaultDueDay || 5)) + '">') +
-        '<div class="field span2"><label>Reason for the move</label><input class="input" name="reason"></div></div>',
-      submitText: "Save enrolment",
+        field("From", '<input class="input" type="date" name="date" value="' + today() + '">') +
+        field("Monthly fee", '<input class="input amt" type="number" name="monthlyFee" min="0" step="1" placeholder="Batch fee">') +
+        field("Due day", '<input class="input" type="number" name="dueDay" min="1" max="28" value="' + esc(cur ? cur.dueDay : dayOf(today())) + '">') +
+        (cur ? '<div class="field"><label>Reason</label><input class="input" name="reason"></div>'
+             : '<label class="sf-check span2"><input type="checkbox" name="firstFee" checked> Put the first fee on the due list now</label>') + '</div>',
+      submitText: "Save",
       onSubmit: function(d){
-        if (!d.batchId) { toast("Pick a batch", "bad"); return false; }
         const b = DataService.getBatch(d.batchId);
+        if (!b) { toast("Choose the batch", "bad"); return false; }
         if (cur) DataService.closeEnrollment(cur.id, "Transferred", d.date, d.reason || "Batch change");
         const sc2 = d.subClassId ? DataService.getSubclass(d.subClassId) : null;
-        DataService.saveEnrollment({ studentId: id, batchId: d.batchId, subClassId: d.subClassId || "",
+        const eid = DataService.saveEnrollment({ studentId: id, batchId: b.id, subClassId: d.subClassId || "",
           joiningDate: d.date || today(), leavingDate: "",
-          monthlyFee: +d.monthlyFee || (sc2 && sc2.monthlyFee) || b.monthlyFee, dueDay: +d.dueDay || 5,
-          feeMode: d.feeMode === "manual" ? "manual" : "",
+          monthlyFee: round2(+d.monthlyFee || (sc2 && +sc2.monthlyFee) || +b.monthlyFee || 0), dueDay: Math.min(28, Math.max(1, +d.dueDay || 5)),
           status: "Active", reason: "", notes: cur ? ("Transferred from " + cur.batchId) : "Initial enrolment" });
-        toast(s.name + " is now in " + b.name, "ok"); render();
+        let msg = s.name + " is now in " + b.name;
+        if (!cur && d.firstFee) { const fm = Logic.firstMonth(d.date || today()), r = Logic.buildBatchMonth(fm, { enrollmentId: eid, first: true, remark: "First month" });
+          if (r.created) msg += " · " + monthLabel(fm) + " fee on the due list"; }
+        toast(msg, "ok", 4200); render();
       }
     });
   },
   "students-csv": () => downloadCSV("students.csv",
-    ["Student ID","Name","Guardian","WhatsApp","Phone","Email","Joined","Status","Batch","Batch fee","Individual course","Fee method","Rate","Outstanding"],
+    ["Student ID","Name","Guardian","WhatsApp","Phone","Email","Joined","Status","Class","Batch","Batch fee","Individual course","Individual fee","Teacher","Outstanding"],
     DataService.getStudents().map(function(s){
       const st = Logic.streamsOf(s.id), b = st.batch ? DataService.getBatch(st.batch.batchId) : null;
       const due = Logic.feeViews({ studentId: s.id }).reduce((a, v) => a + v.balance, 0);
+      const ci = Logic.classInfo(s.id), t = st.individual ? DataService.getTeacher(st.individual.teacherId) : (b ? DataService.getTeacher(b.teacherId) : null);
       return [s.id, s.name, s.guardian, s.whatsapp, s.phone, s.email, s.joiningDate, s.status,
-        b ? b.name : "", st.batch ? st.batch.monthlyFee : "", st.individual ? st.individual.course : "",
-        st.individual ? Logic.methodLabel(st.individual.feeType) : "", st.individual ? st.individual.rate : "", due];
+        (s.status || "Active") === "Active" && ci.pending ? "Pending" : "Arranged",
+        b ? b.name : "", st.batch ? Logic.enrolFee(st.batch) : "", st.individual ? st.individual.course : "",
+        st.individual ? st.individual.rate : "", t ? t.name : "", due];
     })),
 
   /* ---------------- batches + enrolment ---------------- */
@@ -503,52 +456,31 @@ const Actions = {
   "enrol-new": (batchId) => openModal({
     title: "New enrolment",
     body: '<div class="note">If the student is already in a batch, that enrolment is closed as Transferred — nothing is deleted.</div>' +
-      '<div class="form-grid">' +
-      pickBox("Student", "studentId", "", pickStudents(), "Type a student name or ID") +
-      field("Batch", sel("batchId", batchOpts(batchId || "", "Select batch", false), 'data-act="enrol-batch"')) +
+      '<div class="form-grid sf">' +
+      pickBox("Student *", "studentId", "", pickStudents(), "Type a student name or ID") +
+      field("Batch *", sel("batchId", batchOpts(batchId || "", "Select batch", true), 'data-act="enrol-batch"')) +
       '<div class="field"><label>Sub-class</label><select class="select" name="subClassId">' +
         optList(DataService.getSubclasses({ batchId: batchId || "" }).map(x => ({ value: x.id, label: x.name })), "", "Whole batch") +
         '</select></div>' +
       field("Joining date", '<input class="input" type="date" name="date" value="' + today() + '">') +
-      field("Fee method", sel("feeMode", optList(ENROL_FEE_MODES, ""))) +
-      field("Monthly fee", '<input class="input" type="number" name="monthlyFee" placeholder="Blank = batch fee">') +
-      field("Due day", '<input class="input" type="number" name="dueDay" min="1" max="28" value="' + (Settings().defaultDueDay || 5) + '">') +
-      field("Admission fee", '<input class="input" type="number" name="admissionFee" min="0" value="' + (Settings().admissionFeeDefault || 0) + '" placeholder="0 = none">') +
-      '<div class="field"><label>Options</label><label style="display:flex;gap:7px;align-items:center;padding-top:9px;font-size:13px"><input type="checkbox" name="waiveAdmission"> Waive admission fee</label></div>' +
-      '<div class="field span2"><label style="display:flex;gap:7px;align-items:center;font-size:13px"><input type="checkbox" name="raiseFirst" checked> Raise this month\'s fee now so I can collect it (prepaid)</label></div>' +
+      field("Monthly fee", '<input class="input amt" type="number" name="monthlyFee" min="0" step="1" placeholder="Batch fee">') +
+      field("Due day", '<input class="input" type="number" name="dueDay" min="1" max="28" value="' + dayOf(today()) + '">') +
+      '<label class="sf-check span2"><input type="checkbox" name="firstFee" checked> Put the first fee on the due list now</label>' +
       '</div>',
     submitText: "Create enrolment",
     onSubmit: function(d){
-      if (!d.studentId || !d.batchId) { toast("Student and batch are needed", "bad"); return false; }
-      const b = DataService.getBatch(d.batchId), cur = DataService.getActiveEnrollment(d.studentId);
+      const b = DataService.getBatch(d.batchId);
+      if (!DataService.getStudent(d.studentId) || !b) { toast("Student and batch are needed", "bad"); return false; }
+      const cur = DataService.getActiveEnrollment(d.studentId);
       if (cur) DataService.closeEnrollment(cur.id, "Transferred", d.date, "Batch change");
       const sc = d.subClassId ? DataService.getSubclass(d.subClassId) : null;
-      const monthlyFee = +d.monthlyFee || (sc && sc.monthlyFee) || b.monthlyFee;
-      const id = DataService.saveEnrollment({ studentId: d.studentId, batchId: d.batchId, subClassId: d.subClassId || "",
-        joiningDate: d.date, leavingDate: "", monthlyFee: monthlyFee, feeMode: d.feeMode === "manual" ? "manual" : "",
-        dueDay: +d.dueDay || 5, status: "Active", reason: "", notes: "" });
-      /* prepaid: raise the first month's fee immediately so it can be collected */
-      const m = String(d.date || today()).slice(0, 7);
-      const holdB = DataService.holdFor(d.studentId, m);
-      if (d.raiseFirst && !(holdB && holdB.waiveFee)) {
-        const due = Logic.feeDueDate(m, +d.dueDay || Settings().defaultDueDay || 5);
-        DataService.saveFee({ source: "batch", month: m, studentId: d.studentId, batchId: d.batchId,
-          subClassId: d.subClassId || "", enrollmentId: id, teacherId: b ? b.teacherId : "",
-          feeType: d.feeMode === "manual" ? "manual" : "monthly", rate: d.feeMode === "manual" ? 0 : monthlyFee,
-          gross: d.feeMode === "manual" ? 0 : monthlyFee, discount: 0, waived: false, locked: false,
-          needsAmount: d.feeMode === "manual", override: false,
-          dueDate: due, remarks: d.feeMode === "manual" ? "First month — enter the amount" : "First month (prepaid)", createdAt: new Date().toISOString() });
-      }
-      /* admission fee as a one-off fee, unless waived */
-      const adm = +d.admissionFee || 0;
-      if (adm > 0 && !d.waiveAdmission) {
-        DataService.saveFee({ source: "batch", month: m, studentId: d.studentId, batchId: d.batchId,
-          subClassId: d.subClassId || "", enrollmentId: id, teacherId: b ? b.teacherId : "",
-          feeType: "admission", rate: adm, gross: adm, discount: 0, waived: false, locked: true,
-          dueDate: Logic.feeDueDate(m, +d.dueDay || 5), remarks: "Admission fee", createdAt: new Date().toISOString() });
-      }
-      toast("Enrolment " + id + " created" + (d.raiseFirst ? " · fee raised for " + monthLabel(m) : ""), "ok");
-      celebrate("🎓"); render();
+      const id = DataService.saveEnrollment({ studentId: d.studentId, batchId: b.id, subClassId: d.subClassId || "",
+        joiningDate: d.date || today(), leavingDate: "", monthlyFee: round2(+d.monthlyFee || (sc && +sc.monthlyFee) || +b.monthlyFee || 0),
+        dueDay: Math.min(28, Math.max(1, +d.dueDay || 5)), status: "Active", reason: "", notes: "" });
+      let msg = "Enrolment " + id + " created";
+      if (d.firstFee) { const fm = Logic.firstMonth(d.date || today()), r = Logic.buildBatchMonth(fm, { enrollmentId: id, first: true, remark: "First month" });
+        if (r.created) msg += " · " + monthLabel(fm) + " fee on the due list"; }
+      toast(msg, "ok", 4200); celebrate("🎓"); render();
     }
   }),
   "enrol-close": (id) => {
@@ -741,14 +673,11 @@ const Actions = {
       .map(x => ({ value: x.id, label: x.name })), "", "Whole batch");
   },
   "sub-csv": () => downloadCSV("sub-classes.csv",
-    ["Sub-class ID","Name","Batch","Teacher","Days","Time","Students","Monthly fee","Sessions this month","Teacher pay","Status"],
+    ["Sub-class ID","Name","Batch","Teacher","Days","Time","Students","Monthly fee","Status"],
     DataService.getSubclasses().map(function(sc){
       const b = DataService.getBatch(sc.batchId), t = DataService.getTeacher(sc.teacherId);
-      const pv = t ? Logic.payrollView(t, State.month) : null;
-      const line = pv ? (pv.groups || []).find(g => g.subClassId === sc.id) : null;
       return [sc.id, sc.name, b ? b.name : sc.batchId, t ? t.name : "", (sc.days || []).join(" "),
-        (sc.startTime || "") + "-" + (sc.endTime || ""), Logic.rosterOf(sc.batchId, null, sc.id).length,
-        sc.monthlyFee || "", line ? line.sessions : 0, line ? line.amount : 0, sc.status || "Active"];
+        (sc.startTime || "") + "-" + (sc.endTime || ""), Logic.rosterOf(sc.batchId, null, sc.id).length, sc.monthlyFee || "", sc.status || "Active"];
     })),
 
   /* ---------------- teacher attendance link ---------------- */
@@ -881,23 +810,20 @@ const Actions = {
   "goto-subs": () => { closeModal(); go("subclasses"); },
   "alerts": () => {
     const m = State.month;
-    const dues = Logic.feeViews({ month: m }).filter(v => v.daysOverdue > 0 && v.balance > 0);
-    const pay = Logic.payrollMonth(m).filter(p => p.balance > 0);
-    const low = DataService.getStudents().map(function(s){
-      const a = Logic.attStats(DataService.getAttendance({ studentId: s.id, month: m }));
-      return { name: s.name, id: s.id, pct: a.pct, total: a.total };
-    }).filter(x => x.total >= 4 && x.pct < 70);
+    const dues = Logic.feeViews({ month: m }).filter(v => v.daysOverdue > 0 && v.balance > 0 && !v.waived);
+    const waiting = DataService.getStudents().filter(s => (s.status || "Active") === "Active" && Logic.classInfo(s.id).pending);
+    const noT = DataService.getPlans({ status: "Active" }).filter(p => !p.teacherId || !DataService.getTeacher(p.teacherId));
+    const row = (a, b, act, id) => '<button type="button" class="minirow" style="width:100%;border:0;background:transparent;cursor:pointer;text-align:left" data-act="' + act + '" data-id="' + esc(id) + '"><span>' + a + '</span><b class="out">' + b + '</b></button>';
     openModal({ title: "Needs your attention", hideSubmit: true, cancelText: "Close",
       body: '<div class="sub-hd">Overdue fees</div>' +
-        (dues.length ? dues.slice(0, 8).map(v => '<div class="minirow"><span>' + esc(v.studentName) + ' · ' +
-          v.daysOverdue + ' days</span><b class="out">' + money(v.balance) + '</b></div>').join("")
+        (dues.length ? dues.slice(0, 8).map(v => row(esc(v.studentName) + ' · ' + v.daysOverdue + ' days', money(v.balance), "profile-open", v.studentId)).join("")
           : '<div class="minirow"><span>Nothing overdue</span><b>—</b></div>') +
-        '<div class="sub-hd">Teachers still to be paid</div>' +
-        (pay.length ? pay.map(p => '<div class="minirow"><span>' + esc(p.teacherName) + '</span><b class="out">' +
-          money(p.balance) + '</b></div>').join("") : '<div class="minirow"><span>All settled</span><b>—</b></div>') +
-        '<div class="sub-hd">Attendance below 70%</div>' +
-        (low.length ? low.slice(0, 8).map(x => '<div class="minirow"><span>' + esc(x.name) + '</span><b class="out">' +
-          x.pct + '%</b></div>').join("") : '<div class="minirow"><span>Nobody is slipping</span><b>—</b></div>') });
+        '<div class="sub-hd">Waiting for a class</div>' +
+        (waiting.length ? waiting.slice(0, 8).map(s => row(esc(s.name), "Pending", "profile-open", s.id)).join("")
+          : '<div class="minirow"><span>Every student has a class</span><b>—</b></div>') +
+        '<div class="sub-hd">Classes with no teacher</div>' +
+        (noT.length ? noT.slice(0, 8).map(p => row(esc(((DataService.getStudent(p.studentId) || {}).name || p.studentId) + " · " + (p.course || "class")), "No teacher", "plan-edit", p.id)).join("")
+          : '<div class="minirow"><span>Every class has a teacher</span><b>—</b></div>') });
   },
   "att-range": (studentId) => {
     const a = State.att;
@@ -933,7 +859,7 @@ const Actions = {
       } });
   },
   "holidays": () => openModal({ title: "Holidays", hideSubmit: true, cancelText: "Close",
-    body: '<div class="note">Range marking skips these days, and prepaid planning does not charge for them.</div>' +
+    body: '<div class="note">Attendance range marking skips these days. Fees do not change.</div>' +
       (DataService.getHolidays().length ? DataService.getHolidays().map(h => '<div class="minirow"><span><b>' +
         esc(h.name) + '</b> · ' + esc(fmtDate(h.from) + (h.to && h.to !== h.from ? " – " + fmtDate(h.to) : "")) +
         '</span><button type="button" class="btn btn-sm btn-danger" data-act="hol-del" data-id="' + h.id + '">Remove</button></div>').join("")
@@ -955,32 +881,6 @@ const Actions = {
   "hol-del": (id) => { DataService.deleteHoliday(id); toast("Holiday removed", "ok"); closeModal(); render(); },
   "cal-prev": () => { State.cal.month = addMonths(State.cal.month, -1); render(); },
   "cal-next": () => { State.cal.month = addMonths(State.cal.month, 1); render(); },
-  "next-month": () => {
-    const nm = addMonths(State.month, 1);
-    const r = Logic.buildBoth(nm);
-    State.month = nm; $("#globalMonth").innerHTML = monthOpts(State.month, "");
-    toast(monthLabel(nm) + " opened · " + r.created + " fee records raised" +
-      (r.skipped ? ", " + r.skipped + " already existed" : "") + (r.held ? ", " + r.held + " on hold (no fee)" : ""), "ok", 4500);
-    render();
-  },
-  "reconcile": () => {
-    const m = State.month, unfinished = monthEnd(m) > today(), um = Logic.unmarked(m).count;
-    confirmAction({ title: "Reconcile " + monthLabel(m), danger: unfinished || um > 0,
-      note: (um ? "⚠ " + um + " class day" + (um > 1 ? "s" : "") + " in " + monthLabel(m) + " have no attendance mark — " +
-          "on per-class fees an unmarked day counts as a class not held and is credited back. Mark them in Attendance first. " : "") +
-        (unfinished ? "⚠ " + monthLabel(m) + " has not finished yet — classes still to come would be credited back as if " +
-          "they never happened. Reconcile once the month is over. " : "") +
-        "Each individual class fee is compared with the class log. Classes not held come back as a credit on " +
-        monthLabel(addMonths(m, 1)) + "; extra classes are added on. The month is then locked and never rewritten.",
-      message: "Close and reconcile " + monthLabel(m) + "?", submitText: "Reconcile the month",
-      onConfirm: function(){
-        const r = Logic.reconcileMonth(m);
-        toast(r.done + " fee records reconciled · " + money(r.credit) + " credited forward, " +
-          money(r.extra) + " charged forward · " + (r.carried ? r.carried + " set off against " + monthLabel(addMonths(m, 1))
-            : "waiting for the next month to be raised") + (r.skipped ? " · " + r.skipped + " already done" : ""), "ok", 6000);
-        render();
-      } });
-  },
   "att-open": (batchId, el) => { State.att.batchId = batchId; State.att.subClassId = (el && el.dataset.sub) || "";
     State.att.marks = null; go("attendance"); },
   "att-mark": (id, el) => {
@@ -1015,76 +915,43 @@ const Actions = {
             '<b><button type="button" class="btn btn-sm btn-primary" data-act="plan-edit" data-id="' + esc(x.id) + '">Edit</button></b></div>'; }).join("") +
         '<div class="btn-row" style="margin-top:12px"><button type="button" class="btn" data-act="plan-new" data-id="' + esc(studentId) + '">+ A separate new class</button></div>' });
   },
-  "plan-new": (studentId) => openModal({ title: "New class plan", wide: true, body: planForm({}, studentId), submitText: "Save plan",
+  "plan-new": (studentId) => openModal({ title: "New class", wide: true, body: planForm({}, studentId), submitText: "Save class",
     onSubmit: function(d, form){
       if (!DataService.getStudent(d.studentId)) { toast("Pick a student from the list", "bad"); return false; }
-      if (d.teacherId && !DataService.getTeacher(d.teacherId)) { toast("That teacher was not found — pick one from the list", "bad"); return false; }
-      /* v21: a plan needs a course and a fee — an empty plan was being saved by mistake */
       if (!String(d.course || "").trim()) { toast("Choose the course", "bad"); return false; }
-      if (!(+d.rate > 0) && d.feeType !== "manual" && !(+d.feeBase > 0)) { toast("Enter the fee (or choose “Manual each month”)", "bad"); return false; }
+      if (!(+d.rate > 0)) { toast("Type the monthly fee", "bad"); return false; }
+      if (d.teacherId_q && !DataService.getTeacher(d.teacherId)) { toast("Pick the teacher from the list — or clear the box", "bad"); return false; }
       const same = DataService.getPlans({ studentId: d.studentId }).find(x => x.status === "Active" && x.course === d.course);
-      if (same) { toast("This student already has an active " + d.course + " plan (" + same.id + ") — edit that plan instead", "warn", 6000); return false; }
-      d.status = "Active"; delete d.studentId_q; delete d.teacherId_q;
-      d.days = readDays(form);
-      d.perWeek = d.days.length;
-      ["duration","rate","discount","dueDay"].concat(RULE_NUM).forEach(k => d[k] = +d[k] || 0);
-      const raiseFirst = d.raiseFirst, adm = +d.admissionFee || 0, waiveAdm = d.waiveAdmission;
-      const dueDay = d.dueDay || Settings().defaultDueDay || 5;
-      delete d.id; delete d.raiseFirst; delete d.admissionFee; delete d.waiveAdmission;
-      const id = DataService.savePlan(d);
-      /* v20: prepaid on the student's own day — the payment made on joining covers the month that starts with it, which the
-         books call the NEXT month (join 15 October → that payment is "November", due 15 October; 15 November is "December").
-         v19 raised it as October, so November then fell due on the joining day as well. */
-      const start = String(d.startDate || today());
-      const studentDay = Logic.prepaid() && (Settings().prepaidDue || "studentDay") === "studentDay";
-      const m = studentDay ? addMonths(start.slice(0, 7), 1) : start.slice(0, 7);
-      const firstDue = (function(){ const x = Logic.feeDueDate(m, dueDay); return studentDay && x < start ? start : x; })();
-      /* prepaid: raise the first month's fee now using the plan rate, so it can be collected immediately */
-      const holdI = DataService.holdFor(d.studentId, m);
-      /* new rule types raise the first month from the planned classes; the original four keep their old behaviour */
-      const newRule = Logic.isHybrid(d.feeType) || d.feeType === "manual";
-      const firstGross = newRule ? Logic.computeGross(d.feeType, d.rate, Logic.plannedStats(DataService.getPlan(id), m), Logic.ruleExtra(d, "fee"))
-                                 : Math.max(0, (+d.rate || 0) - (+d.discount || 0));
-      if (raiseFirst && (d.feeType === "manual" || (newRule ? firstGross > 0 : (+d.rate || 0) > 0)) && !(holdI && holdI.waiveFee)) {
-        const gross = firstGross;
-        const fx = Logic.ruleExtra(d, "fee");
-        DataService.saveFee({ source: "individual", month: m, studentId: d.studentId, planId: id,
-          teacherId: d.teacherId || "", feeType: newRule ? d.feeType : "monthly", rate: +d.rate || 0, gross: gross, discount: +d.discount || 0,
-          feeBase: fx.base, feeIncluded: fx.included, feeMin: fx.min, feeMax: fx.max,
-          needsAmount: d.feeType === "manual", override: false,
-          carry: 0, billing: "prepaid", reconciled: false, waived: false, locked: false,
-          dueDate: firstDue, remarks: "First month (prepaid)", createdAt: new Date().toISOString() });
-      }
-      /* admission fee as a one-off */
-      if (adm > 0 && !waiveAdm) {
-        DataService.saveFee({ source: "individual", month: m, studentId: d.studentId, planId: id,
-          teacherId: d.teacherId || "", feeType: "admission", rate: adm, gross: adm, discount: 0,
-          carry: 0, billing: "prepaid", reconciled: false, waived: false, locked: true,
-          dueDate: firstDue, remarks: "Admission fee", createdAt: new Date().toISOString() });
-      }
-      toast("Class plan " + id + " created" + (raiseFirst && (+d.rate || 0) > 0 ? " · fee raised for " + monthLabel(m) : ""), "ok");
-      celebrate("🎓"); render();
+      if (same) { toast("This student already has an active " + d.course + " class (" + same.id + ") — edit that one instead", "warn", 6000); return false; }
+      const days = readDays(form), start = d.startDate || today();
+      const id = DataService.savePlan({ studentId: d.studentId, teacherId: DataService.getTeacher(d.teacherId) ? d.teacherId : "", course: d.course,
+        days: days, perWeek: days.length, time: d.time || "", duration: +d.duration || 0, feeType: "monthly", rate: round2(+d.rate), discount: 0,
+        dueDay: Math.min(28, Math.max(1, +d.dueDay || dayOf(start))), startDate: start, endDate: "", status: "Active", notes: d.notes || "" });
+      let msg = "Class " + id + " saved" + (DataService.getTeacher(d.teacherId) ? "" : " · no teacher yet");
+      if (d.firstFee) { const fm = Logic.firstMonth(start), r = Logic.buildIndMonth(fm, { planId: id, first: true, remark: "First month" });
+        if (r.created) msg += " · " + monthLabel(fm) + " fee on the due list"; }
+      toast(msg, "ok", 4200); celebrate("🎓"); render();
     } }),
-  "plan-edit": (id) => { const pl0 = DataService.getPlan(id); if (!pl0) { toast("That plan was not found", "bad"); return; }
-    openModal({ title: "Edit " + id, wide: true, body: planForm(pl0), submitText: "Save changes",
+  "plan-edit": (id) => { const pl0 = DataService.getPlan(id); if (!pl0) { toast("That class was not found", "bad"); return; }
+    openModal({ title: "Edit class " + id, wide: true, body: planForm(pl0), submitText: "Save changes",
     onSubmit: function(d, form){
-      d.days = readDays(form); d.perWeek = d.days.length; d.id = id; delete d.studentId_q; delete d.teacherId_q;
-      ["duration","rate","discount","dueDay"].concat(RULE_NUM).forEach(k => d[k] = +d[k] || 0);
-      const was = Object.assign({}, DataService.getPlan(id) || {});
-      if (d.status === "Stopped" && !d.endDate) d.endDate = today();
-      DataService.savePlan(d);
-      const pl = DataService.getPlan(id);
-      toast("Plan updated", "ok", 2600); render();
-      /* v21: what happens to the unpaid months after the last class, and whose are the marks after a teacher change */
-      const next = [];
-      if (d.status === "Stopped") next.push(() => planStopDialog(pl));
-      if ((was.teacherId || "") !== (d.teacherId || "") && d.teacherId) next.push(() => planTeacherDialog(pl, was.teacherId || "", d.teacherId));
-      if (next.length) setTimeout(next[0], 140);
-      PLAN_NEXT = next.slice(1);
+      if (!String(d.course || "").trim()) { toast("Choose the course", "bad"); return false; }
+      if (d.teacherId_q && !DataService.getTeacher(d.teacherId)) { toast("Pick the teacher from the list — or clear the box", "bad"); return false; }
+      const days = readDays(form), stopped = d.status === "Stopped";
+      const rec = { id: id, course: d.course, teacherId: DataService.getTeacher(d.teacherId) ? d.teacherId : "", days: days, perWeek: days.length,
+        time: d.time || "", duration: +d.duration || 0, feeType: "monthly", rate: round2(+d.rate || 0),
+        dueDay: Math.min(28, Math.max(1, +d.dueDay || 5)), startDate: d.startDate || pl0.startDate || today(), status: d.status || "Active",
+        endDate: stopped ? (d.endDate || today()) : "", notes: d.notes || "" };
+      if (!stopped) rec.stopReason = "";
+      if (rec.rate > 0) rec.setupNeeded = false;
+      DataService.savePlan(rec);
+      const n = followFee({ planId: id }, rec.rate, rec.teacherId);
+      toast((stopped && pl0.status === "Active" ? "Class stopped" : "Class updated") + (n ? " · " + n + " unpaid month" + (n > 1 ? "s" : "") + " updated" : ""), "ok", 3600);
+      render();
     } }); },
   "plan-del": (id) => {
     const pl = DataService.getPlan(id); if (!pl) return;
-    if (planUsed(id)) { toast("This plan has fees or attendance — stop it instead of deleting it", "warn", 5000); return; }
+    if (planUsed(id)) { toast("This class has fees or attendance — stop it instead of deleting it", "warn", 5000); return; }
     const st = DataService.getStudent(pl.studentId);
     confirmAction({ title: "Delete " + id, danger: true, submitText: "Delete the plan",
       note: "The plan has no fees, payments or attendance, so nothing else changes.",
@@ -1119,7 +986,7 @@ const Actions = {
       DataService.saveClass(d); toast("Class updated", "ok"); render();
     } }),
   "class-del": (id) => confirmAction({ title: "Remove this class", danger: true,
-    note: "The fee for that month will be lower once you recalculate. Payments already received are untouched.",
+    note: "Only the attendance mark is removed. Fees and payments do not change.",
     message: "Remove class " + id + " from the log?", submitText: "Remove class",
     onConfirm: function(){ DataService.deleteClass(id); toast("Class removed", "ok"); render(); } }),
   "cls-range": (planId) => openModal({
@@ -1188,79 +1055,6 @@ const Actions = {
       return [c.id, c.date, c.studentId, s ? s.name : "", t ? t.name : "", p ? p.course : "", c.duration, c.status, c.notes];
     })),
 
-  /* ---------------- fees ---------------- */
-  "batch-fees-build": () => openModal({
-    title: "Calculate batch fees",
-    body: '<div class="note">One record per active enrolment. A student who already has a record for the month is skipped, and earlier months are never touched.</div>' +
-      '<div class="form-grid">' + field("Month", sel("month", monthOpts(State.month, ""))) +
-      '<div class="field"><label>Mid-month joiners</label><label style="display:flex;gap:8px;align-items:center;padding-top:8px;font-size:13.5px">' +
-      '<input type="checkbox" name="prorate" checked> Charge only the remaining part of the month</label></div></div>',
-    submitText: "Calculate",
-    onSubmit: function(d){
-      const r = Logic.buildBatchMonth(d.month, { prorate: !!d.prorate });
-      State.month = d.month; $("#globalMonth").innerHTML = monthOpts(State.month, "");
-      toast(r.created + " batch fee records created for " + monthLabel(d.month) +
-        (r.skipped ? " · " + r.skipped + " already existed" : "") + (r.held ? " · " + r.held + " on hold, no fee" : ""), r.created ? "ok" : "warn", 4200);
-      render();
-    }
-  }),
-  "ind-fees-build": () => openModal({
-    title: "Calculate individual fees",
-    body: '<div class="note">Each active plan is worked out from its class log for the month. Locked months are skipped and payments are never touched.</div>' +
-      '<div class="form-grid">' + field("Month", sel("month", monthOpts(State.month, ""))) + '</div>',
-    submitText: "Calculate",
-    onSubmit: function(d){
-      const r = Logic.buildIndMonth(d.month);
-      State.month = d.month; $("#globalMonth").innerHTML = monthOpts(State.month, "");
-      toast(r.created + " created, " + r.updated + " updated from the class log" +
-        (r.skipped ? ", " + r.skipped + " unchanged" : "") + (r.held ? ", " + r.held + " on hold (no fee)" : ""), "ok", 4200);
-      render();
-    }
-  }),
-  "build-both": () => {
-    const r = Logic.buildBoth(State.month);
-    toast(r.created + " fee records created, " + r.updated + " updated for " + monthLabel(State.month) +
-      (r.held ? " · " + r.held + " on hold (no fee)" : ""), "ok", 4200);
-    render();
-  },
-  "fee-edit": (id) => {
-    const v = withBasis(Logic.feeView(DataService.getFee(id)));
-    openModal({ title: "Adjust fee — " + v.studentName,
-      body: '<div class="note">' + streamChip(v.source) + ' ' + esc(monthLabel(v.month)) + ' · gross comes from ' +
-        esc(v.source === "batch" ? "the enrolment fee" : "the class log (" + v.basisText + ")") +
-        '. Payments already received (' + money(v.paidAmount) + ') are untouched. A discount is not an expense — it lowers the fee.' +
-        ' Changing the gross fee makes it this month\'s agreed amount — recalculation will not change it.</div>' +
-        '<div class="form-grid">' +
-        field("Gross fee", '<input class="input" type="number" name="gross" step="0.01" value="' + v.gross + '">') +
-        field("Discount", '<input class="input" type="number" name="discount" min="0" step="0.01" value="' + (+v.discount || 0) + '">') +
-        field("Due date", '<input class="input" type="date" name="dueDate" value="' + esc(v.dueDate) + '">') +
-        '<div class="field"><label>Waive this month</label><label style="display:flex;gap:8px;align-items:center;padding-top:8px;font-size:13.5px">' +
-          '<input type="checkbox" name="waived"' + (v.waived ? " checked" : "") + '> Nothing payable</label></div>' +
-        '<div class="field"><label>Lock this month</label><label style="display:flex;gap:8px;align-items:center;padding-top:8px;font-size:13.5px">' +
-          '<input type="checkbox" name="locked"' + (v.locked ? " checked" : "") + '> Final — recalculation skips it</label></div>' +
-        (v.override ? '<div class="field span2"><label style="display:flex;gap:8px;align-items:center;font-size:13.5px">' +
-          '<input type="checkbox" name="clearOverride"> Go back to the calculated amount' +
-          (v.autoGross !== undefined && v.autoGross !== null ? ' (' + money(v.autoGross) + ')' : '') + '</label></div>' : "") +
-        '<div class="field span2"><label>Remarks</label><input class="input" name="remarks" value="' + esc(v.remarks || "") + '"></div></div>',
-      submitText: "Save adjustment",
-      onSubmit: function(d){
-        const f0 = DataService.getFee(id), g = +d.gross || 0;
-        const upd = { id: id, gross: g, discount: +d.discount || 0, dueDate: d.dueDate,
-          waived: !!d.waived, locked: !!d.locked, remarks: d.remarks };
-        if (d.clearOverride) {
-          upd.override = false;
-          upd.gross = f0.autoGross !== undefined && f0.autoGross !== null ? +f0.autoGross : g;
-          upd.needsAmount = f0.feeType === "manual";
-        } else if (f0.needsAmount || round2(g) !== round2(+f0.gross || 0)) {
-          /* a typed amount: keep what the calculation said, then stop recalculation touching it */
-          upd.override = true; upd.needsAmount = false;
-          if (!f0.override) upd.autoGross = f0.needsAmount ? null : (+f0.gross || 0);
-        }
-        DataService.saveFee(upd);
-        toast(upd.override ? "Amount set for this month" : "Fee record updated", "ok"); render();
-      } });
-  },
-  "rule-ui": (g, el) => ruleUI(el.closest("form"), g),
   "wipe-backup": () => {
     if (!WIPE_SNAPSHOT) return;
     try {
@@ -1315,104 +1109,15 @@ const Actions = {
     };
     inp.click();
   },
-  /* batch enrolment: fixed monthly fee or typed in each month (applies from the next month raised) */
-  "enrol-feemode": (id) => {
-    const e = DataService.getEnrollments().find(x => x.id === id); if (!e) return;
-    openModal({ title: "Fee method — " + id,
-      body: '<div class="note">Applies to months raised from now on. Months already raised keep their amount — use Adjust on a month to change it.</div>' +
-        '<div class="form-grid">' +
-        field("Fee method", sel("feeMode", optList(ENROL_FEE_MODES, e.feeMode || ""))) +
-        field("Monthly fee (fixed)", '<input class="input" type="number" min="0" step="0.01" name="monthlyFee" value="' + (+e.monthlyFee || 0) + '">') +
-        '</div>',
-      submitText: "Save",
-      onSubmit: function(d){
-        DataService.saveEnrollment({ id: id, feeMode: d.feeMode === "manual" ? "manual" : "", monthlyFee: +d.monthlyFee || 0 });
-        toast("Fee method saved", "ok"); render();
-      } });
-  },
-  /* ---- one student's salary line for the month ----
-     Shows the attendance it was worked out from, lets you change the base, add an
-     extra payment, take off a deduction, and leave a note. Nothing else is touched. */
-  "tline-edit": (key) => {
-    const parts = String(key).split("|"), teacherId = parts[0], planId = parts[1];
-    const m = State.tpay.month || State.month, t = DataService.getTeacher(teacherId);
-    if (!t) { toast("Teacher not found", "bad"); return; }
-    const L = Logic.salaryLines(t, m).find(x => x.planId === planId);
-    if (!L) { toast("That student is not in this month", "bad"); return; }
-    const a = DataService.getAdjust(teacherId, m) || {}, lines = Logic.parseLines(a.planLines), cur = lines[planId] || {};
-    const row = (k, v) => '<tr><td>' + k + '</td><td class="num">' + v + '</td></tr>';
-    openModal({ title: L.studentName + " — " + monthLabel(m), wide: true, submitText: "Save",
-      body:
-        '<div class="note">' + esc(t.name) + ' · ' + esc(L.course || "—") +
-          (L.time ? ' · ' + esc(time12(L.time)) : "") + ' · ' + esc(L.basis) + '</div>' +
-        '<div class="tblwrap"><table class="paytbl small"><tbody>' +
-          row("Class days in " + monthShort(m), L.planned + (L.holidays ? " (" + L.holidays + " holiday)" : "")) +
-          row("Classes taken", L.taken) +
-          row("Student absent / leave", L.studentAbsent + " / " + L.studentLeave) +
-          row("Teacher leave / taken by another", L.teacherAbsent + " / " + L.substitute) +
-          row("<b>Classes counted for pay</b>", "<b>" + L.counted + "</b>") +
-        '</tbody></table></div>' +
-        '<div class="form-grid">' +
-        field("Base amount", '<input class="input" type="number" min="0" step="0.01" name="amount" value="' +
-          (cur.amount !== undefined && cur.amount !== "" ? esc(cur.amount) : esc(L.base)) + '">') +
-        '<div class="field"><label>&nbsp;</label><label style="display:flex;gap:8px;align-items:center;font-size:13px">' +
-          '<input type="checkbox" name="auto"' + (cur.amount === undefined || cur.amount === "" ? " checked" : "") +
-          '> Keep it automatic</label></div>' +
-        field("Additional payment", '<input class="input" type="number" min="0" step="0.01" name="add" value="' + esc(+cur.add || 0) + '">') +
-        field("Deduction", '<input class="input" type="number" min="0" step="0.01" name="deduct" value="' + esc(+cur.deduct || 0) + '">') +
-        '<div class="field span2"><label>Note <span class="hint">(printed on the salary report)</span></label>' +
-          '<input class="input" name="note" value="' + esc(cur.note || "") + '" placeholder="e.g. extra revision week, late joining"></div>' +
-        '</div>' +
-        (cur.amount !== undefined || cur.add || cur.deduct || cur.note
-          ? '<div class="btn-row"><button type="button" class="btn btn-danger btn-sm" data-act="tline-clear" data-id="' +
-            esc(teacherId + "|" + planId) + '">Clear this student\'s edits</button></div>' : ""),
-      onSubmit: function(d){
-        const e = {};
-        if (!d.auto) e.amount = round2(+d.amount || 0);
-        if (+d.add) e.add = round2(+d.add);
-        if (+d.deduct) e.deduct = round2(+d.deduct);
-        if (String(d.note || "").trim()) e.note = String(d.note).trim();
-        if (Object.keys(e).length) lines[planId] = e; else delete lines[planId];
-        DataService.saveAdjust({ teacherId: teacherId, month: m, planLines: JSON.stringify(lines) });
-        const after = Logic.salaryLines(t, m).find(x => x.planId === planId);
-        toast(L.studentName + " · " + money(after ? after.amount : 0), "ok", 3600); render();
-      } });
-  },
-  "tline-clear": (key) => {
-    const parts = String(key).split("|"), teacherId = parts[0], planId = parts[1];
-    const m = State.tpay.month || State.month;
-    const a = DataService.getAdjust(teacherId, m) || {}, lines = Logic.parseLines(a.planLines);
-    delete lines[planId];
-    DataService.saveAdjust({ teacherId: teacherId, month: m, planLines: JSON.stringify(lines) });
-    closeModal(); toast("Back to the automatic amount", "ok"); render();
-  },
-  "fees-csv": (id, el) => {
-    const src = el.dataset.src;
-    downloadCSV("fees-" + src + "-" + State.month + ".csv",
-      ["Fee ID","Stream","Month","Student ID","Student","Teacher","Basis","Gross","Discount","Net","Paid","Balance","Due Date","Days Overdue","Status"],
-      Logic.feeViews({ month: State.month, source: src }).map(withBasis).map(v => [v.id, v.source, v.month, v.studentId,
-        v.studentName, v.teacherName, v.shortBasis, v.gross, v.discount, v.netFee, v.paidAmount, v.balance, v.dueDate, v.daysOverdue, v.status]));
-  },
   "dues-quick": (id, el) => { State[el.dataset.key].quick = el.dataset.q; resetLists(); render(); },
   "dues-csv": (id, el) => {
-    const src = el.dataset.src;
-    downloadCSV("dues-" + src + "-" + State.month + ".csv",
-      ["Student ID","Student","Phone","WhatsApp","Stream","Month","Net","Paid","Balance","Due Date","Days Overdue","Status"],
-      Logic.feeViews({ month: State.month, source: src }).filter(v => v.balance > 0).map(v => [v.studentId, v.studentName,
-        v.phone, v.whatsapp, v.source, v.month, v.netFee, v.paidAmount, v.balance, v.dueDate, v.daysOverdue, v.status]));
-  },
-  "brep-csv": () => downloadCSV("batch-report-" + State.month + ".csv",
-    ["Batch ID","Batch","Teacher","Students","Expected","Collected","Pending","Collection %","Attendance %"],
-    DataService.getBatches().map(function(b){
-      const s = Logic.summarize(Logic.feeViews({ month: State.month, source: "batch", batchId: b.id }));
-      const a = Logic.attStats(DataService.getAttendance({ month: State.month, batchId: b.id }));
-      const t = DataService.getTeacher(b.teacherId);
-      return [b.id, b.name, t ? t.name : "", Logic.rosterOf(b.id).length, s.net, s.paid, s.balance, s.collectionPct + "%", a.pct + "%"];
-    })),
-  "irep-csv": () => downloadCSV("individual-report-" + State.month + ".csv",
-    ["Student ID","Student","Teacher","Method","Rate","Basis","Gross","Discount","Net","Paid","Balance","Status"],
-    Logic.feeViews({ month: State.month, source: "individual" }).map(withBasis).map(v => [v.studentId, v.studentName,
-      v.teacherName, Logic.methodLabel(v.feeType), v.rate, v.shortBasis, v.gross, v.discount, v.netFee, v.paidAmount, v.balance, v.status]))
+    const src = el.dataset.src || "";
+    downloadCSV("due-" + (src || "all") + "-" + State.month + ".csv",
+      ["Student ID","Student","Phone","WhatsApp","Stream","Class","Teacher","Month","Fee","Paid","Pending","Due Date","Days Late","Status"],
+      Logic.feeViews(src ? { month: State.month, source: src } : { month: State.month }).map(withBasis).map(v => [v.studentId, v.studentName,
+        v.phone, v.whatsapp, v.source, v.shortBasis, v.teacherName, v.month, v.netFee, v.paidAmount, v.balance, v.dueDate,
+        v.balance > 0 ? v.daysOverdue : 0, Logic.dueStatus(v)]));
+  }
 };
 
 Object.assign(Actions, {
@@ -1499,10 +1204,10 @@ Object.assign(Actions, {
     /* a new student has no fee to pay against until a class plan or batch enrolment raises one */
     if (st && !views.length) {
       hint.innerHTML = '<div class="note" style="margin-top:6px"><b>' + esc(st.name) + ' has no fee yet.</b> ' +
-        'A fee is created when the student gets a class: a <b>class plan</b> (one-to-one) or a <b>batch enrolment</b>. ' +
-        'Leave "Raise this month\'s fee now" ticked there, then come back here.</div>' +
+        'A fee row comes from the student\'s class: arrange an individual class or a batch (tick "Put the first fee on the due list now"), ' +
+        'or make the month\'s list on Due date.</div>' +
         '<div class="btn-row" style="margin-top:8px">' +
-        '<button type="button" class="btn btn-sm btn-primary" data-act="pay-to-plan" data-id="' + esc(sid) + '">+ New class plan</button>' +
+        '<button type="button" class="btn btn-sm btn-primary" data-act="pay-to-plan" data-id="' + esc(sid) + '">+ Individual class</button>' +
         '<button type="button" class="btn btn-sm" data-act="pay-to-batch" data-id="' + esc(sid) + '">Enrol in a batch</button></div>';
       return;
     }
@@ -1567,34 +1272,7 @@ Object.assign(Actions, {
           '<button type="button" class="btn" data-act="print-receipt">Save as PDF</button>' +
           '<button type="button" class="btn btn-wa" data-act="wa-received" data-id="' + p.id + '">Send on WhatsApp</button></div>' });
   },
-  /* ---- welcome letter ----
-     Everything comes from the student's live plan or batch enrolment, so a change to the
-     class time today is in the letter printed tomorrow. Terms are edited in Settings. */
-  /* ---- teacher salary report ----
-     Student by student, with the attendance it was worked out from, the additions and
-     deductions, the day-by-day grid and the total. Opens as a print page. */
-  "salary-report": (id) => {
-    const m = State.tpay.month || State.month, t = DataService.getTeacher(id);
-    if (!t) { toast("Teacher not found", "bad"); return; }
-    const pv = Logic.payrollView(t, m), lines = pv.indLines || [];
-    if (!lines.length && !(pv.groups || []).length) { toast("Nothing to report for " + monthLabel(m), "warn"); return; }
-    const auto = [];
-    lines.forEach(function(L){
-      if (L.note) auto.push(L.studentName + " · " + L.note);
-      L.rows.forEach(function(r){ if (r.notes) auto.push(L.studentName + " · " + fmtDate(r.date) + ": " + r.notes); });
-    });
-    openModal({ title: "Salary report — " + t.name, wide: true, submitText: "Open the report",
-      body: '<div class="note">' + monthLabel(m) + ' · ' + lines.length + ' student' + (lines.length === 1 ? "" : "s") +
-          ' · total payable <b>' + money(pv.payable) + '</b>. Edit a student first if an amount is wrong — the report always prints the saved figures.</div>' +
-        '<div class="form-grid">' +
-        field("Period from", '<input class="input" type="date" name="from" value="' + monthStart(m) + '">') +
-        field("Period to", '<input class="input" type="date" name="to" value="' + monthEnd(m) + '">') +
-        field("Issued on", '<input class="input" type="date" name="issued" value="' + today() + '">') +
-        '<div class="field span2"><label>Notes <span class="hint">(one per line, printed at the bottom)</span></label>' +
-          '<textarea class="input" name="notes" rows="4">' + esc(auto.join("\n")) + '</textarea></div>' +
-        '</div>',
-      onSubmit: function(d){ openSalaryReport(t, m, d); } });
-  },
+  /* ---- welcome letter: everything comes from the student's live class; terms are edited in Settings ---- */
   "welcome": (id) => {
     const st = DataService.getStudent(id);
     if (!st) { toast("Student not found", "bad"); return; }
@@ -1687,95 +1365,22 @@ Object.assign(Actions, {
   /* ---------------- teachers ---------------- */
   "staff-new": () => openModal({ title: "Add staff", wide: true, body: teacherForm({ kind: "staff" }), submitText: "Save staff",
     onSubmit: function(d){
-      if (!d.name) { toast("Name is needed", "bad"); return false; }
-      d.indRate = +d.indRate || 0; ["indBase","indIncluded","indMin","indMax"].forEach(k => d[k] = +d[k] || 0); d.batchRate = +d.batchRate || 0; d.subRate = +d.subRate || 0; d.monthlySalary = +d.monthlySalary || 0; d.kind = "staff"; delete d.id; joinCC(d);
+      if (!String(d.name || "").trim()) { toast("Name is needed", "bad"); return false; }
+      d.kind = "staff"; delete d.id; joinCC(d);
       const id = DataService.saveTeacher(d);
       toast("Staff " + id + " added", "ok"); celebrate("👤"); render();
     } }),
   "teacher-new": () => openModal({ title: "Add teacher", wide: true, body: teacherForm({}), submitText: "Save teacher",
     onSubmit: function(d){
-      if (!d.name) { toast("Name is needed", "bad"); return false; }
-      d.indRate = +d.indRate || 0; ["indBase","indIncluded","indMin","indMax"].forEach(k => d[k] = +d[k] || 0); d.batchRate = +d.batchRate || 0; d.subRate = +d.subRate || 0; d.monthlySalary = +d.monthlySalary || 0; delete d.id; joinCC(d);
+      if (!String(d.name || "").trim()) { toast("Name is needed", "bad"); return false; }
+      delete d.id; joinCC(d);
+      if (d.kind !== "staff") d.role = "";
       const id = DataService.saveTeacher(d);
       toast((d.kind === "staff" ? "Staff " : "Teacher ") + id + " added", "ok"); celebrate(d.kind === "staff" ? "👤" : "🧑‍🏫"); render();
     } }),
   "teacher-edit": (id) => openModal({ title: "Edit " + id, wide: true, body: teacherForm(DataService.getTeacher(id)), submitText: "Save changes",
-    onSubmit: function(d){ d.id = id; d.indRate = +d.indRate || 0; ["indBase","indIncluded","indMin","indMax"].forEach(k => d[k] = +d[k] || 0); d.batchRate = +d.batchRate || 0; d.subRate = +d.subRate || 0; d.monthlySalary = +d.monthlySalary || 0; joinCC(d);
-      DataService.saveTeacher(d); toast("Saved", "ok"); render(); } }),
-  "tpay-new": (teacherId) => {
-    const m = State.tpay.month || State.month;
-    const t = teacherId ? DataService.getTeacher(teacherId) : DataService.getTeachers()[0];
-    const v = t ? Logic.payrollView(t, m) : null;
-    openModal({ title: "Pay teacher",
-      body: (v ? '<div class="note"><b>' + esc(v.teacherName) + '</b> · ' + esc(monthLabel(m)) + '<br>Individual ' +
-        money(v.indAmount) + ' + batch ' + money(v.batchAmount) + ' = payable ' + money(v.payable) +
-        ', already paid ' + money(v.paid) + ', balance <b>' + money(v.balance) + '</b>.</div>' : "") +
-        '<div class="form-grid">' +
-        field("Teacher", sel("teacherId", teacherOpts(t ? t.id : "", "Select teacher"))) +
-        field("For month", sel("month", monthOpts(m, ""))) +
-        field("Amount", '<input class="input amt" type="number" name="amount" min="0.01" step="0.01" value="' +
-          (v && v.balance > 0 ? v.balance : "") + '" required>') +
-        field("Date", '<input class="input" type="date" name="date" value="' + today() + '">') +
-        field("Paid from", sel("account", accountOpts(t && t.payAccount ? t.payAccount : "Bank"))) +
-        field("Type", sel("category", optList(["Teacher Payment","Teacher Advance","Teacher Bonus"], "Teacher Payment"))) +
-        '<div class="field span2"><label>Remarks</label><input class="input" name="remarks"></div></div>',
-      submitText: "Record payment",
-      onSubmit: function(d){
-        const amt = +d.amount;
-        if (!d.teacherId || !amt) { toast("Teacher and amount are needed", "bad"); return false; }
-        DataService.saveTeacherPayment({ teacherId: d.teacherId, month: d.month, amount: amt, date: d.date || today(),
-          account: d.account, category: d.category, remarks: d.remarks });
-        toast(money(amt) + " paid to " + (DataService.getTeacher(d.teacherId) || {}).name, "ok"); render();
-      } });
-  },
-  "tadj-edit": (teacherId) => {
-    const m = State.tpay.month || State.month, t = DataService.getTeacher(teacherId);
-    const a = DataService.getAdjust(teacherId, m) || {}, v = Logic.payrollView(t, m);
-    openModal({ title: "Bonus · incentive · deduction — " + t.name,
-      body: '<div class="note">' + esc(monthLabel(m)) + ' gross is ' + money(v.gross) + ' (individual ' + money(v.indAmount) +
-        ' + batch ' + money(v.batchAmount) + ').</div>' +
-        '<div class="form-grid">' +
-        field("Bonus", '<input class="input" type="number" name="bonus" min="0" step="0.01" value="' + (+a.bonus || 0) + '">') +
-        field("Incentive", '<input class="input" type="number" name="incentive" min="0" step="0.01" value="' + (+a.incentive || 0) + '">') +
-        field("Deduction", '<input class="input" type="number" name="deduction" min="0" step="0.01" value="' + (+a.deduction || 0) + '">') +
-        (t.indRateType === "custom" ? field("Custom individual amount",
-          '<input class="input" type="number" name="custom" min="0" step="0.01" value="' + (+a.custom || 0) + '">') : "") +
-        '<div class="field span2"><label>Remarks</label><input class="input" name="remarks" value="' + esc(a.remarks || "") + '"></div></div>',
-      submitText: "Save",
-      onSubmit: function(d){
-        DataService.saveAdjust({ teacherId: teacherId, month: m, bonus: +d.bonus || 0, incentive: +d.incentive || 0, deduction: +d.deduction || 0,
-          custom: +d.custom || 0, remarks: d.remarks });
-        toast("Saved", "ok"); render();
-      } });
-  },
-  "tstatement": (teacherId) => {
-    const t = DataService.getTeacher(teacherId);
-    const rows = allMonths().map(m => Logic.payrollView(t, m)).filter(p => p.payable > 0 || p.paid > 0);
-    openModal({ title: "Statement — " + t.name, wide: true, hideSubmit: true, cancelText: "Close",
-      body: '<div class="tablewrap"><table class="tbl"><thead><tr><th>Month</th><th class="right">Individual</th>' +
-        '<th class="right">Batch</th><th class="right">Payable</th><th class="right">Paid</th><th class="right">Balance</th></tr></thead><tbody>' +
-        (rows.length ? rows.map(p => '<tr><td>' + esc(monthLabel(p.month)) + '</td>' +
-          '<td class="right amt">' + money(p.indAmount) + '</td><td class="right amt">' + money(p.batchAmount) + '</td>' +
-          '<td class="right amt">' + money(p.payable) + '</td><td class="right amt in">' + money(p.paid) + '</td>' +
-          '<td class="right amt">' + money(p.balance) + '</td></tr>').join("")
-          : '<tr><td colspan="6" style="color:var(--muted)">Nothing yet.</td></tr>') + '</tbody></table></div>' });
-  },
-  "tpay-csv": () => {
-    const m = State.tpay.month || State.month;
-    downloadCSV("teacher-payments-" + m + ".csv",
-      ["Teacher ID","Teacher","Month","Group","Group type","Sessions","Students","Group pay","Individual","Batch total","Gross","Bonus","Deduction","Payable","Paid","Balance","Status"],
-      Logic.payrollMonth(m).reduce(function(rows, p){
-        const gs = (p.groups && p.groups.length) ? p.groups : [{ label: "—", subClassId: "", sessions: 0, students: 0, amount: 0 }];
-        gs.forEach(function(g, i){
-          rows.push([p.teacherId, p.teacherName, p.month, g.label, g.subClassId ? "Sub-class" : "Batch",
-            g.sessions, g.students, g.amount,
-            i === 0 ? p.indAmount : "", i === 0 ? p.batchAmount : "", i === 0 ? p.gross : "",
-            i === 0 ? p.bonus : "", i === 0 ? p.deduction : "", i === 0 ? p.payable : "",
-            i === 0 ? p.paid : "", i === 0 ? p.balance : "", i === 0 ? p.status : ""]);
-        });
-        return rows;
-      }, []));
-  },
+    onSubmit: function(d){ if (!String(d.name || "").trim()) { toast("Name is needed", "bad"); return false; }
+      d.id = id; joinCC(d); DataService.saveTeacher(d); toast("Saved", "ok"); render(); } }),
 
   /* ---------------- income / expense / accounts ---------------- */
   "inc-new": () => openModal({ title: "Add income", body: incomeForm({}), submitText: "Save income",
@@ -1860,23 +1465,16 @@ Object.assign(Actions, {
   "settings-save": () => {
     const patch = {};
     ["academyName","academyTagline","website","email","contactPhone","whatsappNumber","currency","countryCode",
-     "defaultDueDay","defaultFeeMethod","billingMode","advanceDays","prepaidDue","teacherLinkBase","apiUrl",
-     "syncKey","syncEvery","admissionFeeDefault","welcomeTerms","monthlyPayOnlyIfTaught"].forEach(k => {
+     "defaultDueDay","teacherLinkBase","apiUrl","syncKey","syncEvery","welcomeTerms"].forEach(k => {
       const el = $("#set_" + k); if (el) patch[k] = el.value;
     });
     patch.defaultDueDay = +patch.defaultDueDay || 5;
-    if (patch.admissionFeeDefault !== undefined) patch.admissionFeeDefault = Math.max(0, +patch.admissionFeeDefault || 0);
     const so = $("#set_syncOn"); if (so) patch.syncOn = so.checked;
     if (patch.syncEvery !== undefined) patch.syncEvery = Math.max(1, +patch.syncEvery || 3);
-    if (patch.advanceDays !== undefined) patch.advanceDays = Math.max(0, +patch.advanceDays || 0);
     const file = $("#set_logoFile");
     if (file && file.files && file.files[0]) {
       const r = new FileReader();
-      r.onload = function(){ patch.logo = r.result; /* which class states earn the teacher money (checkbox chips) */
-    const picked = Array.prototype.slice.call(document.querySelectorAll(".set_payStatus"))
-      .filter(c => c.checked).map(c => c.value);
-    if (document.querySelector(".set_payStatus")) patch.payCountStatuses = picked.join(",");
-    DataService.saveSettings(patch); toast("Settings saved", "ok"); render(); };
+      r.onload = function(){ patch.logo = r.result; DataService.saveSettings(patch); toast("Settings saved", "ok"); render(); };
       r.readAsDataURL(file.files[0]);
       return;
     }
@@ -2105,7 +1703,7 @@ function welcomeData(st, src){
     out.holiday = welcomeHoliday(p.days);
     out.startDate = p.startDate || st.joiningDate || "";
     out.dueDate = Logic.feeDueDate(addMonths(currentMonth(), 1), p.dueDay || 5);
-    out.fee = p.feeType === "manual" ? "" : money(p.rate);
+    out.fee = +p.rate ? money(p.rate) : "";
     out.teacher = t ? t.name : "";
   } else {
     const e = DataService.getEnrollments().find(x => x.id === id); if (!e) return out;
@@ -2120,7 +1718,7 @@ function welcomeData(st, src){
     out.holiday = welcomeHoliday(days);
     out.startDate = e.joiningDate || st.joiningDate || "";
     out.dueDate = Logic.feeDueDate(addMonths(currentMonth(), 1), e.dueDay || 5);
-    out.fee = e.feeMode === "manual" ? "" : money(+e.monthlyFee || +b.monthlyFee || 0);
+    out.fee = Logic.enrolFee(e) ? money(Logic.enrolFee(e)) : "";
     out.teacher = t ? t.name : "";
     out.batchName = b.name || e.batchId;
   }
@@ -2244,158 +1842,6 @@ function openWelcomeLetter(st, w){
   toast("Welcome letter ready — use Save as PDF", "ok", 4200);
 }
 
-/* ---- the salary report page ---- */
-function salaryReportHTML(t, m, opt){
-  const s = Settings();
-  const pv = Logic.payrollView(t, m), lines = pv.indLines || [];
-  const grid = Logic.salaryGrid(t, m, lines);
-  const n = daysInMonth(m);
-  const notes = String(opt.notes || "").split("\n").map(x => x.trim()).filter(Boolean);
-  const courses = [];
-  lines.forEach(L => { if (L.course && courses.indexOf(L.course) < 0) courses.push(L.course); });
-  const sum = k => lines.reduce((a, x) => a + (+x[k] || 0), 0);
-  const dayHd = (() => {
-    let h = "";
-    for (let i = 1; i <= n; i++) {
-      const dt = parseYMD(m + "-" + pad2(i));
-      h += '<th><span class="dw">' + DOW[dt.getDay()].slice(0, 1) + '</span><span class="dn">' + i + '</span></th>';
-    }
-    return h;
-  })();
-  const codeClass = { "✓": "c-ok", "A": "c-abs", "L": "c-lv", "T": "c-tl", "S": "c-sub", "R": "c-rs", "C": "c-cx" };
-  const gridRows = grid.map(function(g){
-    return '<tr><th class="gname">' + esc(g.studentName) + '</th>' + g.cells.map(function(c){
-      if (c.code) return '<td class="' + (codeClass[c.code] || "") + '">' + c.code + '</td>';
-      return '<td class="' + (c.onPlan ? "c-none" : "c-off") + '"></td>';
-    }).join("") + '</tr>';
-  }).join("");
-  const legend = CLASS_STATUSES.map(x => '<span class="lg"><i class="' + (codeClass[x.code] || "") + '">' + x.code + '</i>' +
-    esc(x.label) + '</span>').join("") + '<span class="lg"><i class="c-none"></i>No class logged</span>';
-  const studentRows = lines.map(function(L){
-    return '<tr>' +
-      '<td><b>' + esc(L.studentName) + '</b><small>' + esc([L.course, L.time ? time12(L.time) : ""].filter(Boolean).join(" · ")) + '</small></td>' +
-      '<td>' + (L.perWeek ? L.perWeek + " days/week" : "—") + '<small>' + esc((L.days || []).join(" ")) + '</small></td>' +
-      '<td class="num">' + (L.startDate ? fmtDate(L.startDate) : "—") + '</td>' +
-      '<td class="num">' + L.planned + '</td>' +
-      '<td class="num">' + L.taken + '</td>' +
-      '<td class="num">' + (L.studentAbsent + L.studentLeave) + '</td>' +
-      '<td class="num">' + (L.teacherAbsent + L.substitute) + '</td>' +
-      '<td class="num"><b>' + L.counted + '</b></td>' +
-      '<td class="num">' + money(L.base) + '</td>' +
-      '<td class="num">' + (L.add ? "+" + money(L.add) : "—") + '</td>' +
-      '<td class="num">' + (L.deduct ? "−" + money(L.deduct) : "—") + '</td>' +
-      '<td class="num"><b>' + money(L.amount) + '</b></td></tr>';
-  }).join("");
-  const batchRows = (pv.groups || []).filter(g => g.amount).map(g =>
-    '<tr><td colspan="7"><b>' + esc(g.label) + '</b><small>batch · ' + esc(g.basis) + '</small></td>' +
-    '<td class="num">' + g.sessions + '</td><td class="num">' + money(g.amount) + '</td>' +
-    '<td class="num">—</td><td class="num">—</td><td class="num"><b>' + money(g.amount) + '</b></td></tr>').join("");
-  const kpi = (v, l, strong) => '<div class="kpi' + (strong ? " strong" : "") + '"><b>' + v + '</b><span>' + esc(l) + '</span></div>';
-  return '<!doctype html><html><head><meta charset="utf-8"><title>Salary — ' + esc(t.name) + ' — ' + esc(monthLabel(m)) + '</title><style>' +
-  '@page{ size:A4; margin:12mm 10mm; }' +
-  '*{ box-sizing:border-box; }' +
-  'body{ margin:0; background:#EFE9DC; color:#262824; font-family:"Segoe UI",Helvetica,Arial,sans-serif; font-size:9.6pt; }' +
-  '.sheet{ max-width:196mm; margin:12px auto; background:#FDFBF5; padding:0 0 18px; border:1px solid #E2D6BC; }' +
-  '.hd{ background:linear-gradient(135deg,#0B4D3B,#17684F); color:#EAF3EE; padding:18px 22px; display:flex; justify-content:space-between; align-items:center; }' +
-  '.hd h1{ margin:0; font-size:17pt; font-family:Georgia,serif; color:#fff; }' +
-  '.hd .sub{ font-size:8.6pt; color:#BCE7CE; margin-top:2px; }' +
-  '.hd .rt{ text-align:right; font-size:9pt; color:#E6CE9C; }' +
-  '.who{ display:flex; justify-content:space-between; padding:16px 22px 10px; border-bottom:1px solid #E6CE9C; }' +
-  '.who h2{ margin:0; font-size:14pt; font-family:Georgia,serif; color:#0B4D3B; }' +
-  '.who .meta{ text-align:right; font-size:9pt; color:#5D6B62; line-height:1.6; }' +
-  '.kpis{ display:flex; gap:10px; padding:14px 22px; }' +
-  '.kpi{ flex:1; border:1px solid #DCE7E0; border-radius:10px; padding:9px 12px; background:#fff; }' +
-  '.kpi b{ display:block; font-size:15pt; color:#0B4D3B; }' +
-  '.kpi span{ font-size:8.4pt; color:#6B6F66; }' +
-  '.kpi.strong{ background:#0B4D3B; border-color:#0B4D3B; } .kpi.strong b, .kpi.strong span{ color:#fff; }' +
-  'h3{ margin:14px 22px 6px; font-size:10.5pt; color:#0B4D3B; }' +
-  'table{ width:calc(100% - 44px); margin:0 22px; border-collapse:collapse; }' +
-  'th,td{ padding:6px 7px; border-bottom:1px solid #EFE7D6; text-align:left; vertical-align:top; }' +
-  'thead th{ background:#F3F7F4; font-size:8.2pt; color:#5D6B62; text-transform:uppercase; letter-spacing:.04em; }' +
-  'td small{ display:block; font-size:8pt; color:#8A8F86; }' +
-  '.num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }' +
-  'tfoot td{ background:#F3F7F4; font-weight:700; border-top:1px solid #C9A96E; }' +
-  '.gridtbl th,.gridtbl td{ padding:0; border:1px solid #EFE7D6; text-align:center; font-size:7.4pt; height:16px; }' +
-  '.gridtbl .gname{ text-align:left; padding:2px 6px; font-weight:600; font-size:8.4pt; white-space:nowrap; background:#FDFBF5; }' +
-  '.gridtbl thead th{ background:#FDFBF5; }' +
-  '.dw{ display:block; font-size:6.4pt; color:#8A8F86; } .dn{ display:block; font-size:7pt; }' +
-  '.c-ok{ background:#1B7A5A; color:#fff; } .c-abs{ background:#CFE3D8; } .c-lv{ background:#F6E6C3; }' +
-  '.c-tl{ background:#F6D9D2; } .c-sub{ background:#D9E4F6; } .c-rs{ background:#EFE7D6; } .c-cx{ background:#E6E6E6; }' +
-  '.c-none{ background:#F7F9F8; } .c-off{ background:#fff; }' +
-  '.legend{ margin:6px 22px 0; font-size:8.2pt; color:#5D6B62; }' +
-  '.lg{ margin-right:12px; white-space:nowrap; } .lg i{ display:inline-block; width:12px; height:11px; border:1px solid #DCE7E0;' +
-  ' margin-right:4px; font-style:normal; font-size:7pt; line-height:11px; text-align:center; vertical-align:-1px; }' +
-  'ul.notes{ margin:4px 22px 0 40px; padding:0; font-size:9pt; } ul.notes li{ margin:2px 0; }' +
-  '.total{ margin:14px 22px 0; border:1px solid #C9A96E; border-radius:10px; background:#F6FAF7; padding:10px 14px; }' +
-  '.total .row{ display:flex; justify-content:space-between; padding:3px 0; }' +
-  '.total .big{ font-size:13pt; font-weight:700; color:#0B4D3B; border-top:1px solid #E6CE9C; margin-top:5px; padding-top:7px; }' +
-  '.sign{ display:flex; justify-content:space-between; margin:26px 22px 0; font-size:9pt; color:#5D6B62; }' +
-  '.sign div{ width:44%; border-top:1px solid #9AA8A0; padding-top:5px; }' +
-  '.ft{ text-align:center; font-size:8.2pt; color:#8A8F86; margin-top:16px; }' +
-  '.noprint{ text-align:center; padding:12px; }' +
-  '.noprint button{ font:inherit; padding:9px 18px; margin:0 5px; border-radius:9px; border:1px solid #0B4D3B; background:#0B4D3B; color:#fff; cursor:pointer; }' +
-  '.noprint .alt{ background:#fff; color:#0B4D3B; }' +
-  '.sheet.editing{ outline:2px dashed #1B7A5A; outline-offset:5px; }' +
-  '@media print{ .noprint{ display:none; } body{ background:#fff; } .sheet{ border:0; margin:0; } }' +
-  '</style>' +
-  '<script>function toggleEdit(){var s=document.querySelector(".sheet"),b=document.getElementById("edit");' +
-  'var on=s.getAttribute("contenteditable")==="true";s.setAttribute("contenteditable",on?"false":"true");' +
-  's.classList.toggle("editing",!on);b.textContent=on?"Edit the text":"Done editing";if(!on)s.focus();}<\/script>' +
-  '</head><body>' +
-  '<div class="noprint"><button onclick="window.print()">Save as PDF / Print</button>' +
-    '<button class="alt" id="edit" onclick="toggleEdit()">Edit the text</button>' +
-    '<button class="alt" onclick="window.close()">Close</button></div>' +
-  '<div class="sheet">' +
-    '<div class="hd"><div><h1>' + esc(s.academyName || "ManzilulQuran") + '</h1>' +
-      '<div class="sub">' + esc(s.academyTagline || "E-learning Academy") + ' · ' + esc(s.website || "manzilulquran.in") + '</div></div>' +
-      '<div class="rt">Teacher Payment Report<br>' + esc(monthLabel(m)) + '</div></div>' +
-    '<div class="who"><div><h2>' + esc(t.name) + '</h2>' +
-      '<div class="sub" style="color:#5D6B62;font-size:9pt">' + lines.length + ' student' + (lines.length === 1 ? "" : "s") +
-      (courses.length ? ' · ' + esc(courses.join(", ")) : "") + '</div></div>' +
-      '<div class="meta">Period: ' + esc(fmtDate(opt.from || monthStart(m))) + ' – ' + esc(fmtDate(opt.to || monthEnd(m))) + '<br>' +
-      'Issued: ' + esc(fmtDate(opt.issued || today())) + '</div></div>' +
-    '<div class="kpis">' + kpi(sum("taken"), "Classes taken") + kpi(sum("counted"), "Classes counted") +
-      kpi(lines.length, "Students") + kpi(money(pv.payable), "Total payable", true) + '</div>' +
-    '<h3>Students</h3>' +
-    '<table><thead><tr><th>Student</th><th>Weekly plan</th><th class="num">From</th><th class="num">Class days</th>' +
-      '<th class="num">Taken</th><th class="num">Stu. abs/leave</th><th class="num">Tchr leave</th><th class="num">Counted</th>' +
-      '<th class="num">Base</th><th class="num">Add</th><th class="num">Deduct</th><th class="num">Amount</th></tr></thead>' +
-      '<tbody>' + studentRows + batchRows + '</tbody>' +
-      '<tfoot><tr><td colspan="3">Total</td><td class="num">' + sum("planned") + '</td><td class="num">' + sum("taken") + '</td>' +
-      '<td class="num">' + (sum("studentAbsent") + sum("studentLeave")) + '</td>' +
-      '<td class="num">' + (sum("teacherAbsent") + sum("substitute")) + '</td>' +
-      '<td class="num">' + sum("counted") + '</td><td class="num">' + money(sum("base")) + '</td>' +
-      '<td class="num">' + (sum("add") ? "+" + money(sum("add")) : "—") + '</td>' +
-      '<td class="num">' + (sum("deduct") ? "−" + money(sum("deduct")) : "—") + '</td>' +
-      '<td class="num">' + money(pv.indAmount + pv.batchAmount) + '</td></tr></tfoot></table>' +
-    (grid.length ? '<h3>Day by day</h3><table class="gridtbl"><thead><tr><th class="gname"></th>' + dayHd + '</tr></thead>' +
-      '<tbody>' + gridRows + '</tbody></table><div class="legend">' + legend + '</div>' : "") +
-    (notes.length ? '<h3>Notes</h3><ul class="notes">' + notes.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul>' : "") +
-    '<div class="total">' +
-      '<div class="row"><span>Individual classes</span><span>' + money(pv.indAmount) + '</span></div>' +
-      (pv.batchAmount ? '<div class="row"><span>Batch classes</span><span>' + money(pv.batchAmount) + '</span></div>' : "") +
-      (pv.bonus ? '<div class="row"><span>Bonus</span><span>+' + money(pv.bonus) + '</span></div>' : "") +
-      (pv.incentive ? '<div class="row"><span>Incentive</span><span>+' + money(pv.incentive) + '</span></div>' : "") +
-      (pv.deduction ? '<div class="row"><span>Deduction (whole month)</span><span>−' + money(pv.deduction) + '</span></div>' : "") +
-      (pv.paid ? '<div class="row"><span>Already paid</span><span>' + money(pv.paid) + '</span></div>' : "") +
-      '<div class="row big"><span>Total payable</span><span>' + money(pv.payable) + '</span></div>' +
-      (pv.paid ? '<div class="row"><span>Balance to pay</span><span>' + money(pv.balance) + '</span></div>' : "") +
-    '</div>' +
-    '<div class="sign"><div>Prepared by · ' + esc(s.academyName || "ManzilulQuran") + '</div>' +
-      '<div>Received by · ' + esc(t.name) + '</div></div>' +
-    '<div class="ft">' + esc(s.academyName || "ManzilulQuran") + ' ' + esc(s.academyTagline || "") + ' · ' +
-      esc(s.email || "") + ' · ' + esc(s.contactPhone || "") + ' · ' + esc(s.whatsappNumber || "") + '</div>' +
-  '</div></body></html>';
-}
-function openSalaryReport(t, m, opt){
-  const win = window.open("", "_blank");
-  if (!win) { toast("Allow pop-ups for this site, then try again", "bad", 6000); return; }
-  win.document.open(); win.document.write(salaryReportHTML(t, m, opt || {})); win.document.close();
-  closeModal();
-  toast("Salary report ready — use Save as PDF", "ok", 4200);
-}
-
-
 /* ---- v19: restore fees waived by the v18 "stop a plan" mistake ----
    v18 offered to waive "this plan's" unpaid months but listed every unpaid fee in the academy. Those fees carry the
    remark "Waived — class plan stopped". One belongs to the mistake when its own plan is not stopped (or it has no plan,
@@ -2436,100 +1882,8 @@ if (!window.MQ_ADMIN) ["iFees", "bFees"].forEach(function(pg){
 
 
 /* ==========================================================================
-   v21 — stopping a plan, changing its teacher, teacher profile, Pay all, Remove
+   v21 — teacher profile, Remove (kept in v22)
    ========================================================================== */
-let PLAN_NEXT = [];
-function planNext(){ const f = PLAN_NEXT.shift(); if (f) setTimeout(f, 160); }
-/* the price of one class on this plan: per-class methods use their rate; a monthly fee is shared over the month's planned classes */
-function planPerClass(pl, month){
-  const r = +pl.rate || 0;
-  if (pl.feeType === "perClass" || pl.feeType === "perDay" || pl.feeType === "hybridH1" || pl.feeType === "hybridH2" || pl.feeType === "hybridH3") return r;
-  if (pl.feeType === "perHour") return round2(r * (+pl.duration || 60) / 60);
-  const planned = Logic.plannedStats(Object.assign({}, pl, { endDate: "" }), month).total || (((pl.days || []).length || +pl.perWeek || 0) * 4);
-  return planned ? round2(r / planned) : 0;
-}
-/* after a plan is stopped: every unpaid month after the last class — waive it, charge only the classes held after the
-   paid period ended (prepaid: from that month's due date to the last class), or keep it owing */
-function planStopDialog(pl){
-  if (!pl) return planNext();
-  const end = pl.endDate || today(), last = monthOf(end);
-  const open = Logic.feeViews({ planId: pl.id }).filter(v => v.planId === pl.id && v.month > last && v.balance > 0 && !v.waived && !(v.paidAmount > 0))
-    .sort((a, b) => a.month < b.month ? -1 : 1);
-  if (!open.length) return planNext();
-  const st = DataService.getStudent(pl.studentId) || {};
-  const marks = DataService.getClasses({ planId: pl.id });
-  const rows = open.map(function(v){
-    const held = Logic.classStats(marks.filter(c => c.date >= v.dueDate && c.date <= end)).completed;
-    const each = planPerClass(pl, v.month);
-    return { v: v, held: held, each: each, amt: round2(held * each) };
-  });
-  openModal({ title: "Class stopped · " + (st.name || pl.studentId), wide: true, submitText: "Save",
-    body: '<div class="note">Last class <b>' + esc(fmtDate(end)) + '</b>. ' + (rows.length > 1 ? "These months were" : "This month was") +
-        ' raised before the class stopped and ' + (rows.length > 1 ? "are" : "is") + ' unpaid. Choose what happens to each.</div>' +
-      rows.map(function(r){
-        const v = r.v, fid = esc(v.id);
-        return '<div class="stoprow"><div class="stop-h"><b>' + esc(monthLabel(v.month)) + '</b> · ' + money(v.balance) + ' · due ' + esc(fmtDate(v.dueDate)) + '</div>' +
-          '<div class="hint">' + (r.held ? r.held + " class" + (r.held > 1 ? "es" : "") + " held after the paid period (from " + esc(fmtDate(v.dueDate)) + ")" +
-              (r.each ? " · " + money(r.each) + " a class" : " · type the amount (the plan has no class days set, so the price of one class is not known)")
-              : "No class held after the paid period") + '</div>' +
-          '<div class="form-grid">' +
-            field("What happens", sel("c_" + v.id, optList([
-              { value: "waive", label: "Waive it — nothing to pay" },
-              { value: "charge", label: "Charge only the classes held" },
-              { value: "keep", label: "Keep the full month owing" }], r.held ? "charge" : "waive"), 'data-act="stop-choice"')) +
-            field("Amount to charge", '<input class="input amt" type="number" min="0" step="1" name="a_' + fid + '" value="' + esc(r.amt || "") + '">', "stop-amt" + (r.held ? "" : " is-hidden")) +
-          '</div></div>';
-      }).join(""),
-    onSubmit: function(d){
-      const miss = rows.find(r => d["c_" + r.v.id] === "charge" && !(+d["a_" + r.v.id] > 0));
-      if (miss) { toast("Type the amount to charge for " + monthLabel(miss.v.month) + " (or choose Waive)", "bad", 5000); return false; }
-      let w = 0, c = 0;
-      rows.forEach(function(r){
-        const v = r.v, how = d["c_" + v.id], amt = round2(+d["a_" + v.id] || 0);
-        if (how === "waive") {
-          DataService.saveFee({ id: v.id, waived: true, locked: true, remarks: (v.remarks ? v.remarks + " · " : "") + "Waived — class plan stopped" }); w++;
-        } else if (how === "charge") {
-          DataService.saveFee({ id: v.id, gross: amt, discount: 0, override: true, needsAmount: false, locked: true,
-            remarks: (v.remarks ? v.remarks + " · " : "") + "Class stopped — charged " + r.held + " class" + (r.held === 1 ? "" : "es") + " held after the paid period" }); c++;
-        }
-      });
-      toast([w ? w + " waived" : "", c ? c + " charged for the classes held" : ""].filter(Boolean).join(" · ") || "Left as they were", "ok", 4200);
-      render(); planNext();
-    } });
-}
-/* after a plan's teacher changes: the marks already saved from a chosen day belong to the new teacher */
-function planTeacherDialog(pl, fromT, toT){
-  if (!pl) return planNext();
-  const A = DataService.getTeacher(fromT) || { name: fromT || "the old teacher" }, B = DataService.getTeacher(toT) || { name: toT };
-  const st = DataService.getStudent(pl.studentId) || {};
-  const mine = DB.classes.filter(c => c.planId === pl.id && c.teacherId === fromT);
-  const tip = "If either teacher is paid a fixed monthly amount for this student, set the pay rule on this plan to “Monthly, shared over the month's class days” — the month is then split by the days each one taught.";
-  if (!mine.length || !fromT) { toast("From now on " + B.name + " teaches " + (st.name || "this student") + ".", "ok", 4200); return planNext(); }
-  const latest = mine.map(c => c.date).sort().pop();
-  openModal({ title: "Teacher changed · " + (st.name || pl.studentId), submitText: "Move the marks", cancelText: "Leave them",
-    body: '<div class="note"><b>' + esc(A.name) + '</b> → <b>' + esc(B.name) + '</b>. Marks saved on or after the day below move to ' + esc(B.name) +
-        '; earlier marks stay with ' + esc(A.name) + '. Each teacher is paid for their own classes.</div>' +
-      '<div class="form-grid">' + field("New teacher from", '<input class="input" type="date" name="from" value="' + esc(today()) + '">') +
-        '<div class="field"><label>Saved marks</label><div class="hint" style="padding-top:9px">' + mine.length + ' with ' + esc(A.name) + ', the latest on ' + esc(fmtDate(latest)) + '</div></div></div>' +
-      '<p class="hint" style="margin:12px 0 0">' + esc(tip) + '</p>',
-    onSubmit: function(d){
-      const from = d.from || today(); let n = 0;
-      DB.classes.forEach(c => { if (c.planId === pl.id && c.teacherId === fromT && c.date >= from) { c.teacherId = toT; n++; } });
-      if (n) persist();
-      toast(n ? n + " mark" + (n > 1 ? "s" : "") + " moved to " + B.name : "No marks on or after " + fmtDate(from) + " — nothing to move", "ok", 4200);
-      render(); planNext();
-    } });
-}
-
-/* ---- Pay all: every teacher's salary for the month in one form ---- */
-function payAllRows(m){
-  return Logic.payrollMonth(m).map(function(p){
-    const t = DataService.getTeacher(p.teacherId) || {};
-    const works = p.kind === "staff" || DataService.getPlans({ teacherId: p.teacherId, status: "Active" }).length ||
-      DataService.getBatches().some(b => b.teacherId === p.teacherId && (b.status || "Active") === "Active") || p.payable > 0;
-    return Object.assign({}, p, { account: t.payAccount || "Bank", works: !!works });
-  }).filter(p => p.balance > 0 || (p.paid <= 0 && p.works));
-}
 Object.assign(Actions, {
   "teacher-open": (id) => {
     closeModal(true);
@@ -2538,8 +1892,6 @@ Object.assign(Actions, {
     go("tprofile");
   },
   "tp-tab": (id, el) => { State.tprofile.tab = el.dataset.t; render(); },
-  /* the amount box only matters when the month is charged for the classes held */
-  "stop-choice": (id, el) => { const row = el.closest(".stoprow"), f = row && row.querySelector(".stop-amt"); if (f) f.classList.toggle("is-hidden", el.value !== "charge"); },
   "tp-back": () => go(State.tprofile.from && State.tprofile.from !== "tprofile" ? State.tprofile.from : "teachers"),
   "exp-void": (id) => voidDialog("expense", id),
   /* take a payment for a student: their oldest unpaid month is picked for you */
@@ -2549,29 +1901,287 @@ Object.assign(Actions, {
     Actions["pay-new"]();
     setTimeout(function(){ const f = $("#mForm"); if (!f || !f.elements.studentId) return; f.elements.studentId.value = sid; Actions["pay-student"](null, f.elements.studentId); }, 30);
   },
-  "inc-void": (id) => voidDialog("income", id),
-  "pay-all": () => {
-    const m = State.tpay.month || State.month, rows = payAllRows(m);
-    if (!rows.length) { toast("Everyone is paid for " + monthLabel(m), "ok"); return; }
-    const total = rows.reduce((a, p) => a + Math.max(0, p.balance), 0);
-    openModal({ title: "Pay teachers · " + monthLabel(m), wide: true, submitText: "Record the payments", noFocus: true,
-      body: '<div class="note">Amounts are filled in from what each teacher has earned. A teacher without a pay rule shows an empty box — type what you are paying, or leave it empty to skip them.</div>' +
-        '<div class="form-grid">' + field("Date paid", '<input class="input" type="date" name="date" value="' + today() + '">') +
-          field("Paid from", sel("account", accountOpts("Bank"))) + '</div>' +
-        '<div class="payall">' + rows.map(p => '<label class="pa-row"><span class="pa-n"><b>' + esc(p.teacherName) + '</b><small>' +
-            esc(p.kind === "staff" ? (p.role || "Staff") : (p.balance > 0 ? "earned " + money(p.payable) + (p.paid ? " · paid " + money(p.paid) : "") : "no pay rule · nothing paid yet")) +
-          '</small></span><input class="input amt" type="number" min="0" step="1" name="amt_' + esc(p.teacherId) + '" value="' + (p.balance > 0 ? round2(p.balance) : "") + '" placeholder="0"></label>').join("") + '</div>' +
-        (total ? '<p class="hint" style="margin:10px 0 0">Earned and still to pay: <b>' + money(total) + '</b></p>' : ""),
+  "inc-void": (id) => voidDialog("income", id)
+});
+
+/* ==========================================================================
+   v22 — simple mode: Due date, classes arranged with the student, manual salary
+   ========================================================================== */
+/* a class's fee changed: the unpaid rows of this month and later follow it (rows already paid or typed in by hand stay) */
+function followFee(filter, fee, teacherId){
+  let n = 0;
+  DB.fees.filter(f => f.month >= currentMonth() && !f.waived && !f.override && Logic.paidOn(f.id) <= 0 &&
+      Object.keys(filter).every(k => f[k] === filter[k])).forEach(function(f){
+    const upd = { id: f.id };
+    if (fee !== undefined && round2(+f.gross || 0) !== round2(fee)) { upd.gross = fee; upd.rate = fee; upd.discount = 0; upd.carry = 0; upd.needsAmount = !(fee > 0); }
+    if (teacherId !== undefined && (f.teacherId || "") !== (teacherId || "")) upd.teacherId = teacherId || "";
+    if (Object.keys(upd).length > 1) { DataService.saveFee(upd); n++; }
+  });
+  return n;
+}
+function activeClassCount(sid){
+  return DataService.getPlans({ studentId: sid }).filter(p => p.status === "Active").length +
+    DataService.getEnrollments({ studentId: sid }).filter(e => e.status === "Active").length;
+}
+Object.assign(Actions, {
+  /* ---- the student form: show the part for the class chosen ---- */
+  "cls-mode": (id, el) => {
+    const form = el.closest("form"); if (!form) return;
+    const v = el.value;
+    form.querySelectorAll(".cls-sec").forEach(x => { x.hidden = x.dataset.cls !== v; });
+    const first = form.querySelector(".cls-first"); if (first) first.hidden = v === "none";
+  },
+  "sf-batch": (id, el) => {
+    const form = el.closest("form"), b = DataService.getBatch(el.value);
+    if (form && form.elements.monthlyFee) form.elements.monthlyFee.placeholder = b && +b.monthlyFee ? String(+b.monthlyFee) + " (batch fee)" : "Batch fee";
+  },
+  "sf-join": (id, el) => {
+    const form = el.closest("form"); if (!form) return;
+    ["dueDay", "bDueDay"].forEach(n => { if (form.elements[n] && !form.elements[n]._typed) form.elements[n].value = dayOf(el.value); });
+  },
+  "student-new": () => openModal({ title: "New student", wide: true, body: studentForm({}, true), submitText: "Save student",
+    onSubmit: function(d, form){
+      const name = String(d.name || "").trim();
+      if (!name) { toast("Type the student's name", "bad"); return false; }
+      const mode = d.clsMode || "none", join = d.joiningDate || today();
+      let batch = null;
+      if (mode === "ind") {
+        if (!String(d.course || "").trim()) { toast("Choose the course", "bad"); return false; }
+        if (!(+d.rate > 0)) { toast("Type the monthly fee", "bad"); return false; }
+        if (d.teacherId_q && !DataService.getTeacher(d.teacherId)) { toast("Pick the teacher from the list — or clear the box", "bad"); return false; }
+      }
+      if (mode === "batch") {
+        batch = DataService.getBatch(d.batchId);
+        if (!batch) { toast("Choose the batch", "bad"); return false; }
+      }
+      const stu = joinCC({ name: name, guardian: d.guardian || "", whatsapp: d.whatsapp, whatsappCC: d.whatsappCC, phone: d.phone || "",
+        email: d.email || "", gender: d.gender || "", dob: d.dob || "", joiningDate: join, address: d.address || "", notes: d.notes || "", status: "Active" });
+      const sid = DataService.saveStudent(stu);
+      let msg = "Student " + sid + " added";
+      if (mode === "ind") {
+        const days = readDays(form);
+        const pid = DataService.savePlan({ studentId: sid, teacherId: DataService.getTeacher(d.teacherId) ? d.teacherId : "", course: d.course,
+          days: days, perWeek: days.length, time: d.time || "", duration: +d.duration || 0, feeType: "monthly", rate: round2(+d.rate), discount: 0,
+          dueDay: Math.min(28, Math.max(1, +d.dueDay || dayOf(join))), startDate: join, endDate: "", status: "Active", notes: "" });
+        msg += " · " + d.course + " class" + (DataService.getTeacher(d.teacherId) ? "" : " (no teacher yet)");
+        if (d.firstFee) { const fm = Logic.firstMonth(join), r = Logic.buildIndMonth(fm, { planId: pid, first: true, remark: "First month" });
+          if (r.created) msg += " · " + monthLabel(fm) + " fee on the due list"; }
+      } else if (mode === "batch") {
+        const eid = DataService.saveEnrollment({ studentId: sid, batchId: batch.id, subClassId: "", joiningDate: join, leavingDate: "",
+          monthlyFee: round2(+d.monthlyFee || +batch.monthlyFee || 0), dueDay: Math.min(28, Math.max(1, +d.bDueDay || dayOf(join))),
+          status: "Active", reason: "", notes: "Initial enrolment" });
+        msg += " · in " + batch.name;
+        if (d.firstFee) { const fm = Logic.firstMonth(join), r = Logic.buildBatchMonth(fm, { enrollmentId: eid, first: true, remark: "First month" });
+          if (r.created) msg += " · " + monthLabel(fm) + " fee on the due list"; }
+      } else msg += " · class pending";
+      toast(msg, "ok", 4600); celebrate("🎓"); render();
+    } }),
+  "student-edit": (id) => openModal({ title: "Edit " + id, wide: true, body: studentForm(DataService.getStudent(id)), submitText: "Save changes",
+    onSubmit: function(d){
+      if (!String(d.name || "").trim()) { toast("Type the student's name", "bad"); return false; }
+      const before = activeClassCount(id);
+      d.id = id; joinCC(d); DataService.saveStudent(d);
+      const closed = before - activeClassCount(id);
+      toast(closed > 0 ? "Saved · " + closed + " class" + (closed > 1 ? "es" : "") + " stopped (student " + String(d.status).toLowerCase() + ")" : "Student updated", "ok", 4200);
+      render();
+    } }),
+  "status-fix": () => {
+    const list = DataService.statusConflicts();
+    if (!list.length) { toast("Nothing to fix", "ok"); render(); return; }
+    confirmAction({ title: "Close " + list.length + " student" + (list.length > 1 ? "s'" : "'s") + " classes",
+      note: "These students are not Active, but a class of theirs is still running. Each class is stopped today and kept in history.",
+      message: list.slice(0, 12).map(s => s.name + " (" + s.status + ")").join(" · "), submitText: "Close the classes",
+      onConfirm: function(){ let n = 0; list.forEach(s => { n += DataService.closeClassesOf(s.id, s.status); });
+        toast(n + " class" + (n > 1 ? "es" : "") + " closed", "ok"); render(); } });
+  },
+  "plans-noteacher": () => { State.plans.teacher = "none"; State.plans.status = "Active"; resetLists(); render(); },
+
+  /* ---- Due date ---- */
+  "due-build": (id, el) => {
+    const src = (el && el.dataset.src) || "", m = State.month;
+    const r = Logic.buildMonth(m, src);
+    toast(r.created ? r.created + " added to the " + monthLabel(m) + " list" + (r.skipped ? " · " + r.skipped + " already there" : "") +
+        (r.held ? " · " + r.held + " on hold" : "")
+      : (r.skipped ? "Everyone is already on the " + monthLabel(m) + " list" : "No active class to add for " + monthLabel(m)), r.created ? "ok" : "warn", 4200);
+    render();
+  },
+  "due-paid": (feeId) => {
+    const f = DataService.getFee(feeId); if (!f) return;
+    const v = withBasis(Logic.feeView(f)), notSet = Logic.dueStatus(v) === "Fee not set";
+    openModal({ title: "Mark paid — " + v.studentName,
+      body: '<div class="note">' + esc(monthLabel(v.month)) + ' · ' + esc(v.shortBasis) + (notSet ? " · the fee is not set yet — the amount you type becomes this month's fee" : " · fee " + money(v.netFee)) + '</div>' +
+        '<div class="form-grid sf">' +
+        field("Amount received *", '<input class="input amt" type="number" name="amount" min="1" step="1" inputmode="numeric" value="' + (v.balance > 0 ? v.balance : "") + '" required>') +
+        field("Date", '<input class="input" type="date" name="date" value="' + today() + '">') +
+        field("Paid by", sel("account", accountOpts("UPI"))) +
+        field("Reference", '<input class="input mono" name="txnId" placeholder="Optional">') +
+        '</div>',
+      submitText: "Save payment",
       onSubmit: function(d){
-        let n = 0, sum = 0;
-        rows.forEach(function(p){
-          const a = round2(+d["amt_" + p.teacherId] || 0); if (!(a > 0)) return;
-          DataService.saveTeacherPayment({ teacherId: p.teacherId, month: m, amount: a, date: d.date || today(),
-            account: d.account || p.account, category: "Teacher Payment", remarks: "Paid with Pay all" });
-          n++; sum += a;
-        });
-        if (!n) { toast("Type at least one amount", "warn"); return false; }
-        toast(money(sum) + " paid to " + n + " teacher" + (n > 1 ? "s" : "") + " for " + monthLabel(m), "ok", 4600); celebrate("₹"); render();
+        const amt = round2(+d.amount);
+        if (!(amt > 0)) { toast("Type the amount received", "bad"); return false; }
+        if (notSet) DataService.saveFee({ id: feeId, gross: amt, rate: amt, discount: 0, carry: 0, override: true, needsAmount: false });
+        DataService.savePayment({ feeId: feeId, source: v.source, studentId: v.studentId, month: v.month, amount: amt,
+          date: d.date || today(), account: d.account, txnId: d.txnId || "", remarks: "" });
+        const after = Logic.feeView(DataService.getFee(feeId));
+        toast(money(amt) + " from " + v.studentName + " · " + (after.balance > 0 ? money(after.balance) + " still pending" : "paid"), "ok", 4200);
+        celebrate("₹"); render();
       } });
+  },
+  "due-share": (feeId) => {
+    const f = DataService.getFee(feeId); if (!f) return;
+    const v = withBasis(Logic.feeView(f)), st = Logic.dueStatus(v);
+    if (st === "Paid" && v.lastPayment) { Actions._wa(v.whatsapp, Logic.receivedText(v, v.lastPayment.amount), "Receipt — " + v.studentName); return; }
+    const amt = v.paidAmount > 0 ? v.balance : (st === "Fee not set" ? "" : v.netFee);
+    openModal({ title: "Share fee — " + v.studentName, hideSubmit: true, cancelText: "Close",
+      body: '<div class="form-grid sf">' +
+          field(v.paidAmount > 0 ? "Amount pending" : "Fee to ask", '<input class="input amt" type="number" min="0" step="1" inputmode="numeric" id="shAmt" data-act="share-amt" data-id="' + esc(feeId) + '" value="' + esc(amt) + '">') +
+          (v.paidAmount > 0 ? '<div></div>' : '<label class="sf-check" style="align-self:end"><input type="checkbox" id="shSave"' + (st === "Fee not set" ? " checked" : "") + '> Save it as ' + esc(monthShort(v.month)) + '\'s fee</label>') +
+        '</div>' +
+        '<div class="field" style="margin-top:10px"><label>Message</label><textarea class="textarea" id="waText" rows="10">' + esc(Logic.feeText(v, amt)) + '</textarea></div>' +
+        '<input type="hidden" id="waNum" value="' + esc(v.whatsapp || "") + '">' +
+        '<div class="btn-row" style="margin-top:12px"><button type="button" class="btn btn-wa" data-act="due-share-send" data-id="' + esc(feeId) + '">Open WhatsApp</button>' +
+        '<button type="button" class="btn" data-act="wa-copy">Copy message</button></div>' +
+        '<p class="hint" style="margin-top:9px">Sending to ' + esc(v.whatsapp || "no number saved") + '</p>' });
+  },
+  "due-share-send": (feeId) => {
+    const box = $("#shAmt"), save = $("#shSave"), f = DataService.getFee(feeId);
+    if (box && save && save.checked && f) {
+      const amt = round2(+box.value || 0), v = Logic.feeView(f);
+      if (amt > 0 && !(v.paidAmount > 0) && round2(v.netFee) !== amt) {
+        DataService.saveFee({ id: feeId, gross: amt, rate: amt, discount: 0, carry: 0, override: true, needsAmount: false });
+        toast(monthShort(v.month) + " fee saved as " + money(amt), "ok"); render();
+      }
+    }
+    Actions["wa-open"]();
+  },
+  "due-edit": (feeId) => {
+    const f = DataService.getFee(feeId); if (!f) return;
+    const v = withBasis(Logic.feeView(f));
+    const cls = v.source === "batch" ? DataService.getEnrollments().find(e => e.id === v.enrollmentId) : DataService.getPlan(v.planId);
+    openModal({ title: "Edit amount — " + v.studentName,
+      body: '<div class="note">' + esc(monthLabel(v.month)) + ' · ' + esc(v.shortBasis) + (v.paidAmount > 0 ? ' · ' + money(v.paidAmount) + ' already paid' : "") + '</div>' +
+        '<div class="form-grid sf">' +
+        field("Fee for " + monthShort(v.month) + " *", '<input class="input amt" type="number" name="amount" min="0" step="1" inputmode="numeric" value="' + esc(v.needsAmount && !v.override ? "" : v.netFee) + '">') +
+        field("Due date", '<input class="input" type="date" name="dueDate" value="' + esc(v.dueDate) + '">') +
+        '<div class="field span2"><label>Note</label><input class="input" name="remarks" value="' + esc(v.remarks || "") + '"></div>' +
+        (cls && cls.status === "Active" ? '<label class="sf-check span2"><input type="checkbox" name="always"> Use this fee for the coming months too</label>' : "") +
+        '</div>',
+      submitText: "Save",
+      onSubmit: function(d){
+        const amt = round2(+d.amount || 0);
+        if (d.amount === "" || amt < 0) { toast("Type the fee", "bad"); return false; }
+        DataService.saveFee({ id: feeId, gross: amt, rate: amt, discount: 0, carry: 0, override: true, needsAmount: false,
+          dueDate: d.dueDate || v.dueDate, remarks: d.remarks || "" });
+        let more = "";
+        if (d.always && cls) {
+          if (v.source === "batch") { DataService.saveEnrollment({ id: cls.id, monthlyFee: amt }); followFee({ enrollmentId: cls.id }, amt); }
+          else { DataService.savePlan({ id: cls.id, rate: amt, feeType: "monthly" }); followFee({ planId: cls.id }, amt); }
+          more = " · from now on " + money(amt) + " a month";
+        }
+        toast(monthShort(v.month) + " fee " + money(amt) + more, "ok", 4200); render();
+      } });
+  },
+  "fee-edit": (id) => Actions["due-edit"](id),
+  "due-unpay": (feeId) => {
+    const pays = DataService.getPayments({ feeId: feeId });
+    if (!pays.length) { toast("No payment to undo", "warn"); return; }
+    if (pays.length === 1) { voidDialog("payment", pays[0].id); return; }
+    openModal({ title: "Which payment was a mistake?", hideSubmit: true, cancelText: "Close",
+      body: pays.map(p => '<div class="minirow"><span>' + esc(fmtDate(p.date)) + ' · ' + esc(p.account || "") + ' · ' + money(p.amount) + '</span>' +
+        '<b><button type="button" class="btn btn-sm btn-danger" data-act="pay-void" data-id="' + esc(p.id) + '">Remove</button></b></div>').join("") });
+  },
+  "due-waive": (feeId) => {
+    const v = Logic.feeView(DataService.getFee(feeId));
+    confirmAction({ title: "Waive " + monthLabel(v.month), message: v.studentName + " pays nothing for " + monthLabel(v.month) + ". The row stays on the list as Waived.",
+      submitText: "Waive it", onConfirm: function(){
+        DataService.saveFee({ id: feeId, waived: true, remarks: (v.remarks ? v.remarks + " · " : "") + "Waived" }); toast("Waived", "ok"); render(); } });
+  },
+  "due-unwaive": (feeId) => {
+    const f = DataService.getFee(feeId); if (!f) return;
+    DataService.saveFee({ id: feeId, waived: false, locked: false, remarks: String(f.remarks || "").split(" · ").filter(x => x.indexOf("Waived") !== 0).join(" · ") });
+    toast("Back on the list", "ok"); render();
+  },
+
+  /* ---- batch enrolment fee ---- */
+  "enrol-fee": (id) => {
+    const e = DataService.getEnrollments().find(x => x.id === id); if (!e) return;
+    const b = DataService.getBatch(e.batchId);
+    openModal({ title: "Batch fee — " + ((DataService.getStudent(e.studentId) || {}).name || e.studentId),
+      body: '<div class="form-grid sf">' +
+        field("Monthly fee", '<input class="input amt" type="number" min="0" step="1" name="monthlyFee" value="' + (+e.monthlyFee || "") + '" placeholder="' + esc(b && b.monthlyFee ? b.monthlyFee + " (batch fee)" : "Batch fee") + '">') +
+        field("Due day", '<input class="input" type="number" min="1" max="28" name="dueDay" value="' + esc(e.dueDay || 5) + '">') +
+        '</div><p class="hint" style="margin:10px 0 0">Unpaid rows from this month on follow the new fee. Paid months stay as they are.</p>',
+      submitText: "Save",
+      onSubmit: function(d){
+        const fee = round2(+d.monthlyFee || 0);
+        DataService.saveEnrollment({ id: id, monthlyFee: fee, dueDay: Math.min(28, Math.max(1, +d.dueDay || 5)), feeMode: "" });
+        const n = followFee({ enrollmentId: id }, Logic.enrolFee(DataService.getEnrollments().find(x => x.id === id)));
+        toast("Fee saved" + (n ? " · " + n + " unpaid month" + (n > 1 ? "s" : "") + " updated" : ""), "ok"); render();
+      } });
+  },
+  "enrol-feemode": (id) => Actions["enrol-fee"](id),
+
+  /* ---- Teacher salary: typed in by hand ---- */
+  "tsal-new": (teacherId) => {
+    const t = teacherId ? DataService.getTeacher(teacherId) : null;
+    openModal({ title: "Add salary",
+      body: '<div class="form-grid sf">' +
+        pickBox("Paid to *", "payeeId", t ? t.id : "", pickPayees(), "Teacher or staff name") +
+        field("Amount *", '<input class="input amt" type="number" name="amount" min="1" step="1" inputmode="numeric" required>') +
+        field("For month", sel("month", monthOpts(State.month, ""))) +
+        field("Date paid", '<input class="input" type="date" name="date" value="' + today() + '">') +
+        field("Paid from", sel("account", accountOpts(t && t.payAccount ? t.payAccount : "Bank"))) +
+        field("Type", sel("category", optList([{ value: "Teacher Payment", label: "Salary" }, { value: "Teacher Advance", label: "Advance" },
+          { value: "Teacher Bonus", label: "Bonus" }], "Teacher Payment"))) +
+        '<div class="field span2"><label>Note</label><input class="input" name="remarks" placeholder="Optional"></div>' +
+        '</div>',
+      submitText: "Save salary", noFocus: !!t,
+      onSubmit: function(d){
+        const who = DataService.getTeacher(d.payeeId), amt = round2(+d.amount);
+        if (!who) { toast("Pick the teacher from the list", "bad"); return false; }
+        if (!(amt > 0)) { toast("Type the amount", "bad"); return false; }
+        DataService.saveTeacherPayment({ teacherId: who.id, month: d.month || State.month, amount: amt, date: d.date || today(),
+          account: d.account, category: d.category || "Teacher Payment", remarks: d.remarks || "" });
+        toast(money(amt) + " to " + who.name + " for " + monthLabel(d.month || State.month), "ok", 4200); render();
+      } });
+  },
+  "tpay-new": (id) => Actions["tsal-new"](id),
+  "tsal-edit": (id) => {
+    const x = DB.teacherPayments.find(p => p.id === id); if (!x) return;
+    const t = DataService.getTeacher(x.teacherId);
+    openModal({ title: "Edit " + id,
+      body: '<div class="form-grid sf">' +
+        field("Paid to", '<input class="input" value="' + esc(t ? t.name : x.teacherId) + '" readonly>') +
+        field("Amount *", '<input class="input amt" type="number" name="amount" min="1" step="1" value="' + esc(x.amount) + '">') +
+        field("For month", sel("month", monthOpts(x.month, ""))) +
+        field("Date paid", '<input class="input" type="date" name="date" value="' + esc(x.date || today()) + '">') +
+        field("Paid from", sel("account", accountOpts(x.account || "Bank"))) +
+        field("Type", sel("category", optList([{ value: "Teacher Payment", label: "Salary" }, { value: "Teacher Advance", label: "Advance" },
+          { value: "Teacher Bonus", label: "Bonus" }], x.category || "Teacher Payment"))) +
+        '<div class="field span2"><label>Note</label><input class="input" name="remarks" value="' + esc(x.remarks || "") + '"></div>' +
+        '</div>',
+      submitText: "Save changes",
+      onSubmit: function(d){
+        const amt = round2(+d.amount);
+        if (!(amt > 0)) { toast("Type the amount", "bad"); return false; }
+        upsert("teacherPayments", { id: id, amount: amt, month: d.month || x.month, date: d.date || x.date, account: d.account,
+          category: d.category || "Teacher Payment", remarks: d.remarks || "" }, "TPY");
+        toast("Salary entry updated", "ok"); render();
+      } });
+  },
+  "tsal-csv": () => downloadCSV("teacher-salary.csv", ["Entry","Teacher ID","Name","For month","Date paid","Amount","Paid from","Type","Note"],
+    DataService.getTeacherPayments().map(function(p){ const t = DataService.getTeacher(p.teacherId);
+      return [p.id, p.teacherId, t ? t.name : "", p.month, p.date, p.amount, p.account, p.category || "Teacher Payment", p.remarks || ""]; }))
+});
+/* the fee message follows the amount as it is typed */
+document.addEventListener("input", function(e){
+  const a = e.target.closest('[data-act="share-amt"]');
+  if (a) {
+    const f = DataService.getFee(a.dataset.id), box = $("#waText");
+    if (f && box) box.value = Logic.feeText(withBasis(Logic.feeView(f)), a.value === "" ? "" : +a.value);
+    return;
   }
+  const dd = e.target.closest('input[name="dueDay"],input[name="bDueDay"]');
+  if (dd) dd._typed = true;
 });
