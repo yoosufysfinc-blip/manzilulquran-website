@@ -4,267 +4,515 @@
 <meta charset="UTF-8" />
 <meta name="robots" content="noindex, nofollow" />
 <meta name="googlebot" content="noindex, nofollow" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Madrasa Batch Class — ManzilulQuran Academy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Sans+Malayalam:wght@300;400;500&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../assets/explainer/explainer.v1.css" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;500&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
-  :root{
-    --teal:#0E7C7B; --teal-d:#0B5E5D; --turq:#19A7A3;
-    --cream:#FFF9EF; --terra:#E07A5F; --terra-d:#C85B43; --gold:#E9B949;
-    --ink:#0B3B3A;
-  }
   *{margin:0;padding:0;box-sizing:border-box}
-  /* CHANGED: page scrolls so the explainer can sit below the card */
-  html{scroll-behavior:smooth}
+  /* .play and .endcard set display:flex, which outranks the browser's own
+     [hidden]{display:none}. Without this they never hide. */
+  [hidden]{display:none !important}
+
+  :root{
+    --gold:#C9A96E;
+    --em:#2fae7f;
+    --ink:#eef7f0;
+    --muted:rgba(238,247,240,.6);
+    --line:rgba(201,169,110,.26);
+    /* video is 1080x1920 -> 9:16 */
+    --ratio:0.5625;
+  }
+
+  html,body{height:100%;overflow:hidden}
+
   body{
-    font-family:'Poppins',sans-serif;color:var(--ink);position:relative;
-    min-height:100%;overflow-x:hidden;
-    background:linear-gradient(165deg,#E8F8F4 0%,#CDEEEA 45%,#AFE3DD 100%);
-    background-attachment:fixed
+    font-family:'Poppins','Noto Sans Malayalam',sans-serif;
+    color:var(--ink);
+    background:linear-gradient(to bottom,
+      #03120c 0%, #051b13 26%, #072519 48%, #0a3425 70%, #072017 88%, #030f0a 100%);
   }
 
-  /* zellige tile pattern */
-  /* CHANGED: centring moved off body so the card renders identically */
-  .hero{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
-    padding:clamp(24px,5vh,44px) 0 clamp(14px,2.5vh,22px)}
-  .tiles{position:fixed;inset:0;z-index:0}
-  .tiles svg{width:100%;height:100%}
-  /* moving soft sheen */
-  .sheen{position:fixed;inset:-25%;z-index:0;mix-blend-mode:soft-light;pointer-events:none;
-    background:radial-gradient(circle at 32% 30%,rgba(255,255,255,.7),transparent 46%);
-    animation:sheen 17s ease-in-out infinite}
-  @keyframes sheen{0%,100%{transform:translate(0,0)}50%{transform:translate(42%,28%)}}
-
-  /* rotating accent stars */
-  .accent{position:absolute;z-index:1;opacity:.5;animation:spin 40s linear infinite}
-  .accent svg{width:100%;height:100%}
-  .a1{width:110px;height:110px;top:7%;left:6%;color:var(--gold)}
-  .a2{width:84px;height:84px;bottom:9%;right:8%;color:var(--terra);animation-direction:reverse;animation-duration:32s}
-  @keyframes spin{to{transform:rotate(360deg)}}
-
-  .card{
-    position:relative;z-index:3;width:min(660px,93vw);text-align:center;
-    padding:clamp(26px,4.6vh,42px) clamp(24px,5vw,50px);
-    background:rgba(255,249,239,.9);border:1px solid rgba(14,124,123,.3);
-    border-radius:28px;backdrop-filter:blur(6px);
-    box-shadow:0 30px 70px -30px rgba(11,59,58,.5),0 0 0 8px rgba(255,249,239,.35);
-    animation:cardIn 1s cubic-bezier(.2,.8,.3,1) both
+  .horizon{
+    position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+    width:130vw;height:40vh;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse at center bottom,
+      rgba(47,174,127,.18), rgba(201,169,110,.07) 46%, transparent 74%);
+    filter:blur(8px);
   }
-  @keyframes cardIn{from{opacity:0;transform:translateY(26px) scale(.96)}to{opacity:1;transform:none}}
 
-  .topline{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:6px}
-  .topline .ar{font-family:'Amiri',serif;font-size:1.45rem;color:var(--terra-d)}
-  .eyebrow{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--teal)}
+  .stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .star{position:absolute;background:#fff;border-radius:50%;animation:tw 3.6s ease-in-out infinite}
+  @keyframes tw{0%,100%{opacity:.16}50%{opacity:.8}}
 
-  h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(2.1rem,6.4vw,3.3rem);line-height:1.02;color:var(--ink)}
-  h1 .u{position:relative;white-space:nowrap}
-  h1 .u::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.18em;background:var(--gold);opacity:.55;border-radius:4px;z-index:-1}
-  .lede{color:#3a5b59;font-size:clamp(.85rem,2.4vw,1rem);margin-top:8px;font-weight:300;max-width:44ch;margin-inline:auto}
-
-  .stats{display:flex;justify-content:center;gap:clamp(12px,2.6vw,16px);margin:clamp(16px,3vh,22px) 0 4px}
-  .chip{flex:1;max-width:200px;border-radius:18px;padding:18px 14px;color:#fff;position:relative;overflow:hidden}
-  .chip.days{background:linear-gradient(150deg,#19A7A3,#0E7C7B)}
-  .chip.fee{background:linear-gradient(150deg,#E89B6A,#E07A5F)}
-  .chip .v{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(1.7rem,5.6vw,2.3rem);line-height:1}
-  .chip .v small{font-size:.42em;font-family:'Poppins',sans-serif;font-weight:400;opacity:.92}
-  .chip .k{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;opacity:.92;margin-top:6px}
-
-  /* note */
-  .note{
-    text-align:left;margin-top:14px;padding:16px 18px;border-radius:16px;
-    background:#F1FBF8;border:1px solid rgba(14,124,123,.22);border-left:4px solid var(--teal);
-    opacity:0;transform:translateY(14px);animation:noteIn .7s .4s forwards
-  }
-  @keyframes noteIn{to{opacity:1;transform:none}}
-  .note .nt{display:flex;align-items:center;gap:8px;font-family:'Fraunces',serif;font-weight:600;font-size:1rem;color:var(--teal-d);margin-bottom:10px}
-  .note .nt svg{width:18px;height:18px;stroke:var(--terra);fill:none;stroke-width:1.8}
-  .tags{display:flex;flex-wrap:wrap;gap:8px}
-  .tag{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:500;color:var(--ink);
-    background:#fff;border:1px solid rgba(14,124,123,.25);padding:6px 12px;border-radius:30px;
-    opacity:0;transform:scale(.9);animation:tagIn .4s forwards}
-  .tag:nth-child(1){animation-delay:.6s}.tag:nth-child(2){animation-delay:.72s}
-  .tag:nth-child(3){animation-delay:.84s}.tag:nth-child(4){animation-delay:.96s}.tag:nth-child(5){animation-delay:1.08s}
-  @keyframes tagIn{to{opacity:1;transform:none}}
-  .tag .d{width:7px;height:7px;border-radius:50%}
-  .tag:nth-child(odd) .d{background:var(--teal)}
-  .tag:nth-child(even) .d{background:var(--terra)}
-
-  .cta{margin-top:clamp(14px,2.6vh,20px);display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
-  .live{display:inline-flex;align-items:center;gap:7px;font-size:.74rem;font-weight:500;color:var(--teal-d);
-    padding:8px 14px;border-radius:30px;background:#fff;border:1px solid rgba(14,124,123,.25)}
-  .live svg{width:14px;height:14px;stroke:var(--teal);fill:none;stroke-width:2}
-  .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:40px;border:none;cursor:pointer;
-    font-family:'Poppins',sans-serif;font-weight:600;font-size:.92rem;color:#fff;text-decoration:none;
-    background:linear-gradient(92deg,#1faa54,#25d366);box-shadow:0 14px 30px -12px rgba(37,211,102,.6);transition:transform .3s,box-shadow .3s}
-  .btn:hover{transform:translateY(-3px);box-shadow:0 20px 40px -14px rgba(37,211,102,.75)}
-  .btn svg{width:19px;height:19px;fill:#fff}
-
-  @media (max-height:640px){ h1{font-size:clamp(1.8rem,5.4vh,2.6rem)} .stats{margin:12px 0 2px} .chip{padding:14px 12px} .accent{display:none} }
-  @media (max-width:440px){ .stats{flex-direction:column;align-items:center} .chip{max-width:280px;width:100%} }
-  @media (prefers-reduced-motion:reduce){ .sheen,.accent{animation:none} }
-
-  /* Back-to-hub link (top-left corner, subtle) */
- /* Small dot back button — barely visible top-left */
   .back-hub{
-    position:fixed;top:20px;left:20px;z-index:50;
-    width:14px;height:14px;
-    border-radius:50%;
-    background:rgba(255,200,140,0.5);
-    box-shadow:0 0 10px rgba(255,200,140,0.4);
+    position:fixed;z-index:30;
+    top:calc(10px + env(safe-area-inset-top,0px));
+    left:calc(10px + env(safe-area-inset-left,0px));
+    width:40px;height:40px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(6,26,19,.55);border:1px solid var(--line);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
     text-decoration:none;
-    transition:all .3s ease;
-    opacity:0.7;
-    display:block;
-    font-size:0;
-    line-height:0;
-    overflow:hidden;
   }
-  .back-hub:hover{
-    opacity:1;
-    background:rgba(255,200,140,1);
-    box-shadow:0 0 20px rgba(255,200,140,0.8);
-    transform:scale(1.4);
+  .back-hub::before{
+    content:"";width:9px;height:9px;margin-left:3px;
+    border-left:2px solid var(--gold);border-bottom:2px solid var(--gold);
+    transform:rotate(45deg);
   }
-  .back-hub *{display:none !important}
+
+  /* ---------- layout: the player takes the screen ---------- */
+  .shell{
+    position:relative;z-index:2;height:100%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:10px;
+    padding:calc(8px + env(safe-area-inset-top,0px)) 8px calc(8px + env(safe-area-inset-bottom,0px));
+  }
+
+  /* ---------- compact language switch ---------- */
+  .toggle{
+    display:inline-flex;align-items:center;
+    background:rgba(8,32,23,.6);border:1px solid var(--line);
+    border-radius:999px;padding:3px;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    cursor:pointer;position:relative;flex:0 0 auto;
+    height:38px;
+  }
+  .toggle .opt{
+    position:relative;z-index:2;
+    min-width:60px;height:32px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:500;letter-spacing:.04em;
+    color:var(--muted);border-radius:999px;
+    transition:color .3s ease;white-space:nowrap;
+  }
+  .toggle .opt.ml{font-family:'Noto Sans Malayalam','Poppins',sans-serif;letter-spacing:0;font-size:12px}
+  .toggle .knob{
+    position:absolute;z-index:1;top:3px;left:3px;
+    width:calc(50% - 3px);height:calc(100% - 6px);border-radius:999px;
+    background:linear-gradient(135deg,rgba(47,174,127,.92),rgba(201,169,110,.88));
+    transition:transform .5s cubic-bezier(.22,.61,.36,1);
+  }
+  .toggle[data-lang="en"] .knob{transform:translateX(100%)}
+  .toggle[data-lang="ml"] .opt.ml,
+  .toggle[data-lang="en"] .opt.en{color:#06140e;font-weight:600}
+
+  /* a short glow so the switch is noticed, then it settles */
+  @keyframes hintGlow{
+    0%,100%{box-shadow:0 0 0 0 rgba(201,169,110,0)}
+    50%{box-shadow:0 0 0 5px rgba(201,169,110,.16), 0 0 20px rgba(201,169,110,.55)}
+  }
+  .toggle.hint{animation:hintGlow 1.65s ease-in-out 3}
+
+  /* ---------- 3D flip stage ---------- */
+  .stage{
+    perspective:1600px;
+    width:min(97vw, calc(92svh * var(--ratio)));
+    max-width:100%;
+    aspect-ratio:9/16;
+    transition:transform .42s ease;
+    will-change:transform;
+  }
+  @keyframes dolly{
+    0%{transform:scale(1)}
+    46%{transform:scale(.78)}
+    100%{transform:scale(1)}
+  }
+  .stage.turning{animation:dolly .92s cubic-bezier(.4,0,.2,1)}
+
+  /* expanded: the player fills the viewport, inside the page */
+  .stage.expanded{
+    position:fixed;inset:0;z-index:50;
+    width:auto;height:auto;max-width:none;
+    aspect-ratio:auto;perspective:2200px;
+  }
+  .stage.expanded .face{border-radius:0;border:0;box-shadow:none}
+  .stage.expanded .face video{object-fit:contain;background:#000}
+  body.is-expanded{background:#000}
+  body.is-expanded .horizon,
+  body.is-expanded .stars{opacity:0}
+  body.is-expanded .toggle{
+    position:fixed;z-index:51;
+    top:calc(12px + env(safe-area-inset-top,0px));
+    left:50%;transform:translateX(-50%);
+  }
+
+  .flip{
+    position:relative;width:100%;height:100%;
+    transform-style:preserve-3d;
+    transition:transform .9s cubic-bezier(.33,.0,.2,1);
+    will-change:transform;
+  }
+
+  .face{
+    position:absolute;inset:0;
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border-radius:16px;overflow:hidden;background:#030f0a;
+    border:1px solid var(--line);
+    box-shadow:
+      0 16px 46px rgba(0,0,0,.55),
+      0 0 26px rgba(201,169,110,.16);
+    transition:box-shadow .5s ease;
+  }
+  .stage.turning .face{
+    box-shadow:
+      0 22px 60px rgba(0,0,0,.6),
+      0 0 0 1px rgba(201,169,110,.45),
+      0 0 48px rgba(201,169,110,.5),
+      0 0 95px rgba(47,174,127,.3);
+  }
+  .face.back{transform:rotateY(180deg)}
+  .face > *{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+  .face video{width:100%;height:100%;object-fit:cover;display:block;background:#030f0a}
+
+  /* big play disc */
+  .play{
+    position:absolute;inset:0;z-index:3;
+    display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at center,rgba(3,15,10,.16),rgba(3,15,10,.5));
+    border:0;cursor:pointer;
+  }
+  .play i{
+    width:64px;height:64px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,rgba(201,169,110,.96),rgba(47,174,127,.9));
+    box-shadow:0 10px 30px rgba(0,0,0,.45);
+  }
+  .play i::after{
+    content:"";width:0;height:0;margin-left:5px;
+    border-left:18px solid #06140e;
+    border-top:11px solid transparent;border-bottom:11px solid transparent;
+  }
+
+  /* fullscreen */
+  .fs{
+    position:absolute;z-index:4;top:10px;right:10px;
+    width:38px;height:38px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(3,15,10,.5);border:1px solid rgba(255,255,255,.14);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    cursor:pointer;
+  }
+  .fs svg{width:17px;height:17px;fill:none;stroke:var(--ink);stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+  .fs.shrink{display:none}
+  .stage.expanded .fs.full{display:none}
+  .stage.expanded .fs.shrink{
+    display:flex;
+    top:calc(12px + env(safe-area-inset-top,0px));
+    right:calc(12px + env(safe-area-inset-right,0px));
+  }
+
+  /* end card — the demo button appears only once the video has finished */
+  .endcard{
+    position:absolute;inset:0;z-index:5;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+    padding:20px;text-align:center;
+    background:linear-gradient(to bottom,rgba(3,15,10,.86),rgba(3,15,10,.96));
+    animation:fadeIn .45s ease both;
+  }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .endcard p{font-size:13px;color:var(--muted);line-height:1.5;max-width:22ch}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    min-height:48px;padding:0 24px;border-radius:999px;
+    background:linear-gradient(135deg,#1f9f6f,#2fae7f);
+    color:#05140e;font-weight:600;font-size:14px;text-decoration:none;
+    box-shadow:0 10px 26px rgba(47,174,127,.3);
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn svg{width:18px;height:18px;fill:currentColor}
+
+  .replay{
+    display:inline-flex;align-items:center;gap:7px;
+    min-height:44px;padding:0 16px;border-radius:999px;
+    background:transparent;border:1px solid var(--line);
+    color:var(--muted);font-size:12px;font-family:inherit;cursor:pointer;
+  }
+  .replay svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+
   @media (max-width:480px){
-    .back-hub{top:14px;left:14px;width:12px;height:12px}
+    .toggle .opt{min-width:54px}
   }
 
-
-  /* ---- explainer theme: a deep teal jewel-box on a light page ---- */
-  .xp{
-    --xp-bg:#021a17; --xp-bg2:#06322c;
-    --xp-panel:rgba(11,94,93,.44); --xp-panel2:rgba(14,124,123,.28);
-    --xp-line:rgba(233,185,73,.22); --xp-line2:rgba(233,185,73,.44);
-    --xp-em:#0E7C7B; --xp-em2:#19A7A3;
-    --xp-gold:#E9B949; --xp-gold2:#F7DE9A; --xp-glow:rgba(233,185,73,.34);
-    --xp-glowA:rgba(25,167,163,.30); --xp-glowB:rgba(233,185,73,.20);
-    --xp-ink:#FFF9EF; --xp-mut:rgba(255,249,239,.74); --xp-dim:rgba(255,249,239,.46);
-    --xp-disp:'Fraunces','Noto Sans Malayalam',serif;
+  @media (prefers-reduced-motion: reduce){
+    .star{animation:none;opacity:.4}
+    .flip,.stage,.toggle .knob{transition:none}
+    .toggle.hint,.endcard{animation:none}
   }
-  .xp-orn{opacity:.14}
-  .scroll-cue{display:flex;flex-direction:column;align-items:center;gap:6px;
-    margin-top:clamp(14px,2.6vh,24px);color:rgba(11,59,58,.62);text-decoration:none;
-    font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
-    min-height:44px;justify-content:center;animation:cueIn .8s 1.2s cubic-bezier(.2,.8,.3,1) both}
-  .scroll-cue:hover{color:#0E7C7B}
-  .scroll-cue i{display:block;width:1px;height:20px;
-    background:linear-gradient(to bottom,transparent,#0E7C7B);animation:cueDrop 2s ease-in-out infinite}
-  @keyframes cueIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  @keyframes cueDrop{0%,100%{opacity:.35;transform:translateY(-4px)}50%{opacity:1;transform:translateY(4px)}}
-  .explainer-band{position:relative;z-index:5;padding:clamp(10px,2vh,20px) 0 clamp(36px,6vh,64px)}
-  .band-head{text-align:center;margin-bottom:clamp(12px,2.2vh,20px);padding:0 16px}
-  .band-head .k{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:#0E7C7B}
-  .band-head h2{font-family:'Fraunces',serif;font-weight:700;color:#0B3B3A;
-    font-size:clamp(1.7rem,6vw,2.8rem);line-height:1.08;margin-top:6px}
-  .band-head p{color:rgba(11,59,58,.66);font-weight:300;
-    font-size:clamp(.8rem,2.3vw,.95rem);margin-top:7px}
-  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.scroll-cue,.scroll-cue i{animation:none}}
 </style>
 </head>
 <body>
- <a href="./" class="back-hub" aria-label="Back to all fees" title="All Fees"></a>
 
-  <div class="tiles" aria-hidden="true">
-    <svg xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="zellige" width="120" height="120" patternUnits="userSpaceOnUse">
-          <g fill="none" stroke="#0E7C7B" stroke-width="2" opacity=".16">
-            <!-- center star -->
-            <rect x="30" y="30" width="60" height="60"/>
-            <rect x="30" y="30" width="60" height="60" transform="rotate(45 60 60)"/>
-            <!-- corner stars -->
-            <rect x="-30" y="-30" width="60" height="60"/><rect x="-30" y="-30" width="60" height="60" transform="rotate(45 0 0)"/>
-            <rect x="90" y="-30" width="60" height="60"/><rect x="90" y="-30" width="60" height="60" transform="rotate(45 120 0)"/>
-            <rect x="-30" y="90" width="60" height="60"/><rect x="-30" y="90" width="60" height="60" transform="rotate(45 0 120)"/>
-            <rect x="90" y="90" width="60" height="60"/><rect x="90" y="90" width="60" height="60" transform="rotate(45 120 120)"/>
-            <!-- edge cross-diamonds -->
-            <rect x="45" y="-15" width="30" height="30" transform="rotate(45 60 0)"/>
-            <rect x="-15" y="45" width="30" height="30" transform="rotate(45 0 60)"/>
-            <rect x="105" y="45" width="30" height="30" transform="rotate(45 120 60)"/>
-            <rect x="45" y="105" width="30" height="30" transform="rotate(45 60 120)"/>
-          </g>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#zellige)"/>
-    </svg>
-  </div>
-  <div class="sheen" aria-hidden="true"></div>
+<a href="./" class="back-hub" aria-label="Back to all fees" title="All Fees"></a>
 
-  <div class="accent a1" aria-hidden="true"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><rect x="22" y="22" width="56" height="56"/><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)"/></svg></div>
-  <div class="accent a2" aria-hidden="true"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><rect x="22" y="22" width="56" height="56"/><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)"/></svg></div>
+<div class="horizon" aria-hidden="true"></div>
+<div class="stars" id="stars" aria-hidden="true"></div>
 
-  <div class="hero">
-  <main class="card">
-    <div class="topline">
-      <span class="ar">مَدْرَسَة</span>
-      <span class="eyebrow">ManzilulQuran E-learning Academy</span>
-    </div>
+<div class="shell">
 
-    <h1><span class="u">Madrasa Batch</span> Class</h1>
-    <p class="lede">A friendly small-group programme building strong Islamic foundations from the ground up.</p>
+  <button class="toggle hint" id="langToggle" data-lang="ml" aria-label="Switch video language">
+    <span class="knob" aria-hidden="true"></span>
+    <span class="opt ml">മലയാളം</span>
+    <span class="opt en">English</span>
+  </button>
 
-    <div class="stats">
-      <div class="chip days">
-        <div class="v">5 <small>days</small></div>
-        <div class="k">Per Week</div>
+  <div class="stage" id="stage">
+    <div class="flip" id="flip">
+
+      <div class="face front">
+        <video id="vML" playsinline preload="metadata" controls controlsList="nodownload"
+               poster="https://media.manzilulquran.in/madrasa-batch-ml-poster.jpg">
+          <source src="https://media.manzilulquran.in/madrasa-batch-ml-v1.mp4" type="video/mp4" />
+        </video>
+        <button class="fs full" data-for="vML" aria-label="Full screen">
+          <svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+        <button class="fs shrink" data-for="vML" aria-label="Smaller">
+          <svg viewBox="0 0 24 24"><path d="M3 8h5V3M21 8h-5V3M3 16h5v5M21 16h-5v5"/></svg>
+        </button>
+        <button class="play" data-for="vML" aria-label="Play video"><i></i></button>
+        <div class="endcard" data-for="vML" hidden>
+          <p>Book a free demo class and see how it works.</p>
+          <a class="btn demo" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.04c-.24.68-1.42 1.31-1.96 1.36-.5.05-1.13.07-1.83-.11-.42-.13-.96-.31-1.66-.61-2.92-1.26-4.83-4.2-4.97-4.4-.15-.2-1.19-1.58-1.19-3.01s.75-2.14 1.02-2.43c.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.59.82 2.03.89 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5-.15.17-.31.39-.44.52-.15.15-.3.31-.13.6.17.29.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.35 1.46.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.19-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.72-.17 1.4z"/></svg>
+            Book a Free Demo
+          </a>
+          <button class="replay" data-for="vML">
+            <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+            Watch again
+          </button>
+        </div>
       </div>
-      <div class="chip fee">
-        <div class="v">₹<span data-count="799">0</span></div>
-        <div class="k">Per Month</div>
+
+      <div class="face back">
+        <video id="vEN" playsinline preload="none" controls controlsList="nodownload"
+               poster="https://media.manzilulquran.in/madrasa-batch-en-poster.jpg">
+          <source src="https://media.manzilulquran.in/madrasa-batch-en-v1.mp4" type="video/mp4" />
+        </video>
+        <button class="fs full" data-for="vEN" aria-label="Full screen">
+          <svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+        <button class="fs shrink" data-for="vEN" aria-label="Smaller">
+          <svg viewBox="0 0 24 24"><path d="M3 8h5V3M21 8h-5V3M3 16h5v5M21 16h-5v5"/></svg>
+        </button>
+        <button class="play" data-for="vEN" aria-label="Play video"><i></i></button>
+        <div class="endcard" data-for="vEN" hidden>
+          <p>Book a free demo class and see how it works.</p>
+          <a class="btn demo" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.04c-.24.68-1.42 1.31-1.96 1.36-.5.05-1.13.07-1.83-.11-.42-.13-.96-.31-1.66-.61-2.92-1.26-4.83-4.2-4.97-4.4-.15-.2-1.19-1.58-1.19-3.01s.75-2.14 1.02-2.43c.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.59.82 2.03.89 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5-.15.17-.31.39-.44.52-.15.15-.3.31-.13.6.17.29.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.35 1.46.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.19-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.72-.17 1.4z"/></svg>
+            Book a Free Demo
+          </a>
+          <button class="replay" data-for="vEN">
+            <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+            Watch again
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div class="note">
-      <div class="nt"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg> What this batch covers</div>
-      <div class="tags">
-        <span class="tag"><span class="d"></span>Strong Foundation</span>
-        <span class="tag"><span class="d"></span>Du'a Memorisation</span>
-        <span class="tag"><span class="d"></span>Good Deeds &amp; Manners (Adab)</span>
-        <span class="tag"><span class="d"></span>Islamic Basics</span>
-        <span class="tag"><span class="d"></span>and more…</span>
-      </div>
     </div>
-
-    <div class="cta">
-      <span class="live"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>100% Live Classes</span>
-      <a class="btn" id="demoBtn" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.04c-.24.68-1.42 1.31-1.96 1.36-.5.05-1.13.07-1.83-.11-.42-.13-.96-.31-1.66-.61-2.92-1.26-4.83-4.2-4.97-4.4-.15-.2-1.19-1.58-1.19-3.01s.75-2.14 1.02-2.43c.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.59.82 2.03.89 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5-.15.17-.31.39-.44.52-.15.15-.3.31-.13.6.17.29.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.35 1.46.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.19-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.72-.17 1.4z"/></svg>
-        Book a Free Demo
-      </a>
-    </div>
-  </main>
-
-    <a href="#how-it-works" class="scroll-cue"><span>How it works</span><i></i></a>
   </div>
 
-  <section class="explainer-band" id="how-it-works">
-    <div class="band-head">
-      <div class="k">Inside the class</div>
-      <h2>How the Madrasa Batch works</h2>
-      <p>The syllabus, the batch system, the timings and the fee.</p>
-    </div>
-    <div id="course-explainer"></div>
-  </section>
+</div>
 
 <script>
-  function countUp(el){
-    var target=+el.dataset.count, dur=1100, t0=null;
-    function step(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/dur,1), e=1-Math.pow(1-p,3);
-      el.textContent=Math.round(target*e).toLocaleString('en-IN'); if(p<1)requestAnimationFrame(step); }
-    requestAnimationFrame(step);
-  }
-  setTimeout(function(){ document.querySelectorAll('[data-count]').forEach(countUp); }, 500);
+(function(){
+  'use strict';
 
-  // WhatsApp free-demo link
-  var phone='917025070415';
-  var msg="Assalamu Alaikum! I'm interested in the Madrasa Batch Class (5 days/week, ₹799/month) at ManzilulQuran E-learning Academy and would like to book a FREE demo class.\n\nPlease share the available batch timings.\n\nJazak Allah Khair.";
-  document.getElementById('demoBtn').href='https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- stars ---------- */
+  (function(){
+    var c = document.getElementById('stars');
+    if(!c) return;
+    var frag = document.createDocumentFragment();
+    for(var k=0;k<60;k++){
+      var s = document.createElement('div');
+      s.className = 'star';
+      var sz = (Math.random()*1.1 + 0.6).toFixed(2);
+      s.style.width = s.style.height = sz + 'px';
+      s.style.left = (Math.random()*100) + '%';
+      s.style.top  = (Math.random()*86) + '%';
+      s.style.opacity = (0.16 + Math.random()*0.45).toFixed(2);
+      if(!reduce){
+        s.style.animationDuration = (2.6 + Math.random()*3.2) + 's';
+        s.style.animationDelay = (-Math.random()*4) + 's';
+      }
+      frag.appendChild(s);
+    }
+    c.appendChild(frag);
+  })();
+
+  /* ---------- WhatsApp demo link (on both end cards) ---------- */
+  var phone = '917025070415';
+  var msg = "Assalamu Alaikum! I'm interested in the Madrasa Batch Class (5 days/week) at ManzilulQuran E-learning Academy and would like to book a FREE demo class.\n\nPlease share the available batch timings.\n\nJazak Allah Khair.";
+  var wa = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
+  Array.prototype.forEach.call(document.querySelectorAll('.btn.demo'), function(a){ a.href = wa; });
+
+  /* ---------- flip player ---------- */
+  var stage  = document.getElementById('stage');
+  var flip   = document.getElementById('flip');
+  var toggle = document.getElementById('langToggle');
+  var vML    = document.getElementById('vML');
+  var vEN    = document.getElementById('vEN');
+
+  var turns  = 0;
+  var busy   = false;
+  var active = vML;
+
+  function pick(sel, id){ return document.querySelector(sel + '[data-for="' + id + '"]'); }
+
+  // ?lang=en opens on the English side with no animation
+  try{
+    if((new URLSearchParams(location.search).get('lang')||'').toLowerCase() === 'en'){
+      turns = 1; active = vEN;
+      toggle.setAttribute('data-lang','en');
+      var prev = flip.style.transition;
+      flip.style.transition = 'none';
+      flip.style.transform  = 'rotateY(180deg)';
+      void flip.offsetWidth;
+      flip.style.transition = prev;
+      vEN.preload = 'metadata'; vML.preload = 'none';
+    }
+  }catch(e){}
+
+  // the glow is a one-time hint; drop it as soon as the switch is used
+  setTimeout(function(){ toggle.classList.remove('hint'); }, 5200);
+
+  // the second video downloads only once the first is actually being watched
+  var backLoaded = false;
+  function loadBack(){
+    if(backLoaded) return;
+    backLoaded = true;
+    var back = (active === vML) ? vEN : vML;
+    try{ back.preload = 'auto'; back.load(); }catch(e){}
+  }
+  vML.addEventListener('playing', loadBack, {once:true});
+  vEN.addEventListener('playing', loadBack, {once:true});
+
+  /* ---------- expand inside the page ----------
+     The Fullscreen API needs a tap, so it cannot fire on a timer. This fills the
+     viewport instead, which needs no gesture; the button still offers the real thing. */
+  var expandTimer = null, autoDone = false, userShrank = false;
+
+  function expand(){
+    if(stage.classList.contains('expanded')) return;
+    stage.classList.add('expanded');
+    document.body.classList.add('is-expanded');
+  }
+  function collapse(){
+    if(!stage.classList.contains('expanded')) return;
+    stage.classList.remove('expanded');
+    document.body.classList.remove('is-expanded');
+  }
+  function scheduleExpand(){
+    if(autoDone || userShrank) return;
+    clearTimeout(expandTimer);
+    expandTimer = setTimeout(function(){
+      if(userShrank) return;
+      autoDone = true;
+      expand();
+    }, 5500);
+  }
+
+  /* per-video controls */
+  [vML, vEN].forEach(function(v){
+    var id   = v.id;
+    var play = pick('.play', id);
+    var end  = pick('.endcard', id);
+    var fs   = pick('.fs', id);
+    var rep  = pick('.replay', id);
+
+    play.addEventListener('click', function(){ v.play().catch(function(){}); });
+
+    rep.addEventListener('click', function(){
+      end.hidden = true;
+      try{ v.currentTime = 0; }catch(e){}
+      v.play().catch(function(){});
+    });
+
+    // real full screen — iOS Safari only allows it on the video element itself,
+    // and every browser requires this to come straight from a tap
+    pick('.fs.full', id).addEventListener('click', function(){
+      if(v.requestFullscreen)            v.requestFullscreen().catch(function(){});
+      else if(v.webkitEnterFullscreen)   v.webkitEnterFullscreen();
+      else if(v.webkitRequestFullscreen) v.webkitRequestFullscreen();
+    });
+
+    pick('.fs.shrink', id).addEventListener('click', function(){
+      userShrank = true;              // their choice sticks for the rest of the visit
+      collapse();
+    });
+
+    v.addEventListener('play', function(){
+      play.hidden = true; end.hidden = true;
+      scheduleExpand();
+    });
+    v.addEventListener('pause', function(){ clearTimeout(expandTimer); });
+    v.addEventListener('ended', function(){
+      clearTimeout(expandTimer);
+      collapse();                     // the end card belongs on the small card
+      end.hidden = false; play.hidden = true;
+    });
+  });
+
+  /* the 180deg turn */
+  function switchLang(){
+    if(busy) return;
+    busy = true;
+    toggle.classList.remove('hint');
+
+    var from = active;
+    var to   = (active === vML) ? vEN : vML;
+    var wasPlaying = !from.paused && !from.ended;
+
+    loadBack();
+
+    turns += 1;
+    toggle.setAttribute('data-lang', to === vML ? 'ml' : 'en');
+
+    if(reduce){
+      flip.style.transform = 'rotateY(' + (turns*180) + 'deg)';
+      handover(from, to, wasPlaying);
+      active = to; busy = false;
+      return;
+    }
+
+    stage.classList.add('turning');
+    flip.style.transform = 'rotateY(' + (turns*180) + 'deg)';
+
+    // halfway through, while the card is edge-on: hand the playhead over
+    setTimeout(function(){
+      handover(from, to, wasPlaying);
+      active = to;
+    }, 450);
+
+    setTimeout(function(){ stage.classList.remove('turning'); }, 930);
+    setTimeout(function(){ busy = false; }, 950);
+  }
+
+  // keep the viewer's place when the language changes
+  function handover(from, to, wasPlaying){
+    var at = from.currentTime || 0;
+    from.pause();
+    pick('.endcard', from.id).hidden = true;
+    function seekAndGo(){
+      try{ if(isFinite(at) && at > 0) to.currentTime = at; }catch(e){}
+      if(wasPlaying){
+        pick('.play', to.id).hidden = true;
+        to.play().catch(function(){});
+      }
+    }
+    if(to.readyState >= 1){ seekAndGo(); }
+    else { to.addEventListener('loadedmetadata', seekAndGo, {once:true}); }
+  }
+
+  toggle.addEventListener('click', switchLang);
+
+})();
 </script>
-<script src="../assets/explainer/engine.v1.js" defer></script>
-<script src="../assets/explainer/madrasa-batch.v1.js" defer></script>
 </body>
 </html>
