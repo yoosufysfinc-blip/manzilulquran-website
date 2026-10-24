@@ -11,6 +11,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;500&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
+  /* .play and .endcard set display:flex, which outranks the browser's own
+     [hidden]{display:none}. Without this they never hide. */
+  [hidden]{display:none !important}
 
   :root{
     --gold:#C9A96E;
@@ -111,7 +114,12 @@
     transition:transform .42s ease;
     will-change:transform;
   }
-  .stage.turning{transform:scale(.92)}
+  @keyframes dolly{
+    0%{transform:scale(1)}
+    46%{transform:scale(.78)}
+    100%{transform:scale(1)}
+  }
+  .stage.turning{animation:dolly .92s cubic-bezier(.4,0,.2,1)}
 
   /* expanded: the player fills the viewport, inside the page */
   .stage.expanded{
@@ -133,7 +141,7 @@
   .flip{
     position:relative;width:100%;height:100%;
     transform-style:preserve-3d;
-    transition:transform .84s cubic-bezier(.22,.61,.36,1);
+    transition:transform .9s cubic-bezier(.33,.0,.2,1);
     will-change:transform;
   }
 
@@ -142,9 +150,20 @@
     backface-visibility:hidden;-webkit-backface-visibility:hidden;
     border-radius:16px;overflow:hidden;background:#030f0a;
     border:1px solid var(--line);
-    box-shadow:0 16px 46px rgba(0,0,0,.55);
+    box-shadow:
+      0 16px 46px rgba(0,0,0,.55),
+      0 0 26px rgba(201,169,110,.16);
+    transition:box-shadow .5s ease;
+  }
+  .stage.turning .face{
+    box-shadow:
+      0 22px 60px rgba(0,0,0,.6),
+      0 0 0 1px rgba(201,169,110,.45),
+      0 0 48px rgba(201,169,110,.5),
+      0 0 95px rgba(47,174,127,.3);
   }
   .face.back{transform:rotateY(180deg)}
+  .face > *{backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .face video{width:100%;height:100%;object-fit:cover;display:block;background:#030f0a}
 
   /* big play disc */
@@ -190,8 +209,7 @@
     position:absolute;inset:0;z-index:5;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
     padding:20px;text-align:center;
-    background:linear-gradient(to bottom,rgba(3,15,10,.72),rgba(3,15,10,.92));
-    backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+    background:linear-gradient(to bottom,rgba(3,15,10,.86),rgba(3,15,10,.96));
     animation:fadeIn .45s ease both;
   }
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -470,10 +488,10 @@
     setTimeout(function(){
       handover(from, to, wasPlaying);
       active = to;
-      stage.classList.remove('turning');
-    }, 420);
+    }, 450);
 
-    setTimeout(function(){ busy = false; }, 860);
+    setTimeout(function(){ stage.classList.remove('turning'); }, 930);
+    setTimeout(function(){ busy = false; }, 950);
   }
 
   // keep the viewer's place when the language changes
