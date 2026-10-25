@@ -556,6 +556,7 @@ function renderControls(){
     <span class="grow"></span>
     <div class="rp-actions">
       <button class="btn gold ix-btn" id="rpPdf">⬇ Download HD PDF</button>
+      <button class="btn ghost ix-btn" id="rpPrintPdf">⎙ A4 Print PDF</button>
       <button class="btn ghost ix-btn" id="rpCopy">Copy WhatsApp summary</button>
     </div></div>`;
 }
@@ -781,11 +782,13 @@ window.renderProgress=function(){
    The sheets are laid out in a hidden 400px-wide frame — the same phone layout as the
    on-screen preview on any device — captured with html2canvas, then stacked on a single
    tall PDF page. Each sheet is captured separately to stay under iOS canvas limits. */
-const PHONE_W=400,PAD=12,GAP=12,BG="#07140f";
-async function buildFrame(){
+const PHONE_W=400,PAD=12,GAP=12,BG="#ffffff";      // white page: nothing dark prints except the design itself
+/* o = {width, cls, pad, gap} — phone: 400px "rp-phone"; A4 print: 733px "rp-fit rp-a4" */
+async function buildFrame(o){
+  o=Object.assign({width:PHONE_W,cls:"rp-phone",pad:PAD,gap:GAP},o||{});
   const ifr=document.createElement("iframe");
   ifr.setAttribute("aria-hidden","true");
-  ifr.style.cssText=`position:fixed;left:-12000px;top:0;width:${PHONE_W}px;height:900px;border:0;`;
+  ifr.style.cssText=`position:fixed;left:-12000px;top:0;width:${o.width}px;height:900px;border:0;`;
   document.body.appendChild(ifr);
   const links=[...document.querySelectorAll('link[rel="stylesheet"]')].filter(l=>/fonts\.googleapis|insights\.css/.test(l.href))
     .map(l=>`<link rel="stylesheet" href="${l.href}">`).join("");
@@ -793,9 +796,9 @@ async function buildFrame(){
   const d=ifr.contentDocument;
   const loaded=new Promise(res=>{ifr.onload=res;setTimeout(res,9000);});
   d.open();
-  d.write(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=${PHONE_W}"><base href="${location.origin}/">
+  d.write(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=${o.width}"><base href="${location.origin}/">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=block">${links}
-    </head><body class="rp-phone" style="margin:0;background:${BG}"><div class="rp-docs" style="padding:${PAD}px;gap:${GAP}px">${html}</div></body></html>`);
+    </head><body class="${o.cls}" style="margin:0;background:${BG}"><div class="rp-docs" style="padding:${o.pad}px;gap:${o.gap}px">${html}</div></body></html>`);
   d.close();
   await loaded;
   try{await Promise.race([d.fonts.ready,new Promise(r=>setTimeout(r,6000))]);}catch(e){}
@@ -858,44 +861,136 @@ function linkRect(sheet){
   const s=sheet.getBoundingClientRect(),r=a.getBoundingClientRect();
   return{x:r.left-s.left,y:r.top-s.top,w:r.width,h:r.height,url:a.getAttribute("href")};
 }
+/* ---------- capture helpers (memory-safe for iPhone) ----------
+   iOS Safari silently returns an EMPTY canvas once canvas memory runs out, which used to
+   show as dark blocks in long (Complete) reports. So: each sheet is captured on its own
+   (other sheets removed from the frame), in small strips, with a short pause between
+   strips, and every strip is checked — an empty one is re-captured at a lower scale. */
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+function canvasOK(c){
+  try{
+    if(!c||!c.width||!c.height)return false;
+    const g=c.getContext("2d");if(!g)return false;
+    const W=c.width,H=c.height,pts=[[W>>1,H>>1],[1,1],[W-2,H-2],[W>>2,(H*3)>>2],[(W*3)>>2,H>>2]];
+    return pts.every(([x,y])=>g.getImageData(x,y,1,1).data[3]>0);   // opaque background ⇒ alpha 0 means a failed render
+  }catch(e){return false;}
+}
+async function captureRegion(el,win,y0,h,scale){
+  const r=el.getBoundingClientRect(),top=r.top+win.scrollY,left=r.left+win.scrollX,w=el.offsetWidth;
+  for(const s of [...new Set([scale,Math.max(2,scale-1),1.5])]){
+    let c=null;
+    try{c=await window.html2canvas(el,{scale:s,useCORS:true,backgroundColor:BG,logging:false,
+      x:left,y:top+y0,width:w,height:h,windowWidth:win.innerWidth,scrollX:0,scrollY:0});}catch(e){c=null;}
+    if(canvasOK(c))return c;
+    if(c)c.width=c.height=0;
+    await pause(120);
+  }
+  throw new Error("capture failed");
+}
+// captures [y0,y0+h) of one sheet as strips of ≤maxPx pixels; calls put(canvas, offsetWithinRegion, stripHeight)
+async function captureStrips(el,win,y0,h,scale,maxPx,put){
+  const stripH=Math.max(150,Math.floor(maxPx/(el.offsetWidth*scale*scale)));
+  for(let off=0;off<h;off+=stripH){
+    const th=Math.min(stripH,h-off);
+    const c=await captureRegion(el,win,y0+off,th,scale);
+    put(c,off,th);
+    c.width=c.height=0;                                    // free memory straight away
+    await pause(30);
+  }
+}
+// detach all sheets; hand them back one at a time so html2canvas clones only one sheet
+function isolateSheets(d){
+  const box=d.querySelector(".rp-docs"),sheets=[...box.querySelectorAll(".rp-doc")];
+  const info=sheets.map(el=>{const top=el.getBoundingClientRect().top;
+    return{el,h:el.offsetHeight,w:el.offsetWidth,link:linkRect(el),
+      cuts:[...el.querySelectorAll(".rp-band,.rp-body>*,.rp-foot")].map(n=>Math.round(n.getBoundingClientRect().bottom-top)).sort((a,b)=>a-b)};});
+  sheets.forEach(el=>el.remove());
+  return{box,info};
+}
+let pdfBusy=false;
+function busy(on,btn,label){
+  pdfBusy=on;$$("#rpPdf,#rpPrintPdf").forEach(b=>{b.disabled=on;});
+  if(btn&&label!=null)btn.textContent=label;
+}
+const pdfName=suffix=>{const nm=String(S.config.student||"Student").replace(/[\\/:*?"<>|]/g,"");
+  return `Hifz Report - ${nm} - ${periodLabel({type:RP.type,key:RP.key}).replace(/[·]/g,"-")}${suffix||""}.pdf`;};
+
+/* ---- 1. HD PDF for phone / WhatsApp: phone layout, ONE continuous page, white background ---- */
 async function downloadPDF(btn){
-  const label=btn.textContent;btn.disabled=true;btn.textContent="Preparing HD PDF…";
+  if(pdfBusy)return;const label=btn.textContent;busy(true,btn,"Preparing HD PDF…");
   let ifr=null;
   try{
     await Promise.all([loadLib("h2c"),loadLib("pdf"),loadLib("qr").catch(()=>{})]);
-    if(window.qrcode&&!$("#rpDoc .rp-poster svg"))renderProgress();      // make sure the QR is in the sheet
-    ifr=await buildFrame();
+    if(window.qrcode&&!$("#rpDoc .rp-poster svg"))renderProgress();
+    ifr=await buildFrame({width:PHONE_W,cls:"rp-phone",pad:PAD,gap:GAP});
     btn.textContent="Preparing HD PDF… sharpening graphics";
     await sharpenSVGs(ifr.contentDocument,4);
-    const d=ifr.contentDocument,sheets=[...d.querySelectorAll(".rp-doc")];
-    const sw=sheets[0].offsetWidth,hs=sheets.map(el=>el.offsetHeight);
-    const W=PHONE_W,H=PAD*2+hs.reduce((a,b)=>a+b,0)+GAP*(sheets.length-1);
+    const d=ifr.contentDocument,win=d.defaultView,{box,info}=isolateSheets(d);
+    const sw=info[0].w,H=PAD*2+info.reduce((a,x)=>a+x.h,0)+GAP*(info.length-1);
     const k=Math.min(.75,14000/H);                                       // css px → pt; PDF pages max out at 14400pt
-    const pdf=new window.jspdf.jsPDF({unit:"pt",format:[W*k,H*k],orientation:"portrait",compress:true});
-    pdf.setFillColor(7,20,15);pdf.rect(0,0,W*k,H*k,"F");
-    // HD: 4× resolution, lossless PNG, captured in horizontal strips so each canvas stays
-    // well under the iOS canvas-area limit (~16.7M px) however long the report is.
-    const SCALE=4,MAXPX=12e6;
-    const stripH=Math.max(200,Math.floor(MAXPX/(sw*SCALE*SCALE)));
-    const win=d.defaultView;let y=PAD;
-    for(let i=0;i<sheets.length;i++){
-      const el=sheets[i],h=hs[i],r=el.getBoundingClientRect(),top=r.top+win.scrollY,left=r.left+win.scrollX;
-      for(let off=0;off<h;off+=stripH){
-        const th=Math.min(stripH,h-off);
+    const pdf=new window.jspdf.jsPDF({unit:"pt",format:[PHONE_W*k,H*k],orientation:"portrait",compress:true});
+    let y=PAD;
+    for(const s of info){
+      box.appendChild(s.el);await pause(40);
+      await captureStrips(s.el,win,0,s.h,4,4e6,(c,off,th)=>{
         btn.textContent=`Preparing HD PDF… ${Math.round((y+off)/H*100)}%`;
-        const c=await window.html2canvas(el,{scale:SCALE,useCORS:true,backgroundColor:BG,logging:false,
-          x:left,y:top+off,width:sw,height:th,windowWidth:PHONE_W,scrollX:0,scrollY:0});
         pdf.addImage(c.toDataURL("image/png"),"PNG",PAD*k,(y+off)*k,sw*k,th*k,undefined,"FAST");
-        c.width=c.height=0;                                                // free memory right away (iOS)
-      }
-      const L=linkRect(el);if(L)pdf.link((PAD+L.x)*k,(y+L.y)*k,L.w*k,L.h*k,{url:L.url});
-      y+=h+GAP;
+      });
+      if(s.link)pdf.link((PAD+s.link.x)*k,(y+s.link.y)*k,s.link.w*k,s.link.h*k,{url:s.link.url});
+      s.el.remove();y+=s.h+GAP;
     }
-    const nm=String(S.config.student||"Student").replace(/[\\/:*?"<>|]/g,"");
-    pdf.save(`Hifz Report - ${nm} - ${periodLabel({type:RP.type,key:RP.key}).replace(/[·]/g,"-")}.pdf`);
+    pdf.save(pdfName(""));
     toast("HD PDF downloaded ✓");
-  }catch(e){console.error(e);toast("Couldn't build the PDF — check the connection and try again");}
-  finally{if(ifr)ifr.remove();btn.disabled=false;btn.textContent=label;}
+  }catch(e){console.error(e);toast("Couldn't build the PDF — close other tabs and try again");}
+  finally{if(ifr)ifr.remove();busy(false,btn,label);}
+}
+
+/* ---- 2. A4 print PDF: A4 layout, white pages, 8mm margins, breaks only between sections.
+   Complete = one designed sheet per page (scaled slightly if needed); Minimal = ≤2 pages. ---- */
+async function downloadPrintPDF(btn){
+  if(pdfBusy)return;const label=btn.textContent;busy(true,btn,"Preparing A4 print PDF…");
+  let ifr=null;
+  try{
+    await Promise.all([loadLib("h2c"),loadLib("pdf"),loadLib("qr").catch(()=>{})]);
+    if(window.qrcode&&!$("#rpDoc .rp-poster svg"))renderProgress();
+    const CW=733,PH=1062,M=8,PW=210,PHmm=297,mmpx=(PW-2*M)/CW;          // A4 at 96dpi minus 8mm margins
+    ifr=await buildFrame({width:CW,cls:"rp-fit rp-a4",pad:0,gap:0});
+    btn.textContent="Preparing A4 print PDF… sharpening graphics";
+    await sharpenSVGs(ifr.contentDocument,3);
+    const d=ifr.contentDocument,win=d.defaultView,{box,info}=isolateSheets(d);
+    const paginate=(s,k)=>{const room=PH/k,out=[];let a=0;
+      while(a<s.h-2){let b=s.cuts.filter(y=>y>a+40&&y<=a+room).pop();if(!b)b=Math.min(s.h,a+room);out.push([a,b]);a=b;}
+      return out;};
+    // plan pages: [{s, k, a, b}]
+    const plan=[];
+    if(info.length>1){
+      info.forEach(s=>{
+        if(s.h<=PH*1.18){plan.push({s,k:Math.min(1,PH/s.h),a:0,b:s.h});}
+        else paginate(s,1).forEach(([a,b])=>plan.push({s,k:1,a,b}));
+      });
+    }else{
+      const s=info[0];let k=1,pg=paginate(s,1);
+      if(pg.length>2)for(let t=.98;t>=.8;t-=.02){const p=paginate(s,t);if(p.length<=2){k=t;pg=p;break;}}
+      pg.forEach(([a,b])=>plan.push({s,k,a,b}));
+    }
+    const pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4",orientation:"portrait",compress:true});
+    let cur=null;
+    for(let p=0;p<plan.length;p++){
+      const {s,k,a,b}=plan[p];
+      if(cur!==s.el){if(cur)cur.remove();box.appendChild(s.el);cur=s.el;await pause(40);}
+      if(p)pdf.addPage();
+      const w=CW*mmpx*k,x=M+((PW-2*M)-w)/2;
+      btn.textContent=`Preparing A4 print PDF… page ${p+1} of ${plan.length}`;
+      await captureStrips(s.el,win,a,b-a,2.5,5e6,(c,off,th)=>{
+        pdf.addImage(c.toDataURL("image/jpeg",.95),"JPEG",x,M+off*mmpx*k,w,th*mmpx*k,undefined,"FAST");
+      });
+      const L=s.link;
+      if(L&&L.y>=a&&L.y+L.h<=b)pdf.link(x+L.x*mmpx*k,M+(L.y-a)*mmpx*k,L.w*mmpx*k,L.h*mmpx*k,{url:L.url});
+    }
+    pdf.save(pdfName(" (A4 print)"));
+    toast(`A4 print PDF ready ✓ ${plan.length} page${plan.length>1?"s":""}`);
+  }catch(e){console.error(e);toast("Couldn't build the print PDF — close other tabs and try again");}
+  finally{if(ifr)ifr.remove();busy(false,btn,label);}
 }
 
 function bindControls(){
@@ -903,6 +998,7 @@ function bindControls(){
   $$("#progressArea [data-rpf]").forEach(b=>b.onclick=()=>{RP.fmt=b.dataset.rpf;renderProgress();});
   const k=$("#rpKey");if(k)k.onchange=()=>{RP.key=k.value;renderProgress();};
   const pd=$("#rpPdf");if(pd)pd.onclick=()=>downloadPDF(pd);
+  const pp=$("#rpPrintPdf");if(pp)pp.onclick=()=>downloadPrintPDF(pp);
   const cp=$("#rpCopy");if(cp)cp.onclick=async()=>{const txt=whatsappText();
     try{await navigator.clipboard.writeText(txt);toast("Summary copied — paste it in WhatsApp ✓");}catch(e){prompt("Copy this summary:",txt);}};
 }
