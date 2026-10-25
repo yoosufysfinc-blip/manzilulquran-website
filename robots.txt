@@ -11,6 +11,31 @@ Disallow: /portal/
 Disallow: /class/
 Disallow: /join/
 
+# Link-preview crawlers: allowed everywhere, so that a page shared on
+# WhatsApp, Facebook, X or LinkedIn can show its preview card.
+# These are not search indexers — the Disallow rules above still keep
+# /fees/, /portal/ and the rest out of search results.
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: facebookcatalog
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+User-agent: Slackbot-LinkExpanding
+Allow: /
+
 # Sitemap location
 Sitemap: https://manzilulquran.in/sitemap.xml
 
