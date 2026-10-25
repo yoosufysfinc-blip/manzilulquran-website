@@ -364,15 +364,15 @@ body.rp-phone .rp-doc{box-shadow:none!important}
 body.rp-phone{-webkit-font-smoothing:antialiased}
 
 /* phone: stacked tables */
-@media(max-width:640px){
-  .rp-tbl.rp-stack thead{display:none}
-  .rp-tbl.rp-stack,.rp-tbl.rp-stack tbody,.rp-tbl.rp-stack tr,.rp-tbl.rp-stack td{display:block;width:100%}
-  .rp-tbl.rp-stack tr{padding:8px 10px;margin-bottom:8px;border:1px solid var(--line);border-radius:12px}
-  .rp-doc .rp-tbl.rp-stack td{border:0;padding:3px 0;display:grid;grid-template-columns:92px 1fr;gap:8px;background:none!important}
-  .rp-tbl.rp-stack td::before{content:attr(data-l);font-size:10.5px;color:var(--mut)}
-  .rp-tbl.rp-stack td.rp-first{font-weight:700;color:var(--g8);grid-template-columns:1fr}
-  .rp-tbl.rp-stack td.rp-first::before{display:none}
-  .rp-tbl.rp-stack td:empty{display:none}
+@media(max-width:640px){ /* not while measuring for print (body.rp-fit) */
+  body:not(.rp-fit) .rp-tbl.rp-stack thead{display:none}
+  body:not(.rp-fit) .rp-tbl.rp-stack,body:not(.rp-fit) .rp-tbl.rp-stack tbody,body:not(.rp-fit) .rp-tbl.rp-stack tr,body:not(.rp-fit) .rp-tbl.rp-stack td{display:block;width:100%}
+  body:not(.rp-fit) .rp-tbl.rp-stack tr{padding:8px 10px;margin-bottom:8px;border:1px solid var(--line);border-radius:12px}
+  body:not(.rp-fit) .rp-doc .rp-tbl.rp-stack td{border:0;padding:3px 0;display:grid;grid-template-columns:92px 1fr;gap:8px;background:none!important}
+  body:not(.rp-fit) .rp-tbl.rp-stack td::before{content:attr(data-l);font-size:10.5px;color:var(--mut)}
+  body:not(.rp-fit) .rp-tbl.rp-stack td.rp-first{font-weight:700;color:var(--g8);grid-template-columns:1fr}
+  body:not(.rp-fit) .rp-tbl.rp-stack td.rp-first::before{display:none}
+  body:not(.rp-fit) .rp-tbl.rp-stack td:empty{display:none}
 }
 @media(min-width:640px){
   .rp-body{padding:20px 26px 22px}
@@ -476,6 +476,21 @@ body.rp-phone{-webkit-font-smoothing:antialiased}
 .rp-foot{color:#ffe08a;background:linear-gradient(90deg,#064e3b,#047857);border-top:2px solid #e6b422}
 .rp-legend{color:#7a6a45}
 
+/* body.rp-fit = A4 layout regardless of viewport width (phone browsers measure for print
+   at screen width, so these must not live only inside @media print / min-width queries) */
+body.rp-fit .rp-band{grid-template-columns:56px 1fr auto}
+body.rp-fit .rp-band .crest{width:56px;height:56px}
+body.rp-fit .rp-band .who{grid-column:auto;flex-direction:column;align-items:flex-end;text-align:right}
+body.rp-fit .rp-band .nm{flex-basis:auto}
+body.rp-fit .rp-hero{grid-template-columns:140px 1fr}
+body.rp-fit .rp-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+body.rp-fit .rp-grid.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.rp-fit .rp-grid.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+body.rp-fit .rp-shelf{grid-template-columns:repeat(15,1fr)}
+body.rp-fit .rp-cap{grid-template-columns:1.1fr 1fr}
+body.rp-fit .rp-tips{grid-template-columns:1fr 1fr}
+body.rp-fit .rp-rem{grid-template-columns:1.4fr 1fr;align-items:end}
+body.rp-fit .rp-rem .rp-sign{margin-top:0}
 /* ---------------- print ----------------
    body.rp-fit is added by insights.js on beforeprint (and removed on afterprint).
    It lays the sheets out at A4 content width with tighter spacing so they can be
