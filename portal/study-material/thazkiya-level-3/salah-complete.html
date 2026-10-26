@@ -670,7 +670,7 @@ const PARTS_ML={1:"ഭാഗം 1 · എന്തിന്, എപ്പോൾ",
   3:"ഭാഗം 3 · മാറ്റങ്ങൾ വരുമ്പോൾ",4:"ഭാഗം 4 · ഒരുമിച്ചും അതിനപ്പുറവും",
   5:"ഭാഗം 5 · ഫിഖ്ഹ് — ത്വഹാറത്ത്"};
 
-const UI_ML={lesson:"പാഠം",of:"ൽ",remember:"ഓർക്കുക",contents:"ഉള്ളടക്കം",
+const UI_ML={barMeta:"23 പാഠങ്ങൾ · ശാഫിഈ",lesson:"പാഠം",of:"ൽ",remember:"ഓർക്കുക",contents:"ഉള്ളടക്കം",
   wm:"നിസ്കാരം സമ്പൂർണം · തസ്കിയ ലെവൽ 3",
   audM:"ആൺകുട്ടികളുടെ ക്ലാസിന്",audF:"പെൺകുട്ടികളുടെ ക്ലാസിന്",
   nPrayer:"നിസ്കാരം",nRak:"റക്അത്ത്",nNiy:"നിയ്യത്ത്",
@@ -1112,12 +1112,7 @@ book.appendChild(el(`<section class="page p1 cover">
   <div class="car">الصَّلَاة</div>
   <div class="cen">ṢALĀH COMPLETE</div>
   <div class="cline"></div>
-  <div class="cmeta">
-    Thazkiya · Level 3<br>
-    Twenty-two lessons in five parts<br>
-    Shāfiʿī madhhab<br>
-    ManzilulQuran E-learning Academy
-  </div>
+  <div class="cmeta">${tx("coverMeta","Thazkiya · Level 3<br>Twenty-three lessons in five parts<br>Shāfiʿī madhhab<br>ManzilulQuran E-learning Academy")}</div>
   <div class="wm">${tx("wm","Ṣalāh Complete · Thazkiya Level 3")}</div>
 </section>`));
 
@@ -1149,7 +1144,27 @@ SHOW.forEach((L0,i)=>{
   book.appendChild(el(page(inner,(T.lang==="ml"?PARTS_ML:PARTS)[L.p],`${tx("lesson","Lesson")} ${n} ${tx("of","of")} ${SHOW.length}`,L.p)));
 });
 }
+const langBtn=document.getElementById('langBtn');
+const barMeta=document.getElementById('barMeta');
+
+function paintLang(){
+  document.body.classList.toggle("lang-ml",T.lang==="ml");
+  document.documentElement.lang=T.lang;
+  if(langBtn) langBtn.textContent = T.lang==="ml" ? "English" : "\u0d2e\u0d32\u0d2f\u0d3e\u0d33\u0d02";
+  if(barMeta) barMeta.textContent = tx("barMeta","23 lessons \u00b7 Sh\u0101fi\u02bf\u012b");
+}
+
+if(langBtn){
+  langBtn.addEventListener('click',()=>{
+    T.lang = T.lang==="ml" ? "en" : "ml";
+    try{localStorage.setItem('slh_lang',T.lang);}catch(e){}
+    paintLang(); render(); window.scrollTo({top:0});
+  });
+}
+
+paintLang();
 render();
+
 
 
 </script>
