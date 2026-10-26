@@ -465,6 +465,90 @@
   .fm-note { display: none; }
 }
 
+
+/* ============================================================
+   MOBILE — the A4 sheet becomes a fluid page below 820px.
+   Without this the page stays 210mm (794px) wide on a 375px
+   phone, so the browser scales the whole sheet down and the
+   book reads as a zoomed-out thumbnail.
+   ============================================================ */
+@media (max-width: 820px) {
+  body { padding: 0; }
+
+  /* the sheet itself */
+  .page {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    /* height is auto now, so hidden clips only the decorative
+       overflow (watermark, corner leaves) and never the content */
+    overflow: hidden;
+    padding: 58px 16px 34px;
+    margin: 0 0 10px;
+    border-bottom: 6px solid var(--sage-light);
+    page-break-after: auto;
+  }
+
+  /* the floating controls sat over a shrunk sheet before; now that the
+     content fills the width they need to take up less of it */
+  .menu-btn { width: 44px; height: 44px; top: 10px; left: 10px;
+              font-size: 17px; border-width: 2px; border-radius: 13px; }
+  .pagepill { bottom: 10px; right: 10px; font-size: 11px;
+              padding: 5px 11px; opacity: .92; }
+
+  /* decorations that assume a 210mm canvas */
+  .watermark-big { font-size: 34pt; letter-spacing: 2px; }
+  .corner-leaf-tr { width: 26mm; height: 26mm; }
+  .corner-leaf-bl { width: 22mm; height: 22mm; }
+  .pg-num { position: static; margin-top: 18px; justify-content: center; }
+
+  /* cover */
+  .cover-content { margin-top: 10px; padding: 0 4px; }
+  .cert { margin-top: 18px; padding: 20px 14px; }
+  .cert .name-line { width: 86%; margin: 22px auto 10px; }
+
+  /* headers */
+  .lesson-top { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .title-bar { flex-wrap: wrap; gap: 6px; }
+  .letter-big-display { min-width: 0; padding: 0; }
+
+  /* grids — fewer columns, nothing below a readable size */
+  .syllabus-grid,
+  .qa-grid { grid-template-columns: 1fr; }
+  .vocab-row,
+  .vocab-row.four { grid-template-columns: repeat(2, 1fr); }
+  .letter-grid { grid-template-columns: repeat(4, 1fr); }
+  .wb-grid { grid-template-columns: repeat(3, 1fr); }
+  .ld-letters { grid-template-columns: 1fr; gap: 14px; }
+  .fm-row { grid-template-columns: 9mm repeat(4, 1fr); }
+
+  /* rows that must stack rather than squeeze */
+  .feature-word,
+  .qa-inline { flex-direction: column; gap: 12px; text-align: center; }
+  .feature-illus { width: 100%; max-width: 150px; height: 130px; }
+  .qa-big-illus { width: 100px; height: 100px; }
+  .icons-row { flex-wrap: wrap; gap: 12px; }
+  .icon-pill { width: 72px; }
+  .trace-row { flex-wrap: wrap; }
+  .letter-opts { gap: 10px; }
+
+  /* boxes with a print-fixed height. The two big inline heights below are
+     full-page layout containers written into the markup (205mm / 180mm);
+     at phone width their content needs more room, so release just those
+     two and leave the ~80 small decorative mm heights alone. */
+  .scene-wrap { height: auto; min-height: 220px; }
+  [style*="height: 205mm"],
+  [style*="height: 180mm"] { height: auto !important; }
+  .vcard .illus { height: 74px; }
+}
+
+@media (max-width: 420px) {
+  .page { padding: 54px 12px 30px; }
+  .vocab-row,
+  .vocab-row.four { grid-template-columns: 1fr; }
+  .letter-grid { grid-template-columns: repeat(3, 1fr); }
+  .wb-grid { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
 <body>
