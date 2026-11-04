@@ -45,7 +45,7 @@ const DEFAULTS = {
   translation: 'ml.abdulhameed', trShow: true,
   arSize: 'l', quranFont: 'amiri', englishHelp: true,
   autoScroll: true, vibrate: true, reduceMotion: false,
-  startMode: 'ayah'
+  startMode: 'ayah', partColors: true, tgView: 'mushaf', dockMini: false
 };
 
 /* ---------------------------------------------------------------------
@@ -295,7 +295,8 @@ function loadSettings() {
   if (!['s', 'm', 'l', 'xl'].includes(s.arSize)) s.arSize = DEFAULTS.arSize;
   if (!['amiri', 'naskh'].includes(s.quranFont)) s.quranFont = DEFAULTS.quranFont;
   if (!['ayah', 'page'].includes(s.startMode)) s.startMode = DEFAULTS.startMode;
-  ['pauseBreak', 'trShow', 'englishHelp', 'autoScroll', 'vibrate', 'reduceMotion'].forEach(k => { s[k] = !!s[k]; });
+  if (!['mushaf', 'ayahs'].includes(s.tgView)) s.tgView = DEFAULTS.tgView;
+  ['pauseBreak', 'trShow', 'englishHelp', 'autoScroll', 'vibrate', 'reduceMotion', 'partColors', 'dockMini'].forEach(k => { s[k] = !!s[k]; });
   return s;
 }
 const saveSettings = () => store.set(KEY.settings, S);
@@ -315,12 +316,12 @@ function applyDisplay() {
    The steps follow the academy method:
      read → unit 1 → unit 2 → together 1–2 → unit 3 → together 1–3 … → all together
    Inside a unit: parts (memorize one part at a time) → join the parts → the full unit.
-   Hide states (one button cycles them): 0 shown · 1 faint · 2 pinned words only · 3 hidden
+   Hide states (one button cycles them): 0 shown · 1 faint · 2 only the edges of linked words · 3 hidden
    --------------------------------------------------------------------- */
 const HIDE_TXT = [
   { en: 'Hide', ml: 'മറയ്ക്കുക', icon: 'eye-off', note: 'Shown' },
   { en: 'Faint', ml: 'മങ്ങി', icon: 'eye-faint', note: 'Faint (10%)' },
-  { en: 'Pins', ml: 'പിൻ മാത്രം', icon: 'pin', note: 'Only pinned words' },
+  { en: 'Links', ml: 'ലിങ്ക് മാത്രം', icon: 'link', note: 'Only the linked words, partly' },
   { en: 'Hidden', ml: 'മറച്ചു', icon: 'eye', note: 'Hidden' }
 ];
 function nextHide(h, hasPins) { let n = ((h || 0) + 1) % 4; if (n === 2 && !hasPins) n = 3; return n; }
@@ -1096,14 +1097,23 @@ function focusHasPins(f) {
   return false;
 }
 const trLang = () => trInfo(L.trEd).lang || 'en';
+const trTag = () => (trLang() === 'ml' ? 'ML' : 'EN');
 const itemLabel = i => (L.kind === 'page' ? `${surahOf(L.items[i].s).en} ${L.items[i].a}` : `Ayah ${L.items[i].a}`);
 
-/* ---------- Arabic text: words, parts, pins and hiding ---------- */
-function gapHTML(i, w, set, h) {
-  const k = `${i}:${w}`, on = set.has(k);
-  if (L.pinMode) return ` <button type="button" class="pg${on ? ' on' : ''}" data-act="pin" data-k="${k}" aria-pressed="${on}" aria-label="Pin words ${w + 1} and ${w + 2} of ${esc(itemLabel(i))}">${ic('pin')}</button> `;
-  if (on) return ` <span class="pm${h === 3 ? ' h3' : ''}" aria-hidden="true">${ic('pin')}</span> `;
-  return ' ';
+/* ---------- Arabic text: words, part colours, links and hiding ---------- */
+// One word. A link "i:w" joins word w to the next word: the first word gets "la", the second "lb".
+// Nothing is inserted between the words, so linking never moves the text.
+function wordSpan(i, w, set, h, extra) {
+  const la = set.has(`${i}:${w}`), lb = w > 0 && set.has(`${i}:${w - 1}`);
+  return `<span class="w${la ? ' la' : ''}${lb ? ' lb' : ''}${h ? ' h' + h : ''}${extra ? ' ' + extra : ''}" data-w="${i}:${w}">${esc(wordsOf(L)[i][w].t)}</span>`;
+}
+const partTint = k => (S.partColors ? `tint c${(k % 4) + 1}` : '');
+const unitOfItem = i => unitsOf(L).parts.findIndex(p => p.includes(i));
+// the parts of one ayah (each in its own colour), for the "together" views
+function itemRuns(i, focus) {
+  const ws = wordsOf(L)[i];
+  if (!S.partColors) return [{ w0: 0, w1: ws.length - 1, cls: '', focus }];
+  return levelParts(ws, levelOf(L, Math.max(0, unitOfItem(i))), S.pauseBreak).map(([w0, w1], k) => ({ w0, w1, focus, cls: partTint(k) }));
 }
 // runs: [{ w0, w1, cls, focus }] — the parts of this ayah; focus parts take the main Hide state
 function wordsHTML(i, o) {
@@ -1113,9 +1123,9 @@ function wordsHTML(i, o) {
     const h = Math.max(o.rowH || 0, r.focus ? (o.focusH || 0) : 0);
     let s = '';
     for (let w = r.w0; w <= r.w1; w++) {
-      const word = `<span class="w${pinnedWord(set, i, w) ? ' pw' : ''}${h ? ' h' + h : ''}">${esc(ws[w].t)}</span>`;
+      const word = wordSpan(i, w, set, h);
       if (w === ws.length - 1) { s += `<span class="nb">${word}&nbsp;<span class="ayah-end">${toAr(it.a)}</span></span>`; break; }
-      s += word + gapHTML(i, w, set, h);
+      s += word + (w < r.w1 ? ' ' : '');
     }
     return `<span class="pc${r.cls ? ' ' + r.cls : ''}${h >= 2 ? ' hid' : ''}">${s}</span>`;
   }).join(' ');
@@ -1140,7 +1150,7 @@ function rowHTML(i, o) {
   const multi = unitsOf(L).parts.some(p => p.length > 1), col = multi ? unitColOf()[i] : -1;
   const tools = [
     L.notes[i] ? `<button class="ib" type="button" data-act="note" data-i="${i}" title="Your note"><span class="sr">Your note for ${esc(label)}</span>${ic('pen')}</button>` : '',
-    hasTr ? `<button class="ib${tv ? ' on' : ''}" type="button" data-act="rowtr" data-i="${i}" aria-pressed="${tv}" title="Translation"><span class="sr">Translation of ${esc(label)}</span>${ic('tr')}</button>` : '',
+    hasTr ? `<button class="ib trk${tv ? ' on' : ''}" type="button" data-act="rowtr" data-i="${i}" aria-pressed="${tv}" title="Translation"><span class="sr">Translation of ${esc(label)}</span><span class="trk-t" aria-hidden="true">${trTag()}</span></button>` : '',
     o.noHide ? '' : `<button class="ib${rh ? ' on' : ''}" type="button" data-act="rowhide" data-i="${i}" title="Hide this ayah"><span class="sr">Hide ${esc(label)} — now ${HIDE_TXT[rh].note.toLowerCase()}</span>${ic(rh ? HIDE_TXT[rh].icon : 'eye-off')}</button>`,
     o.readMode ? `<button class="ib ay-chk${read ? ' on' : ''}" type="button" data-act="read" data-i="${i}" aria-pressed="${read}" title="Read"><span class="sr">${esc(label)} read</span>${ic('check')}</button>` : ''
   ].join('');
@@ -1161,6 +1171,105 @@ function mushafHTML() {
   });
   flush();
   return `<div class="mushaf" lang="ar" dir="rtl">${html}</div>`;
+}
+
+/* ---------- the Madani mushaf (exact 15-line pages, mushaf.v1.js) ---------- */
+const BASMALAH_TXT = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
+const MTX = new Map();   // "s:a" → Arabic text of every ayah on the pages shown (ayah 1 without the basmalah)
+const hasMushaf = () => typeof MUSHAF_LINES !== 'undefined' && Array.isArray(MUSHAF_LINES) && MUSHAF_LINES.length === PAGE_COUNT;
+const lessonPages = () => Array.from(new Set(L.items.map(it => pageOf(it.s, it.a))));
+const pagesReady = ps => ps.every(p => pageAyahs(p).every(([s, a]) => MTX.has(`${s}:${a}`)));
+let mtxLoad = null;
+function loadPages(ps) {
+  if (mtxLoad) return;
+  const lesson = L;
+  mtxLoad = Promise.all(ps.map(p => Promise.all(pageSegments(p).map(sg => fetchEdition(sg.s, sg.f, sg.t, QURAN_EDITION).then(r => {
+    for (let n = sg.f; n <= sg.t; n++) {
+      let t = r.texts.get(n);
+      if (n === 1 && sg.s !== 1 && sg.s !== 9) { const sp = splitBasmalah(t); if (sp.basmalah) t = sp.rest; }
+      MTX.set(`${sg.s}:${n}`, t);
+    }
+  }))))).then(() => true, () => false).then(ok => {
+    mtxLoad = null;
+    if (lesson !== L) return;
+    if (!ok) { L.mtxErr = true; toast('The full mushaf page could not be loaded — showing the ayahs.', '', 'info'); }
+    renderLesson();
+  });
+}
+function mushafLines(p) {
+  let cur = 0;
+  return MUSHAF_LINES[p - 1].split('|').map(x => {
+    if (x[0] === 'H') { cur = +x.slice(1); return { t: 'h', s: cur }; }
+    if (x === 'B') return { t: 'b', s: cur };
+    const star = x[0] === '*', q = (star ? x.slice(1) : x).split(':').map(Number);
+    if (q.length === 3) cur = q.shift();
+    return { t: 'x', s: cur, a: q[0], w: q[1] - 1, star };
+  });
+}
+// o: { focus: Set of item indexes that take the Hide state, colorOf(i, w) → class, ctxDim }
+function mushafPageHTML(p, o) {
+  const set = pinSet(), idx = new Map(L.items.map((it, i) => [`${it.s}:${it.a}`, i]));
+  const stream = [], pos = new Map();
+  pageAyahs(p).forEach(([s, a]) => {
+    const ws = tokenize(MTX.get(`${s}:${a}`) || '');
+    ws.forEach((w, k) => { pos.set(`${s}:${a}:${k}`, stream.length); stream.push({ s, a, k, t: w.t, last: k === ws.length - 1 }); });
+  });
+  const lines = mushafLines(p), starts = lines.map(l => (l.t === 'x' ? pos.get(`${l.s}:${l.a}:${l.w}`) : null));
+  const marker = (s, a, i) => `<span class="ayah-end${i == null ? ' cx' : ''}">${toAr(a)}</span>`;
+  let html = '';
+  lines.forEach((l, li) => {
+    if (l.t === 'h') { html += `<div class="ml mh">${suraHeadHTML(l.s)}</div>`; return; }
+    if (l.t === 'b') { const i = idx.get(`${l.s}:1`); html += `<div class="ml mb${i == null ? ' cx' : ''}">${esc((i != null && L.items[i].bas) || BASMALAH_TXT)}</div>`; return; }
+    const from = starts[li];
+    let to = stream.length;
+    for (let k = li + 1; k < lines.length; k++) if (starts[k] != null) { to = starts[k]; break; }
+    if (from == null) return;
+    const nextStar = (() => { for (let k = li + 1; k < lines.length; k++) if (lines[k].t === 'x') return lines[k].star; return false; })();
+    const items = [];
+    if (l.star && from > 0) { const pw = stream[from - 1]; items.push(marker(pw.s, pw.a, idx.get(`${pw.s}:${pw.a}`))); }
+    for (let n = from; n < to; n++) {
+      const x = stream[n], i = idx.get(`${x.s}:${x.a}`);
+      let word;
+      if (i == null || !wordsOf(L)[i][x.k]) word = `<span class="w cx">${esc(x.t)}</span>`;
+      else {
+        const h = o.focus && o.focus.has(i) ? L.focusHide : 0;
+        word = wordSpan(i, x.k, set, h, [o.colorOf ? o.colorOf(i, x.k) : '', o.focus && !o.focus.has(i) ? 'cx' : ''].filter(Boolean).join(' '));
+      }
+      if (x.last && !(n === to - 1 && nextStar)) word = `<span class="nb">${word}&nbsp;${marker(x.s, x.a, i)}</span>`;
+      items.push(word);
+    }
+    html += `<div class="ml">${items.join(' ')}</div>`;
+  });
+  const ps = pageSummary(p);
+  return `<section class="mp" data-p="${p}" aria-label="Mushaf page ${p}"><p class="mp-h"><span>Page ${p}</span><span>Juz ${ps.juz}</span></p>
+    <div class="mp-l${p <= 2 ? ' cen' : ''}" lang="ar" dir="rtl">${html}</div></section>`;
+}
+// every page of the lesson, exactly as in the mushaf (loads the rest of the page first)
+function mushafViewHTML(o) {
+  const ps = lessonPages();
+  L.items.forEach(it => { if (!MTX.has(`${it.s}:${it.a}`)) MTX.set(`${it.s}:${it.a}`, it.text); });
+  if (!pagesReady(ps)) {
+    setTimeout(() => loadPages(ps), 0);
+    return `<div class="mp-load" role="status"><div class="sk" style="height:18px;width:40%"></div><div class="sk" style="height:220px;margin-top:12px"></div><p class="hint">Loading the mushaf page…</p></div>`;
+  }
+  return `<div class="mps">${ps.map(p => mushafPageHTML(p, o)).join('')}</div>`;
+}
+const useMushaf = () => hasMushaf() && !L.mtxErr && S.tgView === 'mushaf';
+function viewSegHTML() {
+  if (!hasMushaf() || L.mtxErr) return '';
+  return `<div class="seg view-seg" role="radiogroup" aria-label="View">${[['mushaf', `${ic('book', 'ic-sm')}Mushaf`], ['ayahs', `${ic('layers', 'ic-sm')}Ayahs`]].map(([v, l]) => `<button type="button" role="radio" aria-checked="${S.tgView === v}" data-act="tgview" data-v="${v}">${l}</button>`).join('')}</div>`;
+}
+function partColorFn() {
+  if (!S.partColors) return null;
+  const cache = new Map();
+  return (i, w) => {
+    if (!cache.has(i)) { const m = []; levelParts(wordsOf(L)[i], levelOf(L, Math.max(0, unitOfItem(i))), S.pauseBreak).forEach(([a, b], k) => { for (let x = a; x <= b; x++) m[x] = k; }); cache.set(i, m); }
+    return partTint(cache.get(i)[w] || 0);
+  };
+}
+function meaningsHTML(idxs) {
+  if (L.trEd === 'none' || !idxs.some(i => L.items[i].tr)) return '';
+  return `<details class="meanings"${S.trShow ? ' open' : ''}><summary><span class="trk-t" aria-hidden="true">${trTag()}</span>Meanings${ic('chev-d', 'chev')}</summary><ul class="mlist">${idxs.map(i => `<li><span class="mref">${L.items[i].a}</span><span class="tr-txt" lang="${trLang()}">${esc(L.items[i].tr || '—')}</span></li>`).join('')}</ul></details>`;
 }
 
 /* ---------- canvas ---------- */
@@ -1202,8 +1311,8 @@ function readBodyHTML() {
   if (L.kind === 'page') {
     const hasTr = L.trEd !== 'none' && L.items.some(x => x.tr);
     return `<div class="st-head"><h2 class="st-t">Read the page</h2><span class="st-c">${L.items.length} ayahs</span></div>${tipHTML('readPage')}
-      <div class="mushaf-wrap">${mushafHTML()}</div>
-      ${hasTr ? `<details class="meanings"${S.trShow ? ' open' : ''}><summary>${ic('tr')}Meanings${ic('chev-d', 'chev')}</summary><ul class="mlist">${L.items.map(it => `<li><span class="mref">${it.a}</span><span class="tr-txt" lang="${trLang()}">${esc(it.tr || '—')}</span></li>`).join('')}</ul></details>` : ''}`;
+      ${hasMushaf() && !L.mtxErr ? (() => { const col = unitColOf(); return mushafViewHTML({ colorOf: i => `tint c${col[i] + 1}` }); })() : `<div class="mushaf-wrap">${mushafHTML()}</div>`}
+      ${hasTr ? meaningsHTML(L.items.map((_, i) => i)) : ''}`;
   }
   return `<div class="st-head"><h2 class="st-t">Read</h2><span class="st-c">${L.read.length}/${L.items.length}</span></div>${tipHTML('read')}
     <div class="rows">${L.items.map((_, i) => rowHTML(i, { readMode: true, noHide: true, cur: i === L.cur })).join('')}</div>`;
@@ -1220,7 +1329,8 @@ function segBodyHTML(f) {
   const n = f.ps.length, lv = levelOf(L, f.u), ph = f.g.ph;
   const runsFor = i => f.ps.map((p, k) => ({ p, k })).filter(x => x.p.i === i).map(({ p, k }) => {
     const on = k >= f.on[0] && k <= f.on[1];
-    return { w0: p.w0, w1: p.w1, focus: on, cls: n < 2 || ph === 'full' ? 'pf' : (on ? 'on' : 'off') };
+    const state = n < 2 || ph === 'full' ? 'pf' : (on ? 'on' : 'off');
+    return { w0: p.w0, w1: p.w1, focus: on, cls: n < 2 ? state : `${state} ${partTint(k)}`.trim() };
   });
   return `<div class="st-head"><h2 class="st-t">${esc(unitLabel(f.u))}</h2>
       <button class="chip lvl-chip" type="button" data-act="more" data-sec="lvl" title="Part size">${ic('layers', 'ic-sm')}${LEVELS[lv].en} · ${n} ${plural(n, 'part')}</button>
@@ -1229,16 +1339,20 @@ function segBodyHTML(f) {
     <div class="rows">${f.items.map(i => rowHTML(i, { runs: runsFor(i), focusH: L.focusHide, cur: f.items.length > 1 && i === L.cur })).join('')}</div>`;
 }
 function chainBodyHTML(f) {
-  return `<div class="st-head"><h2 class="st-t">${ic('merge')}Make together</h2><span class="st-c">${esc(togetherLabel(f.u))}</span></div>${tipHTML('chain')}
-    <div class="rows">${f.items.map(i => rowHTML(i, { allFocus: true, focusH: L.focusHide, cur: i === L.cur })).join('')}</div>`;
+  return `<div class="st-head"><h2 class="st-t">${ic('merge')}Make together</h2><span class="st-c">${esc(togetherLabel(f.u))}</span>${viewSegHTML()}</div>${tipHTML('chain')}
+    ${togetherHTML(f)}`;
 }
 function finalBodyHTML(f) {
   const done = lessonComplete(L), nx = done ? nextRefOf(L) : null;
   const card = done ? `<div class="done-card" role="status"><span class="dc-ic">${checkIcon()}</span><div class="dc-main"><p class="dc-t">Memorized${mlTag('· മനഃപാഠമായി')}</p><p class="dc-m">${esc(refTitle(refOf(L)))}</p></div>
       <div class="dc-acts">${nx ? `<button class="btn btn-primary btn-sm" type="button" data-act="startref" ${refAttrs(nx)}>Next${ic('arrow-r')}</button>` : ''}<button class="btn btn-sm" type="button" data-act="home">Lessons</button></div></div>`
     : (L.fin.result === 'revise' ? `<div class="banner warn">${ic('repeat')}<div>Practise the ayahs that slipped, then recite all together again.${mlTag('· തെറ്റിയ ആയത്തുകൾ വീണ്ടും പഠിക്കുക.')}</div></div>` : '');
-  return `${card}<div class="st-head"><h2 class="st-t">${ic('layers')}All together</h2><span class="st-c">${L.items.length} ${plural(L.items.length, 'ayah')}</span></div>${tipHTML('final')}
-    <div class="rows">${f.items.map(i => rowHTML(i, { allFocus: true, focusH: L.focusHide, cur: i === L.cur })).join('')}</div>`;
+  return `${card}<div class="st-head"><h2 class="st-t">${ic('layers')}All together</h2><span class="st-c">${L.items.length} ${plural(L.items.length, 'ayah')}</span>${viewSegHTML()}</div>${tipHTML('final')}
+    ${togetherHTML(f)}`;
+}
+function togetherHTML(f) {
+  if (useMushaf()) return mushafViewHTML({ focus: new Set(f.items), colorOf: partColorFn() }) + meaningsHTML(f.items);
+  return `<div class="rows">${f.items.map(i => rowHTML(i, { runs: itemRuns(i, true), focusH: L.focusHide, cur: i === L.cur })).join('')}</div>`;
 }
 function canvasHTML(f) {
   const st = f.st;
@@ -1249,8 +1363,8 @@ function canvasHTML(f) {
   else body = finalBodyHTML(f);
   const trNote = L.trLoading ? `<p class="hint tr-note">${ic('refresh', 'ic-sm')}Loading the translation…</p>`
     : (L.trErr ? `<p class="hint tr-note">${ic('info', 'ic-sm')}The translation is not loaded. <button class="linkbtn" type="button" data-act="retrytr">Retry</button></p>` : '');
-  const pinNote = L.pinMode ? `<div class="banner info pin-note">${ic('pin')}<div>Tap <b>between two words</b> to pin them together. Tap again to remove.${mlTag('· തുടർച്ച കിട്ടാത്ത രണ്ട് വാക്കുകൾക്കിടയിൽ തൊടുക.')}</div><button class="btn btn-sm btn-soft b-act" type="button" data-act="pinmode">Done</button></div>` : '';
-  return `<section class="cv${L.pinMode ? ' pinning' : ''}" aria-label="Lesson text">${canvasHeadHTML()}${railHTML()}<div class="cv-body">${pinNote}${body}${trNote}</div></section>`;
+  const pinNote = L.pinMode ? `<div class="banner info pin-note">${ic('link')}<div>Tap <b>between two words</b> to link them. Tap again to remove.${mlTag('· രണ്ട് വാക്കുകൾക്കിടയിൽ തൊടുക.')}</div><button class="btn btn-sm btn-soft b-act" type="button" data-act="linkmode">Done</button></div>` : '';
+  return `<section class="cv${L.pinMode ? ' linking' : ''}" aria-label="Lesson text">${canvasHeadHTML()}${railHTML()}<div class="cv-body">${pinNote}${body}${trNote}</div></section>`;
 }
 
 /* ---------- panel ---------- */
@@ -1311,20 +1425,45 @@ function panelHTML(f) {
     main = `${hideBtnHTML(f)}${counterHTML(cnt)}<button class="pn-go${cnt.c >= cnt.t ? ' ready' : ''}" type="button" data-act="next">${gl[0]}${ic(gl[1])}</button>`;
   }
   const hasTr = L.trEd !== 'none' && L.items.some(x => x.tr);
-  const tool = (act, icon, label, extra) => `<button class="pt" type="button" data-act="${act}"${extra || ''}>${ic(icon)}<span>${label}</span></button>`;
+  const tool = (act, icon, label, extra) => `<button class="pt" type="button" data-act="${act}"${extra || ''}>${icon}<span>${label}</span></button>`;
+  if (S.dockMini) return miniPanelHTML(f, cnt, atStart);
   return `<aside class="pn" aria-label="Practice controls">
     <div class="pn-top">
       <button class="pn-nav" type="button" data-act="prev"${atStart ? ' disabled' : ''} aria-label="Back one step">${ic('chev-l')}</button>
       <div class="pn-lbl"><b>${esc(lb.b)}</b><span>${esc(lb.s)}</span></div>
+      <button class="pn-min" type="button" data-act="dock" aria-label="Make the controls small">${ic('chev-d')}</button>
     </div>
     <div class="pn-main${st.t === 'read' ? ' rd' : ''}">${main}</div>
     <div class="pn-tools">
-      ${cnt ? tool('undo', 'undo', 'Undo', cnt.c ? '' : ' disabled') : ''}
-      ${st.t === 'read' && L.kind === 'page' ? '' : tool('pinmode', 'pin', 'Pin', ` aria-pressed="${L.pinMode}"`)}
-      ${hasTr ? tool('trall', 'tr', 'Meaning', ` aria-pressed="${S.trShow}"`) : ''}
-      ${tool('audio', 'volume', 'Listen')}
-      ${tool('more', 'more', 'More')}
+      ${cnt ? tool('undo', ic('undo'), 'Undo', cnt.c ? '' : ' disabled') : ''}
+      ${tool('linkmode', ic('link'), 'Link', ` aria-pressed="${L.pinMode}" title="Drag between two words — or tap, then tap between two words"`).replace('class="pt"', 'class="pt pt-drag"')}
+      ${hasTr ? tool('trall', `<span class="trk-t" aria-hidden="true">${trTag()}</span>`, 'Meaning', ` aria-pressed="${S.trShow}"`) : ''}
+      ${tool('audio', ic('volume'), 'Listen')}
+      ${tool('more', ic('more'), 'More')}
     </div>
+  </aside>`;
+}
+
+// the small panel: only counter, hide and next (about a tenth of the space)
+function miniPanelHTML(f, cnt, atStart) {
+  const st = f.st;
+  let mid = '', go;
+  if (st.t === 'read') {
+    mid = `<span class="mini-l">${L.read.length}/${L.items.length} read</span>`;
+    const all = L.read.length >= L.items.length;
+    go = `<button class="mini-go${all || L.kind === 'page' ? ' ready' : ''}" type="button" data-act="next">${L.kind === 'page' ? 'Done' : (all ? 'Start' : 'Read')}${ic(all ? 'arrow-r' : 'check')}</button>`;
+  } else {
+    const h = L.focusHide, T = HIDE_TXT[h], C = 2 * Math.PI * 17, fr = Math.min(1, cnt.c / cnt.t);
+    mid = `<button class="mini-hide h${h}" type="button" data-act="hide" aria-label="Hide. Now: ${T.note}.">${ic(h ? T.icon : 'eye-off')}</button>
+      <button class="mini-count${cnt.c >= cnt.t ? ' done' : ''}" type="button" data-act="count"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" class="rg-b"/><circle cx="20" cy="20" r="17" class="rg-f" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - fr)).toFixed(1)}" transform="rotate(-90 20 20)"/></svg><span class="c-n">${cnt.c}</span><span class="sr"> of ${cnt.t}, count one repetition</span></button>`;
+    go = st.t === 'final'
+      ? (lessonComplete(L) ? `<button class="mini-go ready" type="button" data-act="home">Lessons${ic('arrow-r')}</button>` : `<button class="mini-go" type="button" data-act="dock">Check${ic('chev-d', 'up')}</button>`)
+      : `<button class="mini-go${cnt.c >= cnt.t ? ' ready' : ''}" type="button" data-act="next" aria-label="${esc(goLabel(f)[0])}">${ic('arrow-r')}</button>`;
+  }
+  return `<aside class="pn mini" aria-label="Practice controls">
+    <button class="pn-min" type="button" data-act="dock" aria-label="Show all controls">${ic('chev-d', 'up')}</button>
+    <button class="pn-nav" type="button" data-act="prev"${atStart ? ' disabled' : ''} aria-label="Back one step">${ic('chev-l')}</button>
+    ${mid}${go}
   </aside>`;
 }
 
@@ -1347,6 +1486,7 @@ function renderLesson(opts) {
   // the phone dock covers the bottom of the screen: keep that much space under the text
   const pn = $('#lessonView .pn');
   if (pn && getComputedStyle(pn).position === 'fixed') document.documentElement.style.setProperty('--dock-h', Math.ceil(pn.getBoundingClientRect().height) + 'px');
+  fitMushaf();
   const rail = $('#lessonView .rail'), cur = rail && rail.querySelector('.rs.cur');
   if (cur) rail.scrollLeft = Math.max(0, cur.offsetLeft - rail.clientWidth / 2 + cur.offsetWidth / 2);
   // keep the part being learned in view when it changes
@@ -1357,6 +1497,19 @@ function renderLesson(opts) {
     if (first) window.scrollTo({ top: 0, behavior: 'auto' });
     else if (S.autoScroll) ensureVisible($('#lessonView .pc.on') || $('#lessonView .ay.cur') || $('#lessonView .st-head'));
   }
+}
+// Each mushaf line is one row, justified like the printed page. The font is made just small enough
+// that the longest line of the page fits the width — lines are never re-wrapped.
+function fitMushaf() {
+  $$('#lessonView .mp-l').forEach(el => {
+    el.style.fontSize = '';
+    const base = parseFloat(getComputedStyle(el).fontSize), avail = el.clientWidth;
+    if (!avail) return;
+    el.classList.add('measure');
+    const widest = Math.max(1, ...$$('.ml:not(.mh)', el).map(x => x.scrollWidth));
+    el.classList.remove('measure');
+    el.style.fontSize = (base * Math.min(1, avail * 0.975 / widest)).toFixed(2) + 'px';
+  });
 }
 function ensureVisible(el) {
   if (!el) return;
@@ -1454,7 +1607,7 @@ function cycleRowHide(i) {
 function togglePin(k) {
   L.pins = L.pins.includes(k) ? L.pins.filter(x => x !== k) : L.pins.concat(k);
   renderLesson(); persist();
-  announce(L.pins.includes(k) ? 'Pinned' : 'Pin removed');
+  announce(L.pins.includes(k) ? 'Linked' : 'Link removed');
 }
 function toggleRowTr(i) {
   L.trFlip = L.trFlip.includes(i) ? L.trFlip.filter(x => x !== i) : L.trFlip.concat(i);
@@ -1520,6 +1673,7 @@ function toolsHTML() {
       ${inUnit ? `<div class="tl-row"><span class="tl-k">${esc(unitLabel(f.u))}</span>${lvSeg('unit', levelOf(L, f.u), f.items, 'Part size for ' + unitLabel(f.u))}</div>` : ''}
       <div class="tl-row"><span class="tl-k">Whole lesson</span>${lvSeg('lesson', lvL, all, 'Part size for the whole lesson')}</div>
     </section>
+    <section class="tl-sec"><label class="switch"><input type="checkbox" data-set="partColors"${S.partColors ? ' checked' : ''}><span class="track"></span><span class="sw-txt">Colour each part<small>Every part keeps its own colour, so it stays apart in memory.</small></span></label></section>
     <section class="tl-sec"><h3>${ic('book', 'ic-sm')}Ayah groups${mlTag('· ആയത്ത് ഗ്രൂപ്പുകൾ')}</h3>
       <p class="hint">${L.kind === 'page' ? 'The page is learned in groups of ayahs.' : 'Learn one ayah at a time, or a few ayahs together as one group.'}</p>
       <div class="seg" role="radiogroup" aria-label="Ayahs per group">${gOpts.map(v => `<button type="button" role="radio" aria-checked="${g === v}" data-act="grp" data-v="${v}">${v}</button>`).join('')}<button type="button" role="radio" aria-checked="${g === 'manual'}" data-act="grp" data-v="manual">By hand</button></div>
@@ -1684,6 +1838,7 @@ function renderSettings() {
     <details class="set-sec"><summary><h3>Display${mlTag('· കാഴ്ച')}</h3>${ic('chev-d', 'chev')}</summary><div class="set-in">
       <div class="set-row"><span class="lbl">Arabic text size</span>${seg('arSize', [['s', 'S'], ['m', 'M'], ['l', 'L'], ['xl', 'XL']], 'Arabic text size')}</div>
       <div class="set-row"><span class="lbl">Quran font</span>${seg('quranFont', [['amiri', 'Amiri Quran'], ['naskh', 'Noto Naskh']], 'Quran font')}<p class="font-prev" lang="ar" dir="rtl" style="font-family:var(--ar-font)">مَنْزِلُ الْقُرْآنِ</p></div>
+      ${sw('partColors', 'Colour each part', 'Every part of an ayah keeps its own colour, in every step.')}
       ${EN() ? '' : sw('englishHelp', 'Show English help', 'Malayalam is always shown.')}
       ${sw('autoScroll', 'Keep the current part in view')}
       ${navigator.vibrate ? sw('vibrate', 'Vibrate when counting', 'On phones that support it.') : ''}
@@ -1817,12 +1972,14 @@ const ACTIONS = {
     L.read = L.read.includes(i) ? L.read.filter(x => x !== i) : L.read.concat(i);
     L.cur = i; renderLesson(); persist();
   },
-  pin: el => { if (ready()) togglePin(el.dataset.k); },
-  pinmode: () => {
+  linkmode: () => {
     if (!ready()) return;
+    if (linkDrag.justDropped) return;   // the link was just dragged into place
     L.pinMode = !L.pinMode; renderLesson();
-    if (L.pinMode) { const g = $('#lessonView .pg'); announce('Pin mode on. Tap between two words.'); if (g && !isCoarse()) g.focus({ preventScroll: true }); }
+    if (L.pinMode) announce('Link mode on. Tap between two words.');
   },
+  tgview: el => { if (ready()) changeSetting('tgView', el.dataset.v); },
+  dock: () => { if (ready()) changeSetting('dockMini', !S.dockMini); },
   trall: () => { if (ready()) changeSetting('trShow', !S.trShow); },
   audio: () => { if (ready()) playAudio(); },
   more: el => { if (ready()) openTools(el.dataset.sec); },
@@ -1884,6 +2041,16 @@ function bindEvents() {
   document.addEventListener('keydown', e => {
     if (e.target.id === 'surahSearch' && e.key === 'Enter') { e.preventDefault(); const first = $('#surahList [data-act="pick"]'); if (first) pickSurah(+first.dataset.n); }
   });
+  // link mode: a tap near the gap between two words links (or unlinks) them
+  document.addEventListener('click', e => {
+    if (!L || !L.pinMode || !ready() || linkDrag.justDropped) return;
+    const g = gapAt(e.clientX, e.clientY, e.target);
+    if (g) togglePin(g.key);
+  });
+  bindLinkDrag();
+  let fitT;
+  window.addEventListener('resize', () => { clearTimeout(fitT); fitT = setTimeout(() => { if (ready()) fitMushaf(); }, 120); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (ready()) fitMushaf(); });
   // tapping an ayah row makes it the current ayah (for notes, translation and hiding)
   document.addEventListener('pointerdown', e => {
     const row = e.target.closest && e.target.closest('#lessonView .ay[data-i]');
@@ -1904,6 +2071,59 @@ function bindEvents() {
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveNow(); });
   window.addEventListener('pagehide', saveNow);
   window.addEventListener('online', () => { if (L && L.status === 'error' && !$('#lessonView').hidden) toast('You are back online — press “Try again”.'); });
+}
+
+/* ---------- links: drag the link icon from the panel and drop it between two words ---------- */
+const linkDrag = { on: false, justDropped: false };
+// the gap nearest to (x, y): Arabic runs right to left, so the next word is on the left
+function gapAt(x, y, target) {
+  const el = target && target.closest ? target : document.elementFromPoint(x, y);
+  const w = el && el.closest && el.closest('#lessonView .w[data-w]');
+  if (!w) return null;
+  const [i, wi] = w.dataset.w.split(':').map(Number), n = wordsOf(L)[i].length, r = w.getBoundingClientRect();
+  const wordEl = k => $(`#lessonView .w[data-w="${i}:${k}"]`);
+  if (x < r.left + r.width / 2) return wi < n - 1 ? { key: `${i}:${wi}`, a: w, b: wordEl(wi + 1) } : null;
+  return wi > 0 ? { key: `${i}:${wi - 1}`, a: wordEl(wi - 1), b: w } : null;
+}
+function bindLinkDrag() {
+  let st = null, ghost = null, mark = null;
+  const clear = () => { if (ghost) ghost.remove(); if (mark) mark.remove(); ghost = mark = null; document.documentElement.classList.remove('dragging-link'); st = null; linkDrag.on = false; };
+  document.addEventListener('pointerdown', e => {
+    const b = e.target.closest && e.target.closest('#lessonView [data-act="linkmode"]');
+    if (!b || !ready() || e.button > 0) return;
+    st = { x: e.clientX, y: e.clientY, key: null };
+  });
+  document.addEventListener('pointermove', e => {
+    if (!st) return;
+    if (!linkDrag.on) {
+      if (Math.hypot(e.clientX - st.x, e.clientY - st.y) < 8) return;
+      linkDrag.on = true;
+      document.documentElement.classList.add('dragging-link');
+      ghost = document.createElement('div'); ghost.className = 'lk-ghost'; ghost.innerHTML = ic('link'); document.body.appendChild(ghost);
+      mark = document.createElement('div'); mark.className = 'lk-mark'; mark.hidden = true; document.body.appendChild(mark);
+    }
+    const x = e.clientX, y = e.clientY - 34;   // the icon floats just above the finger
+    ghost.style.transform = `translate(${x - 18}px, ${y - 18}px)`;
+    const g = gapAt(x, y);
+    st.key = g ? g.key : null;
+    if (g && g.a && g.b) {
+      const ra = g.a.getBoundingClientRect(), rb = g.b.getBoundingClientRect();
+      const sameLine = Math.abs(ra.top - rb.top) < ra.height / 2;
+      const gx = sameLine ? (ra.left + rb.right) / 2 : ra.left;
+      mark.hidden = false; mark.style.transform = `translate(${gx - 2}px, ${ra.top}px)`; mark.style.height = ra.height + 'px';
+    } else mark.hidden = true;
+  });
+  const end = () => {
+    if (!st) return;
+    const key = linkDrag.on ? st.key : null, dragged = linkDrag.on;
+    clear();
+    if (dragged) {
+      linkDrag.justDropped = true; setTimeout(() => { linkDrag.justDropped = false; }, 350);
+      if (key) togglePin(key); else announce('Drop the link between two words.');
+    }
+  };
+  document.addEventListener('pointerup', end);
+  document.addEventListener('pointercancel', clear);
 }
 
 function openLink(link, push) {
