@@ -566,16 +566,35 @@ body[data-view="lesson"] .topbar{position:relative}
 .pc.hid{background-image:repeating-linear-gradient(135deg,transparent 0 9px,rgba(185,154,93,.12) 9px 11px)}
 .pc.off.hid{background-image:none}
 .w{transition:opacity .22s var(--ease),color .2s}
-.w.pw{color:#6B4F17}
 .w.h1{opacity:.1}
-.w.h2:not(.pw),.w.h3{opacity:0}
-.pm{display:inline-block;width:.62em;height:.62em;vertical-align:.5em;color:var(--gold);transition:opacity .2s}
-.pm .ic{width:100%;height:100%;stroke-width:2.6}
-.pm.h3{opacity:0}
-.pg{display:inline-grid;place-items:center;width:44px;height:44px;margin:0 -9px;vertical-align:middle;border:0;border-radius:12px;background:transparent;color:#C2B497;padding:0;position:relative;z-index:1}
-.pg .ic{width:17px;height:17px;padding:3px;box-sizing:content-box;border-radius:8px;border:1.5px dashed #D6C7A6;background:#fff}
-.pg:hover .ic{border-color:var(--gold);color:var(--gold-ink)}
-.pg.on .ic{border:1.5px solid var(--gold);background:var(--gold);color:#fff}
+.w.h3{opacity:0}
+.w.h2:not(.la):not(.lb){opacity:0}
+/* links: a small link mark over the gap; nothing is inserted between the words */
+.w.la,.w.lb{background-image:linear-gradient(transparent 84%,rgba(185,154,93,.45) 84%,rgba(185,154,93,.45) 92%,transparent 92%)}
+.w.la{position:relative}
+.w.la::after{content:"";position:absolute;left:-.4em;top:.12em;width:.42em;height:.42em;pointer-events:none;
+  background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B99A5D' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7'/%3E%3Cpath d='M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7'/%3E%3C/svg%3E")}
+/* hidden with links: only the end of the first word and the start of the second stay, fading out smoothly */
+.w.h2.la{-webkit-mask-image:linear-gradient(to right,#000 0,#000 28%,transparent 78%);mask-image:linear-gradient(to right,#000 0,#000 28%,transparent 78%)}
+.w.h2.lb{-webkit-mask-image:linear-gradient(to left,#000 0,#000 28%,transparent 78%);mask-image:linear-gradient(to left,#000 0,#000 28%,transparent 78%)}
+.w.h2.la.lb{-webkit-mask-image:linear-gradient(to right,#000 0,#000 18%,transparent 45%,transparent 55%,#000 82%);mask-image:linear-gradient(to right,#000 0,#000 18%,transparent 45%,transparent 55%,#000 82%)}
+.w.h2.la,.w.h2.lb{background-image:none}
+.linking .w[data-w]{cursor:pointer;-webkit-user-select:none;user-select:none}
+
+/* part colours */
+.pc.tint{background-color:transparent;box-shadow:none}
+.pc.tint .w{background-image:linear-gradient(transparent 84%,var(--bd) 84%,var(--bd) 94%,transparent 94%)}
+.pc.tint.on{background-color:var(--gb);box-shadow:inset 0 0 0 1.5px var(--bd)}
+.pc.tint .w.la,.pc.tint .w.lb{background-image:linear-gradient(transparent 84%,rgba(185,154,93,.6) 84%,rgba(185,154,93,.6) 94%,transparent 94%)}
+.pc.tint .w.h2,.pc.tint .w.h3{background-image:none}
+.mp .w.tint{background:linear-gradient(transparent 84%,var(--bd) 84%,var(--bd) 95%,transparent 95%)}
+.mp .w.tint.cx{background:none}
+.trk-t{display:inline-grid;place-items:center;min-width:22px;height:18px;padding:0 4px;border-radius:5px;border:1.4px solid currentColor;font:800 10px/1 'DM Sans','Noto Sans Malayalam',sans-serif;letter-spacing:.02em}
+.ib.trk .trk-t{opacity:.75}
+.ib.trk.on{background:transparent;color:var(--primary)}
+.ib.trk.on .trk-t{opacity:1;background:var(--soft)}
+.meanings summary .trk-t{margin-right:2px}
+.ic.up{transform:rotate(180deg)}
 .tr{margin:6px 2px 0}
 .tr.tr-txt{font-size:15px;line-height:1.75;color:#3B4A41}
 .tr.tr-txt[lang="ml"]{line-height:1.85}
@@ -702,3 +721,52 @@ details.set-sec[open] > summary .chev{transform:rotate(180deg)}
 @media print{.pn,.rail,.cv-back{display:none!important}.cv{box-shadow:none;border:0}}
 /* messages sit above the control panel on phones */
 @media (max-width:959px){body[data-view="lesson"] .toast{bottom:calc(var(--dock-h) + 10px + env(safe-area-inset-bottom))}}
+
+/* ==========================================================
+   v2.1 — Madani mushaf view, view switch, small panel, dragging a link
+   ========================================================== */
+.view-seg button{min-height:40px;gap:5px}
+.st-head .view-seg{margin-left:auto}
+@media (max-width:480px){.st-head .view-seg{width:100%;display:flex}.st-head .view-seg button{flex:1}}
+.mps{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-width:0}
+.mp{min-width:0;overflow:hidden;border-radius:14px;background:#FFFDF7;border:1px solid #E9DFC9;box-shadow:inset 0 0 0 4px #FFFDF7,inset 0 0 0 5px #EFE5CF;padding:10px 12px 12px}
+.mp-h{display:flex;justify-content:space-between;font:700 11px/1 'DM Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-2);padding:2px 4px 8px}
+.mp-l{min-width:0;overflow:hidden;font-family:var(--ar-font);font-size:calc(var(--ar-size) * .82);line-height:2.05;color:var(--ink-ar);direction:rtl}
+.ml{display:flex;justify-content:space-between;align-items:baseline;gap:0 .16em;white-space:nowrap;min-height:2.05em}
+.mp-l.cen .ml{justify-content:center;gap:0 .3em}
+.mp-l.measure .ml{width:max-content;justify-content:flex-start}
+.ml.mh,.ml.mb{justify-content:center}
+.ml.mh .sura-head{margin:2px 0;width:100%;font-size:16px}
+.ml.mb{color:var(--primary);font-size:.95em}
+.ml .nb{display:inline-flex;align-items:baseline}
+.mp-l .ayah-end{font-size:.5em}
+.w.cx,.mp .cx{opacity:.2}
+.ml.mb.cx{opacity:.25}
+.mp-load{padding:6px 0}
+/* the small panel */
+.pn-top .pn-lbl{flex:1}
+.pn-min{width:44px;height:44px;flex:none;border-radius:12px;border:0;background:transparent;color:var(--pm);display:grid;place-items:center}
+.pn-min:hover{background:rgba(255,255,255,.08);color:var(--pi)}
+.pn.mini{display:flex;align-items:center;gap:8px;padding:6px 10px calc(6px + env(safe-area-inset-bottom))}
+.mini-l{flex:1;font:700 14px/1 'DM Sans',sans-serif;color:var(--pm);text-align:center}
+.mini-hide{width:44px;height:44px;flex:none;border-radius:12px;border:1px solid var(--pl);background:rgba(255,255,255,.06);color:var(--pi);display:grid;place-items:center}
+.mini-hide.h1,.mini-hide.h2,.mini-hide.h3{background:var(--pg);border-color:var(--pg);color:#2A2414}
+.mini-count{position:relative;width:46px;height:46px;flex:none;border-radius:50%;border:0;background:rgba(255,255,255,.07);color:var(--pi);display:grid;place-items:center;padding:0;margin-left:auto}
+.mini-count svg{position:absolute;inset:0;width:100%;height:100%}
+.mini-count .c-n{font-size:17px;margin:0}
+.mini-count.done{background:rgba(216,192,138,.22)}
+.mini-go{min-height:44px;min-width:56px;padding:0 14px;border-radius:13px;border:0;background:#fff;color:var(--primary);font:750 14px/1 'DM Sans',sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none}
+.mini-go.ready{background:var(--pg);color:#2A2414}
+.pn.mini .mini-l + .mini-go{margin-left:0}
+@media (min-width:960px){
+  .pn.mini{position:sticky;top:16px;border-radius:18px;padding:8px 10px}
+  .lx:has(.pn.mini){grid-template-columns:minmax(0,1fr) 300px}
+}
+/* dragging a link from the panel */
+.pt-drag{touch-action:none}
+.dragging-link,.dragging-link *{cursor:grabbing!important;-webkit-user-select:none!important;user-select:none!important}
+.lk-ghost{position:fixed;left:0;top:0;z-index:300;width:36px;height:36px;border-radius:50%;background:var(--gold);color:#fff;display:grid;place-items:center;pointer-events:none;box-shadow:0 8px 20px -6px rgba(10,25,18,.5)}
+.lk-ghost .ic{width:20px;height:20px}
+.lk-mark{position:fixed;left:0;top:0;z-index:299;width:4px;border-radius:4px;background:var(--gold);pointer-events:none;box-shadow:0 0 0 3px rgba(185,154,93,.25)}
+
+@media (max-width:480px){.mp{padding:8px 6px 10px;margin:0 -4px}.mp-h{padding:2px 6px 6px}}
