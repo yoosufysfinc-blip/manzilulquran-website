@@ -1,6 +1,6 @@
 /* ==========================================================
-   ManzilulQuran · Hifz Learning App — dashboard & accounts (v1)
-   Loaded after learn.v1.css and uses its tokens (--primary, --gold, --soft …).
+   ManzilulQuran · Hifz Learning App — dashboard & accounts (v2)
+   Loaded after learn.v2.css and uses its tokens (--primary, --gold, --soft …).
    Phone first: built at 375 px, then widened.
    ========================================================== */
 [hidden]{display:none!important}
@@ -150,3 +150,16 @@ input[type="date"].inp{-webkit-appearance:none;appearance:none}
 body[data-mode="student"] .hero{padding-top:18px}
 body[data-mode="student"] .hero h1{font-size:clamp(24px,4.4vw,32px);max-width:none;margin:10px 0 0}
 body[data-mode="student"] .hero .lead-ml,body[data-mode="student"] .hero .lead-en,body[data-mode="student"] .hero-meta{display:none}
+
+/* ==========================================================
+   v2 — compact dashboard, lesson progress bar, lesson screen space
+   ========================================================== */
+.dash-head h1{margin:8px 0 2px}
+p.step-note{align-items:center;padding:8px 12px;font-size:13px;margin-top:12px;background:transparent;border:1px dashed #E2D3B2;color:#5E4B24}
+p.step-note .ic{margin-top:0}
+.st-bar{display:block;height:4px;border-radius:4px;background:#ECE5D6;overflow:hidden;max-width:220px;margin:3px 0 1px}
+.st-bar i{display:block;height:100%;background:var(--gold);border-radius:4px}
+.footer p{font-size:12px}
+/* the lesson screen gets the whole width: the student bar is folded into the lesson header */
+body[data-view="lesson"] .studentbar{display:none!important}
+@media (max-width:640px){.kpis{gap:8px;margin-top:12px}.kpi{padding:9px 12px}.kpi .v{font-size:22px}.kpi .s{display:none}.dash-head{padding-top:12px}}
