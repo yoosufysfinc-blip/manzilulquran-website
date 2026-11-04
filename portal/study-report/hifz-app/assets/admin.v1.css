@@ -1,0 +1,152 @@
+/* ==========================================================
+   ManzilulQuran · Hifz Learning App — dashboard & accounts (v1)
+   Loaded after learn.v1.css and uses its tokens (--primary, --gold, --soft …).
+   Phone first: built at 375 px, then widened.
+   ========================================================== */
+[hidden]{display:none!important}
+
+/* ---------- top bar: add button, mode switches ---------- */
+.tbtn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.tbtn-primary:hover{background:#12392C;border-color:#12392C;color:#fff}
+.tbtn-primary:disabled{opacity:.5;cursor:not-allowed}
+.tbtn .lbl-always{display:inline}
+@media (max-width:380px){.tbtn-primary .lbl-always{display:none}}
+body[data-mode="student"] .brand-sub{display:none}
+@media (max-width:640px){body[data-mode="student"] .brand-txt{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+
+/* ---------- whose space is open ---------- */
+.studentbar{background:var(--card);border-bottom:1px solid var(--border)}
+.sb-in{max-width:880px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:10px;min-height:60px}
+.sb-back{flex:none;display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 12px 0 8px;border-radius:12px;border:1px solid var(--border);
+  background:#fff;color:var(--primary);font-weight:650;font-size:14px}
+.sb-back:hover{border-color:var(--border-2);background:var(--soft)}
+.sb-who{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.sb-txt{display:grid;min-width:0;line-height:1.25}
+.sb-name{font-weight:700;color:var(--primary);font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-meta{font-size:12.5px;color:var(--muted-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-edit{flex:none;min-height:44px}
+@media (max-width:480px){.sb-back span{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.sb-back{padding:0 10px}}
+
+/* ---------- avatar ---------- */
+.av{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:15px;letter-spacing:.02em;
+  background:var(--gb,var(--soft));color:var(--ink,var(--primary));border:1px solid var(--bd,var(--border))}
+.studentbar .av{width:38px;height:38px;border-radius:12px;font-size:13.5px}
+
+/* ---------- Hifz Report / Hifz Learning App switch ---------- */
+.hz-sections{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:14px 0 4px;border-radius:16px;background:#EFE9DC;border:1px solid var(--border);max-width:560px}
+.hz-sec{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 10px;border-radius:12px;text-decoration:none;
+  color:#4F5A52;font-weight:700;font-size:14.5px;text-align:center;line-height:1.2;transition:background .15s,color .15s,box-shadow .15s}
+.hz-sec .ic{width:18px;height:18px}
+.hz-sec:hover{color:var(--primary)}
+.hz-sec.on{background:#fff;color:var(--primary);box-shadow:0 1px 2px rgba(37,53,45,.12),0 0 0 1px var(--border)}
+.hz-sec.on .ic{color:var(--gold-ink)}
+@media (max-width:440px){.hz-sec{font-size:14px;gap:6px;padding:0 6px}.hz-sec .hz-pre{display:none}}
+
+/* ---------- dashboard ---------- */
+.dash-head{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding:18px 2px 4px}
+.dash-head > div{flex:1 1 260px;min-width:0}
+.dash-head h1{font-size:clamp(28px,6vw,38px);line-height:1.1;letter-spacing:-.03em;color:var(--primary);font-weight:750;margin:10px 0 8px}
+.dash-head p{max-width:56ch;font-size:15px}
+.dash-add{flex:none}
+@media (max-width:640px){.dash-add{display:none}}
+@media (min-width:641px){#btnAddTop{display:none}}
+
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+@media (min-width:760px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 14px;box-shadow:var(--sh-1);min-width:0}
+.kpi .k{font-size:12px;font-weight:700;color:var(--muted-2);letter-spacing:.02em}
+.kpi .v{font-size:26px;font-weight:750;color:var(--primary);letter-spacing:-.02em;line-height:1.2;margin-top:2px;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12.5px;color:var(--muted-2)}
+
+.step-note{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px 14px;border-radius:13px;background:var(--gold-soft);border:1px solid #EBDDBE;
+  color:#5E4B24;font-size:13.5px;line-height:1.55}
+.step-note .ic{flex:none;color:var(--gold-ink);margin-top:2px}
+.step-note b{color:#4E3E1C}
+
+.dash-tools{display:grid;grid-template-columns:1fr;gap:10px;margin:22px 0 12px}
+@media (min-width:760px){.dash-tools{grid-template-columns:minmax(0,1fr) auto 200px;align-items:center}}
+.dsearch{display:flex;align-items:center;gap:8px;height:48px;padding:0 14px;border-radius:14px;border:1.5px solid var(--border);background:#fff;color:var(--muted-2)}
+.dsearch:focus-within{border-color:var(--primary-2)}
+.dsearch input{flex:1;min-width:0;border:0;background:transparent;font-size:15.5px;color:var(--text);outline:none;height:100%}
+.dfilters{display:flex;gap:6px;flex-wrap:wrap}
+.dfilters .chip{min-height:40px}
+.dfilters .cnt{font-variant-numeric:tabular-nums;color:var(--muted-2);font-weight:600}
+.dsort select.select{height:48px}
+
+/* student rows — the phone "chip" pattern: one compact row each, two columns on wide screens */
+.st-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+@media (min-width:900px){.st-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.st-row{position:relative;display:flex;align-items:stretch;background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--sh-1);
+  transition:border-color .15s,box-shadow .15s}
+.st-row:hover{border-color:var(--border-2);box-shadow:var(--sh-2)}
+.st-row.paused{background:#FAF8F3}
+.st-row.paused .av{filter:grayscale(.6);opacity:.75}
+.st-row.flash{animation:stflash 1.6s var(--ease) 1}
+@keyframes stflash{0%{box-shadow:0 0 0 3px rgba(185,154,93,.55)}100%{box-shadow:var(--sh-1)}}
+.st-open{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:12px 4px 12px 12px;border:0;background:transparent;text-align:left;border-radius:var(--r-md) 0 0 var(--r-md);color:inherit;min-height:72px}
+.st-main{flex:1;min-width:0;display:grid;gap:2px}
+.st-name{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+.st-name .nm{font-weight:700;font-size:16px;color:var(--primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.st-id{font:700 11px/1 'DM Sans',sans-serif;letter-spacing:.04em;color:#6F5626;background:var(--gold-soft);border-radius:999px;padding:4px 7px}
+.st-badge{font:700 11px/1 'DM Sans',sans-serif;color:#6B5A3A;background:#EEE7DA;border-radius:999px;padding:4px 7px}
+.st-now{font-size:13.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st-now b{color:var(--primary-2)}
+.st-now .ok{color:#2F7D4F;font-weight:700}
+.st-now.none{color:var(--muted-2)}
+.st-meta{font-size:12.5px;color:var(--muted-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st-chev{flex:none;color:var(--border-2);width:20px;height:20px}
+.st-edit{flex:none;width:48px;border:0;border-left:1px solid var(--border);background:transparent;color:var(--primary-2);display:grid;place-items:center;border-radius:0 var(--r-md) var(--r-md) 0}
+.st-edit:hover,.st-edit:focus-visible{background:var(--soft)}
+.st-empty{padding:22px 14px;text-align:center;color:var(--muted-2);background:var(--card);border:1px dashed var(--border-2);border-radius:var(--r-md)}
+
+.empty-dash{margin-top:22px;text-align:center;display:grid;justify-items:center;gap:10px;padding:34px 20px}
+.empty-dash .ed-ic{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:var(--soft);color:var(--primary)}
+.empty-dash .ed-ic .ic{width:30px;height:30px}
+.empty-dash p{max-width:46ch}
+.empty-dash .btn{margin-top:6px}
+#dashView .footer{margin-top:34px}
+
+/* ---------- add / edit form ---------- */
+.dlg-student{height:min(90vh,860px)}
+.stu-body{padding:4px 18px 18px}
+.fs{border:0;margin:0;padding:16px 0 4px;min-width:0}
+.fs + .fs{border-top:1px solid var(--border);margin-top:12px}
+.fs legend{display:flex;align-items:center;gap:7px;padding:0;margin-bottom:12px;font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--gold-ink)}
+.fs legend .ic{color:var(--gold)}
+.f-grid{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+.f-grid .field{align-content:start}
+@media (min-width:640px){.f-grid{grid-template-columns:1fr 1fr}.f-full{grid-column:1/-1}}
+.req{font-size:11px;font-weight:700;color:#6F5626;background:var(--gold-soft);border-radius:999px;padding:2px 7px;letter-spacing:.02em}
+.inp{width:100%;min-height:48px;padding:0 14px;border-radius:14px;border:1.5px solid var(--border);background:#fff;font-size:16px;color:var(--text);transition:border-color .15s}
+textarea.inp{padding:12px 14px;min-height:96px;resize:vertical;line-height:1.5}
+.inp:focus{outline:none;border-color:var(--primary-2);box-shadow:0 0 0 3px rgba(35,101,77,.12)}
+.inp[aria-invalid="true"],select[aria-invalid="true"]{border-color:#B2402F;box-shadow:0 0 0 3px rgba(178,64,47,.12)}
+input[type="date"].inp{-webkit-appearance:none;appearance:none}
+.f-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.f-row select.select{flex:1 1 220px;min-width:0;height:48px}
+.f-from{flex:0 0 150px;display:flex;align-items:center;gap:0;border:1.5px solid var(--border);border-radius:14px;background:#fff;overflow:hidden}
+.f-from:focus-within{border-color:var(--primary-2)}
+.f-pre{padding:0 4px 0 14px;font-size:14px;font-weight:650;color:var(--muted-2)}
+.f-from .inp{border:0;min-height:45px;padding-left:6px;box-shadow:none}
+.f-page{flex:0 0 120px}
+.f-pageinfo{flex:1 1 180px;font-size:13.5px;color:var(--primary-2);font-weight:600;line-height:1.4}
+.dlg-student .mode-seg{max-width:none}
+.dlg-student .seg{width:100%}
+.dlg-student .seg button{flex:1;min-height:44px}
+.danger-zone{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:18px;padding:14px;border-radius:14px;border:1px solid #EFD3CC;background:#FCF4F1}
+.danger-zone .dz-t{font-weight:700;color:#8A3B2E}
+.danger-zone .btn{border-color:#E5BFB5;background:#fff}
+.stu-foot{align-items:center;flex-wrap:wrap}
+.stu-foot .form-msg{flex:1 1 200px;margin:0;min-height:0;font-weight:600}
+.stu-foot .form-msg:empty{display:none}
+
+/* settings drawer: whose settings */
+.set-who{display:flex;gap:8px;align-items:center;margin:14px 18px 0;padding:10px 12px;border-radius:12px;background:var(--soft);color:var(--primary);font-size:13.5px}
+
+@media (prefers-reduced-motion:reduce){.st-row.flash{animation:none}}
+@media print{.studentbar,.hz-sections{display:none!important}}
+
+/* inside a student's space the method intro is shortened, so the lesson cards come first on a phone */
+body[data-mode="student"] .hero{padding-top:18px}
+body[data-mode="student"] .hero h1{font-size:clamp(24px,4.4vw,32px);max-width:none;margin:10px 0 0}
+body[data-mode="student"] .hero .lead-ml,body[data-mode="student"] .hero .lead-en,body[data-mode="student"] .hero-meta{display:none}
