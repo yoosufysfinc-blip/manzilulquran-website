@@ -1,8 +1,8 @@
 /* =====================================================================
-   ManzilulQuran · Hifz Learning App — students dashboard & routing (v1)
+   ManzilulQuran · Hifz Learning App — students dashboard & routing (v2)
 
    Screens   #dashView  the student list (admin)
-             a student's learning space  (HifzLearn, learn.v1.js)
+             a student's learning space  (HifzLearn, learn.v2.js)
    Links     /portal/study-report/hifz-app/                    students
              /portal/study-report/hifz-app/#student=<id>       that student
              …#student=<id>&page=N  ·  …#student=<id>&lesson=S:F-T
@@ -18,7 +18,7 @@ const say = (msg, icon) => HifzLearn.toast(msg, '', icon || 'check');
 const plural = (n, one, many) => (n === 1 ? one : (many || one + 's'));
 
 const D = { q: '', filter: 'all', sort: 'recent', flash: null };   // dashboard view state
-const F = { mode: 'ayah', lang: 'ml', status: 'active' };          // form segmented choices
+const F = { mode: 'ayah', lang: 'ml', status: 'active', level: 'med' }; // form segmented choices
 let editing = null;                                                // student in the form (null = adding)
 
 const initials = name => String(name).split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
@@ -101,8 +101,7 @@ function renderDashboard() {
   $('#dashView').innerHTML = `
     ${sectionsHTML()}
     <section class="dash-head">
-      <div><span class="eyebrow">Hifz Learning App</span><h1>Students</h1>
-        <p class="muted">Each student has their own lessons, settings and progress. Open a student to start or continue their Hifz lesson.</p></div>
+      <div><span class="eyebrow">Hifz Learning App</span><h1>Students</h1></div>
       ${total ? `<button class="btn btn-primary dash-add" type="button" data-adm="add"${canSave ? '' : ' disabled'}>${ic('user-plus')}Add student</button>` : ''}
     </section>
     ${canSave ? '' : `<div class="banner warn">${ic('info')}<div>This browser is blocking storage, so student accounts cannot be saved here. Allow site data for manzilulquran.in, or use another browser.</div></div>`}
@@ -112,7 +111,7 @@ function renderDashboard() {
       <div class="kpi" role="listitem"><p class="k">Pages complete</p><p class="v">${pages}</p><p class="s">Madani mushaf</p></div>
       <div class="kpi" role="listitem"><p class="k">Active this week</p><p class="v">${recent}</p><p class="s">of ${total} ${plural(total, 'student')}</p></div>
     </div>
-    <div class="step-note">${ic('lock')}<div><b>Step 1 — saved in this browser.</b> Student accounts and their progress are kept on this device for now. In the next step they will be saved to the Hifz Report’s Supabase, so they open on any device.</div></div>
+    <p class="step-note">${ic('lock', 'ic-sm')}<span>Saved in this browser for now · cloud sync comes next.</span></p>
     ${total ? `<div class="dash-tools">
       <label class="dsearch">${ic('search')}<span class="sr">Search students</span><input id="dashSearch" type="search" placeholder="Search name, MQ ID or teacher" autocomplete="off" value="${esc(D.q)}"></label>
       <div class="dfilters" role="group" aria-label="Show students">
@@ -128,8 +127,7 @@ function renderDashboard() {
       <p class="muted">Add the first student. Each one gets their own Hifz lessons — ayah by ayah or page by page — with their own progress.</p>
       <button class="btn btn-primary" type="button" data-adm="add"${canSave ? '' : ' disabled'}>${ic('user-plus')}Add the first student</button>
     </section>`}
-    <footer class="footer"><p><b>ManzilulQuran.in – E-Learning Academy</b> · Hifz Learning App</p>
-      <p>Quran text: Tanzil Uthmani text, loaded from the AlQuran Cloud API when a lesson opens. Page numbers follow the Madani mushaf (604 pages).</p></footer>`;
+    <footer class="footer"><p><b>ManzilulQuran.in – E-Learning Academy</b> · Quran text: Tanzil Uthmani (AlQuran Cloud) · Madani mushaf pages.</p></footer>`;
   if (total) {
     renderList(all);
     $('#dashSearch').addEventListener('input', e => { D.q = e.target.value; renderList(); });
@@ -154,7 +152,7 @@ function renderList(cached) {
 function rowHTML(r) {
   const { st, sum } = r;
   const now = sum.current
-    ? `<span class="st-now"><b>${esc(sum.current.title)}</b> · ${esc(sum.current.sub)} · <span class="${sum.current.detail === 'Memorized' ? 'ok' : ''}">${esc(sum.current.detail)}</span></span>`
+    ? `<span class="st-now"><b>${esc(sum.current.title)}</b> · ${esc(sum.current.sub)} · <span class="${sum.current.detail === 'Memorized' ? 'ok' : ''}">${esc(sum.current.detail)}</span></span>${sum.current.pct != null ? `<span class="st-bar" aria-hidden="true"><i style="width:${Math.min(100, Math.max(0, sum.current.pct))}%"></i></span>` : ''}`
     : `<span class="st-now none">No lesson yet · starts at ${esc(startLabel(st))}</span>`;
   const stats = [sum.ayahs ? `${sum.ayahs} ${plural(sum.ayahs, 'ayah')} memorized` : 'Nothing memorized yet',
     sum.pages ? `${sum.pages} ${plural(sum.pages, 'page')} complete` : '',
@@ -182,6 +180,7 @@ function formHTML(st) {
   F.mode = set.startMode === 'page' ? 'page' : 'ayah';
   F.lang = set.uiLang === 'en' ? 'en' : 'ml';
   F.status = s.status === 'paused' ? 'paused' : 'active';
+  F.level = ['min', 'med', 'max'].includes(set.level) ? set.level : 'med';
   const tr = HifzLearn.TRANSLATIONS.some(t => t.id === set.translation) ? set.translation : (F.lang === 'en' ? 'en.sahih' : 'ml.abdulhameed');
   const surahOpts = SURAHS.map(r => `<option value="${r[0]}"${r[0] === s.start.surah ? ' selected' : ''}>${r[0]}. ${esc(r[2])} (${r[4]})</option>`).join('');
   const trOpts = HifzLearn.TRANSLATIONS.map(t => `<option value="${t.id}"${t.id === tr ? ' selected' : ''}>${esc(t.name + (t.short ? ' — ' + t.short : ''))}</option>`).join('');
@@ -221,6 +220,9 @@ function formHTML(st) {
       <div class="field f-full" id="fStartPage"${F.mode === 'page' ? '' : ' hidden'}><label class="field-label" for="fPage">Start from page</label>
         <div class="f-row"><input class="inp f-page" id="fPage" type="number" inputmode="numeric" min="1" max="604" value="${s.start.page}"><span class="f-pageinfo" id="fPageInfo" aria-live="polite"></span></div>
         <p class="hint">Madani mushaf, 604 pages. Juzʾ ʿAmma starts on page 582.</p></div>
+      <div class="field f-full"><span class="field-label" id="lblFLevel">Part size</span>
+        ${seg('level', [['min', 'Min'], ['med', 'Medium'], ['max', 'Max']], 'lblFLevel')}
+        <p class="hint">How many words in one part: Min ≈ 2–3, Medium ≈ 3–4, Max ≈ 5–6. Each ayah is divided by its own length.</p></div>
       <div class="field f-full"><span class="field-label" id="lblFLang">App language</span>
         ${seg('lang', [['ml', '<span lang="ml" class="keep-ml">മലയാളം</span> + English'], ['en', 'English only']], 'lblFLang')}</div>
       <div class="field f-full"><label class="field-label" for="fTr">Translation</label><select class="select" id="fTr">${trOpts}</select></div>
@@ -298,7 +300,7 @@ function saveForm() {
     return fieldError('fName', 'Enter the student’s full name.');
   }
   const st = res.student, wasNew = !editing;
-  HifzStore.setSettings(st.id, { startMode: F.mode, uiLang: F.lang, translation: $('#fTr').value });
+  HifzStore.setSettings(st.id, { startMode: F.mode, uiLang: F.lang, translation: $('#fTr').value, level: F.level });
   closeForm();
   if (HifzLearn.studentId() === st.id) { paintStudentBar(st); HifzLearn.refresh(st); say('Details saved.'); return; }
   if (wasNew) D.flash = st.id;
