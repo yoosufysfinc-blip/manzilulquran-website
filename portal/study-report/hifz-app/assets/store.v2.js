@@ -1,5 +1,5 @@
 /* =====================================================================
-   ManzilulQuran · Hifz Learning App — storage (v1)
+   ManzilulQuran · Hifz Learning App — storage (v2)
    Step 1: student accounts and progress are kept in THIS BROWSER only
    (localStorage). Every read and write goes through HifzStore, so a later
    step can move the same records to the Hifz Report's Supabase project
@@ -12,6 +12,8 @@
      mqhifz.s.<id>.history.v1      one student's last 10 lessons
      mqhifz.s.<id>.done.v1         ayahs this student has memorized (global ayah numbers)
      mqhifz.textcache.v1           recently loaded Quran text, shared by all students
+   v2: the same keys; the dashboard summary also reads lessons saved by learn.v2.js
+   (lesson format 3, with a small "prog" summary) and still reads older lessons.
    ===================================================================== */
 const HifzStore = (function () {
   'use strict';
@@ -95,11 +97,20 @@ const HifzStore = (function () {
     if (lesson && +lesson.updated) last = +lesson.updated;
     if (Array.isArray(hist)) hist.forEach(e => { if (e && +e.at > last) last = +e.at; });
     let current = null;
-    if (lesson && Array.isArray(lesson.ayahs) && lesson.ayahs.length) {
+    if (lesson && lesson.v === 3 && Array.isArray(lesson.items) && lesson.items.length) {
+      const pr = lesson.prog || {}, n = lesson.items.length, m = Math.min(n, Math.max(0, +pr.m || 0));
+      const detail = pr.done ? 'Memorized' : (lesson.kind === 'page' ? `${Math.min(100, Math.max(0, +pr.pct || 0))}% done` : `${m} of ${n} memorized`);
+      if (lesson.kind === 'page' && lesson.page >= 1 && lesson.page <= 604) {
+        const segs = QuranMeta.pageSegments(lesson.page);
+        current = { kind: 'page', title: `Page ${lesson.page}`, sub: segs.map(sg => `${SURAHS[sg.s - 1][2]} ${sg.f === sg.t ? sg.f : sg.f + '–' + sg.t}`).join(' · '), detail, pct: +pr.pct || 0 };
+      } else if (lesson.surah >= 1 && lesson.surah <= 114) {
+        current = { kind: 'ayah', title: SURAHS[lesson.surah - 1][2], sub: lesson.from === lesson.to ? `Ayah ${lesson.from}` : `Ayahs ${lesson.from}–${lesson.to}`, detail, pct: +pr.pct || 0 };
+      }
+    } else if (lesson && Array.isArray(lesson.ayahs) && lesson.ayahs.length) {   // saved by the first version
       if (lesson.kind === 'page' && lesson.page >= 1 && lesson.page <= 604) {
         const u = lesson.ayahs[0] || {}, segs = QuranMeta.pageSegments(lesson.page);
         current = { kind: 'page', title: `Page ${lesson.page}`, sub: segs.map(sg => `${SURAHS[sg.s - 1][2]} ${sg.f === sg.t ? sg.f : sg.f + '–' + sg.t}`).join(' · '),
-          detail: u.result === 'mastered' ? 'Memorized' : `Stage ${Math.min(6, Math.max(1, +u.stage || 1))} of 6` };
+          detail: u.result === 'mastered' ? 'Memorized' : 'In progress' };
       } else if (lesson.surah >= 1 && lesson.surah <= 114) {
         const n = lesson.ayahs.length, m = lesson.ayahs.filter(a => a && a.result === 'mastered').length;
         current = { kind: 'ayah', title: SURAHS[lesson.surah - 1][2], sub: lesson.from === lesson.to ? `Ayah ${lesson.from}` : `Ayahs ${lesson.from}–${lesson.to}`,
@@ -112,7 +123,8 @@ const HifzStore = (function () {
       for (let p = 1; p <= 604; p++) { const [a, b] = QuranMeta.pageSpan(p); let all = true; for (let g = a; g < b && all; g++) if (!set.has(g)) all = false; if (all) pages++; }
       for (let j = 1; j <= 30; j++) { const [a, b] = QuranMeta.juzSpan(j); let all = true; for (let g = a; g < b && all; g++) if (!set.has(g)) all = false; if (all) juz++; }
     }
-    return { last, current, ayahs: set.size, pages, juz, mode: st.startMode === 'page' ? 'page' : 'ayah', uiLang: st.uiLang === 'en' ? 'en' : 'ml' };
+    return { last, current, ayahs: set.size, pages, juz, mode: st.startMode === 'page' ? 'page' : 'ayah', uiLang: st.uiLang === 'en' ? 'en' : 'ml',
+      level: ['min', 'med', 'max'].includes(st.level) ? st.level : 'med' };
   }
 
   return { available, keys, newId, today, clean, list, get, save, remove, settings, setSettings, doneSet, markDone, summary };
