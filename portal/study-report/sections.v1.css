@@ -1,0 +1,16 @@
+/* ==========================================================
+   Hifz sections switch — Hifz Report ⇄ Hifz Learning App (v1)
+   Shown at the top of the admin student list only (never on teacher share links).
+   Uses the Study Report tokens, so it follows the dark and the parchment theme.
+   ========================================================== */
+.hz-sections{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 18px;max-width:560px;
+  border-radius:16px;background:var(--panel);border:1px solid var(--line2)}
+.hz-sec{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 10px;border-radius:12px;text-decoration:none;
+  font-family:var(--ui);font-weight:600;font-size:14.5px;letter-spacing:.02em;color:var(--mut);text-align:center;line-height:1.2;transition:background .2s,color .2s}
+.hz-sec svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hz-sec:hover{color:var(--gold2)}
+.hz-sec.on{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#06150f;box-shadow:0 4px 16px var(--goldGlow)}
+body.lighttheme .hz-sec.on{color:#fbf6e9}
+.hz-sec:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+@media (max-width:440px){.hz-sec{font-size:14px;gap:6px;padding:0 6px}.hz-sec .hz-pre{display:none}}
+@media print{.hz-sections{display:none!important}}
