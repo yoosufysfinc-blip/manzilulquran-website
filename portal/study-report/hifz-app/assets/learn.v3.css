@@ -1,5 +1,5 @@
 /* ==========================================================
-   ManzilulQuran · Hifz Learning App — learner styles (v2)
+   ManzilulQuran · Hifz Learning App — learner styles (v3)
    Home, lesson screen (light text area + dark control panel), dialogs.
    Fonts (DM Sans, Noto Sans Malayalam, Noto Naskh Arabic, Amiri Quran)
    are loaded from Google Fonts in index.html.
@@ -572,8 +572,7 @@ body[data-view="lesson"] .topbar{position:relative}
 /* links: a small link mark over the gap; nothing is inserted between the words */
 .w.la,.w.lb{background-image:linear-gradient(transparent 84%,rgba(185,154,93,.45) 84%,rgba(185,154,93,.45) 92%,transparent 92%)}
 .w.la{position:relative}
-.w.la::after{content:"";position:absolute;left:-.4em;top:.12em;width:.42em;height:.42em;pointer-events:none;
-  background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B99A5D' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7'/%3E%3Cpath d='M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7'/%3E%3C/svg%3E")}
+.w.la::after{content:"";position:absolute;left:-.46em;top:.22em;width:.62em;height:.3em;border:.085em solid var(--gold);border-bottom:0;border-radius:.4em .4em 0 0;pointer-events:none}
 /* hidden with links: only the end of the first word and the start of the second stay, fading out smoothly */
 .w.h2.la{-webkit-mask-image:linear-gradient(to right,#000 0,#000 28%,transparent 78%);mask-image:linear-gradient(to right,#000 0,#000 28%,transparent 78%)}
 .w.h2.lb{-webkit-mask-image:linear-gradient(to left,#000 0,#000 28%,transparent 78%);mask-image:linear-gradient(to left,#000 0,#000 28%,transparent 78%)}
@@ -770,3 +769,13 @@ details.set-sec[open] > summary .chev{transform:rotate(180deg)}
 .lk-mark{position:fixed;left:0;top:0;z-index:299;width:4px;border-radius:4px;background:var(--gold);pointer-events:none;box-shadow:0 0 0 3px rgba(185,154,93,.25)}
 
 @media (max-width:480px){.mp{padding:8px 6px 10px;margin:0 -4px}.mp-h{padding:2px 6px 6px}}
+
+/* v3 — playing ayah, links list */
+.ay.playing{border-color:#D8C08A;box-shadow:0 0 0 3px rgba(216,192,138,.35)}
+.mp .w.playing:not(.cx){color:#7A5B1E}
+.lk-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.lk-list li{display:flex;align-items:center;gap:10px;padding:2px 2px 2px 12px;border-radius:12px;background:var(--work);border:1px solid #EFE8DA}
+.lk-ref{font:700 11.5px/1.2 'DM Sans',sans-serif;color:var(--muted-2);white-space:nowrap}
+.lk-w{flex:1;min-width:0;font-family:var(--ar-font);font-size:22px;line-height:1.9;color:var(--ink-ar);text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:.3em}
+.lk-arc{display:inline-block;width:.7em;height:.32em;border:2px solid var(--gold);border-bottom:0;border-radius:.4em .4em 0 0;align-self:flex-start;margin-top:.45em}
+.cv .ar,.cv .mp-l{-webkit-touch-callout:none}
