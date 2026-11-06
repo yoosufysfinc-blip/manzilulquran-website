@@ -1,5 +1,5 @@
 /* ==========================================================
-   ManzilulQuran · Hifz Learning App — learner styles (v3)
+   ManzilulQuran · Hifz Learning App — learner styles (v4)
    Home, lesson screen (light text area + dark control panel), dialogs.
    Fonts (DM Sans, Noto Sans Malayalam, Noto Naskh Arabic, Amiri Quran)
    are loaded from Google Fonts in index.html.
@@ -573,20 +573,30 @@ body[data-view="lesson"] .topbar{position:relative}
 .w.la,.w.lb{background-image:linear-gradient(transparent 84%,rgba(185,154,93,.45) 84%,rgba(185,154,93,.45) 92%,transparent 92%)}
 .w.la{position:relative}
 .w.la::after{content:"";position:absolute;left:-.46em;top:.22em;width:.62em;height:.3em;border:.085em solid var(--gold);border-bottom:0;border-radius:.4em .4em 0 0;pointer-events:none}
-/* hidden with links: only the end of the first word and the start of the second stay, fading out smoothly */
-.w.h2.la{-webkit-mask-image:linear-gradient(to right,#000 0,#000 28%,transparent 78%);mask-image:linear-gradient(to right,#000 0,#000 28%,transparent 78%)}
-.w.h2.lb{-webkit-mask-image:linear-gradient(to left,#000 0,#000 28%,transparent 78%);mask-image:linear-gradient(to left,#000 0,#000 28%,transparent 78%)}
-.w.h2.la.lb{-webkit-mask-image:linear-gradient(to right,#000 0,#000 18%,transparent 45%,transparent 55%,#000 82%);mask-image:linear-gradient(to right,#000 0,#000 18%,transparent 45%,transparent 55%,#000 82%)}
+/* hidden with links: the end of the first word and the start of the second stay.
+   The text is RTL, so .la (the word behind) is masked from its left edge and
+   .lb (the next word ahead) from its right edge. The next word is given the
+   wider window of the two: it is the one the memory has to reach for. */
+.w.h2.la{-webkit-mask-image:linear-gradient(to right,#000 0,#000 42%,transparent 88%);mask-image:linear-gradient(to right,#000 0,#000 42%,transparent 88%)}
+.w.h2.lb{-webkit-mask-image:linear-gradient(to left,#000 0,#000 55%,transparent 95%);mask-image:linear-gradient(to left,#000 0,#000 55%,transparent 95%)}
+.w.h2.la.lb{-webkit-mask-image:linear-gradient(to right,#000 0,#000 30%,transparent 46%,transparent 54%,#000 70%);mask-image:linear-gradient(to right,#000 0,#000 30%,transparent 46%,transparent 54%,#000 70%)}
 .w.h2.la,.w.h2.lb{background-image:none}
 .linking .w[data-w]{cursor:pointer;-webkit-user-select:none;user-select:none}
 
-/* part colours */
-.pc.tint{background-color:transparent;box-shadow:none}
-.pc.tint .w{background-image:linear-gradient(transparent 84%,var(--bd) 84%,var(--bd) 94%,transparent 94%)}
+/* part colours — each part wears its colour as a faint wash behind the words.
+   The underline this replaced sat under the Arabic baseline and collided with
+   the descenders of ج ح خ ع and with the kasrah marks. */
+.pc.tint{background-color:var(--gb);box-shadow:none}
+.pc.tint{background-color:color-mix(in srgb,var(--bd) 13%,transparent)}
+.pc.tint .w{background-image:none}
 .pc.tint.on{background-color:var(--gb);box-shadow:inset 0 0 0 1.5px var(--bd)}
+/* a pinned pair keeps its own faint underline, which marks the join, not the part */
 .pc.tint .w.la,.pc.tint .w.lb{background-image:linear-gradient(transparent 84%,rgba(185,154,93,.6) 84%,rgba(185,154,93,.6) 94%,transparent 94%)}
 .pc.tint .w.h2,.pc.tint .w.h3{background-image:none}
-.mp .w.tint{background:linear-gradient(transparent 84%,var(--bd) 84%,var(--bd) 95%,transparent 95%)}
+/* a hidden part shows no wash, so the hide state is never ambiguous */
+.pc.tint.off,.pc.tint.hid:not(.on){background-color:transparent}
+.mp .w.tint{background:var(--gb);border-radius:.3em}
+.mp .w.tint{background:color-mix(in srgb,var(--bd) 13%,transparent)}
 .mp .w.tint.cx{background:none}
 .trk-t{display:inline-grid;place-items:center;min-width:22px;height:18px;padding:0 4px;border-radius:5px;border:1.4px solid currentColor;font:800 10px/1 'DM Sans','Noto Sans Malayalam',sans-serif;letter-spacing:.02em}
 .ib.trk .trk-t{opacity:.75}
@@ -695,6 +705,17 @@ body[data-view="lesson"] .topbar{position:relative}
 .tl-sec h3 [lang="ml"]{letter-spacing:0;text-transform:none;font-weight:600}
 .tl-row{display:grid;gap:6px}
 .tl-k{font-size:13.5px;font-weight:650;color:var(--text)}
+/* moving a part's edge by a word */
+.pe-row{gap:8px}
+.pe-ctl{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;
+  padding:6px;border:1px solid var(--border);border-radius:12px;background:var(--soft)}
+.pe-b{display:grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid var(--border);
+  border-radius:10px;background:#fff;color:var(--primary);cursor:pointer}
+.pe-b:hover:not(:disabled){background:var(--soft);border-color:var(--primary-2)}
+.pe-b:disabled{opacity:.32;cursor:default}
+.pe-prev{min-width:0;text-align:center;font-family:var(--ar-font);font-size:19px;line-height:1.9;
+  color:var(--ink-ar);overflow-wrap:anywhere}
+@media (max-width:420px){.pe-ctl{grid-template-columns:40px 1fr 40px;gap:6px}.pe-b{width:40px;height:40px}.pe-prev{font-size:17px}}
 .tl-acts{display:flex;flex-wrap:wrap;gap:8px}
 .tl-acts .btn{min-height:44px}
 .note-box{width:100%;min-height:64px;resize:vertical;border-radius:12px;border:1.5px solid var(--border);padding:10px 12px;background:#fff;font-size:15px;line-height:1.5;color:var(--text)}
