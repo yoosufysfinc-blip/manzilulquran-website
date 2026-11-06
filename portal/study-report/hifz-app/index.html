@@ -3,26 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#F7F4ED">
+<meta name="theme-color" content="#174A39">
 <meta name="robots" content="noindex, nofollow">
-<title>Hifz Learning App · ManzilulQuran</title>
-<link rel="icon" href="/og-image.jpg">
-<script>
-/* Admin-only page: reuse the portal's 24-hour unlock, exactly like the Hifz Report admin view. */
-(function () {
-  try {
-    var at = parseInt(sessionStorage.getItem("mq_portal_unlocked_at") || "0", 10);
-    if (!(at && Date.now() - at < 24 * 60 * 60 * 1000)) location.replace("/portal/");
-  } catch (e) { /* storage blocked: let the page decide */ }
-})();
-</script>
+<meta name="referrer" content="no-referrer">
+<title>Hifz Learning · ManzilulQuran</title>
+<link rel="icon" href="/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=DM+Sans:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/portal/study-report/hifz-app/assets/learn.v4.css">
-<link rel="stylesheet" href="/portal/study-report/hifz-app/assets/admin.v2.css">
+<link rel="stylesheet" href="/portal/study-report/hifz-app/assets/student.v1.css">
 </head>
-<body data-mode="dash">
+<body class="stu">
 <!-- Icon sprite -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
@@ -67,57 +59,43 @@
   </defs>
 </svg>
 
+<!-- The opening: the academy's mark, then the student's name, then the app.
+     It is removed from the page once the app is drawn. -->
+<div class="splash" id="splash" role="region" aria-label="Opening the Hifz Learning App">
+  <div class="sp-in">
+    <div class="sp-logo"><span class="sp-halo" aria-hidden="true"></span><img src="/logo.png" alt="" onerror="this.remove()"></div>
+    <p class="sp-brand">ManzilulQuran</p>
+    <p class="sp-sub">E-Learning Academy</p>
+    <p class="sp-rule" aria-hidden="true"><i></i><span>Hifz Learning</span><i></i></p>
+    <p class="sp-name" id="spName"></p>
+    <div class="sp-bar" aria-hidden="true"><i></i></div>
+  </div>
+</div>
+
 <a class="skip" href="#main" data-act="skip">Skip to content</a>
 
 <header class="topbar" id="topbar">
   <div class="topbar-in">
-    <a class="brand" href="/portal/study-report/hifz-app/" data-adm="dash">
-      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#174A39"/><g fill="none" stroke="#D8C08A" stroke-width="1.5"><rect x="11.5" y="11.5" width="17" height="17" rx="1.6"/><rect x="11.5" y="11.5" width="17" height="17" rx="1.6" transform="rotate(45 20 20)"/></g><circle cx="20" cy="20" r="3" fill="#D8C08A"/></svg>
-      <span class="brand-txt"><span class="brand-name">Hifz Learning App</span><span class="brand-sub">ManzilulQuran · Academy portal</span></span>
-    </a>
+    <span class="brand">
+      <span class="brand-mark stu-mark"><img src="/logo.png" alt="ManzilulQuran" onerror="this.remove()"></span>
+      <span class="brand-txt"><span class="brand-name" id="stuName">Student</span><span class="brand-sub">Hifz Learning · ManzilulQuran</span></span>
+    </span>
     <div class="top-actions">
       <button class="status-chip" id="statusChip" type="button" data-act="toactive" hidden title="Go to the current ayah">
         <span class="sr">Go to </span><span class="dot" aria-hidden="true"></span><span class="sc-txt" id="statusTxt"></span><span class="sc-extra" id="statusExtra"></span>
       </button>
-      <button class="tbtn" type="button" data-act="tips" id="btnTips" aria-label="Memorization tips" hidden><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg><span class="lbl">Tips</span></button>
-      <button class="tbtn" type="button" data-act="settings" id="btnSettings" aria-label="Settings" hidden><svg class="ic" aria-hidden="true"><use href="#i-sliders"/></svg><span class="lbl">Settings</span></button>
-      <button class="tbtn tbtn-primary" type="button" data-adm="add" id="btnAddTop"><svg class="ic" aria-hidden="true"><use href="#i-user-plus"/></svg><span class="lbl-always">Add student</span></button>
+      <button class="tbtn" type="button" data-act="tips" id="btnTips" aria-label="Memorization tips"><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg><span class="lbl">Tips</span></button>
+      <button class="tbtn" type="button" data-act="settings" id="btnSettings" aria-label="Settings"><svg class="ic" aria-hidden="true"><use href="#i-sliders"/></svg><span class="lbl">Settings</span></button>
+      <button class="tbtn stu-close" type="button" id="btnClose" aria-label="Close and go back" hidden><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span class="lbl">Close</span></button>
     </div>
   </div>
 </header>
 
-<!-- whose learning space is open -->
-<section class="studentbar" id="studentBar" aria-label="Open student" hidden>
-  <div class="sb-in">
-    <button class="sb-back" type="button" data-adm="dash"><svg class="ic" aria-hidden="true"><use href="#i-chev-l"/></svg><span>All students</span></button>
-    <div class="sb-who"><span class="av" id="sbAvatar" aria-hidden="true"></span><span class="sb-txt"><span class="sb-name" id="sbName"></span><span class="sb-meta" id="sbMeta"></span></span></div>
-    <button class="btn btn-sm btn-ghost sb-edit" type="button" data-adm="edit-current"><svg class="ic" aria-hidden="true"><use href="#i-pen"/></svg><span class="hide-sm">Edit details</span><span class="sr">for this student</span></button>
-  </div>
-</section>
-
 <main id="main" tabindex="-1">
-  <div id="dashView" class="view"></div>
   <div id="homeView" class="view" hidden></div>
   <div id="lessonView" class="view" hidden></div>
 </main>
 
-<!-- Add / edit a student -->
-<dialog id="dlgStudent" class="dlg-sheet dlg-student" aria-labelledby="dlgStuT" data-keep>
-  <form class="panel" id="stuForm" novalidate autocomplete="off">
-    <div class="panel-head">
-      <div><h2 id="dlgStuT">Add student</h2><p id="dlgStuSub">Name and details for this student’s Hifz account.</p></div>
-      <button class="x" type="button" data-adm="closeform" aria-label="Close"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
-    </div>
-    <div class="panel-body stu-body" id="stuBody"></div>
-    <div class="panel-foot stu-foot">
-      <p class="form-msg" id="stuMsg" role="alert"></p>
-      <button class="btn btn-ghost" type="button" data-adm="closeform">Cancel</button>
-      <button class="btn btn-primary" type="submit" id="stuSave">Add student</button>
-    </div>
-  </form>
-</dialog>
-
-<!-- Surah picker -->
 <dialog id="dlgSurah" class="dlg-sheet" aria-labelledby="dlgSurahT">
   <div class="panel">
     <div class="panel-head">
@@ -188,6 +166,6 @@
 <script src="/portal/study-report/hifz-app/assets/mushaf.v1.js"></script>
 <script src="/portal/study-report/hifz-app/assets/store.v2.js"></script>
 <script src="/portal/study-report/hifz-app/assets/learn.v4.js"></script>
-<script src="/portal/study-report/hifz-app/assets/admin.v2.js"></script>
+<script src="/portal/study-report/hifz-app/assets/student.v1.js"></script>
 </body>
 </html>
