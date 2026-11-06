@@ -1,5 +1,5 @@
 /* =====================================================================
-   ManzilulQuran \u00b7 Hifz Learning App \u2014 the learner (v3)
+   ManzilulQuran \u00b7 Hifz Learning App \u2014 the learner (v4)
    One student at a time. The academy's way of memorizing:
      1. read every ayah once, looking at it;
      2. memorize the first ayah part by part (parts sized Min / Medium / Max
@@ -45,7 +45,7 @@ const DEFAULTS = {
   translation: 'ml.abdulhameed', trShow: true,
   arSize: 'l', quranFont: 'amiri', englishHelp: true,
   autoScroll: true, vibrate: true, reduceMotion: false,
-  startMode: 'ayah', partColors: true, tgView: 'mushaf', dockMini: false,
+  startMode: 'ayah', partColors: true, tgView: 'ayahs', dockMini: false,
   reciter: 'ar.alafasy', audioRep: 1, audioRate: '1'
 };
 
@@ -151,17 +151,47 @@ const LEVELS = {
   med: { max: 4, ideal: 3.5, en: 'Medium', hint: '3\u20134 words a part' },
   max: { max: 6, ideal: 5.5, en: 'Max', hint: '5\u20136 words a part' }
 };
+// Words that open a new clause. The conjunctions wa- and fa- are written
+// joined to the word that follows them, and particles such as thumma, an and
+// inna stand alone — either way the harf belongs to what comes AFTER it. A part
+// must therefore not end on one: the cut goes before it, so it opens the next
+// part. Two letters or fewer are left out, which keeps the preposition fi out.
+const CLAUSE_PARTICLES = new Set([
+  '\u062b\u0645',          // thumma
+  '\u0627\u0646',          // an / in / inna (hamza forms normalise to alif)
+  '\u0627\u0630\u0627',   // idha
+  '\u0627\u0630',          // idh
+  '\u0627\u0648',          // aw
+  '\u0628\u0644',          // bal
+  '\u0644\u0643\u0646',   // lakin
+  '\u062d\u062a\u0649',   // hatta
+  '\u0644\u0645\u0627',   // lamma
+  '\u0627\u0645\u0627'    // amma
+]);
+const ARABIC_ONLY = /[^\u0600-\u06ff]/g;
+function opensClause(w) {
+  const t = normAr(String(w && w.t || '')).replace(ARABIC_ONLY, '');
+  if (!t) return false;
+  if (CLAUSE_PARTICLES.has(t)) return true;
+  return (t[0] === '\u0648' || t[0] === '\u0641') && t.length > 2;
+}
+
 function levelParts(words, level, pauseBreak) {
   const lv = LEVELS[level] || LEVELS.med, n = words.length;
   if (n <= lv.max) return [[0, Math.max(0, n - 1)]];
+  const opens = words.map(opensClause);
   const best = new Array(n + 1).fill(Infinity), prev = new Array(n + 1).fill(-1);
   best[0] = 0;
   for (let j = 1; j <= n; j++) {
     for (let len = 1; len <= Math.min(lv.max, j); len++) {
       const i = j - len;
       let c = (len - lv.ideal) * (len - lv.ideal) + 0.6;
-      if (len === 1) c += 4;
+      if (len === 1) c += 7;
       if (pauseBreak && j < n && words[j - 1].pause) c -= 1.5;
+      // cutting just before a connective is natural — it starts the next part
+      if (j < n && opens[j]) c -= 1.2;
+      // ending a part on the connective strands it from its own clause
+      if (len > 1 && opens[j - 1]) c += 5;
       if (best[i] + c < best[j]) { best[j] = best[i] + c; prev[j] = i; }
     }
   }
@@ -344,10 +374,14 @@ function loadSettings() {
   if (!['amiri', 'naskh'].includes(s.quranFont)) s.quranFont = DEFAULTS.quranFont;
   if (!['ayah', 'page'].includes(s.startMode)) s.startMode = DEFAULTS.startMode;
   if (!['mushaf', 'ayahs'].includes(s.tgView)) s.tgView = DEFAULTS.tgView;
+  // The total view used to open on the mushaf. It now opens on the ayahs, with
+  // the mushaf as the second choice. A preference saved before that change is
+  // moved across once; after this the student's own choice is kept as always.
+  if (!s.tgViewV2) { s.tgView = DEFAULTS.tgView; s.tgViewV2 = true; }
   if (!RECITERS.some(r => r.edition === s.reciter)) s.reciter = DEFAULTS.reciter;
   s.audioRep = [1, 3, 5, 10].includes(+s.audioRep) ? +s.audioRep : DEFAULTS.audioRep;
   if (!['0.75', '1', '1.25'].includes(String(s.audioRate))) s.audioRate = DEFAULTS.audioRate; else s.audioRate = String(s.audioRate);
-  ['pauseBreak', 'trShow', 'englishHelp', 'autoScroll', 'vibrate', 'reduceMotion', 'partColors', 'dockMini'].forEach(k => { s[k] = !!s[k]; });
+  ['pauseBreak', 'trShow', 'englishHelp', 'autoScroll', 'vibrate', 'reduceMotion', 'partColors', 'dockMini', 'tgViewV2'].forEach(k => { s[k] = !!s[k]; });
   return s;
 }
 const saveSettings = () => store.set(KEY.settings, S);
@@ -379,7 +413,7 @@ function nextHide(h, hasPins) { let n = ((h || 0) + 1) % 4; if (n === 2 && !hasP
 
 function makeLesson(ref, mode) {
   const l = { v: 3, kind: ref.kind === 'page' ? 'page' : 'ayah', mode: mode === 'revise' ? 'revise' : 'learn', trEd: S.translation,
-    basmalah: null, items: [], group: null, colors: [], brush: 0, level: null, segLevel: {}, pins: [], trFlip: [],
+    basmalah: null, items: [], group: null, colors: [], brush: 0, level: null, segLevel: {}, cuts: {}, pins: [], trFlip: [],
     read: [], cur: 0, step: 0, seg: [], chain: {}, fin: { c: 0, result: null }, notes: {}, segKey: '',
     rowHide: {}, focusHide: 0, pinMode: false, paintMode: false,
     created: Date.now(), updated: Date.now(), status: 'loading', error: null };
@@ -420,10 +454,31 @@ function wordsOf(l) {
   return d.words;
 }
 const levelOf = (l, u) => { const first = unitsOf(l).parts[u][0]; return l.segLevel[first] || l.level || S.level; };
+
+/* ---------- part edges the student set by hand ----------
+   Kept per ayah as the first word index of every part after the first, so one
+   ayah's edges never disturb another's and a change of level simply drops them.
+   Everything that draws or counts parts goes through ayahParts, so the edges
+   hold in the row view, the mushaf view, the counters and the step logic. */
+const cutsOf = (l, i) => { const c = l.cuts && l.cuts[i]; return Array.isArray(c) && c.length ? c : null; };
+function partsFromCuts(n, cuts) {
+  const out = []; let a = 0;
+  for (const b of cuts) if (b > a && b < n) { out.push([a, b - 1]); a = b; }
+  out.push([a, Math.max(a, n - 1)]);
+  return out;
+}
+function ayahParts(l, i, lv) {
+  const ws = (wordsOf(l)[i] || []), n = ws.length;
+  if (!n) return [[0, 0]];
+  const c = cutsOf(l, i);
+  return c ? partsFromCuts(n, c) : levelParts(ws, lv, S.pauseBreak);
+}
+// a signature of the edges, so a unit's counters restart when its parts are redrawn
+const cutsSig = (l, idxs) => idxs.map(i => (cutsOf(l, i) || []).join('-')).join('/');
 // the parts of one unit: [{ i: item, w0, w1 }] \u2014 a part never runs across two ayahs
 function piecesOf(l, u) {
-  const words = wordsOf(l), lv = levelOf(l, u), out = [];
-  unitsOf(l).parts[u].forEach(i => levelParts(words[i], lv, S.pauseBreak).forEach(([w0, w1]) => out.push({ i, w0, w1 })));
+  const lv = levelOf(l, u), out = [];
+  unitsOf(l).parts[u].forEach(i => ayahParts(l, i, lv).forEach(([w0, w1]) => out.push({ i, w0, w1 })));
   return out;
 }
 
@@ -444,7 +499,7 @@ const finalReps = () => (L.kind === 'page' ? S.pageReps : S.joinReps);
 const joinSteps = n => comboSteps(n, S.joinMethod).filter(([a, b]) => !(a === 0 && b === n - 1));
 // keep each unit's progress in step with the current groups and part sizes
 function segState(u) {
-  const ps = piecesOf(L, u), key = levelOf(L, u) + '|' + ps.length + '|' + (S.pauseBreak ? 'p' : '-') + '|' + S.joinMethod;
+  const ps = piecesOf(L, u), key = levelOf(L, u) + '|' + ps.length + '|' + (S.pauseBreak ? 'p' : '-') + '|' + S.joinMethod + '|' + cutsSig(L, unitsOf(L).parts[u]);
   let g = L.seg[u];
   if (!g) g = L.seg[u] = { key: '', ph: 'parts', k: 0, pc: [], cs: 0, cc: [], fc: 0, done: false };
   if (g.key !== key) {
@@ -511,7 +566,7 @@ let saveTimer, saveWarned = false;
 function persist() { clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 300); }
 function serialize(l) {
   const o = { v: 3, kind: l.kind, mode: l.mode, trEd: l.trEd, basmalah: l.basmalah, group: l.group, colors: l.colors, brush: l.brush,
-    level: l.level, segLevel: l.segLevel, pins: l.pins, trFlip: l.trFlip, read: l.read, cur: l.cur, step: l.step, seg: l.seg,
+    level: l.level, segLevel: l.segLevel, cuts: l.cuts, pins: l.pins, trFlip: l.trFlip, read: l.read, cur: l.cur, step: l.step, seg: l.seg,
     chain: l.chain, fin: l.fin, notes: l.notes, segKey: l.segKey, created: l.created, updated: l.updated,
     items: l.items.map(x => ({ s: x.s, a: x.a, text: x.text, bas: x.bas || null, tr: x.tr || '' })),
     prog: { m: memorizedItems(l).length, n: l.items.length, pct: Math.round(lessonPercent(l) * 100), done: lessonComplete(l) } };
@@ -596,7 +651,7 @@ function restoreLesson(o) {
       colors: Array.isArray(o.colors) && o.colors.length === n ? o.colors.map(c => clampInt(c, 0, 7, 0)) : [],
       brush: clampInt(o.brush, 0, 7, 0),
       level: LEVELS[o.level] ? o.level : null,
-      segLevel: {}, pins: Array.isArray(o.pins) ? o.pins.filter(k => /^\d+:\d+$/.test(k) && +k.split(':')[0] < n) : [],
+      segLevel: {}, cuts: {}, pins: Array.isArray(o.pins) ? o.pins.filter(k => /^\d+:\d+$/.test(k) && +k.split(':')[0] < n) : [],
       trFlip: idx(o.trFlip), read: idx(o.read), cur: clampInt(o.cur, 0, n - 1, 0), step: clampInt(o.step, 0, 999, 0),
       seg: Array.isArray(o.seg) ? o.seg.map(g => g && typeof g === 'object' ? { key: String(g.key || ''), ph: ['parts', 'join', 'full'].includes(g.ph) ? g.ph : 'parts',
         k: clampInt(g.k, 0, 999, 0), pc: numArr(g.pc), cs: clampInt(g.cs, 0, 999, 0), cc: numArr(g.cc), fc: clampInt(g.fc, 0, 999, 0), done: !!g.done } : null) : [],
@@ -604,6 +659,17 @@ function restoreLesson(o) {
       notes: {}, segKey: String(o.segKey || ''), created: +o.created || Date.now(), updated: +o.updated || Date.now(), status: 'ready'
     });
     if (o.segLevel && typeof o.segLevel === 'object') Object.keys(o.segLevel).forEach(k => { if (+k < n && LEVELS[o.segLevel[k]]) l.segLevel[+k] = o.segLevel[k]; });
+    // the student's own part edges, dropped for any ayah whose text no longer fits them
+    if (o.cuts && typeof o.cuts === 'object') {
+      const ws = wordsOf(l);
+      Object.keys(o.cuts).forEach(k => {
+        const i = +k, c = o.cuts[k];
+        if (!(i >= 0 && i < n) || !Array.isArray(c) || !ws[i]) return;
+        const len = ws[i].length;
+        const clean = [...new Set(c.map(x => clampInt(x, 1, len - 1, 0)).filter(x => x > 0 && x < len))].sort((a, b) => a - b);
+        if (clean.length) l.cuts[i] = clean;
+      });
+    }
     if (o.chain && typeof o.chain === 'object') Object.keys(o.chain).forEach(k => { l.chain[+k] = clampInt(o.chain[k], 0, 999, 0); });
     if (o.notes && typeof o.notes === 'object') Object.keys(o.notes).forEach(k => { if (+k < n && typeof o.notes[k] === 'string') l.notes[+k] = o.notes[k].slice(0, 600); });
     return l;
@@ -1166,7 +1232,7 @@ const unitOfItem = i => unitsOf(L).parts.findIndex(p => p.includes(i));
 function itemRuns(i, focus) {
   const ws = wordsOf(L)[i];
   if (!S.partColors) return [{ w0: 0, w1: ws.length - 1, cls: '', focus }];
-  return levelParts(ws, levelOf(L, Math.max(0, unitOfItem(i))), S.pauseBreak).map(([w0, w1], k) => ({ w0, w1, focus, cls: partTint(k) }));
+  return ayahParts(L, i, levelOf(L, Math.max(0, unitOfItem(i)))).map(([w0, w1], k) => ({ w0, w1, focus, cls: partTint(k) }));
 }
 // runs: [{ w0, w1, cls, focus }] \u2014 the parts of this ayah; focus parts take the main Hide state
 function wordsHTML(i, o) {
@@ -1310,13 +1376,13 @@ function mushafViewHTML(o) {
 const useMushaf = () => hasMushaf() && !L.mtxErr && S.tgView === 'mushaf';
 function viewSegHTML() {
   if (!hasMushaf() || L.mtxErr) return '';
-  return `<div class="seg view-seg" role="radiogroup" aria-label="View">${[['mushaf', `${ic('book', 'ic-sm')}Mushaf`], ['ayahs', `${ic('layers', 'ic-sm')}Ayahs`]].map(([v, l]) => `<button type="button" role="radio" aria-checked="${S.tgView === v}" data-act="tgview" data-v="${v}">${l}</button>`).join('')}</div>`;
+  return `<div class="seg view-seg" role="radiogroup" aria-label="View">${[['ayahs', `${ic('layers', 'ic-sm')}Ayahs`], ['mushaf', `${ic('book', 'ic-sm')}Mushaf`]].map(([v, l]) => `<button type="button" role="radio" aria-checked="${S.tgView === v}" data-act="tgview" data-v="${v}">${l}</button>`).join('')}</div>`;
 }
 function partColorFn() {
   if (!S.partColors) return null;
   const cache = new Map();
   return (i, w) => {
-    if (!cache.has(i)) { const m = []; levelParts(wordsOf(L)[i], levelOf(L, Math.max(0, unitOfItem(i))), S.pauseBreak).forEach(([a, b], k) => { for (let x = a; x <= b; x++) m[x] = k; }); cache.set(i, m); }
+    if (!cache.has(i)) { const m = []; ayahParts(L, i, levelOf(L, Math.max(0, unitOfItem(i)))).forEach(([a, b], k) => { for (let x = a; x <= b; x++) m[x] = k; }); cache.set(i, m); }
     return partTint(cache.get(i)[w] || 0);
   };
 }
@@ -1727,6 +1793,32 @@ async function copyText(url, done) {
 }
 
 /* ---------- lesson tools sheet (More) ---------- */
+// Moving the edge of the part in focus. The automatic split is a starting
+// point, not the last word on it: the arrows hand one word across the edge
+// between this part and the next one in the same ayah. The text is RTL, so
+// the word that comes next lies to the left — the left arrow takes it in.
+function edgeHTML(f, inUnit) {
+  if (!inUnit || !f.ps || !f.ps.length) return '';
+  const p = f.ps[Math.min(f.g.k, f.ps.length - 1)];
+  if (!p) return '';
+  const ws = wordsOf(L)[p.i] || [];
+  const parts = ayahParts(L, p.i, levelOf(L, f.u));
+  const pk = parts.findIndex(([a, b]) => a === p.w0 && b === p.w1);
+  const nw = p.w1 - p.w0 + 1;
+  const grow = pk >= 0 && pk < parts.length - 1;
+  const shrink = nw > 1;
+  const edited = !!cutsOf(L, p.i);
+  const txt = ws.slice(p.w0, p.w1 + 1).map(w => w.t).join(' ');
+  return `<div class="tl-row pe-row">
+    <span class="tl-k">Part ${f.g.k + 1} of ${f.ps.length} \u00b7 ${nw} ${plural(nw, 'word')}${mlTag('\u0d35\u0d3e\u0d15\u0d4d\u0d15\u0d41\u0d15\u0d7e')}</span>
+    <div class="pe-ctl">
+      <button type="button" class="pe-b" data-act="pedge" data-d="1"${grow ? '' : ' disabled'} aria-label="Take the next word into this part">${ic('chev-l')}</button>
+      <span class="pe-prev" lang="ar" dir="rtl">${esc(txt)}</span>
+      <button type="button" class="pe-b" data-act="pedge" data-d="-1"${shrink ? '' : ' disabled'} aria-label="Give the last word back to the next part">${ic('chev-r')}</button>
+    </div>
+    <p class="hint">${edited ? 'You set this ayah\u2019s parts by hand.' : 'The arrows move the edge one word at a time.'}${edited ? ' <button type="button" class="linkbtn" data-act="pereset">Set automatically again</button>' : ''}</p>
+  </div>`;
+}
 function partCount(idxs, lv) { const ws = wordsOf(L); return idxs.reduce((n, i) => n + levelParts(ws[i], lv, S.pauseBreak).length, 0); }
 function toolsHTML() {
   const f = focusOf(), st = f.st, inUnit = st.t === 'seg';
@@ -1742,6 +1834,7 @@ function toolsHTML() {
     <section class="tl-sec" id="tlLvl"><h3>${ic('layers', 'ic-sm')}Part size${mlTag('\u00b7 \u0d2d\u0d3e\u0d17\u0d24\u0d4d\u0d24\u0d3f\u0d28\u0d4d\u0d31\u0d46 \u0d35\u0d32\u0d41\u0d2a\u0d4d\u0d2a\u0d02')}</h3>
       <p class="hint">Min \u2248 2\u20133 words \u00b7 Medium \u2248 3\u20134 \u00b7 Max \u2248 5\u20136. Short ayahs stay whole. The small number is how many parts.</p>
       ${inUnit ? `<div class="tl-row"><span class="tl-k">${esc(unitLabel(f.u))}</span>${lvSeg('unit', levelOf(L, f.u), f.items, 'Part size for ' + unitLabel(f.u))}</div>` : ''}
+      ${edgeHTML(f, inUnit)}
       <div class="tl-row"><span class="tl-k">Whole lesson</span>${lvSeg('lesson', lvL, all, 'Part size for the whole lesson')}</div>
     </section>
     <section class="tl-sec"><label class="switch"><input type="checkbox" data-set="partColors"${S.partColors ? ' checked' : ''}><span class="track"></span><span class="sw-txt">Colour each part<small>Every part keeps its own colour, so it stays apart in memory.</small></span></label></section>
@@ -1788,6 +1881,46 @@ function refreshTools() {
   $('#toolBody').scrollTop = st;
   if (fk) { const el = $('#toolBody ' + fk); if (el && !el.disabled) el.focus({ preventScroll: true }); }
 }
+// Write the edges back, or drop them when they match the automatic split again
+// — an ayah left on the automatic split must follow a later change of level.
+function setAyahCuts(i, parts, lv) {
+  if (!L.cuts) L.cuts = {};
+  const cuts = parts.slice(1).map(p => p[0]);
+  const auto = levelParts(wordsOf(L)[i] || [], lv, S.pauseBreak).slice(1).map(p => p[0]);
+  if (cuts.join('-') === auto.join('-')) delete L.cuts[i]; else L.cuts[i] = cuts;
+}
+function movePartEdge(d) {
+  const f = focusOf();
+  if (f.st.t !== 'seg' || !f.ps || !f.ps.length) return;
+  const p = f.ps[Math.min(f.g.k, f.ps.length - 1)];
+  if (!p) return;
+  const i = p.i, lv = levelOf(L, f.u), n = (wordsOf(L)[i] || []).length;
+  const parts = ayahParts(L, i, lv).map(x => x.slice());
+  const pk = parts.findIndex(([a, b]) => a === p.w0 && b === p.w1);
+  if (pk < 0) return;
+  if (d > 0) {
+    if (pk === parts.length - 1) return;                 // no word ahead inside this ayah
+    parts[pk][1] += 1; parts[pk + 1][0] += 1;
+    if (parts[pk + 1][0] > parts[pk + 1][1]) parts.splice(pk + 1, 1);
+  } else {
+    if (parts[pk][1] <= parts[pk][0]) return;            // a part keeps at least one word
+    parts[pk][1] -= 1;
+    if (pk + 1 < parts.length) parts[pk + 1][0] -= 1;
+    else parts.push([parts[pk][1] + 1, n - 1]);
+  }
+  setAyahCuts(i, parts, lv);
+  renderLesson(); refreshTools(); persist();
+}
+function resetPartEdges() {
+  const f = focusOf();
+  if (f.st.t !== 'seg') return;
+  let any = false;
+  (unitsOf(L).parts[f.u] || []).forEach(i => { if (L.cuts[i]) { delete L.cuts[i]; any = true; } });
+  if (!any) return;
+  renderLesson(); refreshTools(); persist();
+  toast('Parts divided automatically again', '', 'layers');
+}
+
 async function setLevel(scope, v) {
   if (!LEVELS[v]) return;
   const f = focusOf();
@@ -1800,6 +1933,7 @@ async function setLevel(scope, v) {
     }
     const first = unitsOf(L).parts[f.u][0];
     if (v === (L.level || S.level)) delete L.segLevel[first]; else L.segLevel[first] = v;
+    (unitsOf(L).parts[f.u] || []).forEach(i => { delete L.cuts[i]; });   // the level divides it again
   } else {
     if ((L.level || S.level) === v && !Object.keys(L.segLevel).length) return;
     const busy = L.seg.some(g => g && !g.done && (g.pc.some(Boolean) || g.cc.some(Boolean) || g.fc));
@@ -1807,7 +1941,7 @@ async function setLevel(scope, v) {
       const ok = await confirmBox({ title: 'Change the part size for every ayah?', body: 'Ayahs you are still learning are divided again and their part counts start again. Memorized ayahs stay memorized.', ml: '\u0d0e\u0d32\u0d4d\u0d32\u0d3e \u0d06\u0d2f\u0d24\u0d4d\u0d24\u0d41\u0d15\u0d33\u0d41\u0d02 \u0d35\u0d40\u0d23\u0d4d\u0d1f\u0d41\u0d02 \u0d35\u0d3f\u0d2d\u0d1c\u0d3f\u0d15\u0d4d\u0d15\u0d41\u0d02. \u0d2e\u0d28\u0d03\u0d2a\u0d3e\u0d20\u0d2e\u0d3e\u0d2f\u0d35 \u0d05\u0d24\u0d47\u0d2a\u0d1f\u0d3f \u0d28\u0d3f\u0d32\u0d28\u0d3f\u0d7d\u0d15\u0d4d\u0d15\u0d41\u0d02.', ok: 'Change' });
       if (!ok) return;
     }
-    L.level = v; L.segLevel = {};
+    L.level = v; L.segLevel = {}; L.cuts = {};
     S.level = v; saveSettings();
   }
   renderLesson(); refreshTools(); persist();
@@ -2084,6 +2218,8 @@ const ACTIONS = {
   more: el => { if (ready()) openTools(el.dataset.sec); },
   note: el => { if (!ready()) return; L.cur = +el.dataset.i; openTools(); setTimeout(() => { const t = $('#noteBox'); if (t) t.focus(); }, 60); },
   lvl: el => { if (ready()) setLevel(el.dataset.scope, el.dataset.v); },
+  pedge: el => { if (ready()) movePartEdge(+el.dataset.d); },
+  pereset: () => { if (ready()) resetPartEdges(); },
   grp: el => { if (ready()) setGroup(el.dataset.v); },
   gbreak: el => { if (ready()) toggleBreak(+el.dataset.i); },
   assess: el => { if (ready()) assess(el.dataset.r); },
