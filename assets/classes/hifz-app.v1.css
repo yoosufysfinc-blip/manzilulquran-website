@@ -1,0 +1,64 @@
+/* ==========================================================
+   ManzilulQuran · class sheet — the Hifz Learning App launcher (v1)
+   Loaded after sheet.v3.css by /class/ and /portal/demo/class/.
+
+   Only a Hifz student sees this, and it sits above the tab row rather than
+   inside it: the app is a place of its own, not another panel of the sheet.
+   The warm parchment and gold are the app's own colours, so the card reads
+   as a door into it and not as part of the cool night the sheet is built in.
+   ========================================================== */
+.hifz-app{
+  position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;align-items:center;
+  margin:0 0 18px;padding:18px 18px 16px;border-radius:20px;overflow:hidden;
+  background:linear-gradient(135deg,#FDF9EF 0%,#F6EEDC 55%,#EFE3C8 100%);
+  border:1px solid rgba(201,169,97,.55);
+  box-shadow:0 20px 44px -22px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.7);
+}
+.hifz-app[hidden]{display:none}
+/* a slow sheen, so the card feels alive next to the sheet's drifting aurora */
+.hifz-app::after{
+  content:"";position:absolute;top:0;bottom:0;width:38%;left:-40%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+  animation:hifzSheen 7s ease-in-out 1.2s infinite;
+}
+@keyframes hifzSheen{0%{left:-45%}45%{left:120%}100%{left:120%}}
+.ha-mark{width:52px;height:52px;flex:none;display:grid;place-items:center;
+  filter:drop-shadow(0 8px 16px rgba(17,53,38,.45))}
+.ha-mark svg{width:100%;height:100%;display:block}
+.ha-txt{min-width:0}
+.ha-eyebrow{
+  font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#8a6d2e;
+}
+.ha-title{
+  font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:700;line-height:1.15;color:#123C2C;
+  letter-spacing:.2px;margin-top:2px;
+}
+.ha-sub{font-size:13px;line-height:1.6;color:#4A5A4A;margin-top:5px;max-width:46ch}
+.ha-open{
+  grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:14px;min-height:50px;padding:0 20px;border-radius:14px;text-decoration:none;
+  background:linear-gradient(135deg,#1E5C46,#123C2C);color:#F6EEDC;
+  font-weight:700;font-size:15.5px;letter-spacing:.2px;
+  box-shadow:0 14px 30px -12px rgba(18,60,44,.95);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.ha-open:hover{transform:translateY(-2px);box-shadow:0 20px 38px -12px rgba(18,60,44,1)}
+.ha-open:active{transform:translateY(0)}
+.ha-open svg{width:19px;height:19px;flex:0 0 auto}
+.ha-note{grid-column:1/-1;font-size:11.5px;color:#6C5A33;margin-top:10px;text-align:center;letter-spacing:.2px}
+@media (min-width:620px){
+  .hifz-app{grid-template-columns:auto minmax(0,1fr) auto;padding:20px 22px}
+  .ha-open{grid-column:auto;margin-top:0;min-width:210px}
+  .ha-note{text-align:left;margin-top:12px}
+}
+@media (max-width:420px){
+  .hifz-app{padding:16px 14px 14px;gap:4px 12px}
+  .ha-mark{width:46px;height:46px}
+  .ha-title{font-size:22px}
+  .ha-sub{font-size:12.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  .hifz-app::after{animation:none;display:none}
+  .ha-open{transition:none}
+  .ha-open:hover{transform:none}
+}
