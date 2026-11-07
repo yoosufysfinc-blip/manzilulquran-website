@@ -37,7 +37,7 @@
 body.stu.ready #main{animation:spIn .45s cubic-bezier(.2,.7,.3,1) both}
 @keyframes spIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){
-  .sp-logo,.sp-brand,.sp-sub,.sp-rule,.sp-name{animation:none}
+  .sp-logo,.sp-brand,.sp-sub,.sp-rule,.sp-name,.stu-mark img{animation:none}
   .sp-halo,.sp-bar i{animation:none;opacity:.5}
   .splash{transition-duration:.15s}
   body.stu.ready #main{animation:none}
@@ -46,9 +46,11 @@ body.stu.ready #main{animation:spIn .45s cubic-bezier(.2,.7,.3,1) both}
 /* ---------- the student's header ----------
    The academy's mark where the app's own mark sits in the staff copy, and
    the student's name where the app's name sits. Nothing else changes. */
-.stu-mark{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:11px;
-  background:var(--primary);overflow:hidden}
-.stu-mark img{width:100%;height:100%;object-fit:cover}
+.stu-mark{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;
+  background:transparent;overflow:visible}
+.stu-mark img{width:100%;height:100%;object-fit:contain;animation:mqTurn 8s cubic-bezier(.5,0,.3,1) 4s infinite}
+/* The academy's mark turns once, then rests for about seven seconds. */
+@keyframes mqTurn{0%,86%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 body.stu .brand{cursor:default}
 body.stu .brand-name{overflow:hidden;text-overflow:ellipsis;max-width:42vw}
 @media (min-width:760px){body.stu .brand-name{max-width:none}}
