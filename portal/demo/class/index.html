@@ -13,6 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="/assets/classes/sheet.v3.css?b=1" />
+<link rel="stylesheet" href="/assets/classes/hifz-app.v1.css" />
 </head>
 <body>
 
@@ -80,6 +81,24 @@
           This class sheet is currently inactive. Please contact the academy.
         </div>
         <div class="sync-note" id="syncNote"></div>
+
+        <!-- The Hifz Learning App. Only a Hifz student sees it, and it sits
+             above the tabs on purpose: it is a place of its own, not a panel. -->
+        <section class="hifz-app" id="hifzApp" hidden aria-labelledby="haTitle">
+          <span class="ha-mark" aria-hidden="true">
+            <svg viewBox="0 0 40 40"><rect width="40" height="40" rx="12" fill="#143F2F"/><g fill="none" stroke="#D8C08A" stroke-width="1.5"><rect x="11.5" y="11.5" width="17" height="17" rx="1.6"/><rect x="11.5" y="11.5" width="17" height="17" rx="1.6" transform="rotate(45 20 20)"/></g><circle cx="20" cy="20" r="3" fill="#D8C08A"/></svg>
+          </span>
+          <div class="ha-txt">
+            <p class="ha-eyebrow">For your Hifz</p>
+            <h2 class="ha-title" id="haTitle">Hifz Learning App</h2>
+            <p class="ha-sub">Learn your lesson ayah by ayah — read it, memorise it part by part, join the parts, then recite them all together.</p>
+          </div>
+          <a class="ha-open" id="haOpen" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg>
+            Open the app
+          </a>
+          <p class="ha-note">Opens in a new tab · your lesson is kept on this device</p>
+        </section>
 
         <div class="tabs">
           <button class="tab active" data-tab="overview">Overview</button>
@@ -439,6 +458,25 @@ function renderHifzLink(url){
   else  { btn.removeAttribute('href'); tab.hidden = true; }
 }
 
+/* =================================================================
+   THE HIFZ LEARNING APP
+   A Hifz student gets their own door into the app (its own page, its
+   own opening), not another tab of this sheet. The link carries only
+   what the app shows and what it needs to tell one student's saved
+   lesson from another's on a shared phone: the name and the Student
+   ID. No progress is sent anywhere — the app keeps it on the device.
+   ================================================================= */
+function renderHifzApp(d){
+  const card = $('hifzApp'), open = $('haOpen');
+  if(!card) return;
+  const isHifz = /hifz/i.test(String(d.course || ''));
+  const active = (d.status || 'Active') === 'Active';
+  if(!isHifz || !active){ card.hidden = true; return; }
+  const q = new URLSearchParams({ n: d.studentName || 'Student', k: d.studentId || d.studentName || '' });
+  open.href = '/portal/study-report/hifz-app/student.html?' + q.toString();
+  card.hidden = false;
+}
+
 function renderStudyMaterial(raw){
   const tab = $('tabMaterial');
   const list = smParse(raw);
@@ -514,6 +552,7 @@ function render(d){
   renderCalendars();
   renderStudyMaterial(d.studyMaterial);
   renderHifzLink(d.hifzLink);
+  renderHifzApp(d);
 }
 
 
@@ -696,6 +735,7 @@ function renderBatch(d){
   // the admin's batch form). No Hifz report on a batch sheet.
   renderStudyMaterial(d.studyMaterial);
   $('tabHifz').hidden = true;
+  $('hifzApp').hidden = true;        // a batch sheet has no single Hifz student
 
   renderNotices(Array.isArray(d.notices) ? d.notices : []);
 
