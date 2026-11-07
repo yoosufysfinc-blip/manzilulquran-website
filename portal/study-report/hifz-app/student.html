@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=DM+Sans:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/portal/study-report/hifz-app/assets/learn.v4.css">
+<link rel="stylesheet" href="/portal/study-report/hifz-app/assets/tutorial.v1.css">
 <link rel="stylesheet" href="/portal/study-report/hifz-app/assets/student.v1.css">
 </head>
 <body class="stu">
@@ -132,10 +133,18 @@
 <dialog id="dlgTips" class="dlg-sheet" aria-labelledby="dlgTipsT">
   <div class="panel">
     <div class="panel-head">
-      <div><h2 id="dlgTipsT">Memorization tips</h2><p lang="ml">മനഃപാഠമാക്കാനുള്ള നിർദ്ദേശങ്ങൾ</p></div>
+      <div><h2 id="dlgTipsT">Memorization tips</h2><p lang="ml">ഹിഫ്‌സ് ആപ്പ് · സഹായം</p></div>
       <button class="x" type="button" data-act="closedlg" aria-label="Close tips"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
-    <div class="panel-body" style="padding:4px 18px 22px" id="tipsBody"></div>
+    <!-- The tutorial. One button, one player: see tutorial.v1.js -->
+    <div class="tut-bar">
+      <button class="tut-btn" type="button" data-tut="open">
+        <span class="tut-ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.52.85l11-6.8a1 1 0 0 0 0-1.7l-11-6.8A1 1 0 0 0 8 5.2Z"/></svg></span>
+        <span class="tut-t"><b>Watch the tutorial</b><span lang="ml">വീഡിയോ കാണുക</span></span>
+        <svg class="tut-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+    <div class="panel-body" style="padding:4px 18px 22px" id="tipsBody" tabindex="0"></div>
   </div>
 </dialog>
 
@@ -159,6 +168,18 @@
   </div>
 </dialog>
 
+<!-- The tutorial video. Nothing is fetched until the button is pressed. -->
+<dialog id="dlgVideo" aria-labelledby="tutTitle">
+  <div class="vid-wrap">
+    <div class="vid-head">
+      <h2 id="tutTitle">Tutorial</h2>
+      <button class="vid-x" type="button" data-tut="close" aria-label="Close the video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <video id="tutVideo" controls playsinline preload="none" controlsList="nodownload"></video>
+    <p class="vid-err">The tutorial could not be played just now. Please check your internet and try again.</p>
+  </div>
+</dialog>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="sr" id="live" aria-live="polite"></div>
 
@@ -167,5 +188,6 @@
 <script src="/portal/study-report/hifz-app/assets/store.v2.js"></script>
 <script src="/portal/study-report/hifz-app/assets/learn.v4.js"></script>
 <script src="/portal/study-report/hifz-app/assets/student.v1.js"></script>
+<script src="/portal/study-report/hifz-app/assets/tutorial.v1.js"></script>
 </body>
 </html>
