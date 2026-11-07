@@ -22,9 +22,15 @@
   animation:hifzSheen 7s ease-in-out 1.2s infinite;
 }
 @keyframes hifzSheen{0%{left:-45%}45%{left:120%}100%{left:120%}}
-.ha-mark{width:52px;height:52px;flex:none;display:grid;place-items:center;
-  filter:drop-shadow(0 8px 16px rgba(17,53,38,.45))}
-.ha-mark svg{width:100%;height:100%;display:block}
+/* The academy's own mark, from the small circular file. It turns once every
+   eight seconds and rests in between, so the card catches the eye without
+   ever being busy. The emblem in the markup is hidden behind it. */
+.ha-mark{width:54px;height:54px;flex:none;
+  background:url("/assets/logo-mark.png") center/contain no-repeat;
+  filter:drop-shadow(0 8px 16px rgba(17,53,38,.4));
+  animation:haTurn 8s cubic-bezier(.5,0,.3,1) 2.5s infinite}
+.ha-mark svg{display:none}
+@keyframes haTurn{0%,86%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 .ha-txt{min-width:0}
 .ha-eyebrow{
   font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#8a6d2e;
@@ -53,12 +59,13 @@
 }
 @media (max-width:420px){
   .hifz-app{padding:16px 14px 14px;gap:4px 12px}
-  .ha-mark{width:46px;height:46px}
+  .ha-mark{width:48px;height:48px}
   .ha-title{font-size:22px}
   .ha-sub{font-size:12.5px}
 }
 @media (prefers-reduced-motion:reduce){
   .hifz-app::after{animation:none;display:none}
+  .ha-mark{animation:none}
   .ha-open{transition:none}
   .ha-open:hover{transform:none}
 }
