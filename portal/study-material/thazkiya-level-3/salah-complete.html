@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>Ṣalāh Complete · الصَّلَاة — ManzilulQuran</title>
+<title>At-Ṭahārah wa-ṣ-Ṣalāh · الطَّهَارَةُ وَالصَّلَاة — ManzilulQuran</title>
 <link rel="icon" href="/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -69,6 +69,8 @@ p.txt{font-size:11pt;color:var(--ink);max-width:150mm;margin:0 auto 2mm;line-hei
 .lead{font-size:11.5pt;color:var(--soft);max-width:150mm;margin:0 auto}
 
 /* Arabic always right-to-left */
+.arb-inline{font-family:'Amiri',serif;font-size:1.08em;font-weight:500;
+  direction:rtl;unicode-bidi:isolate}
 .arb{direction:rtl;text-align:right;font-family:'Amiri',serif;font-size:17pt;font-weight:700;
   color:var(--acc);line-height:2.15;background:#fff;border:1px solid var(--accbg);
   border-right:4px solid var(--acc);border-radius:3mm;padding:5mm 6mm;margin:0 auto 2mm;max-width:158mm}
@@ -195,10 +197,10 @@ body.lang-ml p.txt,body.lang-ml li{line-height:1.95}
 <body>
 
 <div class="bar">
-  <div><span class="t">Ṣalāh Complete</span> <span class="ar">الصَّلَاة</span></div>
+  <div><span class="t">At-Ṭahārah wa-ṣ-Ṣalāh</span> <span class="ar">الطَّهَارَةُ وَالصَّلَاة</span></div>
   <div class="sp"></div>
   <button class="lang" id="langBtn">മലയാളം</button>
-  <span id="barMeta" style="font-size:11.5px;color:var(--soft)">23 lessons · Shāfiʿī</span>
+  <span id="barMeta" style="font-size:11.5px;color:var(--soft)">21 lessons · Shāfiʿī</span>
 </div>
 
 <div id="book"></div>
@@ -207,7 +209,7 @@ body.lang-ml p.txt,body.lang-ml li{line-height:1.95}
 /* ==========================================================================
    ⚠️  SHĀFIʿĪ FIQH. Every Arabic formula, niyyah wording, ḥadīth reference and
    fiqh ruling below MUST be checked by a qualified teacher before publishing.
-   Lesson 21 (major impurity) must additionally be reviewed by a female teacher
+   Lesson 19 (major impurity) must additionally be reviewed by a female teacher
    for the section written for girls.
 
    A4 model matches basic-arabic.html: 210×297mm, page-break-after, @page.
@@ -286,16 +288,18 @@ const LESSONS=[
 {p:1,t:"The Five Prayers",ar:"الصَّلَوَاتُ الْخَمْس",
  sub:"Names, times, and how many rakʿahs — in one table.",
  b:[{t:"tbl",head:["Prayer","Arabic","Farḍ","Time begins","Time ends"],
-     rows:[["Ṣubḥ (Fajr)","الصُّبْح","2","True dawn","Sunrise"],
+     rows:[["Ṣubḥ (Fajr)","الصُّبْح","2","Ṣubḥ ṣādiq — true dawn","Sunrise"],
            ["Ẓuhr","الظُّهْر","4","Sun passes zenith","Shadow = object + noon shadow"],
            ["ʿAṣr","الْعَصْر","4","End of Ẓuhr","Sunset"],
-           ["Maghrib","الْمَغْرِب","3","Sunset","Disappearance of red twilight"],
-           ["ʿIshā'","الْعِشَاء","4","Red twilight gone","True dawn"]]},
+           ["Maghrib","الْمَغْرِب","3","Sunset","Shafaq — the red twilight — gone"],
+           ["ʿIshā'","الْعِشَاء","4","Red twilight gone","Ṣubḥ ṣādiq"]]},
+    {t:"h",x:"The two dawns — ṣādiq and kādhib"},
+    {t:"txt",x:"Before the true dawn a faint upright glow rises in the eastern sky and then fades back into darkness. That is <b>ṣubḥ kādhib</b> — the false dawn. <b>No prayer time begins with it.</b> A little after it the real light spreads <i>sideways</i> along the horizon and never fades again: that is <b>ṣubḥ ṣādiq</b>, the true dawn. Ṣubḥ begins here, the time for suḥūr ends here, and the fast begins. Whoever prays Ṣubḥ at the false dawn has prayed before its time, and the prayer does not count."},
     {t:"note",x:"<b>Shāfiʿī note.</b> ʿAṣr begins when an object's shadow equals its own length plus the shadow it had at noon. Delaying a prayer past its time without excuse is a serious sin — pray it at its beginning wherever you can."},
     {t:"h",x:"The ten rakʿah rawātib"},
     {t:"tbl",head:["Prayer","Before","After"],
      rows:[["Ṣubḥ","2","—"],["Ẓuhr","2","2"],["Maghrib","—","2"],["ʿIshā'","—","2"]]},
-    {t:"note",x:"<b>Ten rakʿahs in total.</b> ʿAṣr has no rawātib, and Witr is not counted among them. Both are covered in Lesson 16."},
+    {t:"note",x:"<b>Ten rakʿahs in total.</b> ʿAṣr has no rawātib, and Witr is not counted among them. Both are covered in Lesson 14."},
     {t:"rem",x:"Learn the table by heart. A person who knows the times never misses a prayer by accident."}]},
 
 {p:1,t:"Conditions Before You Stand",ar:"شُرُوطُ الصَّلَاة",
@@ -339,61 +343,97 @@ const LESSONS=[
     {t:"note",x:"<b>Making up a missed prayer?</b> Replace <span style='font-family:Amiri,serif'>أَدَاءً</span> (on time) with <span style='font-family:Amiri,serif'>قَضَاءً</span> (made up)."},
     {t:"rem",x:"The tongue may be silent. The heart must not be."}]},
 
-{p:2,t:"Takbīr to Rukūʿ",ar:"مِنَ التَّكْبِيرِ إِلَى الرُّكُوع",
- sub:"Standing, opening, reciting, and bowing.",
- b:[{t:"ol",x:["Stand facing the qiblah, feet apart, eyes on the place of sujūd.",
-     "Raise both hands to shoulder level and say <b>Allāhu akbar</b> — this is takbīrat al-iḥrām, and the niyyah is in the heart at this moment.",
-     "Place the right hand over the left, below the chest and above the navel.",
-     "Recite the opening duʿā, then aʿūdhu billāh, then Al-Fātiḥah.",
-     "Recite a short sūrah — in the first two rakʿahs only.",
-     "Say Allāhu akbar, raise the hands, and bow into rukūʿ with a straight back."]},
-    {t:"seq",x:"POS_A",cls:"four"},
-    {t:"h",x:"In rukūʿ"},
+{p:2,t:"The Prayer in Order",ar:"كَيْفِيَّةُ الصَّلَاة",
+ sub:"The thirteen farḍ, then every step from niyyah to salām — with what is said at each one.",
+ b:[{t:"h",x:"The thirteen farḍ of ṣalāh"},
+    {t:"txt",x:"The farḍ of the prayer — its <b>arkān</b> — are thirteen in the Shāfiʿī madhhab. Leave one out, by forgetfulness or by choice, and that rakʿah is not sound. Everything else is sunnah: rewarded and beloved, but not what the prayer stands on."},
+    {t:"ol",x:["<b>Niyyah</b> — <span class='arb-inline'>النِّيَّة</span> — in the heart, at the takbīr.",
+     "<b>Takbīrat al-iḥrām</b> — <span class='arb-inline'>تَكْبِيرَةُ الإِحْرَام</span>.",
+     "<b>Standing</b> — <span class='arb-inline'>القِيَام</span> — in a farḍ prayer, for whoever is able.",
+     "<b>Reciting Al-Fātiḥah</b> — <span class='arb-inline'>قِرَاءَةُ الفَاتِحَة</span> — in every rakʿah.",
+     "<b>Rukūʿ</b> — <span class='arb-inline'>الرُّكُوع</span>.",
+     "<b>Iʿtidāl</b> — <span class='arb-inline'>الاعْتِدَال</span> — rising upright from rukūʿ.",
+     "<b>Two sujūd</b> — <span class='arb-inline'>السُّجُودُ مَرَّتَيْن</span> — in every rakʿah.",
+     "<b>Sitting between the two sujūd</b> — <span class='arb-inline'>الجُلُوسُ بَيْنَ السَّجْدَتَيْن</span>.",
+     "<b>Stillness</b> — <span class='arb-inline'>الطُّمَأْنِينَة</span> — in rukūʿ, iʿtidāl, sujūd and the sitting.",
+     "<b>The final tashahhud</b> — <span class='arb-inline'>التَّشَهُّدُ الأَخِير</span>.",
+     "<b>Sitting for it</b> — <span class='arb-inline'>القُعُودُ لَهُ</span>.",
+     "<b>Ṣalāh upon the Prophet ﷺ</b> — <span class='arb-inline'>الصَّلَاةُ عَلَى النَّبِيّ</span> — after the tashahhud.",
+     "<b>The salām</b> — <span class='arb-inline'>السَّلَام</span> — the first one."]},
+    {t:"note",x:"<b>And the order itself.</b> Tartīb — keeping these in the sequence below and no other — is binding; some reckonings count it as a fourteenth farḍ. That is why the rest of this lesson walks through the prayer exactly as it is prayed."},
+    {t:"rem",x:"Thirteen farḍ. Learn them as a list, then learn them as a prayer."},
+
+    {t:"h",x:"1 · Niyyah — النِّيَّة"},
+    {t:"txt",x:"Stand facing the qiblah, feet apart, eyes on the place of sujūd. The niyyah is formed <b>in the heart</b> at the moment of the takbīr — the wording for each prayer is in Lesson 5."},
+    {t:"h",x:"2 · Takbīrat al-iḥrām — تَكْبِيرَةُ الإِحْرَام"},
+    {t:"txt",x:"Raise both hands to shoulder level and say:"},
+    {t:"ar",x:"اللَّهُ أَكْبَرُ",tr:"Allāhu akbar",
+     en:"Allah is the Greatest. — With this the prayer is entered, and everything outside it becomes forbidden."},
+    {t:"txt",x:"Then place the right hand over the left, below the chest and above the navel."},
+    {t:"h",x:"3 · The opening duʿā — دُعَاءُ الاِفْتِتَاح"},
+    {t:"ar",x:"وَجَّهْتُ وَجْهِيَ لِلَّذِي فَطَرَ السَّمَاوَاتِ وَالْأَرْضَ حَنِيفًا مُسْلِمًا وَمَا أَنَا مِنَ الْمُشْرِكِينَ، إِنَّ صَلَاتِي وَنُسُكِي وَمَحْيَايَ وَمَمَاتِي لِلَّهِ رَبِّ الْعَالَمِينَ، لَا شَرِيكَ لَهُ وَبِذَٰلِكَ أُمِرْتُ وَأَنَا مِنَ الْمُسْلِمِينَ",
+     tr:"Wajjahtu wajhiya lilladhī faṭara s-samāwāti wa l-arḍa ḥanīfan musliman wa mā anā mina l-mushrikīn. Inna ṣalātī wa nusukī wa maḥyāya wa mamātī lillāhi rabbi l-ʿālamīn. Lā sharīka lahu wa bi-dhālika umirtu wa anā mina l-muslimīn",
+     en:"I have turned my face to the One who created the heavens and the earth, upright and submitting, and I am not among those who associate partners with Him. My prayer, my devotion, my living and my dying are for Allah, Lord of the worlds. He has no partner. With this I was commanded, and I am among those who submit. — Sunnah, said silently."},
+    {t:"h",x:"4 · Taʿawwudh and Basmalah"},
+    {t:"ar",x:"أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",tr:"Aʿūdhu billāhi mina sh-shayṭāni r-rajīm",
+     en:"I seek refuge in Allah from the outcast Shayṭān."},
+    {t:"h",x:"5 · Al-Fātiḥah — فَرْض in every rakʿah"},
+    {t:"ar",x:"بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ۝ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ۝ الرَّحْمَٰنِ الرَّحِيمِ ۝ مَالِكِ يَوْمِ الدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ۝ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
+     tr:"Bismillāhi r-raḥmāni r-raḥīm. Al-ḥamdu lillāhi rabbi l-ʿālamīn. Ar-raḥmāni r-raḥīm. Māliki yawmi d-dīn. Iyyāka naʿbudu wa iyyāka nastaʿīn. Ihdina ṣ-ṣirāṭa l-mustaqīm. Ṣirāṭa lladhīna anʿamta ʿalayhim ghayri l-maghḍūbi ʿalayhim wa lā ḍ-ḍāllīn",
+     en:"In the name of Allah, the Most Merciful, the Most Compassionate. All praise is for Allah, Lord of the worlds. The Most Merciful, the Most Compassionate. Master of the Day of Judgement. You alone we worship, and You alone we ask for help. Guide us along the straight path — the path of those You have blessed, not of those who earned anger, nor of those who went astray."},
+    {t:"note",x:"<b>The Basmalah is an āyah of Al-Fātiḥah in the Shāfiʿī madhhab</b> and is recited with it. Then say <span class='arb-inline'>آمِين</span> — <i>Āmīn</i> — aloud in the loud prayers, quietly in the silent ones."},
+    {t:"h",x:"6 · A short sūrah"},
+    {t:"txt",x:"After Al-Fātiḥah, recite a short sūrah or a few āyāt — <b>in the first two rakʿahs only</b>. This is sunnah, not farḍ."},
+    {t:"h",x:"7 · Rukūʿ — الرُّكُوع"},
+    {t:"txt",x:"Say <b>Allāhu akbar</b>, raise the hands, and bow with a straight back, hands on the knees. Settle there before saying:"},
     {t:"ar",x:"سُبْحَانَ رَبِّيَ الْعَظِيمِ وَبِحَمْدِهِ",tr:"Subḥāna rabbiya l-ʿaẓīmi wa bi-ḥamdih",
      en:"Glory to my Lord the Most Great, and praise be to Him. — three times"},
-    {t:"h",x:"Rising — iʿtidāl"},
-    {t:"ar",x:"سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ",tr:"Samiʿa llāhu liman ḥamidah",en:"Allah hears whoever praises Him — said while rising."},
+    {t:"seq",x:"POS_A",cls:"four"},
+    {t:"h",x:"8 · Iʿtidāl — الاعْتِدَال"},
+    {t:"ar",x:"سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ",tr:"Samiʿa llāhu liman ḥamidah",
+     en:"Allah hears whoever praises Him — said while rising."},
     {t:"ar",x:"رَبَّنَا لَكَ الْحَمْدُ، مِلْءَ السَّمَاوَاتِ وَمِلْءَ الْأَرْضِ وَمِلْءَ مَا شِئْتَ مِنْ شَيْءٍ بَعْدُ",
      tr:"Rabbanā laka l-ḥamd, mil'a s-samāwāti wa mil'a l-arḍi wa mil'a mā shi'ta min shay'in baʿd",
      en:"Our Lord, all praise is Yours — filling the heavens, filling the earth, and filling whatever else You will."},
-    {t:"note",x:"<b>Shāfiʿī.</b> Al-Fātiḥah is a pillar in every rakʿah, for the imām and the follower alike. If you cannot finish it before the imām bows, you may still follow — but learn it until you can."},
-    {t:"rem",x:"Stillness is a pillar. Never move to the next position until the body has settled in this one."}]},
-
-{p:2,t:"Sujūd to Salām",ar:"مِنَ السُّجُودِ إِلَى السَّلَام",
- sub:"The closest a servant comes to his Lord, and how the prayer ends.",
- b:[{t:"txt",x:"Sujūd is made on <b>seven bones</b>: the forehead with the nose, the two palms, the two knees, and the toes of both feet. All seven must touch the ground."},
+    {t:"h",x:"9 · Qunūt — القُنُوت — in Ṣubḥ only"},
+    {t:"txt",x:"In the <b>second rakʿah of Ṣubḥ</b>, while still standing in iʿtidāl, raise the hands and recite the Qunūt:"},
+    {t:"ar",x:"اللَّهُمَّ اهْدِنِي فِيمَنْ هَدَيْتَ، وَعَافِنِي فِيمَنْ عَافَيْتَ، وَتَوَلَّنِي فِيمَنْ تَوَلَّيْتَ، وَبَارِكْ لِي فِيمَا أَعْطَيْتَ، وَقِنِي شَرَّ مَا قَضَيْتَ، فَإِنَّكَ تَقْضِي وَلَا يُقْضَىٰ عَلَيْكَ، وَإِنَّهُ لَا يَذِلُّ مَنْ وَالَيْتَ، وَلَا يَعِزُّ مَنْ عَادَيْتَ، تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ",
+     tr:"Allāhumma hdinī fīman hadayt, wa ʿāfinī fīman ʿāfayt, wa tawallanī fīman tawallayt, wa bārik lī fīmā aʿṭayt, wa qinī sharra mā qaḍayt, fa-innaka taqḍī wa lā yuqḍā ʿalayk, wa innahu lā yadhillu man wālayt, wa lā yaʿizzu man ʿādayt, tabārakta rabbanā wa taʿālayt",
+     en:"O Allah, guide me among those You have guided, grant me well-being among those You have granted well-being, take me into Your care among those You have taken into Your care, bless me in what You have given, and protect me from the evil You have decreed. For You decree and none decrees against You. Whoever You befriend is never abased, and whoever You oppose is never honoured. Blessed are You, our Lord, and Exalted."},
+    {t:"note",x:"<b>Qunūt is sunnah, not farḍ.</b> If it is forgotten, the prayer is still sound — but sujūd as-sahw is made for it (Lesson 8). It is also recited in the last rakʿah of Witr during the second half of Ramaḍān."},
+    {t:"h",x:"10 · Sujūd — السُّجُود"},
+    {t:"txt",x:"Say <b>Allāhu akbar</b> and go down. Sujūd is made on <b>seven bones</b>: the forehead with the nose, the two palms, the two knees, and the toes of both feet. All seven must touch the ground, and the body must settle before saying:"},
     {t:"ar",x:"سُبْحَانَ رَبِّيَ الأَعْلَى وَبِحَمْدِهِ",tr:"Subḥāna rabbiya l-aʿlā wa bi-ḥamdih",
      en:"Glory to my Lord the Most High, and praise be to Him. — three times"},
-    {t:"seq",x:"POS_B",cls:"three"},
-    {t:"h",x:"Sitting between the two sujūd"},
+    {t:"h",x:"11 · Sitting between the two sujūd"},
     {t:"ar",x:"رَبِّ اغْفِرْ لِي وَارْحَمْنِي وَاجْبُرْنِي وَارْفَعْنِي وَارْزُقْنِي وَاهْدِنِي وَعَافِنِي وَاعْفُ عَنِّي",
      tr:"Rabbi ghfir lī warḥamnī wajburnī warfaʿnī warzuqnī wahdinī wa ʿāfinī waʿfu ʿannī",
      en:"My Lord, forgive me, have mercy on me, mend me, raise me, provide for me, guide me, grant me well-being, and pardon me."},
-    {t:"h",x:"Tashahhud, then durūd, then salām"},
-    {t:"txt",x:"In the final sitting, recite the tashahhud, then the durūd Ibrāhīmī, then a duʿā, then turn the face right and left saying:"},
-    {t:"ar",x:"السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ",tr:"As-salāmu ʿalaykum wa raḥmatullāh",
-     en:"Peace be upon you and the mercy of Allah."},
-    {t:"rem",x:"The prayer is opened with Allah's greatness and closed with peace given to others. That is the whole religion in one movement."}]},
-
-{p:2,t:"What We Recite",ar:"مَا نَقْرَؤُهُ فِي الصَّلَاة",
- sub:"Al-Fātiḥah, tashahhud, durūd — and the Qunūt of Ṣubḥ.",
- b:[{t:"h",x:"Tashahhud"},
+    {t:"h",x:"12 · The second sujūd — then stand"},
+    {t:"txt",x:"Say <b>Allāhu akbar</b>, make the second sujūd exactly as the first, then rise saying <b>Allāhu akbar</b>. <b>One rakʿah is now complete.</b> The second rakʿah is prayed the same way, from Al-Fātiḥah onward — there is no opening duʿā again."},
+    {t:"seq",x:"POS_B",cls:"three"},
+    {t:"h",x:"13 · The final sitting — التَّشَهُّد"},
+    {t:"txt",x:"In Ṣubḥ this comes after two rakʿahs. In Maghrib after three, in Ẓuhr, ʿAṣr and ʿIshā' after four — and in those there is also a short first tashahhud after the second rakʿah, from which you rise without the durūd."},
     {t:"ar",x:"التَّحِيَّاتُ الْمُبَارَكَاتُ الصَّلَوَاتُ الطَّيِّبَاتُ لِلَّهِ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلَامُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ",
-     tr:"At-taḥiyyātu l-mubārakātu ṣ-ṣalawātu ṭ-ṭayyibātu lillāh…",
-     en:"All greetings, blessings and good deeds are for Allah. Peace be upon you, O Prophet, and the mercy of Allah and His blessings…"},
-    {t:"h",x:"Durūd Ibrāhīmī"},
+     tr:"At-taḥiyyātu l-mubārakātu ṣ-ṣalawātu ṭ-ṭayyibātu lillāh, as-salāmu ʿalayka ayyuha n-nabiyyu wa raḥmatullāhi wa barakātuh, as-salāmu ʿalaynā wa ʿalā ʿibādillāhi ṣ-ṣāliḥīn, ash-hadu an lā ilāha illa llāh wa ash-hadu anna Muḥammadan rasūlullāh",
+     en:"All greetings, blessings and good deeds are for Allah. Peace be upon you, O Prophet, and the mercy of Allah and His blessings. Peace be upon us and upon the righteous servants of Allah. I bear witness that there is no god but Allah, and I bear witness that Muḥammad is the Messenger of Allah."},
+    {t:"h",x:"14 · Durūd Ibrāhīmī — فَرْض in the final sitting"},
     {t:"ar",x:"اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ فِي الْعَالَمِينَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
      tr:"Allāhumma ṣalli ʿalā sayyidinā Muḥammadin wa ʿalā āli sayyidinā Muḥammad, kamā ṣallayta ʿalā Ibrāhīma wa ʿalā āli Ibrāhīm, wa bārik ʿalā sayyidinā Muḥammadin wa ʿalā āli sayyidinā Muḥammad, kamā bārakta ʿalā Ibrāhīma wa ʿalā āli Ibrāhīma fi l-ʿālamīn, innaka ḥamīdun majīd",
      en:"O Allah, send blessings upon our master Muḥammad and upon the family of our master Muḥammad, as You blessed Ibrāhīm and the family of Ibrāhīm; and send favour upon our master Muḥammad and upon his family, as You favoured Ibrāhīm and his family among the worlds. Indeed You are Praiseworthy, Glorious."},
-    {t:"h",x:"The duʿā after the durūd, before the salām"},
+    {t:"h",x:"15 · A duʿā before the salām"},
     {t:"ar",x:"اللَّهُمَّ اغْفِرْ لِي مَا قَدَّمْتُ وَمَا أَخَّرْتُ وَمَا أَسْرَرْتُ وَمَا أَعْلَنْتُ وَمَا أَسْرَفْتُ وَمَا أَنْتَ أَعْلَمُ بِهِ مِنِّي، أَنْتَ الْمُقَدِّمُ وَأَنْتَ الْمُؤَخِّرُ، لَا إِلَهَ إِلَّا أَنْتَ",
      tr:"Allāhumma ghfir lī mā qaddamtu wa mā akhkhartu wa mā asrartu wa mā aʿlantu wa mā asraftu wa mā anta aʿlamu bihi minnī, anta l-muqaddimu wa anta l-mu'akhkhiru, lā ilāha illā ant",
-     en:"O Allah, forgive me what I have sent ahead and what I have left behind, what I have concealed and what I have declared, and what I have been excessive in, and what You know better than I. You are the One who brings forward and the One who puts back. There is no god but You."},
+     en:"O Allah, forgive me what I have sent ahead and what I have left behind, what I have concealed and what I have declared, what I have been excessive in, and what You know better than I. You are the One who brings forward and the One who puts back. There is no god but You."},
     {t:"ar",x:"اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ وَمِنْ عَذَابِ النَّارِ وَمِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ وَمِنْ فِتْنَةِ الْمَسِيحِ الدَّجَّالِ",
      tr:"Allāhumma innī aʿūdhu bika min ʿadhābi l-qabri wa min ʿadhābi n-nāri wa min fitnati l-maḥyā wa l-mamāti wa min fitnati l-masīḥi d-dajjāl",
      en:"O Allah, I seek refuge in You from the punishment of the grave, from the punishment of the Fire, from the trial of life and death, and from the trial of the Masīḥ ad-Dajjāl."},
-    {t:"note",x:"<b>Qunūt — a Shāfiʿī practice.</b> In the second rakʿah of Ṣubḥ, after rising from rukūʿ, the Qunūt duʿā is recited standing. It is sunnah; if forgotten, sujūd as-sahw is performed. It is also recited in the last rakʿah of Witr in the second half of Ramaḍān."},
-    {t:"rem",x:"Learn the meanings, not only the sounds. You cannot mean what you do not understand."}]},
+    {t:"h",x:"16 · The salām — السَّلَام"},
+    {t:"txt",x:"Turn the face to the right, then to the left, saying each time:"},
+    {t:"ar",x:"السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ",tr:"As-salāmu ʿalaykum wa raḥmatullāh",
+     en:"Peace be upon you and the mercy of Allah. — The first salām is farḍ; with it the prayer ends."},
+    {t:"note",x:"<b>Stillness is a farḍ.</b> Never move to the next position until the body has settled in this one. A prayer rushed through its positions is a prayer missing one of its thirteen."},
+    {t:"rem",x:"Opened with Allah's greatness, closed with peace given to others. That is the whole religion in one movement."}]},
 
 {p:2,t:"After the Salām",ar:"أَذْكَارُ بَعْدَ الصَّلَاة",
  sub:"The most valuable two minutes of the whole prayer.",
@@ -670,11 +710,11 @@ const PARTS_ML={1:"ഭാഗം 1 · എന്തിന്, എപ്പോൾ",
   3:"ഭാഗം 3 · മാറ്റങ്ങൾ വരുമ്പോൾ",4:"ഭാഗം 4 · ഒരുമിച്ചും അതിനപ്പുറവും",
   5:"ഭാഗം 5 · ഫിഖ്ഹ് — ത്വഹാറത്ത്"};
 
-const UI_ML={barMeta:"23 പാഠങ്ങൾ · ശാഫിഈ",lesson:"പാഠം",of:"ൽ",remember:"ഓർക്കുക",contents:"ഉള്ളടക്കം",
-  wm:"നിസ്കാരം സമ്പൂർണം · തസ്കിയ ലെവൽ 3",
+const UI_ML={barMeta:"21 പാഠങ്ങൾ · ശാഫിഈ",lesson:"പാഠം",of:"ൽ",remember:"ഓർക്കുക",contents:"ഉള്ളടക്കം",
+  wm:"ത്വഹാറത്തും നിസ്കാരവും · തസ്കിയ ലെവൽ 3",
   audM:"ആൺകുട്ടികളുടെ ക്ലാസിന്",audF:"പെൺകുട്ടികളുടെ ക്ലാസിന്",
   nPrayer:"നിസ്കാരം",nRak:"റക്അത്ത്",nNiy:"നിയ്യത്ത്",
-  coverMeta:"തസ്കിയ · ലെവൽ 3<br>അഞ്ച് ഭാഗങ്ങളിലായി ഇരുപത്തിമൂന്ന് പാഠങ്ങൾ<br>ശാഫിഈ മദ്ഹബ്<br>മൻസിലുൽ ഖുർആൻ ഇ-ലേണിംഗ് അക്കാദമി"};
+  coverMeta:"തസ്കിയ · ലെവൽ 3<br>അഞ്ച് ഭാഗങ്ങളിലായി ഇരുപത്തിയൊന്ന് പാഠങ്ങൾ<br>ശാഫിഈ മദ്ഹബ്<br>മൻസിലുൽ ഖുർആൻ ഇ-ലേണിംഗ് അക്കാദമി"};
 
 /* figure labels */
 const FIG_ML={
@@ -702,27 +742,29 @@ const ML_L=[
   "നിസ്കാരം നിന്റെ ദിവസത്തിന്റെ ഒരു ഭാഗമല്ല. നിന്റെ ദിവസം അതിന് ചുറ്റുമാണ് പണിതുയർത്തുന്നത്."]},
 /* 2 */{t:"അഞ്ച് നിസ്കാരങ്ങൾ",sub:"പേരുകൾ, സമയങ്ങൾ, റക്അത്തുകൾ — ഒരൊറ്റ പട്ടികയിൽ.",
  b:[{head:["നിസ്കാരം","അറബി","ഫർദ്","സമയം തുടങ്ങുന്നത്","സമയം അവസാനിക്കുന്നത്"],
-   rows:[["സുബ്ഹി","الصُّبْح","2","യഥാർത്ഥ പ്രഭാതം","സൂര്യോദയം"],
+   rows:[["സ്വുബ്ഹി","الصُّبْح","2","സ്വുബ്ഹി സ്വാദിഖ്","സൂര്യോദയം"],
      ["ളുഹ്ർ","الظُّهْر","4","സൂര്യൻ മധ്യാഹ്നം കടക്കുമ്പോൾ","നിഴൽ = വസ്തു + ഉച്ചനിഴൽ"],
      ["അസ്വ്ർ","الْعَصْر","4","ളുഹ്ർ അവസാനിക്കുമ്പോൾ","സൂര്യാസ്തമയം"],
-     ["മഗ്‌രിബ്","الْمَغْرِب","3","സൂര്യാസ്തമയം","ചുവന്ന ശോഭ മറയുമ്പോൾ"],
-     ["ഇശാഅ്","الْعِشَاء","4","ചുവന്ന ശോഭ മറഞ്ഞാൽ","യഥാർത്ഥ പ്രഭാതം"]]},
+     ["മഗ്‌രിബ്","الْمَغْرِب","3","സൂര്യാസ്തമയം","ശഫഖ് (ചുവന്ന പ്രഭ) മറയുമ്പോൾ"],
+     ["ഇശാഅ്","الْعِشَاء","4","ശഫഖ് മറഞ്ഞാൽ","സ്വുബ്ഹി സ്വാദിഖ്"]]},
+ "രണ്ട് പ്രഭാതങ്ങൾ — സ്വാദിഖും കാദിബും",
+ "യഥാർത്ഥ പ്രഭാതത്തിന് മുമ്പ് കിഴക്കൻ ആകാശത്ത് ഒരു നേർത്ത വെളിച്ചം <i>കുത്തനെ</i> ഉയർന്ന് വന്ന് പിന്നെ വീണ്ടും ഇരുട്ടിലേക്ക് മായും. അതാണ് <b>സ്വുബ്ഹി കാദിബ്</b> — കള്ളപ്രഭാതം. <b>അതുകൊണ്ട് ഒരു നിസ്കാര സമയവും തുടങ്ങുന്നില്ല.</b> അതിന് അൽപ്പം ശേഷം യഥാർത്ഥ വെളിച്ചം ചക്രവാളത്തിൽ <i>വിലങ്ങനെ</i> പരക്കും, പിന്നെ അത് മായുകയുമില്ല: അതാണ് <b>സ്വുബ്ഹി സ്വാദിഖ്</b>. ഇവിടെയാണ് സ്വുബ്ഹിയുടെ സമയം തുടങ്ങുന്നത്, അത്താഴത്തിന്റെ സമയം തീരുന്നതും നോമ്പ് തുടങ്ങുന്നതും ഇവിടെയാണ്. കാദിബിന്റെ സമയത്ത് സ്വുബ്ഹി നിസ്കരിച്ചവൻ സമയത്തിന് മുമ്പ് നിസ്കരിച്ചു, ആ നിസ്കാരം സ്വീകാര്യമാകില്ല.",
   "<b>ശാഫിഈ കുറിപ്പ്.</b> ഒരു വസ്തുവിന്റെ നിഴൽ അതിന്റെ നീളത്തിന് തുല്യമായി, ഉച്ചയ്ക്ക് ഉണ്ടായിരുന്ന നിഴലും കൂടി ചേരുമ്പോഴാണ് അസ്വ്ർ തുടങ്ങുന്നത്. കാരണമില്ലാതെ ഒരു നിസ്കാരം അതിന്റെ സമയം കഴിഞ്ഞ് വൈകിപ്പിക്കുന്നത് വലിയ തെറ്റാണ് — കഴിയുന്നിടത്തോളം സമയത്തിന്റെ തുടക്കത്തിൽ തന്നെ നിസ്കരിക്കൂ.",
   "സുന്നത്ത് റവാതിബ്",
   {head:["നിസ്കാരം","മുമ്പ്","ശേഷം"],
-   rows:[["സുബ്ഹി","2","—"],["ളുഹ്ർ","2","2"],["മഗ്‌രിബ്","—","2"],["ഇശാഅ്","—","2"]]},
-  "<b>ആകെ പത്ത് റക്അത്ത്.</b> അസ്വറിന് റവാതിബ് ഇല്ല, വിത്ർ ഇതിൽ എണ്ണുന്നുമില്ല. രണ്ടും പാഠം 16-ൽ വിശദമാക്കുന്നു.",
+   rows:[["സ്വുബ്ഹി","2","—"],["ളുഹ്ർ","2","2"],["മഗ്‌രിബ്","—","2"],["ഇശാഅ്","—","2"]]},
+  "<b>ആകെ പത്ത് റക്അത്ത്.</b> അസ്വറിന് റവാതിബ് ഇല്ല, വിത്ർ ഇതിൽ എണ്ണുന്നുമില്ല. രണ്ടും പാഠം 14-ൽ വിശദമാക്കുന്നു.",
   "പട്ടിക മനഃപാഠമാക്കൂ. സമയങ്ങൾ അറിയാവുന്ന ഒരാൾ അബദ്ധത്തിൽ ഒരു നിസ്കാരവും നഷ്ടപ്പെടുത്തില്ല."]},
-/* 3 */{t:"നിൽക്കുന്നതിന് മുമ്പുള്ള ഉപാധികൾ",sub:"തക്ബീറിന് മുമ്പ് അഞ്ച് കാര്യങ്ങൾ ശരിയാകണം — ശുദ്ധി അതിലൊന്നാണ്.",
+/* 3 */{t:"നിൽക്കുന്നതിന് മുമ്പുള്ള ശർത്വുകൾ",sub:"തക്ബീറിന് മുമ്പ് അഞ്ച് കാര്യങ്ങൾ ശരിയാകണം — ശുദ്ധി അതിലൊന്നാണ്.",
  b:[["<b>ഹദസിൽ നിന്നുള്ള ശുദ്ധി</b> — ചെറുതും വലുതും. ഭാഗം 5-ൽ വിശദമായി പഠിക്കും.",
    "<b>ശരീരം, വസ്ത്രം, സ്ഥലം</b> നജസിൽ നിന്ന് ശുദ്ധമായിരിക്കണം.",
    "<b>ഔറത്ത് മറയ്ക്കൽ</b> — പുരുഷന് പൊക്കിൾ മുതൽ മുട്ട് വരെ; സ്ത്രീക്ക് മുഖവും മുൻകൈകളും ഒഴികെ.",
    "<b>ഖിബ്‌ലയിലേക്ക് തിരിയൽ</b> — കഴിയുമെങ്കിൽ ഉറപ്പോടെ, ഇല്ലെങ്കിൽ പരമാവധി ശ്രമിച്ച്.",
    "<b>സമയം ആയിരിക്കണം</b> — സമയത്തിന് മുമ്പ് നിസ്കരിച്ചാൽ അത് സ്വീകാര്യമല്ല."],
   "പിന്നെ നിയ്യത്ത്",
-  "നിയ്യത്ത് നിസ്കാരത്തിന് പുറത്തുള്ള ഒരു ഉപാധിയല്ല — ശാഫിഈ മദ്ഹബിൽ അത് ആദ്യത്തെ റുക്‌നാണ്, തക്ബീറത്തുൽ ഇഹ്‌റാമിന്റെ സമയത്ത് മനസ്സിൽ ഉണ്ടാകേണ്ടത്. അടുത്ത പാഠത്തിൽ ഓരോ നിസ്കാരത്തിന്റെയും വാക്കുകളുണ്ട്.",
+  "നിയ്യത്ത് നിസ്കാരത്തിന് പുറത്തുള്ള ഒരു ശർത്വ്യല്ല — ശാഫിഈ മദ്ഹബിൽ അത് ആദ്യത്തെ റുക്‌നാണ്, തക്ബീറത്തുൽ ഇഹ്‌റാമിന്റെ സമയത്ത് മനസ്സിൽ ഉണ്ടാകേണ്ടത്. അടുത്ത പാഠത്തിൽ ഓരോ നിസ്കാരത്തിന്റെയും വാക്കുകളുണ്ട്.",
   "ഈ അഞ്ചിൽ ഒന്ന് ഇല്ലെങ്കിൽ, എത്ര ഭംഗിയായി നിസ്കരിച്ചാലും അത് സ്വീകാര്യമല്ല. കൈ ഉയർത്തുന്നതിന് മുമ്പ് പരിശോധിക്കൂ, ശേഷമല്ല.",
-  "അഞ്ച് ഉപാധികൾ, പിന്നെ നിയ്യത്ത്. അതിന് മുമ്പ് ഒന്നുമില്ല, ഒന്നും ഒഴിവാക്കാനുമില്ല."]},
+  "അഞ്ച് ശർത്വുകൾ, പിന്നെ നിയ്യത്ത്. അതിന് മുമ്പ് ഒന്നുമില്ല, ഒന്നും ഒഴിവാക്കാനുമില്ല."]},
 /* 4 */{t:"ബാങ്കും ഇഖാമത്തും",sub:"സമയം അറിയിക്കുന്ന വിളിയും നിസ്കാരം തുടങ്ങുന്ന വിളിയും.",
  b:["സമയമായി എന്ന് അറിയിക്കുന്നതാണ് ബാങ്ക്. നിസ്കാരം തുടങ്ങുന്നു എന്ന് അറിയിക്കുന്നതാണ് ഇഖാമത്ത്. അഞ്ച് നേരത്തെ നിസ്കാരങ്ങൾക്ക് രണ്ടും ശക്തമായ സുന്നത്താണ്.",
   "ബാങ്കിന് മറുപടി പറയൽ",
@@ -743,40 +785,74 @@ const ML_L=[
   "അതായത് ഇമാമിന്റെ പിന്നിലുള്ള ളുഹ്ർ ഇങ്ങനെയാകും: أُصَلِّي فَرْضَ الظُّهْرِ أَرْبَعَ رَكَعَاتٍ مُتَوَجِّهًا إِلَى الْقِبْلَةِ أَدَاءً مَأْمُومًا لِلَّهِ تَعَالَى",
   "<b>നഷ്ടപ്പെട്ട നിസ്കാരം വീട്ടുകയാണോ?</b> <span style='font-family:Amiri,serif'>أَدَاءً</span> (സമയത്ത്) എന്നതിന് പകരം <span style='font-family:Amiri,serif'>قَضَاءً</span> (വീട്ടൽ) എന്ന് ചേർക്കൂ.",
   "നാവ് മിണ്ടാതിരുന്നാലും കുഴപ്പമില്ല. മനസ്സ് മിണ്ടാതിരിക്കരുത്."]},
-/* 6 */{t:"തക്ബീർ മുതൽ റുകൂഅ് വരെ",sub:"നിൽക്കൽ, തുടങ്ങൽ, ഓതൽ, കുനിയൽ.",
- b:[["ഖിബ്‌ലയിലേക്ക് തിരിഞ്ഞ്, കാലുകൾ അകത്തിവെച്ച്, സുജൂദ് ചെയ്യുന്ന സ്ഥലത്തേക്ക് നോക്കി നിൽക്കൂ.",
-   "രണ്ട് കൈകളും ചുമലിന്റെ ഉയരത്തിൽ ഉയർത്തി <b>അല്ലാഹു അക്ബർ</b> എന്ന് പറയൂ — ഇതാണ് തക്ബീറത്തുൽ ഇഹ്‌റാം. ഈ നിമിഷത്തിലാണ് നിയ്യത്ത് മനസ്സിലുണ്ടാകേണ്ടത്.",
-   "വലതു കൈ ഇടതു കൈയുടെ മുകളിൽ, നെഞ്ചിന് താഴെ പൊക്കിളിന് മുകളിൽ വെക്കൂ.",
-   "ആദ്യം തുടക്കത്തിന്റെ ദുആ, പിന്നെ അഊദു, പിന്നെ ഫാതിഹ ഓതൂ.",
-   "ഒരു ചെറിയ സൂറ ഓതൂ — ആദ്യത്തെ രണ്ട് റക്അത്തിൽ മാത്രം.",
-   "അല്ലാഹു അക്ബർ പറഞ്ഞ്, കൈകൾ ഉയർത്തി, മുതുക് നേരെയാക്കി റുകൂഇലേക്ക് കുനിയൂ."],
-  null,"റുകൂഇൽ","മഹാനായ എന്റെ റബ്ബ് എത്ര പരിശുദ്ധൻ, അവന് സ്തുതി. — മൂന്ന് തവണ",
-  "ഉയരുമ്പോൾ — ഇഅ്തിദാൽ",
-  "അല്ലാഹുവിനെ സ്തുതിച്ചവന്റെ സ്തുതി അല്ലാഹു കേട്ടു — ഉയരുമ്പോൾ പറയുന്നത്.",
-  "ഞങ്ങളുടെ റബ്ബേ, എല്ലാ സ്തുതിയും നിനക്കാണ് — ആകാശങ്ങൾ നിറയെ, ഭൂമി നിറയെ, അതിന് ശേഷം നീ ഉദ്ദേശിക്കുന്നത് നിറയെ.",
-  "<b>ശാഫിഈ.</b> ഓരോ റക്അത്തിലും ഫാതിഹ ഒരു റുക്‌നാണ് — ഇമാമിനും മഅ്മൂമിനും ഒരുപോലെ. ഇമാം കുനിയുന്നതിന് മുമ്പ് പൂർത്തിയാക്കാൻ കഴിഞ്ഞില്ലെങ്കിലും പിന്തുടരാം — പക്ഷേ കഴിയുന്നതുവരെ പഠിക്കൂ.",
-  "അടങ്ങിയിരിക്കൽ ഒരു റുക്‌നാണ്. ശരീരം ഈ നിലയിൽ ഉറയ്ക്കുന്നതുവരെ അടുത്തതിലേക്ക് നീങ്ങരുത്."]},
-/* 7 */{t:"സുജൂദ് മുതൽ സലാം വരെ",sub:"ദാസൻ റബ്ബിനോട് ഏറ്റവും അടുക്കുന്ന നിമിഷം, പിന്നെ നിസ്കാരം അവസാനിക്കുന്ന വിധം.",
- b:["സുജൂദ് <b>ഏഴ് അസ്ഥികളിലാണ്</b>: മൂക്കോടുകൂടിയ നെറ്റി, രണ്ട് ഉള്ളംകൈ, രണ്ട് മുട്ട്, രണ്ട് കാലിന്റെയും വിരലുകൾ. ഏഴും നിലത്ത് തൊടണം.",
-  "അത്യുന്നതനായ എന്റെ റബ്ബ് എത്ര പരിശുദ്ധൻ, അവന് സ്തുതി. — മൂന്ന് തവണ",
-  null,"രണ്ട് സുജൂദിനിടയിൽ ഇരിക്കുമ്പോൾ",
-  "എന്റെ റബ്ബേ, എനിക്ക് പൊറുത്തുതരേണമേ, കരുണ ചെയ്യേണമേ, എന്നെ നന്നാക്കേണമേ, ഉയർത്തേണമേ, ഉപജീവനം നൽകേണമേ, നേർവഴി കാണിക്കേണമേ, സൗഖ്യം നൽകേണമേ, മാപ്പ് നൽകേണമേ.",
-  "തശഹ്ഹുദ്, പിന്നെ സ്വലാത്ത്, പിന്നെ സലാം",
-  "അവസാനത്തെ ഇരുത്തത്തിൽ തശഹ്ഹുദ്, പിന്നെ സ്വലാത്തുൽ ഇബ്രാഹീമിയ്യ, പിന്നെ ദുആ ചൊല്ലി, മുഖം വലത്തോട്ടും ഇടത്തോട്ടും തിരിച്ച് പറയൂ:",
-  "നിങ്ങളുടെ മേൽ അല്ലാഹുവിന്റെ രക്ഷയും കാരുണ്യവും ഉണ്ടാകട്ടെ.",
-  "അല്ലാഹുവിന്റെ മഹത്വം പറഞ്ഞ് നിസ്കാരം തുടങ്ങുന്നു, മറ്റുള്ളവർക്ക് സമാധാനം നേർന്ന് അവസാനിക്കുന്നു. ഒരു ചലനത്തിൽ ദീൻ മുഴുവനുമുണ്ട്."]},
-/* 8 */{t:"നാം എന്താണ് ഓതുന്നത്",sub:"ഫാതിഹ, തശഹ്ഹുദ്, സ്വലാത്ത് — പിന്നെ സുബ്ഹിയിലെ ഖുനൂത്ത്.",
- b:["തശഹ്ഹുദ്",
-  "എല്ലാ അഭിവാദ്യങ്ങളും അനുഗ്രഹങ്ങളും നല്ല കാര്യങ്ങളും അല്ലാഹുവിനാണ്. നബിയേ, അങ്ങയുടെ മേൽ അല്ലാഹുവിന്റെ രക്ഷയും കാരുണ്യവും അനുഗ്രഹങ്ങളും ഉണ്ടാകട്ടെ…",
-  "സ്വലാത്തുൽ ഇബ്രാഹീമിയ്യ",
-  "അല്ലാഹുവേ, ഇബ്രാഹീം നബിയുടെയും കുടുംബത്തിന്റെയും മേൽ നീ അനുഗ്രഹം ചൊരിഞ്ഞതുപോലെ ഞങ്ങളുടെ നേതാവ് മുഹമ്മദ് നബി ﷺ യുടെയും കുടുംബത്തിന്റെയും മേൽ അനുഗ്രഹം ചൊരിയേണമേ. ഇബ്രാഹീം നബിയുടെയും കുടുംബത്തിന്റെയും മേൽ നീ ബറകത്ത് ചൊരിഞ്ഞതുപോലെ ഞങ്ങളുടെ നേതാവ് മുഹമ്മദ് നബി ﷺ യുടെയും കുടുംബത്തിന്റെയും മേൽ ബറകത്ത് ചൊരിയേണമേ. തീർച്ചയായും നീ സ്തുത്യർഹനും മഹത്വമുള്ളവനുമാണ്.",
-  "സ്വലാത്തിന് ശേഷം, സലാമിന് മുമ്പുള്ള ദുആ",
-  "അല്ലാഹുവേ, ഞാൻ മുമ്പ് ചെയ്തതും പിന്നീട് ചെയ്യുന്നതും, രഹസ്യമാക്കിയതും പരസ്യമാക്കിയതും, അതിരുകടന്നതും, എന്നെക്കാൾ നിനക്ക് നന്നായി അറിയാവുന്നതും എനിക്ക് പൊറുത്തുതരേണമേ. നീയാണ് മുന്തിക്കുന്നവനും പിന്തിക്കുന്നവനും. നീയല്ലാതെ ഒരു ദൈവവുമില്ല.",
-  "അല്ലാഹുവേ, ഖബ്‌റിലെ ശിക്ഷയിൽ നിന്നും നരകശിക്ഷയിൽ നിന്നും ജീവിതത്തിന്റെയും മരണത്തിന്റെയും പരീക്ഷണത്തിൽ നിന്നും മസീഹുദ്ദജ്ജാലിന്റെ ഫിത്‌നയിൽ നിന്നും ഞാൻ നിന്നിൽ അഭയം തേടുന്നു.",
-  "<b>ഖുനൂത്ത് — ഒരു ശാഫിഈ പതിവ്.</b> സുബ്ഹിയുടെ രണ്ടാം റക്അത്തിൽ, റുകൂഇൽ നിന്ന് ഉയർന്ന ശേഷം നിന്നുകൊണ്ട് ഖുനൂത്ത് ദുആ ഓതുന്നു. ഇത് സുന്നത്താണ്; മറന്നാൽ സഹ്‌വിന്റെ സുജൂദ് ചെയ്യണം. റമദാനിന്റെ അവസാന പകുതിയിൽ വിത്‌റിന്റെ അവസാന റക്അത്തിലും ഇത് ഓതുന്നു.",
-  "ശബ്ദം മാത്രമല്ല, അർത്ഥവും പഠിക്കൂ. മനസ്സിലാകാത്തത് നിനക്ക് ഉദ്ദേശിക്കാനാവില്ല."]}
+/* 6 */{t:"നിസ്കാരം ക്രമപ്രകാരം",sub:"പതിമൂന്ന് ഫർദുകൾ, പിന്നെ നിയ്യത്ത് മുതൽ സലാം വരെ ഓരോ ചുവടും — ഓരോന്നിലും ചൊല്ലേണ്ടതോടൊപ്പം.",
+ b:["നിസ്കാരത്തിന്റെ പതിമൂന്ന് ഫർദുകൾ",
+ "ശാഫിഈ മദ്ഹബിൽ നിസ്കാരത്തിന്റെ ഫർദുകൾ — <b>അർകാൻ</b> — പതിമൂന്നാണ്. മറന്നിട്ടായാലും മനഃപൂർവമായാലും ഒന്ന് വിട്ടുപോയാൽ ആ റക്അത്ത് ശരിയാവില്ല. ബാക്കിയെല്ലാം സുന്നത്താണ്: പ്രതിഫലമുള്ളതും ഇഷ്ടപ്പെട്ടതും, പക്ഷേ നിസ്കാരം നിൽക്കുന്നത് അതിന്മേലല്ല.",
+ ["<b>നിയ്യത്ത്</b> — <span class='arb-inline'>النِّيَّة</span> — തക്ബീറിന്റെ സമയത്ത് മനസ്സിൽ.",
+  "<b>തക്ബീറത്തുൽ ഇഹ്‌റാം</b> — <span class='arb-inline'>تَكْبِيرَةُ الإِحْرَام</span>.",
+  "<b>നിൽക്കൽ</b> — <span class='arb-inline'>القِيَام</span> — ഫർദ് നിസ്കാരത്തിൽ, കഴിവുള്ളവന്.",
+  "<b>ഫാതിഹ ഓതൽ</b> — <span class='arb-inline'>قِرَاءَةُ الفَاتِحَة</span> — ഓരോ റക്അത്തിലും.",
+  "<b>റുകൂഅ്</b> — <span class='arb-inline'>الرُّكُوع</span>.",
+  "<b>ഇഅ്തിദാൽ</b> — <span class='arb-inline'>الاعْتِدَال</span> — റുകൂഇൽ നിന്ന് നിവർന്ന് നിൽക്കൽ.",
+  "<b>രണ്ട് സുജൂദ്</b> — <span class='arb-inline'>السُّجُودُ مَرَّتَيْن</span> — ഓരോ റക്അത്തിലും.",
+  "<b>രണ്ട് സുജൂദിനിടയിൽ ഇരിക്കൽ</b> — <span class='arb-inline'>الجُلُوسُ بَيْنَ السَّجْدَتَيْن</span>.",
+  "<b>അടങ്ങൽ</b> — <span class='arb-inline'>الطُّمَأْنِينَة</span> — റുകൂഅ്, ഇഅ്തിദാൽ, സുജൂദ്, ഇരുത്തം എന്നിവയിൽ.",
+  "<b>അവസാനത്തെ തശഹ്ഹുദ്</b> — <span class='arb-inline'>التَّشَهُّدُ الأَخِير</span>.",
+  "<b>അതിനുവേണ്ടിയുള്ള ഇരുത്തം</b> — <span class='arb-inline'>القُعُودُ لَهُ</span>.",
+  "<b>നബി ﷺ യുടെ മേലുള്ള സ്വലാത്ത്</b> — <span class='arb-inline'>الصَّلَاةُ عَلَى النَّبِيّ</span> — തശഹ്ഹുദിന് ശേഷം.",
+  "<b>സലാം</b> — <span class='arb-inline'>السَّلَام</span> — ഒന്നാമത്തേത്."],
+ "<b>ക്രമവും ഫർദാണ്.</b> തർതീബ് — ഇവ താഴെ പറയുന്ന ക്രമത്തിൽ തന്നെ വരിക — നിർബന്ധമാണ്; ചില കണക്കുകളിൽ ഇത് പതിനാലാമത്തെ ഫർദായി എണ്ണുന്നു. അതുകൊണ്ടാണ് ഈ പാഠത്തിന്റെ ബാക്കി ഭാഗം നിസ്കാരം നിസ്കരിക്കുന്ന അതേ ക്രമത്തിൽ പഠിപ്പിക്കുന്നത്.",
+ "പതിമൂന്ന് ഫർദ്. ആദ്യം പട്ടികയായി പഠിക്കൂ, പിന്നെ നിസ്കാരമായി പഠിക്കൂ.",
+
+ "1 · നിയ്യത്ത് — النِّيَّة",
+ "ഖിബ്‌ലയിലേക്ക് തിരിഞ്ഞ്, കാലുകൾ അകത്തിവെച്ച്, സുജൂദ് ചെയ്യുന്ന സ്ഥലത്തേക്ക് നോക്കി നിൽക്കൂ. നിയ്യത്ത് തക്ബീറിന്റെ സമയത്ത് <b>മനസ്സിലാണ്</b> ഉണ്ടാകേണ്ടത് — ഓരോ നിസ്കാരത്തിന്റെയും വാചകം പാഠം 5-ൽ ഉണ്ട്.",
+ "2 · തക്ബീറത്തുൽ ഇഹ്‌റാം — تَكْبِيرَةُ الإِحْرَام",
+ "രണ്ട് കൈകളും ചുമലിന്റെ ഉയരത്തിൽ ഉയർത്തി പറയൂ:",
+ "അല്ലാഹു ഏറ്റവും വലിയവൻ. — ഇതോടെ നിസ്കാരത്തിൽ പ്രവേശിച്ചു, പുറത്തുള്ളതെല്ലാം ഹറാമായി.",
+ "പിന്നെ വലതു കൈ ഇടതു കൈയുടെ മുകളിൽ, നെഞ്ചിന് താഴെ പൊക്കിളിന് മുകളിൽ വെക്കൂ.",
+ "3 · തുടക്കത്തിന്റെ ദുആ — دُعَاءُ الاِفْتِتَاح",
+ "ആകാശങ്ങളും ഭൂമിയും സൃഷ്ടിച്ചവനിലേക്ക് ഞാൻ എന്റെ മുഖം തിരിച്ചിരിക്കുന്നു — നേർമാർഗിയായി, കീഴ്പ്പെട്ടവനായി. ഞാൻ ശിർക്ക് ചെയ്യുന്നവരിൽ പെട്ടവനല്ല. എന്റെ നിസ്കാരവും ആരാധനകളും ജീവിതവും മരണവും ലോകരക്ഷിതാവായ അല്ലാഹുവിനാണ്. അവന് പങ്കുകാരില്ല. അങ്ങനെയാണ് എന്നോട് കൽപ്പിക്കപ്പെട്ടത്, ഞാൻ മുസ്‌ലിംകളിൽ പെട്ടവനാണ്. — സുന്നത്ത്, പതുക്കെ ചൊല്ലുന്നു.",
+ "4 · അഊദും ബിസ്മിയും",
+ "ആട്ടിയകറ്റപ്പെട്ട പിശാചിൽ നിന്ന് ഞാൻ അല്ലാഹുവിൽ അഭയം തേടുന്നു.",
+ "5 · ഫാതിഹ — ഓരോ റക്അത്തിലും ഫർദ്",
+ "പരമകാരുണികനും കരുണാനിധിയുമായ അല്ലാഹുവിന്റെ നാമത്തിൽ. ലോകരക്ഷിതാവായ അല്ലാഹുവിന് സർവ സ്തുതിയും. പരമകാരുണികൻ, കരുണാനിധി. പ്രതിഫല ദിനത്തിന്റെ ഉടമസ്ഥൻ. നിന്നെ മാത്രം ഞങ്ങൾ ആരാധിക്കുന്നു, നിന്നോട് മാത്രം സഹായം തേടുന്നു. ഞങ്ങളെ നേരായ പാതയിൽ നയിക്കേണമേ — നീ അനുഗ്രഹിച്ചവരുടെ പാതയിൽ; കോപത്തിന് ഇരയായവരുടെയോ വഴിപിഴച്ചവരുടെയോ പാതയിലല്ല.",
+ "<b>ശാഫിഈ മദ്ഹബിൽ ബിസ്മി ഫാതിഹയുടെ ഒരു ആയത്താണ്</b>, അതുകൊണ്ട് അതോടൊപ്പം ഓതണം. പിന്നെ <span class='arb-inline'>آمِين</span> — <i>ആമീൻ</i> — ഉറക്കെ ഓതുന്ന നിസ്കാരങ്ങളിൽ ഉറക്കെയും, പതുക്കെ ഓതുന്നവയിൽ പതുക്കെയും.",
+ "6 · ഒരു ചെറിയ സൂറ",
+ "ഫാതിഹയ്ക്ക് ശേഷം ഒരു ചെറിയ സൂറയോ കുറച്ച് ആയത്തുകളോ ഓതൂ — <b>ആദ്യത്തെ രണ്ട് റക്അത്തിൽ മാത്രം</b>. ഇത് സുന്നത്താണ്, ഫർദല്ല.",
+ "7 · റുകൂഅ് — الرُّكُوع",
+ "<b>അല്ലാഹു അക്ബർ</b> പറഞ്ഞ്, കൈകൾ ഉയർത്തി, മുതുക് നേരെയാക്കി കൈകൾ മുട്ടിൽ വെച്ച് കുനിയൂ. അവിടെ അടങ്ങിയ ശേഷം ചൊല്ലൂ:",
+ "മഹാനായ എന്റെ റബ്ബ് എത്ര പരിശുദ്ധൻ, അവന് സ്തുതി. — മൂന്ന് തവണ",
+ null,
+ "8 · ഇഅ്തിദാൽ — الاعْتِدَال",
+ "അല്ലാഹുവിനെ സ്തുതിച്ചവന്റെ സ്തുതി അല്ലാഹു കേട്ടു — ഉയരുമ്പോൾ പറയുന്നത്.",
+ "ഞങ്ങളുടെ റബ്ബേ, എല്ലാ സ്തുതിയും നിനക്കാണ് — ആകാശങ്ങൾ നിറയെ, ഭൂമി നിറയെ, അതിന് ശേഷം നീ ഉദ്ദേശിക്കുന്നത് നിറയെ.",
+ "9 · ഖുനൂത്ത് — القُنُوت — സ്വുബ്ഹിയിൽ മാത്രം",
+ "<b>സ്വുബ്ഹിയുടെ രണ്ടാം റക്അത്തിൽ</b>, ഇഅ്തിദാലിൽ നിൽക്കുമ്പോൾത്തന്നെ കൈകൾ ഉയർത്തി ഖുനൂത്ത് ഓതൂ:",
+ "അല്ലാഹുവേ, നീ നേർവഴിയിലാക്കിയവരുടെ കൂട്ടത്തിൽ എന്നെയും നേർവഴിയിലാക്കേണമേ. നീ സൗഖ്യം നൽകിയവരുടെ കൂട്ടത്തിൽ എനിക്കും സൗഖ്യം നൽകേണമേ. നീ കൈകാര്യം ചെയ്തവരുടെ കൂട്ടത്തിൽ എന്നെയും ഏറ്റെടുക്കേണമേ. നീ തന്നതിൽ എനിക്ക് ബറകത്ത് ചെയ്യേണമേ. നീ വിധിച്ചതിന്റെ തിന്മയിൽ നിന്ന് എന്നെ കാക്കേണമേ. തീർച്ചയായും നീ വിധിക്കുന്നു, നിനക്കെതിരെ ആരും വിധിക്കുന്നില്ല. നീ സഹായിച്ചവൻ നിന്ദിക്കപ്പെടില്ല, നീ എതിർത്തവൻ പ്രതാപിയാകില്ല. ഞങ്ങളുടെ റബ്ബേ, നീ അനുഗൃഹീതനും ഉന്നതനുമാകുന്നു.",
+ "<b>ഖുനൂത്ത് സുന്നത്താണ്, ഫർദല്ല.</b> മറന്നാലും നിസ്കാരം ശരിയാകും — പക്ഷേ അതിന് സഹ്‌വിന്റെ സുജൂദ് ചെയ്യണം (പാഠം 8). റമദാനിന്റെ അവസാന പകുതിയിൽ വിത്‌റിന്റെ അവസാന റക്അത്തിലും ഇത് ഓതുന്നു.",
+ "10 · സുജൂദ് — السُّجُود",
+ "<b>അല്ലാഹു അക്ബർ</b> പറഞ്ഞ് താഴേക്ക് പോകൂ. സുജൂദ് <b>ഏഴ് അസ്ഥികളിലാണ്</b>: മൂക്കോടുകൂടിയ നെറ്റി, രണ്ട് ഉള്ളംകൈ, രണ്ട് മുട്ട്, രണ്ട് കാലിന്റെയും വിരലുകൾ. ഏഴും നിലത്ത് തൊടണം, ശരീരം അടങ്ങിയ ശേഷം ചൊല്ലൂ:",
+ "അത്യുന്നതനായ എന്റെ റബ്ബ് എത്ര പരിശുദ്ധൻ, അവന് സ്തുതി. — മൂന്ന് തവണ",
+ "11 · രണ്ട് സുജൂദിനിടയിൽ ഇരിക്കുമ്പോൾ",
+ "എന്റെ റബ്ബേ, എനിക്ക് പൊറുത്തുതരേണമേ, കരുണ ചെയ്യേണമേ, എന്നെ നന്നാക്കേണമേ, ഉയർത്തേണമേ, ഉപജീവനം നൽകേണമേ, നേർവഴി കാണിക്കേണമേ, സൗഖ്യം നൽകേണമേ, മാപ്പ് നൽകേണമേ.",
+ "12 · രണ്ടാമത്തെ സുജൂദ് — പിന്നെ എഴുന്നേൽക്കൽ",
+ "<b>അല്ലാഹു അക്ബർ</b> പറഞ്ഞ്, ആദ്യത്തേത് പോലെ തന്നെ രണ്ടാമത്തെ സുജൂദ് ചെയ്ത്, <b>അല്ലാഹു അക്ബർ</b> പറഞ്ഞ് എഴുന്നേൽക്കൂ. <b>ഒരു റക്അത്ത് ഇപ്പോൾ പൂർത്തിയായി.</b> രണ്ടാം റക്അത്തും ഇതേ രീതിയിൽ, ഫാതിഹ മുതൽ — തുടക്കത്തിന്റെ ദുആ വീണ്ടും ഇല്ല.",
+ null,
+ "13 · അവസാനത്തെ ഇരുത്തം — التَّشَهُّد",
+ "സ്വുബ്ഹിയിൽ ഇത് രണ്ട് റക്അത്തിന് ശേഷമാണ്. മഗ്‌രിബിൽ മൂന്നിന് ശേഷം; ളുഹ്ർ, അസ്വ്ർ, ഇശാഅ് എന്നിവയിൽ നാലിന് ശേഷം — അവയിൽ രണ്ടാം റക്അത്തിന് ശേഷം ഒരു ചെറിയ ആദ്യ തശഹ്ഹുദും ഉണ്ട്, അതിൽ നിന്ന് സ്വലാത്ത് ചൊല്ലാതെ എഴുന്നേൽക്കുന്നു.",
+ "എല്ലാ അഭിവാദ്യങ്ങളും അനുഗ്രഹങ്ങളും നല്ല കാര്യങ്ങളും അല്ലാഹുവിനാണ്. നബിയേ, അങ്ങയുടെ മേൽ അല്ലാഹുവിന്റെ രക്ഷയും കാരുണ്യവും അനുഗ്രഹങ്ങളും ഉണ്ടാകട്ടെ. ഞങ്ങളുടെ മേലും അല്ലാഹുവിന്റെ സ്വാലിഹീങ്ങളായ അടിമകളുടെ മേലും രക്ഷയുണ്ടാകട്ടെ. അല്ലാഹുവല്ലാതെ ഒരു ഇലാഹുമില്ലെന്ന് ഞാൻ സാക്ഷ്യം വഹിക്കുന്നു, മുഹമ്മദ് നബി ﷺ അല്ലാഹുവിന്റെ റസൂലാണെന്നും ഞാൻ സാക്ഷ്യം വഹിക്കുന്നു.",
+ "14 · സ്വലാത്തുൽ ഇബ്രാഹീമിയ്യ — അവസാനത്തെ ഇരുത്തത്തിൽ ഫർദ്",
+ "അല്ലാഹുവേ, ഇബ്രാഹീം നബിയുടെയും കുടുംബത്തിന്റെയും മേൽ നീ അനുഗ്രഹം ചൊരിഞ്ഞതുപോലെ ഞങ്ങളുടെ നേതാവ് മുഹമ്മദ് നബി ﷺ യുടെയും കുടുംബത്തിന്റെയും മേൽ അനുഗ്രഹം ചൊരിയേണമേ. ഇബ്രാഹീം നബിയുടെയും കുടുംബത്തിന്റെയും മേൽ നീ ബറകത്ത് ചൊരിഞ്ഞതുപോലെ ഞങ്ങളുടെ നേതാവ് മുഹമ്മദ് നബി ﷺ യുടെയും കുടുംബത്തിന്റെയും മേൽ ബറകത്ത് ചൊരിയേണമേ. തീർച്ചയായും നീ സ്തുത്യർഹനും മഹത്വമുള്ളവനുമാണ്.",
+ "15 · സലാമിന് മുമ്പുള്ള ദുആ",
+ "അല്ലാഹുവേ, ഞാൻ മുമ്പ് ചെയ്തതും പിന്നീട് ചെയ്യുന്നതും, രഹസ്യമാക്കിയതും പരസ്യമാക്കിയതും, അതിരുകടന്നതും, എന്നെക്കാൾ നിനക്ക് നന്നായി അറിയാവുന്നതും എനിക്ക് പൊറുത്തുതരേണമേ. നീയാണ് മുന്തിക്കുന്നവനും പിന്തിക്കുന്നവനും. നീയല്ലാതെ ഒരു ഇലാഹുമില്ല.",
+ "അല്ലാഹുവേ, ഖബ്‌റിലെ ശിക്ഷയിൽ നിന്നും നരകശിക്ഷയിൽ നിന്നും ജീവിതത്തിന്റെയും മരണത്തിന്റെയും പരീക്ഷണത്തിൽ നിന്നും മസീഹുദ്ദജ്ജാലിന്റെ ഫിത്‌നയിൽ നിന്നും ഞാൻ നിന്നിൽ അഭയം തേടുന്നു.",
+ "16 · സലാം — السَّلَام",
+ "മുഖം വലത്തോട്ടും പിന്നെ ഇടത്തോട്ടും തിരിച്ച് ഓരോ തവണയും പറയൂ:",
+ "നിങ്ങളുടെ മേൽ അല്ലാഹുവിന്റെ രക്ഷയും കാരുണ്യവും ഉണ്ടാകട്ടെ. — ഒന്നാമത്തെ സലാം ഫർദാണ്; അതോടെ നിസ്കാരം അവസാനിക്കുന്നു.",
+ "<b>അടങ്ങൽ ഒരു ഫർദാണ്.</b> ശരീരം ഈ നിലയിൽ ഉറയ്ക്കുന്നതുവരെ അടുത്തതിലേക്ക് നീങ്ങരുത്. ചുവടുകൾ തിരക്കിട്ട് ചെയ്യുന്ന നിസ്കാരം പതിമൂന്നിൽ ഒന്ന് നഷ്ടപ്പെട്ട നിസ്കാരമാണ്.",
+ "അല്ലാഹുവിന്റെ മഹത്വം പറഞ്ഞ് തുടങ്ങുന്നു, മറ്റുള്ളവർക്ക് സമാധാനം നേർന്ന് അവസാനിക്കുന്നു. ഒരു ചലനത്തിൽ ദീൻ മുഴുവനുമുണ്ട്."]}
 ,
-/* 9 */{t:"സലാമിന് ശേഷം",sub:"നിസ്കാരം മുഴുവനിലെയും ഏറ്റവും വിലപ്പെട്ട രണ്ട് മിനിറ്റ്.",
+/* 7 */{t:"സലാമിന് ശേഷം",sub:"നിസ്കാരം മുഴുവനിലെയും ഏറ്റവും വിലപ്പെട്ട രണ്ട് മിനിറ്റ്.",
  b:[["<b>അസ്തഗ്ഫിറുല്ലാഹ്</b> — മൂന്ന് തവണ.",
    "<b>അല്ലാഹുമ്മ അൻതസ്സലാം വ മിൻകസ്സലാം, തബാറക്ത യാ ദൽജലാലി വൽ ഇക്‌റാം.</b>",
    "<b>ആയത്തുൽ കുർസി</b> — ഓരോ ഫർദ് നിസ്കാരത്തിന് ശേഷവും ഇത് ഓതുന്നവന് സ്വർഗത്തിനും അവനും ഇടയിൽ മരണമല്ലാതെ ഒന്നുമില്ല.",
@@ -785,10 +861,10 @@ const ML_L=[
   "അല്ലാഹുവേ, നിന്നെ ഓർക്കാനും നിനക്ക് നന്ദി പറയാനും നിന്നെ നന്നായി ആരാധിക്കാനും എന്നെ സഹായിക്കേണമേ.",
   "സലാം പറഞ്ഞ ഉടനെ എഴുന്നേൽക്കരുത്. നബി ﷺ ഖിബ്‌ലയിലേക്ക് തിരിഞ്ഞ് ഇരിക്കുമായിരുന്നു. ഈ ഏതാനും മിനിറ്റുകളുടെ പ്രതിഫലം അതിന്റെ ദൈർഘ്യത്തിന് ഒട്ടും ആനുപാതികമല്ല.",
   "കഠിനമായ ഭാഗം നീ ഇതിനകം ചെയ്തുകഴിഞ്ഞു. ഇത് അതിന്റെ പലിശയാണ്."]},
-/* 10 */{t:"സഹ്‌വിന്റെ സുജൂദ്",sub:"മറന്നാൽ, കൂട്ടിയാൽ, എണ്ണം തെറ്റിയാൽ എന്ത് ചെയ്യണം.",
+/* 8 */{t:"സഹ്‌വിന്റെ സുജൂദ്",sub:"മറന്നാൽ, കൂട്ടിയാൽ, എണ്ണം തെറ്റിയാൽ എന്ത് ചെയ്യണം.",
  b:["മറവി കാരണം കുഴഞ്ഞുപോയ നിസ്കാരം ശരിയാക്കുന്ന രണ്ട് സുജൂദാണ് സഹ്‌വിന്റെ സുജൂദ്. <b>ശാഫിഈ മദ്ഹബിൽ ഇത് സലാമിന് മുമ്പാണ്</b>, തശഹ്ഹുദിന് ശേഷം.",
   "എപ്പോൾ ചെയ്യണം",
-  ["<b>സുന്നത്ത് അബ്ആദ്</b> ഒഴിവായാൽ — ആദ്യത്തെ തശഹ്ഹുദ് അല്ലെങ്കിൽ സുബ്ഹിയിലെ ഖുനൂത്ത് പോലെ.",
+  ["<b>സുന്നത്ത് അബ്ആദ്</b> ഒഴിവായാൽ — ആദ്യത്തെ തശഹ്ഹുദ് അല്ലെങ്കിൽ സ്വുബ്ഹിയിലെ ഖുനൂത്ത് പോലെ.",
    "അബദ്ധത്തിൽ നിസ്കാരത്തിലെ ഒരു പ്രവൃത്തി കൂട്ടിയാൽ — ഒരു റുകൂഅ്, സുജൂദ് അല്ലെങ്കിൽ റക്അത്ത്.",
    "എത്ര റക്അത്ത് നിസ്കരിച്ചു എന്ന് ഉറപ്പില്ലെങ്കിൽ."],
   "സംശയത്തിന്റെ നിയമം",
@@ -798,7 +874,7 @@ const ML_L=[
   "ഈ രണ്ട് സുജൂദും നിസ്കാരത്തിലെ സുജൂദ് പോലെ തന്നെയാണ്, ഇടയിൽ ഇരുത്തത്തോടെ, അവസാന തശഹ്ഹുദിന് ശേഷം <b>സലാമിന് മുമ്പ്</b>.",
   "ഒഴിവായ ഒരു റുക്‌ൻ സഹ്‌വിന്റെ സുജൂദ് കൊണ്ട് നികത്താനാവില്ല. ഒരു റക്അത്ത് മുഴുവൻ മറന്നാൽ അത് നിസ്കരിക്കണം.",
   "മറവി മനുഷ്യസഹജമാണ്. അതിന്റെ പേരിൽ നിസ്കാരം ഉപേക്ഷിക്കാനാണ് പിശാച് ആഗ്രഹിക്കുന്നത് — പകരം അത് നന്നാക്കി തുടരൂ."]},
-/* 11 */{t:"നിസ്കാരം മുറിയുന്നത്",sub:"മുറിക്കും എന്ന് ആളുകൾ കരുതുന്ന, യഥാർത്ഥത്തിൽ മുറിക്കാത്ത ചില കാര്യങ്ങളും.",
+/* 9 */{t:"നിസ്കാരം മുറിയുന്നത്",sub:"മുറിക്കും എന്ന് ആളുകൾ കരുതുന്ന, യഥാർത്ഥത്തിൽ മുറിക്കാത്ത ചില കാര്യങ്ങളും.",
  b:["ഇവ നിസ്കാരം അസാധുവാക്കും",
   ["മനഃപൂർവം സംസാരിക്കൽ, ഒരു വാക്കാണെങ്കിലും.",
    "എന്തെങ്കിലും തിന്നുകയോ കുടിക്കുകയോ ചെയ്യൽ.",
@@ -815,7 +891,7 @@ const ML_L=[
    "കണ്ണുനീർ, അല്ലെങ്കിൽ ഇഷ്ടമില്ലാതെ വരുന്ന ഒരു ചെറിയ ശബ്ദം.",
    "ഒരു കുട്ടി കടന്നുപോകൽ, അല്ലെങ്കിൽ മുന്നിലൂടെ ആരെയെങ്കിലും കടക്കുന്നത് തടയാനുള്ള ചെറിയ ചലനം."],
   "അവ്യക്തമായ ആശങ്ക കാരണം നിസ്കാരം വീണ്ടും തുടങ്ങരുത്. ശരിക്കും എന്താണ് മുറിക്കുന്നത് എന്ന് പഠിച്ച് ബാക്കിയുള്ളതിൽ സംശയിക്കുന്നത് നിർത്തൂ."]},
-/* 12 */{t:"നഷ്ടപ്പെട്ട നിസ്കാരവും ഖദാഉം",sub:"പിന്നിൽ ബാക്കിയായ നിസ്കാരങ്ങൾ എന്ത് ചെയ്യണം.",
+/* 10 */{t:"നഷ്ടപ്പെട്ട നിസ്കാരവും ഖദാഉം",sub:"പിന്നിൽ ബാക്കിയായ നിസ്കാരങ്ങൾ എന്ത് ചെയ്യണം.",
  b:["ന്യായമായ കാരണത്താൽ — ഉറക്കമോ യഥാർത്ഥ മറവിയോ — നഷ്ടപ്പെട്ട നിസ്കാരം ഉണരുമ്പോഴോ ഓർക്കുമ്പോഴോ ഉടനെ നിസ്കരിക്കണം. ഉറക്കത്തിൽ അശ്രദ്ധയില്ലെന്നും, അടുത്ത നിസ്കാരം വരുന്നതുവരെ വൈകിപ്പിക്കുന്നതിലാണ് അശ്രദ്ധയെന്നും നബി ﷺ പറഞ്ഞു.",
   "മനഃപൂർവം ഒഴിവാക്കിയ നിസ്കാരം വലിയ തെറ്റാണ്, എന്നിട്ടും അത് വീട്ടണം. ഖദാഅ് നിർബന്ധമായി തുടരുന്നു എന്നും, കടം തീരുന്നതുവരെ ഇപ്പോഴത്തെ നിസ്കാരങ്ങൾക്കൊപ്പം <b>ഉടനെയും ക്രമത്തിലും</b> വീട്ടണമെന്നുമാണ് ശാഫിഈ നിലപാട്.",
   "എങ്ങനെ വീട്ടാം",
@@ -825,9 +901,9 @@ const ML_L=[
    "കടം യഥാർത്ഥവും കണ്ണിൽപ്പെടുന്നതുമാകാൻ എഴുതി കണക്ക് വെക്കൂ."],
   "നിരാശ തൗബയല്ല. വർഷങ്ങളോളം നിസ്കാരം നഷ്ടപ്പെടുത്തിയ ഒരാൾ അടുത്ത നിസ്കാരത്തിൽ നിന്ന് — ഇന്നത്തേതിൽ നിന്ന് — തുടങ്ങുന്നു, പിന്നെ കടം വീട്ടാൻ തുടങ്ങുന്നു.",
   "നഷ്ടപ്പെട്ടത് മാറ്റാൻ നിനക്കാവില്ല. പക്ഷേ ഇന്നുമുതൽ ഇനി നഷ്ടപ്പെടില്ല എന്ന് തീരുമാനിക്കാം."]},
-/* 13 */{t:"യാത്രയിൽ",sub:"ചുരുക്കലും ചേർക്കലും — ഒരു ഇളവ്, ഒരു പഴുതല്ല.",
+/* 11 */{t:"യാത്രയിൽ",sub:"ചുരുക്കലും ചേർക്കലും — ഒരു ഇളവ്, ഒരു പഴുതല്ല.",
  b:["ഖസ്വ്ർ — ചുരുക്കൽ",
-  "നിശ്ചിത ദൂരമുള്ള, അനുവദനീയമായ ആവശ്യത്തിനുള്ള യാത്രയിൽ നാല് റക്അത്തുള്ള ളുഹ്ർ, അസ്വ്ർ, ഇശാഅ് <b>രണ്ട്</b> റക്അത്തായി നിസ്കരിക്കുന്നു. സുബ്ഹിയും മഗ്‌രിബും ഒരിക്കലും ചുരുക്കാറില്ല.",
+  "നിശ്ചിത ദൂരമുള്ള, അനുവദനീയമായ ആവശ്യത്തിനുള്ള യാത്രയിൽ നാല് റക്അത്തുള്ള ളുഹ്ർ, അസ്വ്ർ, ഇശാഅ് <b>രണ്ട്</b> റക്അത്തായി നിസ്കരിക്കുന്നു. സ്വുബ്ഹിയും മഗ്‌രിബും ഒരിക്കലും ചുരുക്കാറില്ല.",
   "ജംഅ് — ചേർക്കൽ",
   {head:["ജോഡി","ചേർക്കുന്ന സമയം","പേര്"],
    rows:[["ളുഹ്ർ + അസ്വ്ർ","ളുഹ്‌റിന്റെ സമയത്ത്","ജംഅ് തഖ്ദീം"],["ളുഹ്ർ + അസ്വ്ർ","അസ്വറിന്റെ സമയത്ത്","ജംഅ് താഖീർ"],
@@ -835,7 +911,7 @@ const ML_L=[
   "നിന്റെ നാടിന്റെ കെട്ടിടങ്ങൾ കഴിഞ്ഞാൽ യാത്രയുടെ ഇളവ് തുടങ്ങുന്നു; തിരിച്ചെത്തുമ്പോഴോ ദീർഘകാലം താമസിക്കാൻ ഉദ്ദേശിക്കുമ്പോഴോ അത് അവസാനിക്കുന്നു.",
   "<b>നാട്ടുകാരനായ ഇമാമിന്റെ പിന്നിൽ</b> മുഴുവൻ എണ്ണവും നിസ്കരിക്കണം. ഒറ്റയ്ക്കോ മറ്റൊരു യാത്രക്കാരന്റെ പിന്നിലോ നിസ്കരിക്കുമ്പോഴാണ് ചുരുക്കൽ.",
   "അല്ലാഹു യാത്ര എളുപ്പമാക്കി, ഒഴിവാക്കിയില്ല. നിസ്കാരം ചുരുക്കൂ — ഒരിക്കലും ഉപേക്ഷിക്കരുത്."]},
-/* 14 */{t:"ഇമാമിന്റെ പിന്നിൽ",sub:"ഇരുപത്തിയേഴ് ഇരട്ടി പ്രതിഫലം, അതിനൊപ്പം വരുന്ന മര്യാദകളും.",
+/* 12 */{t:"ഇമാമിന്റെ പിന്നിൽ",sub:"ഇരുപത്തിയേഴ് ഇരട്ടി പ്രതിഫലം, അതിനൊപ്പം വരുന്ന മര്യാദകളും.",
  b:["ജമാഅത്തായുള്ള നിസ്കാരം ഒറ്റയ്ക്കുള്ളതിനെക്കാൾ ഇരുപത്തിയേഴ് ഇരട്ടിയാണെന്ന് നബി ﷺ പറഞ്ഞു. പുരുഷന്മാർക്ക് ഇത് ശക്തമായി ഊന്നിപ്പറയപ്പെട്ടിരിക്കുന്നു; സ്ത്രീകൾക്ക് വീട്ടിൽ നിസ്കരിക്കാൻ അനുവാദവും പ്രതിഫലവുമുണ്ട്, ജമാഅത്തിൽ ചേരാനും അനുവാദമുണ്ട്.",
   "വൈകി ചേരൽ — മസ്ബൂഖ്",
   ["<span style='font-family:Amiri,serif'>مَأْمُومًا</span> ചേർത്ത് നിയ്യത്ത് വെച്ച് തക്ബീർ ചൊല്ലൂ.",
@@ -849,7 +925,7 @@ const ML_L=[
    "ഇമാമിനെക്കാൾ മുന്നോട്ട് പോകരുത് — പിന്തുടരൂ, മത്സരിക്കരുത്."],
   null,
   "നേരായ സ്വഫ്ഫ് വെറും അലങ്കാരമല്ല. സ്വഫ്ഫുകൾ നേരെയാകുന്നതുവരെ നബി ﷺ നിസ്കാരം തുടങ്ങിയിരുന്നില്ല."]},
-/* 15 */{t:"ജുമുഅ",sub:"സൂര്യൻ ഉദിക്കുന്ന ദിവസങ്ങളിൽ ഏറ്റവും ഉത്തമമായ ദിവസം.",
+/* 13 */{t:"ജുമുഅ",sub:"സൂര്യൻ ഉദിക്കുന്ന ദിവസങ്ങളിൽ ഏറ്റവും ഉത്തമമായ ദിവസം.",
  b:["വെള്ളിയാഴ്ച ളുഹ്‌റിന് പകരമാണ് ജുമുഅ. പ്രായപൂർത്തിയായ, ബുദ്ധിയുള്ള, നാട്ടിൽ താമസിക്കുന്ന പുരുഷന്മാർക്ക് ഇത് നിർബന്ധമാണ്. രണ്ട് ഖുത്ബകൾക്ക് ശേഷമുള്ള രണ്ട് റക്അത്താണ് — ഖുത്ബ നിസ്കാരത്തിന്റെ ഭാഗമാണ്, അതിന്റെ ആമുഖമല്ല.",
   "ആ ദിവസത്തെ സുന്നത്തുകൾ",
   ["കുളിക്കുക, ഏറ്റവും നല്ല വൃത്തിയുള്ള വസ്ത്രം ധരിക്കുക.",
@@ -861,17 +937,17 @@ const ML_L=[
   "വെള്ളിയാഴ്ചയിൽ ഒരു നിമിഷമുണ്ട് — ആ നേരത്ത് ഒരു മുസ്‌ലിം അല്ലാഹുവോട് നല്ലത് ചോദിച്ചാൽ അത് നൽകപ്പെടും. പല പണ്ഡിതരും അത് മഗ്‌രിബിന് മുമ്പുള്ള അവസാന നാഴികയിലാണെന്ന് പറയുന്നു.",
   "നേരത്തെ എത്തൂ, മുന്നിൽ ഇരിക്കൂ, മൗനമായിരിക്കൂ. ഒരുങ്ങിയെത്തുന്നവന് വെള്ളിയാഴ്ച പ്രതിഫലം നൽകുന്നു."]}
 ,
-/* 16 */{t:"സുന്നത്തും നഫ്‌ലും",sub:"നബി ﷺ പതിവാക്കിയ പത്ത് റക്അത്ത്, പിന്നെ അതിനപ്പുറമുള്ള നിസ്കാരങ്ങൾ.",
+/* 14 */{t:"സുന്നത്തും നഫ്‌ലും",sub:"നബി ﷺ പതിവാക്കിയ പത്ത് റക്അത്ത്, പിന്നെ അതിനപ്പുറമുള്ള നിസ്കാരങ്ങൾ.",
  b:["ഏത് സമയത്തും എത്ര വേണമെങ്കിലും സുന്നത്ത് നിസ്കരിക്കാം. പക്ഷേ ഫർദ് നിസ്കാരങ്ങൾക്ക് മുമ്പും ശേഷവും നബി ﷺ <b>പതിവായി</b> നിർവഹിച്ചവയ്ക്ക് പ്രത്യേക സ്ഥാനമുണ്ട്. അവ <b>പത്ത് റക്അത്താണ്</b>, അവയെ <b>റവാതിബ്</b> എന്ന് വിളിക്കുന്നു.",
-  {head:["നിസ്കാരം","മുമ്പ്","ശേഷം"],rows:[["സുബ്ഹി","2","—"],["ളുഹ്ർ","2","2"],["മഗ്‌രിബ്","—","2"],["ഇശാഅ്","—","2"]]},
-  "ഇബ്നു ഉമർ (റ) പറഞ്ഞു: <i>നബി ﷺ യിൽ നിന്ന് പത്ത് റക്അത്ത് ഞാൻ മനഃപാഠമാക്കി — ളുഹ്‌റിന് മുമ്പ് രണ്ടും ശേഷം രണ്ടും, മഗ്‌രിബിന് ശേഷം വീട്ടിൽ രണ്ട്, ഇശാഇന് ശേഷം വീട്ടിൽ രണ്ട്, സുബ്ഹിക്ക് മുമ്പ് രണ്ട്.</i> (ബുഖാരി)",
-  "സുബ്ഹിക്ക് മുമ്പുള്ള രണ്ട് — എല്ലാറ്റിലും ഏറ്റവും പ്രധാനം",
+  {head:["നിസ്കാരം","മുമ്പ്","ശേഷം"],rows:[["സ്വുബ്ഹി","2","—"],["ളുഹ്ർ","2","2"],["മഗ്‌രിബ്","—","2"],["ഇശാഅ്","—","2"]]},
+  "ഇബ്നു ഉമർ (റ) പറഞ്ഞു: <i>നബി ﷺ യിൽ നിന്ന് പത്ത് റക്അത്ത് ഞാൻ മനഃപാഠമാക്കി — ളുഹ്‌റിന് മുമ്പ് രണ്ടും ശേഷം രണ്ടും, മഗ്‌രിബിന് ശേഷം വീട്ടിൽ രണ്ട്, ഇശാഇന് ശേഷം വീട്ടിൽ രണ്ട്, സ്വുബ്ഹിക്ക് മുമ്പ് രണ്ട്.</i> (ബുഖാരി)",
+  "സ്വുബ്ഹിക്ക് മുമ്പുള്ള രണ്ട് — എല്ലാറ്റിലും ഏറ്റവും പ്രധാനം",
   "യാത്രയിൽ പോലും അവിടുന്ന് അവ ഒഴിവാക്കിയില്ല. അവിടുന്ന് പറഞ്ഞു: <i>ഈ രണ്ട് റക്അത്ത് എനിക്ക് ഈ ദുൻയാവിനെക്കാൾ പ്രിയപ്പെട്ടതാണ്.</i> (മുസ്‌ലിം, തിർമിദി, അഹ്മദ്)",
-  "അബൂഹുറൈറ (റ) റിപ്പോർട്ട് ചെയ്യുന്നു: <i>കുതിരപ്പട നിങ്ങളെ ഓടിച്ചാലും സുബ്ഹിക്ക് മുമ്പുള്ള രണ്ട് റക്അത്ത് ഒഴിവാക്കരുത്.</i> (അഹ്മദ്, അബൂദാവൂദ്). ഈ രണ്ടിന് നൽകിയ ശ്രദ്ധ മറ്റൊരു സുന്നത്തിനും അവിടുന്ന് നൽകിയിട്ടില്ലെന്ന് ആഇശ (റ) പറഞ്ഞു. (ബുഖാരി, മുസ്‌ലിം)",
+  "അബൂഹുറൈറ (റ) റിപ്പോർട്ട് ചെയ്യുന്നു: <i>കുതിരപ്പട നിങ്ങളെ ഓടിച്ചാലും സ്വുബ്ഹിക്ക് മുമ്പുള്ള രണ്ട് റക്അത്ത് ഒഴിവാക്കരുത്.</i> (അഹ്മദ്, അബൂദാവൂദ്). ഈ രണ്ടിന് നൽകിയ ശ്രദ്ധ മറ്റൊരു സുന്നത്തിനും അവിടുന്ന് നൽകിയിട്ടില്ലെന്ന് ആഇശ (റ) പറഞ്ഞു. (ബുഖാരി, മുസ്‌ലിം)",
   ["<b>ലഘുവായും ചുരുക്കിയും</b> നിസ്കരിക്കൂ — ഫാതിഹ ഓതിയോ എന്ന് പോലും സംശയിച്ചെന്ന് ആഇശ (റ) പറഞ്ഞു.",
    "ആദ്യ റക്അത്തിൽ സൂറത്തുൽ കാഫിറൂനും രണ്ടാമത്തേതിൽ ഇഖ്‌ലാസും പതുക്കെ ഓതൂ. (അഹ്മദ്)",
-   "പിന്നെ അവിടുന്ന് സുബ്ഹി നിസ്കാരം വരെ <b>വലതു വശം ചെരിഞ്ഞ് കിടക്കുമായിരുന്നു</b> — വീട്ടിൽ സുന്നത്ത് നിസ്കരിക്കുന്നവർക്കാണ് ഇത് ബാധകമെന്ന് പല പണ്ഡിതരും പറയുന്നു.",
-   "നഷ്ടപ്പെട്ടാൽ സുബ്ഹി നിസ്കാരത്തിന് ശേഷം നിസ്കരിക്കാം."],
+   "പിന്നെ അവിടുന്ന് സ്വുബ്ഹി നിസ്കാരം വരെ <b>വലതു വശം ചെരിഞ്ഞ് കിടക്കുമായിരുന്നു</b> — വീട്ടിൽ സുന്നത്ത് നിസ്കരിക്കുന്നവർക്കാണ് ഇത് ബാധകമെന്ന് പല പണ്ഡിതരും പറയുന്നു.",
+   "നഷ്ടപ്പെട്ടാൽ സ്വുബ്ഹി നിസ്കാരത്തിന് ശേഷം നിസ്കരിക്കാം."],
   "ളുഹ്ർ, മഗ്‌രിബ്, ഇശാഅ്",
   "ചിലപ്പോൾ നബി ﷺ ളുഹ്‌റിന് മുമ്പ് <b>നാലും</b> ശേഷം രണ്ടും നിസ്കരിച്ചു. ആഇശ (റ) ഇത് റിപ്പോർട്ട് ചെയ്തിട്ടുണ്ട് (അഹ്മദ്, മുസ്‌ലിം), ചിലപ്പോൾ ളുഹ്‌റിന് ശേഷം നാലും നിസ്കരിച്ചു. മഗ്‌രിബിന് മുമ്പ് രണ്ട് റക്അത്ത് അനുവദനീയമാണ്, പക്ഷേ അത് സ്ഥിരം പതിവാക്കരുത് — <i>മഗ്‌രിബിന് മുമ്പ് നിസ്കരിക്കൂ</i> എന്ന് പറഞ്ഞ ശേഷം അവിടുന്ന് <i>ഉദ്ദേശിക്കുന്നവർക്ക്</i> എന്ന് കൂട്ടിച്ചേർത്തു (ബുഖാരി), അത് ഉറപ്പുള്ള സുന്നത്തായി ആളുകൾ കണക്കാക്കുന്നത് അവിടുന്ന് ഇഷ്ടപ്പെട്ടില്ല.",
   "അസ്വ്ർ — ലഘുവായ ഒരു സുന്നത്ത്",
@@ -883,7 +959,7 @@ const ML_L=[
      ["വുദൂവിന് ശേഷം","വുദൂ പൂർത്തിയാക്കിയ ശേഷം","2"]]},
   "<b>സ്ഥലം മാറുക.</b> ഫർദ് നിസ്കരിച്ച അതേ സ്ഥലത്തല്ല, അൽപ്പം മുന്നിലോ പിന്നിലോ വലത്തോ ഇടത്തോ മാറി സുന്നത്ത് നിസ്കരിക്കണമെന്ന് അബൂഹുറൈറ (റ) വഴി വന്ന ഹദീസ് സൂചിപ്പിക്കുന്നു (അബൂദാവൂദ്).",
   "ദിവസം പത്ത് റക്അത്ത്, ഒരു വർഷം തുടർന്നാൽ — ഒരു തവണ നൂറ് നിസ്കരിക്കുന്നതിനെക്കാൾ ഒരാളെ അത് മാറ്റിമറിക്കും."]},
-/* 17 */{t:"പ്രത്യേക സമയങ്ങളിലെ നിസ്കാരങ്ങൾ",sub:"ആവശ്യം വരുന്നതിന് മുമ്പ് എല്ലാ മുസ്‌ലിമും അറിഞ്ഞിരിക്കേണ്ട നാലെണ്ണം.",
+/* 15 */{t:"പ്രത്യേക സമയങ്ങളിലെ നിസ്കാരങ്ങൾ",sub:"ആവശ്യം വരുന്നതിന് മുമ്പ് എല്ലാ മുസ്‌ലിമും അറിഞ്ഞിരിക്കേണ്ട നാലെണ്ണം.",
  b:["മയ്യിത്ത് നിസ്കാരം",
   "ഇത് ഫർദ് കിഫായയാണ് — ചിലർ നിർവഹിച്ചാൽ ബാക്കിയുള്ളവരിൽ നിന്ന് ബാധ്യത ഒഴിവാകും. ഇതിന് <b>റുകൂഉം സുജൂദുമില്ല</b>: നാല് തക്ബീർ, മുഴുവൻ സമയവും നിൽക്കൽ. ആദ്യത്തേതിന് ശേഷം ഫാതിഹ; രണ്ടാമത്തേതിന് ശേഷം സ്വലാത്ത്; മൂന്നാമത്തേതിന് ശേഷം മയ്യിത്തിന് വേണ്ടി ദുആ; നാലാമത്തേതിന് ശേഷം സലാം.",
   null,"രണ്ട് പെരുന്നാളുകൾ",
@@ -894,7 +970,7 @@ const ML_L=[
   "സുജൂദുത്തിലാവത്ത്",
   "സുജൂദിന്റെ ആയത്ത് ഓതുകയോ കേൾക്കുകയോ ചെയ്താൽ അല്ലാഹു അക്ബർ പറഞ്ഞ് ഒരു സുജൂദ് ചെയ്ത് എഴുന്നേൽക്കുക. നിസ്കാരത്തിനുള്ളിലാണെങ്കിൽ അവിടെത്തന്നെ; പുറത്താണെങ്കിൽ ശുദ്ധിയോടെ ഖിബ്‌ലയിലേക്ക് തിരിഞ്ഞ്.",
   "മയ്യിത്ത് നിസ്കാരം ഇപ്പോൾ പഠിക്കൂ. ആവശ്യം വരുന്ന ദിവസം പഠിക്കാൻ സമയമുണ്ടാകില്ല."]},
-/* 18 */{t:"ഖുശൂഅ്",sub:"മനസ്സ് ശരിക്കും ഹാജരായിക്കൊണ്ട് നിസ്കരിക്കൽ.",
+/* 16 */{t:"ഖുശൂഅ്",sub:"മനസ്സ് ശരിക്കും ഹാജരായിക്കൊണ്ട് നിസ്കരിക്കൽ.",
  b:["രൂപത്തിൽ പൂർണവും ഉള്ളടക്കത്തിൽ ശൂന്യവുമായ ഒരു നിസ്കാരം ഉണ്ടാകാം. അവയവങ്ങളുടെ അടക്കവും മനസ്സിന്റെ സാന്നിധ്യവും ഒരുമിച്ചാണ് ഖുശൂഅ് — നിന്നെ മാറ്റിമറിക്കുന്ന നിസ്കാരത്തെ വെറും എണ്ണത്തിന് വേണ്ടിയുള്ള നിസ്കാരത്തിൽ നിന്ന് വേർതിരിക്കുന്നത് അതാണ്.",
   "നിൽക്കുന്നതിന് മുമ്പ്",
   ["വുദൂ പതുക്കെ, തിടുക്കമില്ലാതെ ചെയ്യൂ.",
@@ -908,7 +984,7 @@ const ML_L=[
    "മനസ്സ് അലയുമ്പോൾ ദേഷ്യപ്പെടാതെ തിരിച്ചുകൊണ്ടുവരൂ. അത് വീണ്ടും അലയും. വീണ്ടും തിരിച്ചുകൊണ്ടുവരൂ."],
   "ഒരാൾ നിസ്കാരം പൂർത്തിയാക്കിയാലും അതിന്റെ പത്തിലൊന്ന് മാത്രമേ അവന് എഴുതപ്പെടൂ എന്ന് നബി ﷺ പറഞ്ഞു — അവൻ ഹാജരായിരുന്ന ഭാഗം മാത്രം.",
   "ഇത് നിന്റെ അവസാനത്തെ നിസ്കാരമാണെന്ന് കരുതി നിസ്കരിക്കൂ. ഒരു ദിവസം അത് ശരിയാകും."]},
-/* 19 */{t:"ചെറിയ അശുദ്ധി",sub:"വുദൂ എന്താണ് നീക്കുന്നത് — എന്താണ് വുദൂ മുറിക്കുന്നത്.",
+/* 17 */{t:"ചെറിയ അശുദ്ധി",sub:"വുദൂ എന്താണ് നീക്കുന്നത് — എന്താണ് വുദൂ മുറിക്കുന്നത്.",
  b:["വുദൂ ചെയ്യുന്നതുവരെ നിസ്കാരം തടയുന്ന അവസ്ഥയാണ് ഹദസുൽ അസ്ഗർ. ഇത് ശരീരത്തിലെ അഴുക്കല്ല; അത് നീക്കുന്നതുവരെ ഒരാളിൽ പറ്റിനിൽക്കുന്ന ഒരു വിധിയാണ്.",
   "വുദൂവിന്റെ ആറ് ഫർദുകൾ (ശാഫിഈ)",
   ["<b>നിയ്യത്ത്</b> — വെള്ളം ആദ്യം മുഖത്ത് തൊടുന്ന നിമിഷത്തിൽ.",
@@ -925,7 +1001,7 @@ const ML_L=[
    "<b>ഉള്ളംകൈകൊണ്ടോ വിരലുകളുടെ ഉൾഭാഗം കൊണ്ടോ</b> ഗുഹ്യഭാഗം സ്പർശിക്കൽ — സ്വന്തമോ മറ്റൊരാളുടെയോ."],
   "<b>സംശയത്തിന്റെ നിയമം.</b> ഉറപ്പ് സംശയം കൊണ്ട് നീങ്ങുകയില്ല. വുദൂ ഉണ്ടായിരുന്നു എന്ന് ഉറപ്പും അത് മുറിഞ്ഞോ എന്ന് സംശയവുമാണെങ്കിൽ നിനക്ക് വുദൂ ഉണ്ട്. വസ്‌വാസ് കാരണം വുദൂ ആവർത്തിക്കരുത്.",
   "മൂന്നും നാലും ശാഫിഈ നിലപാടുകളാണ്, മറ്റ് മദ്ഹബുകളിൽ വ്യത്യാസമുണ്ട്. നീ പഠിക്കുന്ന മദ്ഹബ് പിന്തുടരൂ."]},
-/* 20 */{t:"വലിയ അശുദ്ധി",sub:"കുളി എന്താണ് നീക്കുന്നത്, എങ്ങനെ ചെയ്യണം. കാരണങ്ങൾ അടുത്ത പാഠത്തിൽ.",
+/* 18 */{t:"വലിയ അശുദ്ധി",sub:"കുളി എന്താണ് നീക്കുന്നത്, എങ്ങനെ ചെയ്യണം. കാരണങ്ങൾ അടുത്ത പാഠത്തിൽ.",
  b:["ഹദസുൽ അക്ബർ വലിയ അശുദ്ധിയാണ്; <b>കുളി</b> കൊണ്ട് മാത്രമേ അത് നീങ്ങൂ — അത് നീക്കാനുള്ള നിയ്യത്തോടെ ശരീരം മുഴുവൻ കഴുകൽ. ഇത് ആരാധനയുടെ കാര്യമാണ്, വൃത്തിയുടെയല്ല: ഒരാൾ പൂർണമായി വൃത്തിയായിരുന്നിട്ടും ഈ അവസ്ഥയിലാകാം.",
   "ഈ അവസ്ഥയിൽ ഇവ പാടില്ല",
   ["നിസ്കരിക്കൽ, കഅ്ബ ത്വവാഫ് ചെയ്യൽ.",
@@ -944,7 +1020,7 @@ const ML_L=[
    "ഒരു ഭാഗവും ഉണങ്ങിയിരിക്കരുത് — ചെവിക്ക് പിന്നിൽ, പൊക്കിൾ, വിരലുകൾക്കിടയിൽ.",
    "വുദൂവിൽ കാലുകൾ കഴുകിയിട്ടില്ലെങ്കിൽ അവസാനം കഴുകൂ."],
   "കുളി എന്നാൽ ഒരു നിയ്യത്തും എല്ലായിടത്തും വെള്ളവുമാണ്. ബാക്കിയെല്ലാം സുന്നത്താണ്."]},
-/* 21 */{t:"ജനാബത്ത് — കാരണങ്ങളും വിധികളും",sub:"വലിയ അശുദ്ധിയുടെ കാരണങ്ങളും അതിന് ശേഷം ചെയ്യേണ്ടതും.",
+/* 19 */{t:"ജനാബത്ത് — കാരണങ്ങളും വിധികളും",sub:"വലിയ അശുദ്ധിയുടെ കാരണങ്ങളും അതിന് ശേഷം ചെയ്യേണ്ടതും.",
  b:["ഈ അവസ്ഥ ഉണ്ടാക്കുന്നത്",
   ["<b>മനിയ്യ്</b> പുറപ്പെടൽ — ഉറക്കത്തിലായാലും ഉണർവിലായാലും, ആഗ്രഹത്തോടെയായാലും അല്ലെങ്കിലും.",
    "<b>ജിമാഅ്</b> — ദാമ്പത്യബന്ധം, പുറപ്പെടലുണ്ടായാലും ഇല്ലെങ്കിലും.",
@@ -960,10 +1036,10 @@ const ML_L=[
   "അതിന് ശേഷം",
   ["കഴിഞ്ഞ പാഠത്തിൽ പഠിച്ചതുപോലെ കുളിക്കൂ.",
    "ഈ അവസ്ഥയിൽ നഷ്ടപ്പെട്ട നിസ്കാരങ്ങൾ വീട്ടണം.",
-   "റമദാനിൽ രാത്രിയിലാണ് സംഭവിക്കുന്നതെങ്കിൽ കുളിച്ച് സാധാരണപോലെ നോമ്പെടുക്കൂ — സുബ്ഹി കഴിഞ്ഞ് കുളിച്ചാലും നോമ്പ് സാധുവാണ്."],
+   "റമദാനിൽ രാത്രിയിലാണ് സംഭവിക്കുന്നതെങ്കിൽ കുളിച്ച് സാധാരണപോലെ നോമ്പെടുക്കൂ — സ്വുബ്ഹി കഴിഞ്ഞ് കുളിച്ചാലും നോമ്പ് സാധുവാണ്."],
   "ഏത് പുറപ്പെടലാണെന്ന് ഉറപ്പില്ലെങ്കിൽ അധ്യാപകനോട് സ്വകാര്യമായി ചോദിക്കൂ. ഒരു ഫിഖ്ഹ് ചോദ്യത്തിന്റെ പേരിൽ ആരും ലജ്ജിക്കേണ്ടതില്ല.",
   "ആവശ്യം വരുന്നതിന് മുമ്പ് ഇത് പഠിക്കൂ. ഇത് സാധാരണ ഫിഖ്ഹാണ്, എല്ലാ മുസ്‌ലിമും ഇത് പഠിപ്പിക്കപ്പെടുന്നു."]},
-/* 22 */{t:"ഹൈദും നിഫാസും",sub:"വലിയ അശുദ്ധിയുടെ കാരണങ്ങളും മാസമുറയുടെ വിധികളും.",
+/* 20 */{t:"ഹൈദും നിഫാസും",sub:"വലിയ അശുദ്ധിയുടെ കാരണങ്ങളും മാസമുറയുടെ വിധികളും.",
  b:["ഈ അവസ്ഥ ഉണ്ടാക്കുന്നത്",
   ["<b>മനിയ്യ്</b> പുറപ്പെടൽ.",
    "<b>ജിമാഅ്</b> — ദാമ്പത്യബന്ധം.",
@@ -989,7 +1065,7 @@ const ML_L=[
    "സമയമുള്ള അടുത്ത നിസ്കാരം മുതൽ വീണ്ടും നിസ്കരിക്കൂ."],
   "സാധാരണ രീതിക്ക് പുറത്തുള്ള രക്തസ്രാവം <b>ഇസ്തിഹാദ</b> ആകാം, അതിന് വേറെ വിധികളാണ് — നിസ്കാരം തുടരും. ഊഹിക്കാതെ ഒരു അധ്യാപികയോട് ചോദിക്കൂ.",
   "ഈ വിധികൾ അറിയുന്നത് നിന്റെ ആരാധനയുടെ ഭാഗമാണ്. ലജ്ജയില്ലാതെ, ശരിയായി പഠിക്കൂ."]},
-/* 23 */{t:"വെള്ളമില്ലാത്തപ്പോൾ",sub:"തയമ്മും, പിന്നെ സോക്സിനും കെട്ടിനും മുകളിലൂടെ തടവൽ.",
+/* 21 */{t:"വെള്ളമില്ലാത്തപ്പോൾ",sub:"തയമ്മും, പിന്നെ സോക്സിനും കെട്ടിനും മുകളിലൂടെ തടവൽ.",
  b:["വെള്ളം ശരിക്കും ലഭ്യമല്ലാത്തപ്പോൾ, അല്ലെങ്കിൽ അത് ഉപയോഗിച്ചാൽ രോഗം വരികയോ കൂടുകയോ ചെയ്യുമ്പോൾ, വുദൂവിനും കുളിക്കും പകരമാണ് തയമ്മും. ഇത് ഒരു യഥാർത്ഥ പകരമാണ്, കുറഞ്ഞ ഒന്നല്ല.",
   "തയമ്മുമിന്റെ ഫർദുകൾ (ശാഫിഈ)",
   ["<b>നിയ്യത്ത്</b> — നിസ്കാരം അനുവദനീയമാക്കാൻ വേണ്ടി പ്രത്യേകം.",
@@ -1094,7 +1170,7 @@ function page(inner,partLabel,right,part){
   return `<section class="page p${part||1}">
     <div class="ptop"><span class="part">${partLabel||''}</span><span>${right||''}</span></div>
     ${inner}
-    <div class="wm">${tx("wm","Ṣalāh Complete · Thazkiya Level 3")}</div>
+    <div class="wm">${tx("wm","At-Ṭahārah wa-ṣ-Ṣalāh · Thazkiya Level 3")}</div>
     <div class="pno">${pageNo}</div>
   </section>`;
 }
@@ -1109,11 +1185,11 @@ const SHOW=LESSONS;
 /* cover */
 book.appendChild(el(`<section class="page p1 cover">
   <img class="crest" src="/logo.png" alt="">
-  <div class="car">الصَّلَاة</div>
-  <div class="cen">ṢALĀH COMPLETE</div>
+  <div class="car">الطَّهَارَةُ وَالصَّلَاة</div>
+  <div class="cen">AT-ṬAHĀRAH WA-Ṣ-ṢALĀH</div>
   <div class="cline"></div>
-  <div class="cmeta">${tx("coverMeta","Thazkiya · Level 3<br>Twenty-three lessons in five parts<br>Shāfiʿī madhhab<br>ManzilulQuran E-learning Academy")}</div>
-  <div class="wm">${tx("wm","Ṣalāh Complete · Thazkiya Level 3")}</div>
+  <div class="cmeta">${tx("coverMeta","Thazkiya · Level 3<br>Twenty-one lessons in five parts<br>Shāfiʿī madhhab<br>ManzilulQuran E-learning Academy")}</div>
+  <div class="wm">${tx("wm","At-Ṭahārah wa-ṣ-Ṣalāh · Thazkiya Level 3")}</div>
 </section>`));
 
 /* contents */
@@ -1127,7 +1203,7 @@ book.appendChild(el(`<section class="page p1">
   <h1 class="ltitle">${tx("contents","Contents")}</h1>
   <div class="rule"></div>
   <div class="toc">${toc}</div>
-  <div class="wm">${tx("wm","Ṣalāh Complete · Thazkiya Level 3")}</div>
+  <div class="wm">${tx("wm","At-Ṭahārah wa-ṣ-Ṣalāh · Thazkiya Level 3")}</div>
 </section>`));
 
 /* lessons */
@@ -1151,7 +1227,7 @@ function paintLang(){
   document.body.classList.toggle("lang-ml",T.lang==="ml");
   document.documentElement.lang=T.lang;
   if(langBtn) langBtn.textContent = T.lang==="ml" ? "English" : "\u0d2e\u0d32\u0d2f\u0d3e\u0d33\u0d02";
-  if(barMeta) barMeta.textContent = tx("barMeta","23 lessons \u00b7 Sh\u0101fi\u02bf\u012b");
+  if(barMeta) barMeta.textContent = tx("barMeta","21 lessons \u00b7 Sh\u0101fi\u02bf\u012b");
 }
 
 if(langBtn){
