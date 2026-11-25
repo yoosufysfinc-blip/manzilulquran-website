@@ -1,5 +1,5 @@
 /* =================================================================
-   ManzilulQuran — STUDY MATERIAL CATALOG  v1
+   ManzilulQuran — STUDY MATERIAL CATALOG  v2
    -----------------------------------------------------------------
    The list of lesson books a student may be assigned, plus the two
    helpers that turn a stored assignment into cards.
@@ -136,7 +136,7 @@ const SM_CATALOG = {
     ]
   },
   "salah-complete": {
-    title: "Salah Complete",
+    title: "At-Taharah wa-s-Salah",
     path : "/portal/study-material/thazkiya-level-3/salah-complete.html",
     lessons: [
       "Why Salah",
@@ -144,9 +144,7 @@ const SM_CATALOG = {
       "Conditions Before You Stand",
       "Adhan and Iqamah",
       "Niyyah for Every Prayer",
-      "Takbir to Ruku",
-      "Sujud to Salam",
-      "What We Recite",
+      "The Prayer in Order",
       "After the Salam",
       "Sujud as-Sahw",
       "What Breaks the Prayer",
