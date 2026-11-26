@@ -12,8 +12,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="/assets/classes/admin.v2.css" />
-<link rel="stylesheet" href="/assets/classes/chat.v1.css" />
-<link rel="stylesheet" href="/assets/classes/teachers-admin.v3.css" />
+<link rel="stylesheet" href="/assets/classes/chat.v2.css" />
+<link rel="stylesheet" href="/assets/classes/teachers-admin.v4.css" />
 </head>
 <body>
   <div class="ambient" aria-hidden="true"><i class="amb-gold"></i><i class="amb-jade"></i></div>
@@ -131,6 +131,10 @@
       <div id="alertRows"></div>
     </div>
 
+    <!-- Academic Service classes of this class sheet's students that have no
+         class sheet yet — filled by teachers-admin.v4.js -->
+    <div class="acs-panel" id="asPanel" hidden></div>
+
     <div class="list-wrap" data-enter style="--i:4">
       <div class="list-tools">
         <label class="list-search">
@@ -188,7 +192,7 @@
       <div id="bList" data-enter style="--i:3"><div class="loading"><div class="loading-spin"></div><div>Loading batches…</div></div></div>
     </div>
 
-    <!-- TEACHERS WORKSPACE — filled by /assets/classes/teachers-admin.v3.js.
+    <!-- TEACHERS WORKSPACE — filled by /assets/classes/teachers-admin.v4.js.
          Teachers, their students and the attendance come from Academic
          Service (read only); profiles, notices, leave and availability
          from <prefix>tadmin. -->
@@ -609,6 +613,14 @@
             <input type="tel" id="fPhone" placeholder="+91 98765 43210" />
             <span class="err-msg">Please enter a valid number (or leave empty).</span>
           </div>
+          <div class="field full si-field" id="fSiField">
+            <label>Student sign-in <span style="font-size:10px;color:var(--cream-faint);font-weight:500;letter-spacing:0;text-transform:none">— the student opens the sheet once on their phone with the contact number above + date of birth</span></label>
+            <div class="si-row">
+              <input type="date" id="fSiDob" aria-label="Student's date of birth" />
+              <label class="si-switch"><input type="checkbox" id="fSiOn" /><span>Sign-in on</span></label>
+            </div>
+            <div class="si-meta"><span id="fSiNote"></span><button type="button" class="btn-outline si-out" id="fSiOut" hidden>Sign out all devices</button></div>
+          </div>
         </div>
       </div>
       <div class="modal-foot">
@@ -695,7 +707,7 @@ window.MQ_SUPABASE_PREFIX = "clsdemo_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v7.js"></script>
+<script src="/assets/classes/api.v8.js"></script>
 <script src="/assets/classes/catalog.v2.js"></script>
 <script>
 /* =================================================================
@@ -2631,7 +2643,7 @@ function renderList(items){
   const rows = items.map((c, i) => {
     const isActive = (c["Status"] || "Active") === "Active";
     return `<tr${i < 14 ? ` class="rv" style="--r:${i}"` : ''}>
-      <td data-label="Student">${escapeHtml(c["Student Name"] || "—")}${needsHifzLink(c) ? '<span class="row-note" title="Paste their link from the Hifz Command Center in Edit">No Hifz link</span>' : ''}</td>
+      <td data-label="Student">${escapeHtml(c["Student Name"] || "—")}${needsHifzLink(c) ? '<span class="row-note" title="Paste their link from the Hifz Command Center in Edit">No Hifz link</span>' : ''}${window.CLS_ROW ? CLS_ROW(c) : ''}</td>
       <td class="sid" data-label="Student ID">${escapeHtml(c["Student ID"] || "—")}</td>
       <td data-label="Course">${escapeHtml(c["Course"] || "—")}</td>
       <td class="date" data-label="Joined">${fmtDate(c["Join Date"])}</td>
@@ -2684,7 +2696,7 @@ function renderList(items){
 function shareUrl(c){ return SHARE_BASE + "?t=" + encodeURIComponent(c["Share Token"]); }
 
 /* ---------------- Create / Edit ---------------- */
-$("newClassBtn").onclick = () => openForm(null);
+$("newClassBtn").onclick = () => (window.CLS_NEW ? CLS_NEW() : openForm(null));
 
 /* =================================================================
    STUDY MATERIAL CATALOG
@@ -2791,6 +2803,7 @@ function openForm(c){
   $("fHifzLink").value = c ? (c["Hifz Link"] || "") : "";
 
   document.querySelectorAll("#formModal .field").forEach(f => f.classList.remove("invalid"));
+  if(window.CLS_SI) CLS_SI.fill(c);
   openModal("formModal");
   setTimeout(()=>$("fName").focus(), 200);
 }
@@ -2834,6 +2847,10 @@ $("formSaveBtn").onclick = async () => {
     closeModal("formModal");
     toast(editingId ? "Class sheet updated" : "Class sheet created");
     await loadClasses();
+    if(window.CLS_SI){
+      const savedId = editingId || ((classes.find(x => x["Share Token"] === data.token) || {})["Class ID"]);
+      await CLS_SI.save(savedId);
+    }
 
     // Straight after creating, show the share link — that's the whole point
     if(!editingId && data.token){
@@ -3190,7 +3207,7 @@ function toDateInput(v){
   return d.toISOString().slice(0,10);
 }
 </script>
-<script src="/assets/classes/chat.v1.js"></script>
-<script src="/assets/classes/teachers-admin.v3.js"></script>
+<script src="/assets/classes/chat.v2.js"></script>
+<script src="/assets/classes/teachers-admin.v4.js"></script>
 </body>
 </html>

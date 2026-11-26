@@ -14,7 +14,12 @@
 
 <link rel="stylesheet" href="/assets/classes/sheet.v3.css?b=1" />
 <link rel="stylesheet" href="/assets/classes/hifz-app.v1.css" />
-<link rel="stylesheet" href="/assets/classes/chat.v1.css" />
+<link rel="stylesheet" href="/assets/classes/chat.v2.css" />
+<style>
+  /* sign-out on a sheet with a student sign-in */
+  .foot-link{background:none;border:0;padding:0;font:inherit;color:var(--azure-light);opacity:.85;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .foot-link:hover{opacity:1}
+</style>
 </head>
 <body>
 
@@ -212,6 +217,7 @@
   <footer class="foot">
     ManzilulQuran E-learning Academy ·
     <a href="https://manzilulquran.in" target="_blank" rel="noopener">manzilulquran.in</a>
+    <span id="signoutRow" hidden> · <button type="button" class="foot-link" id="signoutBtn">Sign out on this phone</button></span>
   </footer>
 
 <div class="state" id="stateLogin">
@@ -236,6 +242,30 @@
   </div>
 </div>
 
+<!-- Individual sheet sign-in (phone + date of birth). Once per phone or
+     browser; it stays until the academy signs the sheet out. -->
+<div class="state" id="stateSignin">
+  <div class="login-card">
+    <div class="login-logo"><img src="/logo.png" alt="" onerror="this.style.display='none'" /></div>
+    <div class="brand">ManzilulQuran</div>
+    <div class="brand-sub">E-Learning Academy</div>
+
+    <div class="rule"><i></i><span id="siCourse">Class Sheet</span><i></i></div>
+
+    <p class="login-lead" id="siLead">Sign in once to open your class sheet.</p>
+
+    <label class="login-lbl" for="siPhone">Phone number</label>
+    <input type="tel" id="siPhone" inputmode="tel" autocomplete="tel" placeholder="the number given to the academy" />
+
+    <label class="login-lbl" for="siDob">Date of birth</label>
+    <input type="date" id="siDob" autocomplete="bday" />
+
+    <button class="login-btn" id="siBtn">Sign in</button>
+    <div class="login-err" id="siErr" hidden></div>
+    <div class="login-foot">You sign in only once on this phone. Your details are checked by the academy&rsquo;s system and never shown on this page.</div>
+  </div>
+</div>
+
 <div class="ntc-modal" id="ntcModal" hidden></div>
 
 <!-- =================================================================
@@ -253,12 +283,12 @@ window.MQ_SUPABASE_PREFIX = "clsdemo_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v7.js"></script>
+<script src="/assets/classes/api.v8.js"></script>
 <script src="/assets/classes/catalog.v2.js"></script>
 <script src="/assets/classes/notices.v1.js"></script>
 <script src="/assets/classes/pen.v2.js"></script>
-<script src="/assets/classes/chat.v1.js"></script>
-<script src="/assets/classes/chat-student.v1.js"></script>
+<script src="/assets/classes/chat.v2.js"></script>
+<script src="/assets/classes/chat-student.v2.js"></script>
 <script>
 /* =================================================================
    ░░  CLASS SHEET (shared view) — page logic  ░░
@@ -413,6 +443,13 @@ async function load(){
   try{
     const out = await fetchClass(token);
 
+    if(out.result === 'login'){
+      showSignin(out);
+      setSyncing(false);
+      return;
+    }
+    $('signoutRow').hidden = !out.signin;
+
     if(out.result !== 'success'){
       if(out.error === 'invalid_token'){
         // Link was reset. Drop the stale copy and say so, even if we were
@@ -447,6 +484,55 @@ async function load(){
     }
   }
 }
+
+/* ---------------- Individual sign-in (phone + date of birth) ---------------- */
+const SIGNIN_ERRORS = {
+  no_match:        'Those details do not match the academy\'s records. Check the phone number and the date of birth.',
+  locked_out:      'Too many attempts. Please wait 15 minutes and try again.',
+  missing_details: 'Please fill in both the phone number and the date of birth.',
+  not_active:      'This class sheet is not active right now. Please contact the academy.',
+  invalid_token:   'This class sheet link is not valid, or it may have been reset by the academy. Please ask for a new link.',
+  offline:         'Could not reach the academy. Please check your internet and try again.'
+};
+function showSignin(out, message){
+  if(out && out.course) $('siCourse').textContent = out.course;
+  if(out && out.name) $('siLead').textContent = 'Assalamu alaikum, ' + out.name + '. Sign in once to open your class sheet.';
+  const box = $('siErr');
+  if(message){ box.textContent = message; box.hidden = false; } else { box.hidden = true; }
+  showState('stateSignin');
+}
+async function doSignin(){
+  const phone = $('siPhone').value.trim(), dob = $('siDob').value, btn = $('siBtn');
+  if(!phone || !dob) return showSignin(null, SIGNIN_ERRORS.missing_details);
+  btn.disabled = true; btn.textContent = 'Checking…';
+  try{
+    const out = await studentLogin(shareToken, phone, dob, deviceId());
+    if(out.result === 'success' && out.data){
+      writeCache(shareToken, out.data);
+      render(out.data);
+      $('signoutRow').hidden = !out.signin;
+      showState('stateSheet');
+      window.dispatchEvent(new Event('mq:signedin'));
+      return;
+    }
+    let msg = SIGNIN_ERRORS[out.error] || out.error || 'Something went wrong. Please try again.';
+    if(out.error === 'no_match' && out.attemptsLeft !== undefined) msg += ' ' + out.attemptsLeft + ' attempt' + (out.attemptsLeft === 1 ? '' : 's') + ' left.';
+    showSignin(null, msg);
+  }catch(err){
+    console.error(err);
+    showSignin(null, SIGNIN_ERRORS.offline);
+  }finally{
+    btn.disabled = false; btn.textContent = 'Sign in';
+  }
+}
+$('siBtn').addEventListener('click', doSignin);
+$('siDob').addEventListener('keydown', e => { if(e.key === 'Enter') doSignin(); });
+$('siPhone').addEventListener('keydown', e => { if(e.key === 'Enter') $('siDob').focus(); });
+$('signoutBtn').addEventListener('click', async () => {
+  if(!confirm('Sign out of this class sheet on this phone? You will need the phone number and date of birth to open it again.')) return;
+  await studentLogout(shareToken);
+  location.reload();
+});
 
 /* ---------------- Render ---------------- */
 /* =================================================================

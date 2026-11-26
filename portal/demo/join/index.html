@@ -111,7 +111,7 @@ window.MQ_SUPABASE_PREFIX = "clsdemo_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v5.js"></script>
+<script src="/assets/classes/api.v8.js"></script>
 <script>
 spawnStars(40);
 /* =================================================================
@@ -196,6 +196,12 @@ function resolve(calendars, want){
   let data;
   try{
     const out = await fetchClass(token);
+    /* A sheet with a student sign-in: sign in on the class sheet first,
+       which then opens on the invited day. */
+    if(out.result === 'login'){
+      location.replace(mqUrl('/class/') + '?t=' + encodeURIComponent(token) + '&d=' + encodeURIComponent(dt));
+      return;
+    }
     if(out.result !== 'success'){
       fail('Link not valid', 'This link is no longer valid, or it was reset by the academy. Please ask for a new one.');
       return;
