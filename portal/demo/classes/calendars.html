@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="/assets/classes/calendars.v1.css" />
+<link rel="stylesheet" href="/assets/classes/calendars.v2.css" />
 </head>
 <body>
 
@@ -69,23 +69,33 @@
         <p id="formSubtitle">Set the schedule once — the days are generated automatically.</p>
       </div>
       <div class="modal-body">
+        <div class="cal-who" id="calWho"></div>
+        <div class="cal-cont" id="calCont" hidden></div>
         <div class="fgrid">
 
           <div class="field full">
-            <label>Calendar Name <span class="req">*</span></label>
-            <input type="text" id="fName" placeholder="e.g. July Plan, Revision Plan, Hifz Plan" />
+            <label>Calendar Name <span class="req">*</span> <span class="hint">— filled from the start date; tap a name or type your own</span></label>
+            <input type="text" id="fName" placeholder="e.g. November Session" />
+            <div class="q-chips" id="nameChips"></div>
             <span class="err-msg">Please enter a name.</span>
           </div>
 
           <div class="field">
             <label>Start Date <span class="req">*</span></label>
-            <input type="date" id="fStart" />
+            <div class="date-row">
+              <button type="button" class="step" data-step="-1" aria-label="One day earlier">−1</button>
+              <input type="date" id="fStart" />
+              <button type="button" class="step" data-step="1" aria-label="One day later">+1</button>
+            </div>
+            <div class="q-chips" id="startChips"></div>
             <span class="err-msg">Please pick a start date.</span>
           </div>
 
           <div class="field">
             <label>Number of Days <span class="req">*</span></label>
             <input type="number" id="fDays" min="1" max="40" value="30" />
+            <div class="q-chips" id="daysChips"></div>
+            <span class="end-line" id="endLine"></span>
             <span class="err-msg">Enter 1–40 days.</span>
           </div>
 
@@ -99,6 +109,10 @@
             <div id="linkList"></div>
             <button type="button" class="link-add" id="addLinkBtn">+ Add another link</button>
             <span class="err-msg" id="linkErr">Add at least one valid link (must start with http).</span>
+          </div>
+
+          <div class="field full">
+            <label>The days <span class="hint">— what the student will see</span></label>
             <div class="rotate-note" id="rotateNote"></div>
           </div>
 
@@ -333,30 +347,132 @@ function toggleDays(c){
 /* ---------------- Create / Edit ---------------- */
 $("newCalBtn").onclick = () => openForm(null);
 
+/* ---- the easier editor (demo first) ----
+   · the window says whose calendar it is
+   · the name fills itself from the start date ("November Session"); chips for other names
+   · a NEW calendar continues from the last one: it starts the day after it ends (today if it
+     already ended) with the same number of days, weekly off and links — "Start empty" clears it
+   · −1 / +1 / Today for the start date, "Till month end" / 30 / 40 for the days, the end date
+     shown, and every day of the calendar previewed (date, link number or Off) */
+const MONTHS_FULL = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+let nameAuto = true;          // the name follows the start date until the admin types their own
+function localToday(){ return isoDate(today0()); }
+function autoName(iso){ const d = parseDate(iso); return d ? MONTHS_FULL[d.getMonth()] + " Session" : ""; }
+function nameOptions(){
+  const s = parseDate($("fStart").value); if(!s) return [];
+  const n = parseInt($("fDays").value, 10) || 1, e = addDays(s, Math.max(1, Math.min(MAX_DAYS, n)) - 1);
+  const m1 = MONTHS_FULL[s.getMonth()], m2 = MONTHS_FULL[e.getMonth()];
+  const out = [m1 + " Session"];
+  if(m1 !== m2) out.push(m1.slice(0, 3) + "–" + m2.slice(0, 3) + " Session");
+  out.push(m1 + " " + s.getFullYear() + " Session", m1 + " Revision");
+  return out.filter((v, i, a) => a.indexOf(v) === i);
+}
+function paintNameChips(){
+  const cur = $("fName").value.trim();
+  $("nameChips").innerHTML = nameOptions().map(v => `<button type="button" data-name="${escapeHtml(v)}" class="${v === cur ? 'on' : ''}">${escapeHtml(v)}</button>`).join('');
+}
+/* the calendar that ends last (an active one first) — a new calendar continues from it */
+function lastCalendar(exceptId){
+  const list = calendars.filter(c => c.calendarId !== exceptId && endDate(c));
+  const pick = arr => arr.slice().sort((a, b) => endDate(b) - endDate(a))[0] || null;
+  return pick(list.filter(c => c.active)) || pick(list);
+}
+function startAfter(c){
+  const e = c ? endDate(c) : null; if(!e) return localToday();
+  const next = isoDate(addDays(e, 1));
+  return next < localToday() ? localToday() : next;
+}
+function paintStartChips(){
+  const last = lastCalendar(editingId), v = $("fStart").value, t = localToday(), opts = [["Today", t]];
+  if(last){ const a = startAfter(last); if(a !== t) opts.push(["After " + last.name, a]); }
+  $("startChips").innerHTML = opts.map(([l, d]) => `<button type="button" data-start="${d}" class="${v === d ? 'on' : ''}">${escapeHtml(l)}</button>`).join('');
+}
+function monthEndDays(){
+  const s = parseDate($("fStart").value); if(!s) return null;
+  const last = new Date(s.getFullYear(), s.getMonth() + 1, 0);
+  return Math.round((last - s) / 864e5) + 1;
+}
+function paintDaysChips(){
+  const v = parseInt($("fDays").value, 10), me = monthEndDays(), opts = [];
+  if(me && me <= MAX_DAYS) opts.push(["Till month end · " + me, me]);
+  [30, 40].forEach(n => { if(n !== me) opts.push([n + " days", n]); });
+  $("daysChips").innerHTML = opts.map(([l, n]) => `<button type="button" data-days="${n}" class="${v === n ? 'on' : ''}">${escapeHtml(l)}</button>`).join('');
+}
+function formCal(){
+  return { calendarId: editingId || "", name: $("fName").value.trim(), startDate: $("fStart").value,
+           days: Math.max(1, Math.min(MAX_DAYS, parseInt($("fDays").value, 10) || 1)), weeklyOff: getWeeklyOff(),
+           links: getLinks().length ? getLinks() : ["#"], active: $("fActive").value === "true" };
+}
+function paintEndLine(){
+  const c = formCal(), s = parseDate(c.startDate), box = $("endLine");
+  if(!s){ box.innerHTML = ""; return; }
+  const days = buildDays(c), cls = days.filter(d => !d.isOff).length, e = endDate(c);
+  const other = calendars.filter(x => x.calendarId !== editingId && x.active && endDate(x) && parseDate(x.startDate) <= e && endDate(x) >= s);
+  box.innerHTML = `Ends <b>${escapeHtml(DAYS_SHORT[e.getDay()] + ", " + fmtDate(e))}</b> · ${cls} class${cls === 1 ? '' : 'es'}${days.length - cls ? ' · ' + (days.length - cls) + ' off' : ''}` +
+    (other.length ? `<span class="warn">Overlaps ${other.map(x => '“' + escapeHtml(x.name) + '” (' + fmtDate(parseDate(x.startDate)) + ' – ' + fmtDate(endDate(x)) + ')').join(', ')}. The student sees the first one in the list on shared days.</span>` : '');
+}
+function paintWho(){
+  const ci = classInfo || {};
+  const nm = ci.studentName || "Student", ini = String(nm).split(/\s+/).filter(Boolean).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+  $("calWho").innerHTML = `<span class="av">${escapeHtml(ini || "?")}</span><span class="t"><span class="k">Calendar for</span><b>${escapeHtml(nm)}</b>
+    <small>${escapeHtml([ci.studentId, ci.course, ci.classTime ? formatTime(ci.classTime) : ""].filter(Boolean).join(" · "))}</small></span>`;
+}
+function editorChanged(){ paintNameChips(); paintStartChips(); paintDaysChips(); paintEndLine(); updateRotateNote(); }
+function setStart(iso){
+  $("fStart").value = iso;
+  $("fStart").closest(".field").classList.remove("invalid");
+  if(nameAuto) $("fName").value = autoName(iso);
+  editorChanged();
+}
+
 function openForm(c){
   editingId = c ? c.calendarId : null;
   $("formTitle").innerHTML = c ? 'Edit <span class="accent">Calendar Sheet</span>' : 'New <span class="accent">Calendar Sheet</span>';
   $("formSubtitle").textContent = c
     ? 'Changes apply to the student’s view immediately.'
     : 'Set the schedule once — the days are generated automatically.';
+  paintWho();
 
-  $("fName").value  = c ? c.name : '';
-  $("fStart").value = c ? c.startDate : '';
-  $("fDays").value  = c ? c.days : 30;
+  const last = c ? null : lastCalendar("");
+  const cont = $("calCont");
+  if(last){
+    cont.hidden = false;
+    cont.innerHTML = `<span>Continues after <b>${escapeHtml(last.name)}</b> (ends ${escapeHtml(fmtDate(endDate(last)))}) — same days, weekly off and links.</span><button type="button" id="calFresh">Start empty</button>`;
+  } else cont.hidden = true;
+
+  const start = c ? c.startDate : (last ? startAfter(last) : localToday());
+  $("fStart").value = start;
+  $("fDays").value  = c ? c.days : (last ? last.days : 30);
   $("fActive").value = c ? String(!!c.active) : 'true';
+  nameAuto = c ? (c.name === autoName(c.startDate)) : true;
+  $("fName").value  = c ? c.name : autoName(start);
 
-  buildDowChips(c ? c.weeklyOff : []);
-  buildLinkRows(c ? c.links : ['']);
+  buildDowChips(c ? c.weeklyOff : (last ? last.weeklyOff : []));
+  buildLinkRows(c ? c.links : (last && last.links && last.links.length ? last.links : ['']));
 
   // Position picker only makes sense when creating
   $("positionField").style.display = c ? 'none' : 'flex';
   if(!c) buildPositionOptions();
 
   document.querySelectorAll("#formModal .field").forEach(f => f.classList.remove("invalid"));
-  updateRotateNote();
+  editorChanged();
   openModal("formModal");
   setTimeout(()=>$("fName").focus(), 200);
 }
+/* the editor's quick buttons */
+$("formModal").addEventListener("click", function(ev){
+  const b = ev.target.closest("button"); if(!b) return;
+  if(b.dataset.name){ $("fName").value = b.dataset.name; nameAuto = b.dataset.name === autoName($("fStart").value); $("fName").closest(".field").classList.remove("invalid"); paintNameChips(); }
+  else if(b.dataset.start) setStart(b.dataset.start);
+  else if(b.dataset.step){ const d = parseDate($("fStart").value) || today0(); setStart(isoDate(addDays(d, +b.dataset.step))); }
+  else if(b.dataset.days){ $("fDays").value = b.dataset.days; $("fDays").closest(".field").classList.remove("invalid"); editorChanged(); }
+  else if(b.id === "calFresh"){
+    $("calCont").hidden = true;
+    $("fDays").value = 30; buildDowChips([]); buildLinkRows(['']);
+    setStart(localToday());
+  }
+});
+$("fName").addEventListener("input", () => { nameAuto = $("fName").value.trim() === autoName($("fStart").value); paintNameChips(); });
 
 function buildDowChips(selected){
   const sel = new Set(selected || []);
@@ -366,7 +482,7 @@ function buildDowChips(selected){
   $("dowRow").querySelectorAll('.dow').forEach(chip => {
     chip.addEventListener('click', () => {
       chip.classList.toggle('on');
-      updateRotateNote();
+      updateRotateNote(); paintEndLine();
     });
   });
 }
@@ -391,7 +507,7 @@ function addLinkRow(value){
     renumberLinks();
     updateRotateNote();
   });
-  row.querySelector('input').addEventListener('input', updateRotateNote);
+  row.querySelector('input').addEventListener('input', () => { updateRotateNote(); paintEndLine(); });
   $("linkList").appendChild(row);
   renumberLinks();
 }
@@ -407,38 +523,22 @@ function getLinks(){
 }
 $("addLinkBtn").onclick = () => { addLinkRow(''); updateRotateNote(); };
 
-// Live preview of how links land on the first few days
+// Every day of the calendar, as the student will see it: date, link number or Off
 function updateRotateNote(){
   const links = getLinks();
-  const off = new Set(getWeeklyOff().map(n => DAYS_FULL.indexOf(n)));
   const start = parseDate($("fStart").value);
   const note = $("rotateNote");
-
-  if(!links.length){
-    note.innerHTML = 'Add links above to see how they rotate.';
-    return;
-  }
-  if(!start){
-    note.innerHTML = `<b>${links.length} link${links.length>1?'s':''}</b> will rotate across class days. Pick a start date to preview.`;
-    return;
-  }
-
-  let linkIdx = 0;
-  const lines = [];
-  const total = Math.min(6, parseInt($("fDays").value,10) || 6);
-  for(let i = 0; i < total; i++){
-    const d = addDays(start, i);
-    if(off.has(d.getDay())){
-      lines.push(`Day ${i+1} ${DAYS_SHORT[d.getDay()]} → Holiday`);
-    } else {
-      lines.push(`Day ${i+1} ${DAYS_SHORT[d.getDay()]} → Link ${(linkIdx % links.length)+1}`);
-      linkIdx++;
-    }
-  }
-  note.innerHTML = `<b>Rotation preview</b><br>` + lines.join(' · ') + ' …';
+  if(!start){ note.innerHTML = 'Pick a start date to see the days.'; return; }
+  const days = buildDays(formCal()), t = today0().getTime();
+  const lead = (days[0].date.getDay() + 6) % 7;          // weeks start on Monday
+  const cells = '<span class="pad"></span>'.repeat(lead) + days.map(d =>
+    `<span class="${d.isOff ? 'off' : ''}${d.date.getTime() === t ? ' today' : ''}" title="Day ${d.n} · ${escapeHtml(DAYS_SHORT[d.date.getDay()] + ' ' + fmtDate(d.date))}${d.isOff ? ' · Holiday' : ''}">` +
+      `<small>${DAYS_SHORT[d.date.getDay()].slice(0, 2)}</small>${d.date.getDate()}<i>${d.isOff ? 'Off' : links.length > 1 ? 'L' + ((links.indexOf(d.link) + 1) || 1) : ''}</i></span>`).join('');
+  note.innerHTML = `<div class="pv-head"><span><b>${days.length} days</b> from ${escapeHtml(fmtDate(start))}</span><span>${links.length > 1 ? links.length + ' links rotate on class days (L1, L2…)' : links.length ? 'One link every class day' : 'Add a class link above'}</span></div>` +
+    `<div class="pv">${cells}</div>`;
 }
-$("fStart").addEventListener('change', updateRotateNote);
-$("fDays").addEventListener('input', updateRotateNote);
+$("fStart").addEventListener('change', () => { if(nameAuto && $("fStart").value) $("fName").value = autoName($("fStart").value); editorChanged(); });
+$("fDays").addEventListener('input', editorChanged);
 
 function buildPositionOptions(){
   const sel = $("fPosition");
