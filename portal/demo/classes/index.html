@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="/assets/classes/admin.v2.css" />
+<link rel="stylesheet" href="/assets/classes/teachers-admin.v1.css" />
 </head>
 <body>
   <div class="ambient" aria-hidden="true"><i class="amb-gold"></i><i class="amb-jade"></i></div>
@@ -55,7 +56,7 @@
          the class sheets, so switching never waits on the network.
          ========================================================= -->
     <div class="ws-bar" data-enter style="--i:1">
-      <div class="ws-toggle" id="wsToggle" role="tablist" aria-label="Workspace" data-active="individual">
+      <div class="ws-toggle three" id="wsToggle" role="tablist" aria-label="Workspace" data-active="individual">
         <span class="ws-thumb" id="wsThumb" aria-hidden="true"></span>
         <button class="ws-tab active" data-ws="individual" role="tab" aria-selected="true" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -72,6 +73,13 @@
           <span>Batch</span>
           <span class="ws-count" id="wsCountBatch">—</span>
         </button>
+        <button class="ws-tab" data-ws="teachers" role="tab" aria-selected="false" type="button" tabindex="-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/>
+          </svg>
+          <span>Teachers</span>
+          <span class="ws-count" id="wsCountTeachers">—</span>
+        </button>
       </div>
       <button class="btn-new" id="newClassBtn" type="button" aria-label="New class sheet">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -80,6 +88,10 @@
       <button class="btn-new" id="newBatchBtn" type="button" aria-label="New batch" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span class="lbl">New batch</span>
+      </button>
+      <button class="btn-new" id="tFreeBtn" type="button" aria-label="Who's free?" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span class="lbl">Who's free?</span>
       </button>
     </div>
 
@@ -174,6 +186,14 @@
       </div>
       <div id="bList" data-enter style="--i:3"><div class="loading"><div class="loading-spin"></div><div>Loading batches…</div></div></div>
     </div>
+
+    <!-- TEACHERS WORKSPACE — filled by /assets/classes/teachers-admin.v1.js.
+         Teachers, their students and the attendance come from Academic
+         Service (read only); profiles, notices, leave and availability
+         from <prefix>tadmin. -->
+    <div class="ws" id="wsTeachers" hidden>
+      <div id="taRoot"><div class="loading"><div class="loading-spin"></div><div>Loading teachers…</div></div></div>
+    </div>
   </div>
     </div>
   </div>
@@ -195,6 +215,10 @@
     <button class="menu-item" id="coursesBtn" type="button" role="menuitem">
       <span class="mi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>
       <span class="mi-txt"><b>Courses</b><small>Courses and their subjects</small></span>
+    </button>
+    <button class="menu-item" id="settingsBtn" type="button" role="menuitem">
+      <span class="mi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></span>
+      <span class="mi-txt"><b>Settings</b><small>Attendance link and teacher page</small></span>
     </button>
     <div class="menu-sep" role="separator"></div>
     <button class="menu-item" id="refreshBtn" type="button" role="menuitem">
@@ -670,7 +694,7 @@ window.MQ_SUPABASE_PREFIX = "clsdemo_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v5.js"></script>
+<script src="/assets/classes/api.v6.js"></script>
 <script src="/assets/classes/catalog.v2.js"></script>
 <script>
 /* =================================================================
@@ -742,51 +766,61 @@ let alertItems = [];          // Needs attention rows, before the search filter
 const modalCloseTimers = {};  // sheets that are sliding closed
 const WA_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.7 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1112 20.2z"/><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.5-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4z"/></svg>';
 
+const WS_ORDER = ["individual", "batch", "teachers"];
+const WS_EL = { individual: "wsIndividual", batch: "wsBatch", teachers: "wsTeachers" };
+function currentWs(){ return ($("wsToggle") && $("wsToggle").dataset.active) || "individual"; }
+
 function setWorkspace(name, opts){
+  if(WS_ORDER.indexOf(name) < 0) name = "individual";
+  const prev   = currentWs();
   const batch  = (name === "batch");
-  const inEl   = batch ? $("wsBatch") : $("wsIndividual");
-  const outEl  = batch ? $("wsIndividual") : $("wsBatch");
+  const inEl   = $(WS_EL[name]);
+  const outEls = WS_ORDER.filter(n => n !== name).map(n => $(WS_EL[n]));
+  const outEl  = outEls.find(el => !el.hidden) || outEls[0];
   const motion = !!(opts && opts.animate) && motionOK();
 
-  document.querySelectorAll(".ws-tab").forEach(function(t){
-    const on = (t.dataset.ws === name);
-    t.classList.toggle("active", on);
-    t.setAttribute("aria-selected", on ? "true" : "false");
-    t.tabIndex = on ? 0 : -1;
+  document.querySelectorAll(".ws-tab").forEach(function(tab){
+    const on = (tab.dataset.ws === name);
+    tab.classList.toggle("active", on);
+    tab.setAttribute("aria-selected", on ? "true" : "false");
+    tab.tabIndex = on ? 0 : -1;
   });
   $("wsToggle").dataset.active = name;
   document.body.classList.toggle("ws-batch", batch);
+  document.body.classList.toggle("ws-teachers", name === "teachers");
 
   // The header action belongs to whichever workspace is open.
-  $("newClassBtn").hidden = batch;
+  $("newClassBtn").hidden = (name !== "individual");
   $("newBatchBtn").hidden = !batch;
+  $("tFreeBtn").hidden = (name !== "teachers");
 
   try{ sessionStorage.setItem(WS_KEY, name); }catch(e){}
 
   // Normally loaded already, in the background after the class sheets;
   // this covers a slow or failed first load.
   if(batch && !batches.length){ batchesTried = true; loadBatches(); }
+  if(name === "teachers" && typeof taOpenWorkspace === "function") taOpenWorkspace();
+  updateLiveDot();
 
   // A switch still moving is finished at once, so quick taps never leave
   // both sides half-faded.
   if(wsSwap){
     clearTimeout(wsSwap.out); clearTimeout(wsSwap.done);
-    $("wsIndividual").classList.remove("ws-out", "ws-in");
-    $("wsBatch").classList.remove("ws-out", "ws-in");
+    WS_ORDER.forEach(n => $(WS_EL[n]).classList.remove("ws-out", "ws-in"));
     wsSwap = null;
   }
 
-  if(!motion || (!inEl.hidden && outEl.hidden)){
+  if(!motion || (!inEl.hidden && outEls.every(el => el.hidden))){
     inEl.hidden = false;
-    outEl.hidden = true;
+    outEls.forEach(el => { el.hidden = true; });
     return;
   }
 
   // The old side slips out, then the new side arrives from the direction
-  // of travel (.ws-out / .ws-in in admin.v2.css). An entrance still
-  // running on either side gives way to the switch.
+  // of travel (.ws-out / .ws-in in admin.v2.css).
+  const dir = WS_ORDER.indexOf(name) > WS_ORDER.indexOf(prev) ? 1 : -1;
   [inEl, outEl].forEach(function(w){
-    w.style.setProperty("--dir", batch ? 1 : -1);
+    w.style.setProperty("--dir", dir);
     w.querySelectorAll(".enter").forEach(function(el){ el.classList.remove("enter"); });
   });
   const thumb = $("wsThumb");
@@ -795,8 +829,7 @@ function setWorkspace(name, opts){
   outEl.classList.add("ws-out");
   const swap = wsSwap = {};
   swap.out = setTimeout(function(){
-    outEl.hidden = true;
-    outEl.classList.remove("ws-out");
+    outEls.forEach(el => { el.hidden = true; el.classList.remove("ws-out"); });
     inEl.hidden = false;
     inEl.classList.add("ws-in");
     swap.done = setTimeout(function(){
@@ -813,7 +846,8 @@ document.querySelectorAll(".ws-tab").forEach(function(t){
 $("wsToggle").addEventListener("keydown", function(e){
   if(e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
   e.preventDefault();
-  const next = (e.key === "ArrowRight") ? "batch" : "individual";
+  const i = WS_ORDER.indexOf(currentWs());
+  const next = WS_ORDER[(i + (e.key === "ArrowRight" ? 1 : WS_ORDER.length - 1)) % WS_ORDER.length];
   setWorkspace(next, { animate: true });
   const t = document.querySelector('.ws-tab[data-ws="' + next + '"]');
   if(t) t.focus();
@@ -1333,6 +1367,7 @@ async function loadBatches(){
     batches = (out.result === "success") ? (out.batches || []) : [];
   }catch(e){ console.error(e); batches = []; }
   renderBatches();
+  ensureBatchCalendars().then(() => updateLiveDot());
   revealRows($("bList"));
 }
 
@@ -1852,6 +1887,7 @@ const IC = {
   del:    '<path d="M4 7h16M9 7V4.8A.8.8 0 019.8 4h4.4a.8.8 0 01.8.8V7M6.5 7l1 12.2a1.8 1.8 0 001.8 1.8h5.4a1.8 1.8 0 001.8-1.8L17.5 7"/>',
   roster: '<circle cx="9" cy="8" r="3.4"/><path d="M3.5 19a5.5 5.5 0 0111 0"/><path d="M16 5.2a3.2 3.2 0 010 5.6M18 19a5 5 0 00-2.4-4.3"/>',
   join:   '<path d="M15.5 10.5l5-3v9l-5-3"/><rect x="3" y="6.5" width="12.5" height="11" rx="2.2"/>',
+  open: '<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/>',
   nolink: '<path d="M10.5 13.5l3-3"/><path d="M12.6 7.3l1.1-1.1a3.6 3.6 0 015.1 5.1l-1.1 1.1M11.4 16.7l-1.1 1.1a3.6 3.6 0 01-5.1-5.1l1.1-1.1"/><path d="M4 4l16 16"/>'
 };
 function ic(name){
@@ -1865,13 +1901,20 @@ function ic(name){
    opening this from another country sees the academy's day. */
 let liveTimer = null;
 
-/* Today's entries from both workspaces. The Live sheet and the dot on
-   the Live button are worked out from the same list, so they cannot
-   disagree. */
-function liveEntries(){
-  const entries = [];
+/* Today's entries for the OPEN workspace (fix 2026-11-26):
+     Individual → class sheets only · Batch → batches only · Teachers → both.
+   A class sheet or batch that is not Active NEVER appears, even when one
+   of its calendars is still switched on — the sheet decides, not the
+   calendar. The Live sheet and the dot on the Live button are worked out
+   from the same list, so they cannot disagree. */
+const batchCals = {};          // batchId → calendars array, when the list sent only a count
+function liveScope(){ const w = currentWs(); return { classes: w !== "batch", batches: w !== "individual", ws: w }; }
 
-  classes.forEach(c => {
+function liveEntries(){
+  const entries = [], sc = liveScope();
+
+  if(sc.classes) classes.forEach(c => {
+    if(String(c["Status"] || "Active") !== "Active") return;
     entries.push({
       id: c["Class ID"],
       name: c["Student Name"] || "—",
@@ -1882,18 +1925,53 @@ function liveEntries(){
     });
   });
 
-  batches.forEach(b => {
+  if(sc.batches) batches.forEach(b => {
+    if(String(b.status || "Active") !== "Active") return;
     entries.push({
       id: b.batchId,
       name: b.name,
       sub: [b.batchId, b.course, b.students + " students"].filter(Boolean).join(" · "),
       kind: "batch",
       classTime: b.classTime || "",
-      calendars: b.calendars || []
+      calendars: Array.isArray(b.calendars) ? b.calendars : (batchCals[b.batchId] || [])
     });
   });
 
   return entries;
+}
+
+/* Older servers send a batch's calendars as a number. Fetch the real list
+   once per batch (the same call the calendar page uses) so the batch
+   shows in Live and its join link works. */
+async function ensureBatchCalendars(){
+  const need = batches.filter(b => !Array.isArray(b.calendars) && !batchCals[b.batchId] && String(b.status || "Active") === "Active");
+  if(!need.length) return;
+  await Promise.all(need.map(async b => {
+    try{
+      const d = await fetchClassAdmin(b.batchId);
+      if(d && d.result === "success") batchCals[b.batchId] = d.calendars || [];
+    }catch(e){ console.error(e); }
+  }));
+}
+
+/* Open the sheet behind a Live row. A class opens the student's own sheet;
+   a batch opens its TEACHER link (?tb=) — no student sign-in needed, and
+   the student link stays protected. The window is opened at once (inside
+   the tap) so a phone does not block it while the link loads. */
+async function openLiveSheet(id, kind){
+  if(kind === "class"){
+    const c = classes.find(x => x["Class ID"] === id);
+    if(c) window.open(shareUrl(c), "_blank", "noopener");
+    return;
+  }
+  const w = window.open("about:blank", "_blank");
+  try{
+    const out = await fetchBatchAdmin(id, "");
+    const tok = out && out.result === "success" && out.batch && out.batch.teacherToken;
+    if(!tok){ if(w) w.close(); toast("This batch has no teacher link yet — open Roster & fees once to make one.", true); return; }
+    const url = window.location.origin + mqUrl("/class/") + "?tb=" + encodeURIComponent(tok);
+    if(w){ w.opener = null; w.location.href = url; } else window.location.href = url;
+  }catch(e){ if(w) w.close(); toast("Could not open the batch", true); }
 }
 
 /* The Live button's dot pings while a class is running, with the count. */
@@ -1930,6 +2008,7 @@ function liveRowHtml(r){
       <div class="live-sub"><span class="live-note">${escapeHtml(note)}</span><span class="lv-rest">${escapeHtml(rest)}</span></div>
     </div>
     <div class="live-btns">
+      <button class="ib ib-open" data-act="liveopen" data-tip="${r.kind === "batch" ? "Open batch (teacher view)" : "Open class sheet"}" aria-label="${r.kind === "batch" ? "Open batch, teacher view" : "Open class sheet"}">${ic('open')}</button>
       ${r.link
         ? `<a class="ib ib-join" href="${escapeHtml(r.link)}" target="_blank" rel="noopener" data-tip="Join class" aria-label="Join class">${ic('join')}</a>`
         : `<span class="ib ib-nolink" role="img" data-tip="No link today" aria-label="No link today">${ic('nolink')}</span>`}
@@ -1950,9 +2029,10 @@ function renderLive(){
   ].map(g => Object.assign(g, { rows: rows.filter(r => r.state === g.state) }))
    .filter(g => g.rows.length);
 
+  const scopeTxt = { individual: "Individual classes", batch: "Batch classes", teachers: "All classes" }[liveScope().ws];
   $("liveSub").textContent = rows.length
-    ? `Academy time (IST), now ${liveNowLabel()}`
-    : "No classes today. Holidays and finished plans are left out.";
+    ? `${scopeTxt} · academy time (IST), now ${liveNowLabel()}`
+    : `${scopeTxt}: nothing today. Holidays, inactive sheets and finished plans are left out.`;
 
   if(!rows.length){
     $("liveList").innerHTML = '<div class="empty-state">Nothing scheduled for today.</div>';
@@ -1972,6 +2052,7 @@ async function openLive(){
   // when that workspace is first opened.
   if(!batches.length) await loadBatches();
   renderLive();
+  if(liveScope().batches){ await ensureBatchCalendars(); renderLive(); }
   // Re-draw every 30s so "live now" and the countdown stay true while the
   // panel sits open — a stale live list is worse than none.
   clearInterval(liveTimer);
@@ -1983,16 +2064,18 @@ $("liveRefresh").addEventListener("click", async () => {
   const b = $("liveRefresh");
   if(b.classList.contains("busy")) return;
   b.classList.add("busy");
-  try{ await loadClasses(); await loadBatches(); renderLive(); }
+  try{ await loadClasses(); await loadBatches(); await ensureBatchCalendars(); renderLive(); }
   finally{ b.classList.remove("busy"); }
 });
 $("liveCloseBtn").addEventListener("click", () => { clearInterval(liveTimer); closeModal("liveModal"); });
 
 $("liveList").addEventListener("click", (e) => {
   const lt = e.target.closest("[data-act]");
-  if(!lt || lt.dataset.act !== "livetime") return;
+  if(!lt) return;
   const row = e.target.closest(".live-row");
-  if(row) promptClassTime(row.dataset.id, row.dataset.kind);
+  if(!row) return;
+  if(lt.dataset.act === "livetime") promptClassTime(row.dataset.id, row.dataset.kind);
+  if(lt.dataset.act === "liveopen") openLiveSheet(row.dataset.id, row.dataset.kind);
 });
 
 /* ---------------- One class time ----------------
@@ -3106,5 +3189,6 @@ function toDateInput(v){
   return d.toISOString().slice(0,10);
 }
 </script>
+<script src="/assets/classes/teachers-admin.v1.js"></script>
 </body>
 </html>
