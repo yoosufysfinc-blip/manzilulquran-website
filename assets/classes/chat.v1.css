@@ -1,0 +1,63 @@
+/* chat.v1.css — the chat thread (chat.v1.js) on the teacher page, the student's
+   class sheet and the admin view. Self-contained colours so it sits on any of the
+   dark emerald pages. Published files are immutable; create .v2 to change. */
+[hidden]{display:none !important}
+.mqc{--c-bg:#071210;--c-panel:#0b1a16;--c-line:rgba(120,190,165,.18);--c-line2:rgba(120,190,165,.3);--c-text:#eef5f1;--c-dim:rgba(238,245,241,.62);
+  --c-faint:rgba(238,245,241,.38);--c-em:#10b981;--c-em2:#059669;--c-gold:#e4c987;--c-rose:#ff9aa6;
+  display:flex;flex-direction:column;min-height:0;height:100%;color:var(--c-text);font-size:14.5px;line-height:1.45}
+.mqc-msgs{flex:1;min-height:0;overflow-y:auto;padding:12px 4px 8px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.mqc-list{display:flex;flex-direction:column;gap:6px}
+.mqc-keep{text-align:center;font-size:11px;color:var(--c-faint);margin:0 auto 8px;padding:4px 11px;border-radius:99px;background:rgba(238,245,241,.05);width:max-content;max-width:100%}
+.mqc-day{align-self:center;font-size:11px;font-weight:800;color:var(--c-dim);margin:8px 0 2px;letter-spacing:.02em}
+.mqc-empty{text-align:center;color:var(--c-dim);font-size:13.5px;padding:26px 10px}
+.mqc-m{max-width:82%;padding:8px 12px 6px;border-radius:17px;word-wrap:break-word;overflow-wrap:anywhere;animation:mqcIn .22s cubic-bezier(.32,.72,0,1)}
+.mqc-m.me{align-self:flex-end;background:linear-gradient(135deg,#0c6b4e,#095a41);border-bottom-right-radius:5px}
+.mqc-m.them{align-self:flex-start;background:var(--c-panel);border:1px solid var(--c-line);border-bottom-left-radius:5px}
+.mqc-m time{display:block;text-align:right;font-size:10px;color:rgba(238,245,241,.5);margin-top:2px}
+.mqc-who{display:block;font-size:10.5px;font-weight:800;color:var(--c-gold);margin-bottom:2px}
+@keyframes mqcIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.mqc-vn{display:flex;align-items:center;gap:9px;min-width:190px}
+.mqc-vn button{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;background:rgba(255,255,255,.15);color:#fff;border:0;cursor:pointer}
+.mqc-vn button svg{width:16px;height:16px}
+.mqc-vn span{font-size:11px;font-variant-numeric:tabular-nums;color:rgba(238,245,241,.75)}
+.mqc-wave{flex:1;display:flex;align-items:center;gap:2px;height:24px}
+.mqc-wave i{flex:1;border-radius:2px;background:rgba(255,255,255,.45)}
+.mqc-wave.on i{animation:mqcWave .8s ease-in-out infinite alternate}
+.mqc-wave.on i:nth-child(2n){animation-delay:.2s}
+@keyframes mqcWave{to{opacity:.3}}
+.mqc-inv{min-width:200px}
+.mqc-inv small{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--c-gold)}
+.mqc-inv b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:20px;font-weight:600;margin:2px 0 4px}
+.mqc-sub{font-size:12px;color:rgba(238,245,241,.7)}
+.mqc-join{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:40px;margin-top:4px;border:0;border-radius:99px;cursor:pointer;
+  font:inherit;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--c-em),var(--c-em2));box-shadow:0 8px 20px -8px rgba(16,185,129,.6)}
+.mqc-join svg{width:18px;height:18px}
+.mqc-comp{position:relative;display:flex;align-items:flex-end;gap:7px;padding:8px 2px 4px;border-top:1px solid var(--c-line)}
+.mqc-comp textarea{flex:1;min-height:42px;max-height:120px;resize:none;border-radius:21px;border:1px solid var(--c-line2);background:var(--c-panel);
+  color:var(--c-text);font:inherit;font-size:15px;line-height:1.35;padding:10px 15px;outline:none}
+.mqc-comp textarea:focus{border-color:var(--c-em)}
+.mqc-b{width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;border:1px solid var(--c-line2);background:transparent;color:var(--c-text);cursor:pointer}
+.mqc-b svg{width:19px;height:19px}
+.mqc-b.go{background:var(--c-em);border-color:transparent;color:#fff}
+.mqc-b:disabled{opacity:.5}
+.mqc-comp.rec textarea{visibility:hidden;position:absolute;width:0}
+.mqc-comp.rec [data-c="inv"]{display:none}
+.mqc-rec{flex:1;display:flex;align-items:center;gap:9px;min-height:42px;padding:0 14px;border-radius:21px;background:rgba(255,154,166,.1);border:1px solid rgba(255,154,166,.35);color:var(--c-rose);font-weight:800;font-size:14px}
+.mqc-rec i{width:9px;height:9px;border-radius:50%;background:var(--c-rose);animation:mqcWave .7s infinite alternate}
+.mqc-rec small{font-weight:600;font-size:11.5px;color:rgba(255,154,166,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mqc-comp.rec .go{background:var(--c-rose);color:#2a0a0e}
+.mqc-toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:999;background:#eef5f1;color:#0a1f16;
+  padding:9px 16px;border-radius:99px;font-weight:700;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+@media (prefers-reduced-motion:reduce){ .mqc-m,.mqc-wave.on i,.mqc-rec i{animation:none !important} }
+
+/* Student class sheet: the Chat tab panel (chat-student.v1.js) */
+.mqs-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:2px 2px 8px}
+.mqs-head small{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(238,245,241,.5)}
+.mqs-head b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:24px;font-weight:600;line-height:1.1}
+.mqs-head span{font-size:12px;color:rgba(238,245,241,.6);white-space:nowrap}
+.mqs-switch{display:flex;gap:6px;overflow-x:auto;margin:0 0 6px;scrollbar-width:none}
+.mqs-switch button{flex:none;font:inherit;font-size:12.5px;font-weight:700;color:rgba(238,245,241,.65);background:none;border:1px solid rgba(120,190,165,.3);border-radius:99px;padding:6px 12px;cursor:pointer}
+.mqs-switch button.on{background:#eef5f1;color:#071210;border-color:transparent}
+.mqs-switch i{font-style:normal;background:#10b981;color:#fff;border-radius:9px;padding:0 6px;font-size:10px;margin-left:3px}
+.mqs-box{height:min(62vh,560px);min-height:340px;border-radius:18px;background:rgba(4,7,6,.45);border:1px solid rgba(120,190,165,.16);padding:4px 10px 8px}
+.mqs-note{font-size:11.5px;color:rgba(238,245,241,.45);text-align:center;margin-top:8px}

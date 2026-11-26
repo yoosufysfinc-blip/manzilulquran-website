@@ -12,7 +12,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="/assets/classes/admin.v2.css" />
-<link rel="stylesheet" href="/assets/classes/teachers-admin.v2.css" />
+<link rel="stylesheet" href="/assets/classes/chat.v1.css" />
+<link rel="stylesheet" href="/assets/classes/teachers-admin.v3.css" />
 </head>
 <body>
   <div class="ambient" aria-hidden="true"><i class="amb-gold"></i><i class="amb-jade"></i></div>
@@ -187,7 +188,7 @@
       <div id="bList" data-enter style="--i:3"><div class="loading"><div class="loading-spin"></div><div>Loading batches…</div></div></div>
     </div>
 
-    <!-- TEACHERS WORKSPACE — filled by /assets/classes/teachers-admin.v2.js.
+    <!-- TEACHERS WORKSPACE — filled by /assets/classes/teachers-admin.v3.js.
          Teachers, their students and the attendance come from Academic
          Service (read only); profiles, notices, leave and availability
          from <prefix>tadmin. -->
@@ -694,7 +695,7 @@ window.MQ_SUPABASE_PREFIX = "clsdemo_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v6.js"></script>
+<script src="/assets/classes/api.v7.js"></script>
 <script src="/assets/classes/catalog.v2.js"></script>
 <script>
 /* =================================================================
@@ -3189,6 +3190,7 @@ function toDateInput(v){
   return d.toISOString().slice(0,10);
 }
 </script>
-<script src="/assets/classes/teachers-admin.v2.js"></script>
+<script src="/assets/classes/chat.v1.js"></script>
+<script src="/assets/classes/teachers-admin.v3.js"></script>
 </body>
 </html>
