@@ -207,6 +207,7 @@ function resolve(calendars, want){
       return;
     }
     data = out.data;
+    if(out.plan) data.plan = out.plan;
   }catch(err){
     console.error(err);
     fail('Connection problem', 'Could not reach the academy right now. Please check your internet and try again.');
@@ -218,6 +219,16 @@ function resolve(calendars, want){
 
   if(!found){
     fail('No class that day', `There is no class scheduled for ${pretty}.`);
+    return;
+  }
+  /* the class itself is paused that day, or has ended (set in the attendance) */
+  const pz = data.plan && data.plan.pause, wantIso = isoDate(want);
+  if(pz && pz.from && wantIso >= pz.from && (!pz.until || wantIso <= pz.until)){
+    fail('Classes are paused', `There is no class on ${pretty} — classes are paused` + (pz.until ? ` until ${fmtDate(parseDate(pz.until))}.` : ' until the academy restarts them.'));
+    return;
+  }
+  if(data.plan && data.plan.endDate && wantIso > data.plan.endDate){
+    fail('This class has ended', 'The last class was on ' + fmtDate(parseDate(data.plan.endDate)) + '. Please contact the academy.');
     return;
   }
   if(found.day.isOff){

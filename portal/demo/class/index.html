@@ -83,6 +83,13 @@
 
         <div class="ntc-ticker" id="ntcTicker" hidden></div>
 
+        <style>
+.plan-banner{display:none;flex-direction:column;gap:2px;margin:0 0 14px;padding:12px 16px;border-radius:14px;
+  border:1px solid rgba(246,207,154,.45);background:rgba(232,169,92,.1);color:#f6dca8;font-size:13.5px;line-height:1.5}
+.plan-banner.show{display:flex}
+.plan-banner b{font-size:14.5px;color:#fbe7c2}
+.plan-banner span{color:rgba(246,220,168,.85)}
+</style>
         <div class="status-banner" id="statusBanner">
           This class sheet is currently inactive. Please contact the academy.
         </div>
@@ -463,6 +470,7 @@ async function load(){
       return;
     }
 
+    if(out.plan) out.data.plan = out.plan;   // pause / last class day of the class (from the attendance)
     writeCache(token, out.data);
 
     // Repaint only if something actually changed — avoids a pointless flash.
@@ -625,6 +633,8 @@ function render(d){
   $('ovStatus').innerHTML   = `<span class="pill ${isActive ? 'active' : 'inactive'}">${isActive ? 'Active' : 'Inactive'}</span>`;
 
   if(!isActive) $('statusBanner').classList.add('show');
+  PLAN = d.plan || null;
+  renderPlanBanner();
 
   const wa = (d.whatsapp || '').trim();
   const btn = $('waBtn');
@@ -872,6 +882,31 @@ function updateNoticeDot(){
 $('ntcBell').addEventListener('click', () => { activateTab('notices'); noticesWereRead(); });
 
 /* ---------------- Overview: calendar status line ---------------- */
+/* ---------------- Pause / last class day (set by the academy in the attendance) ---------------- */
+let PLAN = null;
+function planNoClass(date){
+  if(!PLAN) return '';
+  const iso = isoDate(date), pz = PLAN.pause;
+  if(PLAN.endDate && iso > PLAN.endDate) return 'Ended';
+  if(pz && pz.from && iso >= pz.from && (!pz.until || iso <= pz.until)) return 'Paused';
+  return '';
+}
+function renderPlanBanner(){
+  let b = $('planBanner');
+  if(!b){ b = document.createElement('div'); b.id = 'planBanner'; b.className = 'plan-banner'; $('statusBanner').after(b); }
+  const pz = PLAN && PLAN.pause, t = isoDate(today0());
+  let html = '';
+  if(PLAN && PLAN.endDate && PLAN.endDate >= t){
+    html = `<b>Last class: ${fmtDate(parseDate(PLAN.endDate))}</b><span>After this day the class sheet closes.</span>`;
+  } else if(pz && pz.from && pz.from <= t){
+    html = `<b>Classes are paused</b><span>${pz.until ? 'Classes restart on ' + fmtDate(addDays(parseDate(pz.until), 1)) + ', in shā’ Allāh.' : 'The academy will tell you when classes restart.'}</span>`;
+  } else if(pz && pz.from){
+    html = `<b>Classes pause from ${fmtDate(parseDate(pz.from))}</b><span>${pz.until ? 'Back on ' + fmtDate(addDays(parseDate(pz.until), 1)) + '.' : 'Until the academy restarts them.'}</span>`;
+  }
+  b.innerHTML = html;
+  b.classList.toggle('show', !!html);
+}
+
 function renderCalendarStatus(){
   const box = $('ovCalendar');
   if(!calendars.length){ box.textContent = 'No calendar sheets yet'; return; }
@@ -1001,7 +1036,8 @@ function renderCalBody(){
            calendar on, or a link still sitting in the rotation, does not
            bring yesterday back — before this, every past day inside a
            running plan kept a live Meet button. */
-        const joinable = canJoin && d.link && !isPast;
+        const noCls = planNoClass(d.date);
+        const joinable = canJoin && d.link && !isPast && !noCls;
         return `<div class="day ${isFocus ? 'spotlight' : (isToday ? 'today' : '')} ${isPast && !isToday && !isFocus ? 'past' : ''}">
           <div class="day-left">
             <div class="day-n">Day ${d.n}</div>
@@ -1019,7 +1055,7 @@ function renderCalBody(){
                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                    Join
                  </a>`
-              : `<span class="btn-join dead">${isPast ? 'Finished' : 'Join'}</span>`}
+              : `<span class="btn-join dead">${isPast ? 'Finished' : (noCls || 'Join')}</span>`}
           </div>
         </div>`;
       }).join('')}
