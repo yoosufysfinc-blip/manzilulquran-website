@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#031b13">
+<title>Attendance · Demo class sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/portal/academic-service/assets/as.v9.css">
+<link rel="stylesheet" href="/portal/academic-service/assets/att-sheet.v2.css">
+<link rel="stylesheet" href="/portal/academic-service/assets/simple.v1.css">
+<link rel="stylesheet" href="/portal/academic-service/assets/att-admin.v4.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* class-admin link only (portal/attendance/) */
+  .adm-block{ position:fixed; inset:0; z-index:200; background:var(--shell); display:flex; align-items:center; justify-content:center; padding:24px; }
+  .adm-block .box{ background:#fff; color:var(--text); border-radius:16px; padding:26px 22px; max-width:380px; width:100%; text-align:center; }
+  .adm-block h2{ margin:0 0 8px; font-family:var(--f-d); }
+  .adm-block p{ margin:0; color:var(--muted); }
+  .adm-who{ color:var(--on-dark-2); font-size:13px; white-space:nowrap; }
+  .adm-who b{ color:#fff; }
+  .adm-save{ display:inline-flex; align-items:center; min-height:34px; padding:0 12px; border-radius:999px; font-size:12.5px; font-weight:600; white-space:nowrap; }
+  .adm-save.ok{ background:rgba(143,211,174,.16); color:var(--mint); }
+  .adm-save.wait{ background:var(--warn-bg); color:var(--warn); }
+  .adm-top .tn-right{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+</style>
+<script>
+  /* the demo class sheet's own attendance (att-own.v1.js) — no link */
+  window.MQ_ADMIN = true; document.documentElement.classList.add("adm-skin");
+  window.MQ_SUPABASE_URL    = "https://uuwboujrotmmpofjynhz.supabase.co";
+  window.MQ_SUPABASE_KEY    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2JvdWpyb3RtbXBvZmp5bmh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0Mjk4OTQsImV4cCI6MjEwMjAwNTg5NH0.z0_G7oKlmGILPr8zzOOQEgtUDrT8rNQLjrV9GQQdA9U";   // PUBLIC key only
+  window.MQ_SUPABASE_PREFIX = "clsdemo_";
+</script>
+</head>
+<body data-ws="ind">
+<div class="app">
+  <header class="topnav adm-top no-print">
+    <div class="tn-row">
+      <div class="brand">
+        <div class="brand-mark" id="brandMark"></div>
+        <div><div class="brand-name" id="brandName">ManzilulQuran</div>
+          <div class="brand-sub" id="brandSub">Attendance · class sheet</div></div>
+      </div>
+      <nav class="navpill" id="navList" style="display:none"></nav>
+      <div class="tn-right">
+        <span class="adm-who">👤 <b id="admWho">—</b></span>
+        <span class="adm-save ok" id="admSave">…</span>
+      </div>
+    </div>
+    <div class="wsbar">
+      <div class="month-pick"><label for="globalMonth">Month</label>
+        <select id="globalMonth" class="mono"></select></div>
+    </div>
+  </header>
+  <div class="head">
+    <div><div class="crumb" id="crumb">Attendance</div>
+      <h1 class="page-title" id="pageTitle">Attendance</h1>
+      <div class="page-sub" id="pageSub"></div></div>
+    <div class="head-acts no-print" id="headActs"></div>
+  </div>
+  <main class="content" id="view" tabindex="-1"></main>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div id="modalRoot"></div>
+
+<script src="/portal/academic-service/assets/core.v10.js"></script>
+<script src="/portal/academic-service/assets/logic.v10.js"></script>
+<script src="/portal/academic-service/assets/ui.v10.js"></script>
+<script src="/portal/academic-service/assets/forms-actions.v22.js"></script>
+<script src="/portal/academic-service/assets/ws-attendance.v6.js"></script>
+<script src="/portal/academic-service/assets/plan-pause.v1.js"></script>
+<script src="/portal/academic-service/assets/att-admin.v6.js"></script>
+<script src="/portal/academic-service/assets/att-own.v1.js"></script>
+<script>ownInit();</script>
+</body>
+</html>
