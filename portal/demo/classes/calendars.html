@@ -13,6 +13,7 @@
 
 <link rel="stylesheet" href="/assets/classes/calendars.v2.css" />
 <link rel="stylesheet" href="/assets/classes/calendars-sync.v1.css" />
+<style>.is-batch #csStrip,.is-batch .cs-badge,.is-batch #csLine{display:none !important}</style>
 </head>
 <body>
 
@@ -705,5 +706,10 @@ function fmtDate(d){
 </script>
 <script src="/assets/classes/calsync.v1.js"></script>
 <script src="/assets/classes/calendars-sync.v1.js"></script>
+<script>
+/* an individual class's calendar lives in the class sheet now (calpanel.v1.js); batches stay here */
+(function(){ const r = renderList; renderList = function(){ if(classInfo && !classInfo.isBatch){ location.replace("./?cal=" + encodeURIComponent(classId)); return; }
+  if(classInfo && classInfo.isBatch) document.body.classList.add("is-batch"); r(); }; })();
+</script>
 </body>
 </html>
