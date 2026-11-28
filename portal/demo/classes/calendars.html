@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="/assets/classes/calendars.v2.css" />
+<link rel="stylesheet" href="/assets/classes/calendars-sync.v1.css" />
 </head>
 <body>
 
@@ -166,7 +167,7 @@ window.MQ_SUPABASE_PREFIX = "clsdemo_";
 </script>
 
 <script src="/assets/classes/engine.v1.js"></script>
-<script src="/assets/classes/api.v5.js"></script>
+<script src="/assets/classes/api.v10.js"></script>
 <script>
 /* =================================================================
    ░░  CALENDAR SHEETS ADMIN  ░░
@@ -702,5 +703,7 @@ function fmtDate(d){
   return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
 }
 </script>
+<script src="/assets/classes/calsync.v1.js"></script>
+<script src="/assets/classes/calendars-sync.v1.js"></script>
 </body>
 </html>

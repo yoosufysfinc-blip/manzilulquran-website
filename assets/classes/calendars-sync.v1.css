@@ -1,0 +1,42 @@
+/* calendars-sync.v1.css — class days ↔ weekly off on the calendar page (demo). Phone first. */
+.cs-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 16px;padding:12px 14px;border-radius:14px;
+  background:rgba(45,212,164,.07);border:1px solid rgba(45,212,164,.28);animation:csIn .35s ease both}
+.cs-k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cream-faint)}
+.cs-v{font-size:13px;color:var(--cream-dim)}
+.cs-v b{color:var(--cream)}
+.cs-wait{opacity:.7}
+.cs-none{color:var(--err)}
+.cs-h{flex-basis:100%;font-size:12px;color:var(--cream-faint);line-height:1.45}
+.cs-tc{font-style:normal;padding:1px 7px;border-radius:99px;background:rgba(124,196,251,.14);color:var(--sky);font-size:11px}
+.cs-days{display:inline-flex;gap:4px}
+.cs-days i{font-style:normal;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;font-size:11px;font-weight:700;
+  color:var(--cream-faint);background:rgba(250,246,238,.05);border:1px solid rgba(250,246,238,.1);transition:transform .25s ease,background .25s ease}
+.cs-days i.on{color:#06261b;background:var(--emerald-glow);border-color:transparent}
+.cs-days.new i.ch{animation:csPop .5s ease both;box-shadow:0 0 0 2px var(--gold-light)}
+.cs-badge{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:12px;line-height:1.4;animation:csIn .3s ease both}
+.cs-badge.ok{color:var(--emerald-glow);background:rgba(45,212,164,.1)}
+.cs-badge.bad{color:#ffd28a;background:rgba(255,190,90,.12);border:1px solid rgba(255,190,90,.35)}
+.cs-fix{font:inherit;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer;min-height:28px}
+.cs-fix:disabled{opacity:.5}
+.cs-line{margin-top:8px;font-size:12.5px;line-height:1.45;padding:7px 10px;border-radius:10px;transition:background .25s ease,color .25s ease}
+.cs-line:empty{display:none}
+.cs-line.ok{color:var(--emerald-glow);background:rgba(45,212,164,.08)}
+.cs-line.bad{color:#ffd28a;background:rgba(255,190,90,.1)}
+.cs-line .cs-fix{margin-left:4px}
+.cs-ask{max-width:480px}
+.cs-cmp{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 12px}
+.cs-cmp > div{display:flex;flex-direction:column;gap:5px}
+.cs-arrow{font-size:20px;color:var(--gold-light);animation:csNudge 1.2s ease-in-out infinite}
+.cs-list{margin:0;padding-left:18px;font-size:13px;line-height:1.55;color:var(--cream-dim)}
+.cs-list b{color:var(--cream)}
+.cs-warn{color:var(--err);font-size:13px}
+.cs-askf{flex-wrap:wrap;gap:8px}
+@media (max-width:560px){
+  .cs-askf{flex-direction:column-reverse}
+  .cs-askf button{width:100%}
+  .cs-days i{width:30px;height:30px}
+}
+@keyframes csIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes csPop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes csNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){.cs-strip,.cs-badge,.cs-days.new i.ch,.cs-arrow{animation:none}}
