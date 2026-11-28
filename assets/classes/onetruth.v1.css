@@ -1,0 +1,37 @@
+/* onetruth.v1.css — the class sheet follows its class (demo admin class sheet): the Edit note and the
+   fields that come from the class, the one on/off window, the month's calendars in "Needs attention".
+   Phone first. PUBLISHED FILES ARE IMMUTABLE — create onetruth.v2.css to change this. */
+
+/* Edit: the class is the truth */
+.ot-note{display:flex;flex-direction:column;gap:3px;margin:0 0 16px;padding:11px 13px;border-radius:13px;
+  background:rgba(45,212,164,.08);border:1px solid rgba(45,212,164,.24);animation:otIn .35s cubic-bezier(.2,.9,.25,1) both}
+.ot-note b{font-size:12.5px;color:#7ee6b8;letter-spacing:.2px}
+.ot-note span{font-size:12.5px;line-height:1.5;color:var(--cream-dim)}
+.ot-note[hidden]{display:none}
+.field.ot-lock input{opacity:.78;cursor:default;border-style:dashed;background:rgba(0,0,0,.16)}
+.field.ot-lock input:focus{box-shadow:none}
+.field.ot-lock label::after{content:"from the class";margin-left:8px;font-size:9px;letter-spacing:1px;padding:2px 6px;border-radius:99px;
+  background:rgba(45,212,164,.14);color:#7ee6b8;vertical-align:1px}
+.field.ot-lock:has(#fStudentId) label::after{content:"stays"}
+
+/* Needs attention: the month's calendars for every class */
+.ot-cal{display:flex;flex-wrap:wrap;align-items:center;column-gap:10px;row-gap:1px;width:100%;margin:2px 0 10px;padding:10px 13px;text-align:left;
+  font:inherit;color:var(--gold-light);cursor:pointer;border-radius:13px;border:1.5px dashed rgba(201,169,110,.45);background:rgba(201,169,110,.06);
+  transition:background .2s,transform .12s;animation:otIn .4s cubic-bezier(.2,.9,.25,1) both}
+.ot-cal span{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:rgba(201,169,110,.16);font-size:15px}
+.ot-cal b{font-size:13.5px;font-weight:800}
+.ot-cal small{flex-basis:100%;padding-left:36px;font-size:11.5px;color:var(--cream-faint)}
+.ot-cal:hover{background:rgba(201,169,110,.12)}
+.ot-cal:active{transform:scale(.985)}
+.ot-cal[hidden]{display:none}
+
+/* classes without a class sheet: why a second class is listed */
+.acs-mid .acs-why{color:var(--gold-warm);font-size:11.5px;margin-top:5px;line-height:1.45}
+
+@keyframes otIn{from{opacity:0;transform:translate3d(0,6px,0)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){ .ot-note,.ot-cal{animation:none} }
+html.mq-lite .ot-note,html.mq-lite .ot-cal{animation:none}
+
+/* the one-ask window */
+#otAskB{display:flex;flex-direction:column;gap:14px}
+#otAskB .nc-lead{margin:0}

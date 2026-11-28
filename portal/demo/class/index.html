@@ -19,6 +19,10 @@
   /* sign-out on a sheet with a student sign-in */
   .foot-link{background:none;border:0;padding:0;font:inherit;color:var(--azure-light);opacity:.85;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
   .foot-link:hover{opacity:1}
+  /* an academy holiday (Academic Service): a named day off */
+  .day.hol{background:linear-gradient(90deg, rgba(255,184,107,0.09), rgba(255,184,107,0.02))}
+  .day.hol .day-holiday{display:flex;flex-direction:column;align-items:flex-end;gap:2px;color:#ffc98a;opacity:.95;text-align:right}
+  .day.hol .day-holiday small{font-size:11.5px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--frost-dim)}
 </style>
 </head>
 <body>
@@ -471,6 +475,7 @@ async function load(){
     }
 
     if(out.plan) out.data.plan = out.plan;   // pause / last class day of the class (from the attendance)
+    if(out.holidays) out.data.holidays = out.holidays;   // academy holidays (Academic Service)
     writeCache(token, out.data);
 
     // Repaint only if something actually changed — avoids a pointless flash.
@@ -516,6 +521,8 @@ async function doSignin(){
   try{
     const out = await studentLogin(shareToken, phone, dob, deviceId());
     if(out.result === 'success' && out.data){
+      if(out.plan) out.data.plan = out.plan;
+      if(out.holidays) out.data.holidays = out.holidays;
       writeCache(shareToken, out.data);
       render(out.data);
       $('signoutRow').hidden = !out.signin;
@@ -634,6 +641,7 @@ function render(d){
 
   if(!isActive) $('statusBanner').classList.add('show');
   PLAN = d.plan || null;
+  HOLS = Array.isArray(d.holidays) ? d.holidays : [];
   renderPlanBanner();
 
   const wa = (d.whatsapp || '').trim();
@@ -884,7 +892,14 @@ $('ntcBell').addEventListener('click', () => { activateTab('notices'); noticesWe
 /* ---------------- Overview: calendar status line ---------------- */
 /* ---------------- Pause / last class day (set by the academy in the attendance) ---------------- */
 let PLAN = null;
+/* Academy holidays (Academic Service): no class that day — shown as a holiday, never joinable */
+let HOLS = [];
+function holidayOn(date){
+  const iso = isoDate(date);
+  return HOLS.find(h => h && h.from && iso >= h.from && iso <= (h.to || h.from)) || null;
+}
 function planNoClass(date){
+  if(holidayOn(date)) return 'Holiday';
   if(!PLAN) return '';
   const iso = isoDate(date), pz = PLAN.pause;
   if(PLAN.endDate && iso > PLAN.endDate) return 'Ended';
@@ -986,7 +1001,7 @@ function renderCalBody(){
   const s     = parseDate(cal.startDate);
   const e     = endDate(cal);
   const days  = buildDays(cal);
-  const classCount = days.filter(d => !d.isOff).length;
+  const classCount = days.filter(d => !d.isOff && !holidayOn(d.date)).length;
   const canJoin = joinAllowed(cal);
   const offTxt  = (cal.weeklyOff && cal.weeklyOff.length) ? cal.weeklyOff.join(', ') : 'None';
 
@@ -1036,6 +1051,16 @@ function renderCalBody(){
            calendar on, or a link still sitting in the rotation, does not
            bring yesterday back — before this, every past day inside a
            running plan kept a live Meet button. */
+        const hol = holidayOn(d.date);
+        if(hol){
+          return `<div class="day off hol ${isFocus ? 'spotlight' : ''} ${isPast && !isFocus ? 'past' : ''}">
+            <div class="day-left">
+              <div class="day-n">Day ${d.n}</div>
+              <div class="day-date">${fmtDate(d.date)}<span class="day-dow">${DAYS_SHORT[d.date.getDay()]}</span>${isToday ? '<span class="today-tag">Today</span>' : ''}</div>
+            </div>
+            <div class="day-holiday">Holiday<small>${escapeHtml(hol.name || '')}</small></div>
+          </div>`;
+        }
         const noCls = planNoClass(d.date);
         const joinable = canJoin && d.link && !isPast && !noCls;
         return `<div class="day ${isFocus ? 'spotlight' : (isToday ? 'today' : '')} ${isPast && !isToday && !isFocus ? 'past' : ''}">
