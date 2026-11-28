@@ -1,0 +1,60 @@
+/* motion.v1.css — calm, useful motion for the demo admin class sheet (with motion.v1.js). Phone first.
+   Only opacity and transform move (the cheap ones); lite mode drops the costly blur on slower phones. */
+
+/* ---- something just changed: one soft glow ---- */
+.mo-flash{ animation:moFlash 1.6s cubic-bezier(.2,.8,.2,1) 1; }
+tr.mo-flash td{ animation:moFlashCell 1.6s cubic-bezier(.2,.8,.2,1) 1; }
+@keyframes moFlash{
+  0%{ box-shadow:0 0 0 0 rgba(45,212,164,0); }
+  18%{ box-shadow:0 0 0 3px rgba(45,212,164,.55), 0 0 26px rgba(45,212,164,.25); }
+  100%{ box-shadow:0 0 0 0 rgba(45,212,164,0); }
+}
+@keyframes moFlashCell{ 0%{ background-color:transparent; } 18%{ background-color:rgba(45,212,164,.16); } 100%{ background-color:transparent; } }
+
+/* ---- the list refreshes in place: a thin running bar, the old list stays ---- */
+#listContent{ position:relative; }
+#listContent.mo-refreshing{ pointer-events:none; }
+#listContent.mo-refreshing > *{ opacity:.72; transition:opacity .2s ease; }
+#listContent.mo-refreshing::before{ content:""; position:absolute; z-index:5; left:0; right:0; top:-6px; height:3px; border-radius:99px; overflow:hidden;
+  background:linear-gradient(90deg, transparent, var(--emerald-glow, #2dd4a4), var(--gold-light, #e3c88e), transparent); background-size:50% 100%; background-repeat:no-repeat;
+  animation:moRun 1s linear infinite; }
+@keyframes moRun{ from{ background-position:-50% 0; } to{ background-position:150% 0; } }
+
+/* ---- windows close as smoothly as they open ---- */
+.modal-backdrop.mo-closing{ animation:moFadeOut .2s ease forwards; pointer-events:none; }
+.modal-backdrop.mo-closing .modal{ animation:moModalOut .2s cubic-bezier(.4,0,1,1) forwards !important; }
+@keyframes moFadeOut{ from{ opacity:1; } to{ opacity:0; } }
+@keyframes moModalOut{ from{ transform:translate3d(0,var(--drag,0px),0); opacity:1; } to{ transform:translate3d(0,14px,0) scale(.98); opacity:0; } }
+@media (max-width:560px){
+  .nc-back.mo-closing .modal{ animation-name:moSheetOut !important; animation-duration:.22s !important; }
+}
+@keyframes moSheetOut{ from{ transform:translate3d(0,var(--drag,0px),0); } to{ transform:translate3d(0,105%,0); } }
+/* the grab bar invites a pull on phones */
+@media (max-width:640px){
+  .nc-grab, .sheet-grab{ cursor:grab; touch-action:none; }
+  .nc .modal-head{ touch-action:pan-x; }
+}
+
+/* ---- the toast shows how long it stays ---- */
+#toast.mo-t.show{ overflow:hidden; }
+#toast.mo-t.show::after{ content:""; position:absolute; left:14px; right:14px; bottom:5px; height:2px; border-radius:99px; background:currentColor; opacity:.35;
+  transform-origin:left center; animation:moToastBar 3s linear forwards; }
+@keyframes moToastBar{ from{ transform:scaleX(1); } to{ transform:scaleX(0); } }
+
+/* ---- lite mode: slower phones and long lists stay smooth ---- */
+html.mq-lite .stat, html.mq-lite .b-card, html.mq-lite .r-row, html.mq-lite .crs-row, html.mq-lite .ntc-item, html.mq-lite .t-link,
+html.mq-lite .ws-empty, html.mq-lite .ws-tab, html.mq-lite .r-add, html.mq-lite .b-hint, html.mq-lite .sm-summary,
+html.mq-lite .modal, html.mq-lite .modal-backdrop, html.mq-lite .lock-screen, html.mq-lite .ta-card, html.mq-lite .menu-sheet,
+html.mq-long .r-row, html.mq-long .stat, html.mq-long .list-table tr{
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+html.mq-lite .modal{ background:linear-gradient(165deg, #0f4a37, #04241a) !important; }
+html.mq-lite .modal-backdrop{ background:rgba(0,0,0,.72) !important; }
+html.mq-lite .tap-ring{ display:none !important; }
+html.mq-lite [style*="--i:"], html.mq-lite [style*="--r:"]{ animation-delay:0s !important; }
+html.mq-lite .nc-burst i{ display:none; }
+
+@media (prefers-reduced-motion:reduce){
+  .mo-flash, tr.mo-flash td, #listContent.mo-refreshing::before, #toast.mo-t.show::after{ animation:none !important; }
+  .mo-flash{ outline:2px solid rgba(45,212,164,.6); outline-offset:2px; }
+}
